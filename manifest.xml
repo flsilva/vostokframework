@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<componentPackage>
+
+	<!-- org.vostokframework -->
+	<!--
+	<component id="org.vostokframework:XXX" 					class="org.vostokframework.XXX" />
+	<component id="org.vostokframework:XXX" 					class="org.vostokframework.XXX" />
+	<component id="org.vostokframework:XXX" 					class="org.vostokframework.XXX" />
+	-->
+</componentPackage>
