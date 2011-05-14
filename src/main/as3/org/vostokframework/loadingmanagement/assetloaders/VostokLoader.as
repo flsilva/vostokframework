@@ -109,6 +109,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 */
 		public function load(): void
 		{
+			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
+			
 			addFileLoaderListeners();
 			_loader.load(_request, _context);
 		}

@@ -28,36 +28,65 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
+	import org.vostokframework.assetmanagement.AssetType;
+	import org.vostokframework.loadingmanagement.monitors.LoadingMonitoring;
+
 	import flash.events.Event;
-	import flash.system.LoaderContext;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoaderEvent extends Event
+	public class AssetLoadingMonitorEvent extends Event
 	{
-		public static const COMPLETE:String = "VostokFramework.FileLoaderEvent.COMPLETE";
-		public static const TRYING_TO_CONNECT:String = "VostokFramework.FileLoaderEvent.TRYING_TO_CONNECT";
+		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
+		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
 		
 		/**
-		 * @private
- 		 */
-		private var _loadedAssetData:LoaderContext;
+		 * description
+		 */
+		private var _assetData:*;
+		private var _assetId:String;
+		private var _assetType:AssetType;
+		private var _monitoring:LoadingMonitoring;
 		
-		public function get loadedAssetData():* { return _loadedAssetData; }
+		/**
+		 * description
+		 */
+		public function get assetData(): * { return _assetData; }
+
+		/**
+		 * description
+		 */
+		public function get assetId(): String { return _assetId; }
+		
+		/**
+		 * description
+		 */
+		public function get assetType(): AssetType { return _assetType; }
+
+		/**
+		 * description
+		 */
+		public function get monitoring(): LoadingMonitoring { return _monitoring; }
 		
 		/**
 		 * description
 		 * 
-		 * @param type
-		 * @param loadedAssetData
+		 * @param assetId
+		 * @param assetType
+		 * @param monitoring
+		 * @param assetData
 		 */
-		public function FileLoaderEvent(type:String, loadedAssetData:* = null)
+		public function AssetLoadingMonitorEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
 		{
 			super(type);
-			_loadedAssetData = loadedAssetData;
+			
+			_assetId = assetId;
+			_assetType = assetType;
+			_monitoring = monitoring;
+			_assetData = assetData;
 		}
 		
 	}

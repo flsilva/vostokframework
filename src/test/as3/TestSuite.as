@@ -42,6 +42,7 @@ package
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractFileLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
 
 	/**
 	 * @author Flávio Silva
@@ -71,6 +72,9 @@ package
 		public var abstractAssetLoaderTests:AbstractAssetLoaderTests;
 		public var abstractFileLoaderTests:AbstractFileLoaderTests;
 		public var vostokLoaderTests:VostokLoaderTests;
+		
+		//org.vostokframework.loadingmanagement.monitors
+		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
 		
 		public function TestSuite()
 		{

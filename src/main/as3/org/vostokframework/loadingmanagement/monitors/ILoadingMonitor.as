@@ -29,13 +29,14 @@
 
 package org.vostokframework.loadingmanagement.monitors
 {
+	import flash.events.IEventDispatcher;
 
 	/**
 	 * Description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoadingMonitor
+	public interface ILoadingMonitor extends IEventDispatcher
 	{
 
 	}
