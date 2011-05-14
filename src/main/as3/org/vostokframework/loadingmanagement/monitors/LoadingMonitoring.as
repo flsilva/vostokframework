@@ -74,7 +74,7 @@ package org.vostokframework.loadingmanagement.monitors
 		 * description
 		 */
 		public function get bytesTotal(): int { return _bytesTotal; }
-
+		
 		/**
 		 * description
 		 */
@@ -107,10 +107,9 @@ package org.vostokframework.loadingmanagement.monitors
 		 * @param bytesTotal
 		 * @param bufferPercent
 		 */
-		public function LoadingMonitoring(latency:int, bytesTotal:int, bufferPercent:int = 100): void
+		public function LoadingMonitoring(latency:int, bufferPercent:int = 100): void
 		{
 			_latency = latency;
-			_bytesTotal = bytesTotal;
 			_bufferPercent = bufferPercent;
 		}
 
@@ -127,9 +126,12 @@ package org.vostokframework.loadingmanagement.monitors
 		 * 
 		 * @param bytesLoaded
 		 */
-		public function update(bytesLoaded:int): void
+		public function update(bytesTotal:int, bytesLoaded:int): void
 		{
-			_percent = (_bytesTotal > 0) ? Math.floor((bytesLoaded * 100) / _bytesTotal) : 0;
+			_bytesTotal = bytesTotal;
+			_bytesLoaded = bytesLoaded;
+			
+			_percent = (_bytesTotal > 0) ? Math.floor((_bytesLoaded * 100) / _bytesTotal) : 0;
 		}
 
 	}

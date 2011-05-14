@@ -72,16 +72,16 @@ package org.vostokframework.loadingmanagement.monitors
 			addLoaderEvents();
 		}
 		
-		protected function createLoadingMonitoring(bytesTotal:int):void
+		protected function createLoadingMonitoring():void
 		{
-			_monitoring = new LoadingMonitoring(_latency, bytesTotal);
+			_monitoring = new LoadingMonitoring(_latency);
 		}
 		
 		private function addLoaderEvents():void
 		{
 			_loader.addEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false, 0, true);
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
-			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
+			//_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
 		}
 		
 		private function loaderTryingToConnectHandler(event:FileLoaderEvent):void
@@ -92,13 +92,13 @@ package org.vostokframework.loadingmanagement.monitors
 		private function loaderOpenHandler(event:Event):void
 		{
 			_latency = getTimer() - _startedTimeTryingToConnect;
-			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType));
+			createLoadingMonitoring();
+			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType, _monitoring));
 		}
 		
 		private function loaderProgressHandler(event:ProgressEvent):void
 		{
-			if (!_monitoring) createLoadingMonitoring(event.bytesTotal);
-			_monitoring.update(event.bytesLoaded);
+			_monitoring.update(event.bytesTotal, event.bytesLoaded);
 			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.PROGRESS, _assetId, _assetType, _monitoring));
 		}
 		

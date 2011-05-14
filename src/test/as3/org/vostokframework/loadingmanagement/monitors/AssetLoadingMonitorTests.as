@@ -32,12 +32,11 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.AssetType;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
 	import flash.events.Event;
-	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 
 	/**
@@ -115,22 +114,42 @@ package org.vostokframework.loadingmanagement.monitors
 		public function dispatchEvent_stubDispatchOpen_OPEN(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
-									Async.asyncHandler(this, timerCompleteHandler, 100,
+									Async.asyncHandler(this, fileLoaderOpenHandler, 100,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
-														timerTimeoutHandler),
+														asyncTimeoutHandler),
 									false, 0, true);
 			
 			_fileLoader.dispatchEvent(new Event(Event.OPEN));
 		}
 		
-		public function timerCompleteHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		[Test(async)]
+		public function dispatchEvent_stubDispatchOpenCheckLatency_GreaterThanZero(): void
 		{
-			Assert.assertEquals(event[passThroughData["propertyName"]], passThroughData["propertyValue"]);
+			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
+									Async.asyncHandler(this, timerCompleteHandlerCheckLatency, 100,
+														null, asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
+			_fileLoader.eventToDispatch = new Event(Event.OPEN);
+			_fileLoader.load();
 		}
 		
-		public function timerTimeoutHandler(passThroughData:Object):void
+		
+		public function fileLoaderOpenHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
-			Assert.fail("Asynchronous Test Failed: Timeout Handler");
+			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
+		}
+		
+		public function timerCompleteHandlerCheckLatency(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		{
+			Assert.assertTrue(event.monitoring.latency > 0);
+			passThroughData = null;
+		}
+		
+		public function asyncTimeoutHandler(passThroughData:Object):void
+		{
+			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
 		}
 		

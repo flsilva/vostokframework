@@ -219,7 +219,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function timerTimeoutHandler(passThroughData:Object):void
 		{
-			Assert.fail("Asynchronous Test Failed: Timeout Handler");
+			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
 		}
 		
