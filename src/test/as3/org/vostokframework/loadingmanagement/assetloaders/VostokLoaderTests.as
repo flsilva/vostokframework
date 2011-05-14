@@ -35,6 +35,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	/**
 	 * @author Flávio Silva
 	 */
+	[TestCase(order=11)]
 	public class VostokLoaderTests
 	{
 		

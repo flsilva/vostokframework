@@ -38,11 +38,6 @@ package org.vostokframework.loadingmanagement.monitors
 	public interface ILoadingMonitor
 	{
 
-		/**
-		 * description
-		 * 
- 		 */
-		function get monitoring(): LoadingMonitoring;
 	}
 
 }

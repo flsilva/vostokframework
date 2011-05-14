@@ -26,41 +26,39 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement.events
 {
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.utils.setTimeout;
+	import flash.system.LoaderContext;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoaderStub extends EventDispatcher implements IFileLoader
+	public class FileLoaderEvent extends Event
 	{
-		public var eventToDispatch:Event;
+		public static const COMPLETE:String = "VostokFramework.FileLoaderEvent.COMPLETE";
 		
-		public function VostokLoaderStub()
-		{
-			
-		}
+		/**
+		 * @private
+ 		 */
+		private var _loadedAssetData:LoaderContext;
+		
+		public function get loadedAssetData():* { return _loadedAssetData; }
 		
 		/**
 		 * description
+		 * 
+		 * @param type
+		 * @param loadedAssetData
 		 */
-		public function cancel(): void
+		public function FileLoaderEvent(type:String, loadedAssetData:*)
 		{
-			
+			super(type);
+			_loadedAssetData = loadedAssetData;
 		}
 		
-		public function load(): void
-		{
-			if (!eventToDispatch) return;
-			
-			setTimeout(dispatchEvent, 50, eventToDispatch);
-		}
-
 	}
 
 }

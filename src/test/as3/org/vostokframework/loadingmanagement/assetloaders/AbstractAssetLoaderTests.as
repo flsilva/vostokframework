@@ -30,19 +30,27 @@
 package org.vostokframework.loadingmanagement.assetloaders
 {
 	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
-	import flash.display.Loader;
-	import flash.net.URLRequest;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * @author Flávio Silva
 	 */
+	[TestCase(order=12)]
 	public class AbstractAssetLoaderTests
 	{
 		
-		//private var _loader:AbstractAssetLoader;
+		private var _fileLoader:VostokLoaderStub;
+		private var _loader:AbstractAssetLoader;
+		private var _timer:Timer;
 		
 		public function AbstractAssetLoaderTests()
 		{
@@ -52,25 +60,27 @@ package org.vostokframework.loadingmanagement.assetloaders
 		/////////////////////////
 		// TESTS CONFIGURATION //
 		/////////////////////////
-		/*
+		
 		[Before]
-		public function startup(): void
+		public function setUp(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
+			_timer = new Timer(100, 1);
 			
-			var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1", "en-US");
-			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			AssetsContext.getInstance().assetRepository.add(asset);
-			
-			var fileLoader:IFileLoader = new VostokLoader(new Loader(), new URLRequest());
-			
-			_loader = new AbstractAssetLoader(asset, fileLoader);
+			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+			_fileLoader = new VostokLoaderStub();
+			_loader = new AbstractAssetLoader(_fileLoader, settings);
 		}
-		*/
+		
+		[After]
+		public function tearDown(): void
+		{
+			_timer.stop();
+			_timer = null;
+			_fileLoader = null;
+			_loader = null;
+			//_event = null;
+		}
+		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
@@ -88,13 +98,16 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function status_validGet_AssetLoaderStatus(): void
+		public function status_validGet_QUEUED(): void
 		{
-			var fileLoader:IFileLoader = new VostokLoader(new Loader(), new URLRequest());
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			Assert.assertEquals(AssetLoaderStatus.QUEUED, loader.status);
+			Assert.assertEquals(AssetLoaderStatus.QUEUED, _loader.status);
+		}
+		
+		[Test]
+		public function status_validGet_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		////////////////////////////////////////////
@@ -104,23 +117,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test]
 		public function historicalStatus_validGet_QUEUED(): void
 		{
-			var fileLoader:IFileLoader = new VostokLoader(new Loader(), new URLRequest());
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			Assert.assertEquals(AssetLoaderStatus.QUEUED, loader.historicalStatus.getAt(0));
+			Assert.assertEquals(AssetLoaderStatus.QUEUED, _loader.historicalStatus.getAt(0));
 		}
 		
 		[Test]
 		public function historicalStatus_validGet_TRYING_TO_CONNECT(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			var fileLoader:IFileLoader = new VostokLoaderStub();
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			loader.load();
-			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, loader.historicalStatus.getAt(1));
+			_loader.load();
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.historicalStatus.getAt(1));
 		}
 		
 		//////////////////////////////////
@@ -130,14 +134,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test]
 		public function cancel_checkStatus_CANCELED(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			
-			var fileLoader:IFileLoader = new VostokLoaderStub();
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			loader.cancel();
-			
-			Assert.assertEquals(AssetLoaderStatus.CANCELED, loader.status);
+			_loader.cancel();
+			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
 		}
 		
 		//////////////////////////////////
@@ -145,29 +143,84 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function load_allowedLoading_True(): void
+		public function load_checkReturn_True(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			
-			var fileLoader:IFileLoader = new VostokLoaderStub();
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			var load:Boolean = loader.load();
-			
-			Assert.assertTrue(load);
+			var allowedLoading:Boolean = _loader.load();
+			Assert.assertTrue(allowedLoading);
 		}
 		
 		[Test]
-		public function load_allowedLoadingCheckStatus_TRYING_TO_CONNECT(): void
+		public function load_checkStatus_TRYING_TO_CONNECT(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+			_loader.load();
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+		}
+		
+		[Test(async)]
+		public function load_stubDispatchOpen_LOADING(): void
+		{
+			_fileLoader.eventToDispatch = new Event(Event.OPEN);
+			_loader.load();
 			
-			var fileLoader:IFileLoader = new VostokLoaderStub();
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 100,
+														{loader:_loader, expectedStatus:AssetLoaderStatus.LOADING},
+														timerTimeoutHandler),
+									false, 0, true);
+			_timer.start();
+		}
+		
+		[Test(async)]
+		public function load_stubDispatchComplete_COMPLETE(): void
+		{
+			_fileLoader.eventToDispatch = new FileLoaderEvent(FileLoaderEvent.COMPLETE, null);
+			_loader.load();
 			
-			loader.load();
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 100,
+														{loader:_loader, expectedStatus:AssetLoaderStatus.COMPLETE},
+														timerTimeoutHandler),
+									false, 0, true);
+			_timer.start();
+		}
+		
+		[Test(async)]
+		public function load_stubDispatchIOError_FAILED(): void
+		{
+			_fileLoader.eventToDispatch = new IOErrorEvent(IOErrorEvent.IO_ERROR);
+			_loader.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, loader.status);
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 100,
+														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
+														timerTimeoutHandler),
+									false, 0, true);
+			_timer.start();
+		}
+		
+		[Test(async)]
+		public function load_stubDispatchSecurityError_FAILED(): void
+		{
+			_fileLoader.eventToDispatch = new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR);
+			_loader.load();
+			
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 100,
+														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
+														timerTimeoutHandler),
+									false, 0, true);
+			_timer.start();
+		}
+		
+		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
+		{
+			Assert.assertEquals(passThroughData["expectedStatus"], passThroughData["loader"]["status"]);
+		}
+		
+		public function timerTimeoutHandler(passThroughData:Object):void
+		{
+			Assert.fail("Asynchronous Test Failed: Timeout Handler");
+			passThroughData = null;
 		}
 		
 		//////////////////////////////////
@@ -177,14 +230,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test]
 		public function stop_checkStatus_STOPPED(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
-			
-			var fileLoader:IFileLoader = new VostokLoaderStub();
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(fileLoader, settings);
-			
-			loader.stop();
-			
-			Assert.assertEquals(AssetLoaderStatus.STOPPED, loader.status);
+			_loader.stop();
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
 		}
 		
 	}

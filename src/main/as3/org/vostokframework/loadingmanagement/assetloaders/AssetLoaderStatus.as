@@ -40,7 +40,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	public class AssetLoaderStatus extends Enum
 	{
 		public static const CANCELED:AssetLoaderStatus = new AssetLoaderStatus("CANCELED", 0);
-		public static const COMPLETED:AssetLoaderStatus = new AssetLoaderStatus("COMPLETED", 1);
+		public static const COMPLETE:AssetLoaderStatus = new AssetLoaderStatus("COMPLETE", 1);
 		public static const FAILED:AssetLoaderStatus = new AssetLoaderStatus("FAILED", 2);
 		public static const LOADING:AssetLoaderStatus = new AssetLoaderStatus("LOADING", 3);
 		public static const QUEUED:AssetLoaderStatus = new AssetLoaderStatus("QUEUED", 4);

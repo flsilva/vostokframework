@@ -35,6 +35,7 @@ package org.vostokframework.assetmanagement
 	/**
 	 * @author Flávio Silva
 	 */
+	[TestCase(order=4)]
 	public class AssetPackageFactoryTests
 	{
 		

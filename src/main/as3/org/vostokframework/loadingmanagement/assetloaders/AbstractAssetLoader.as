@@ -28,12 +28,17 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
-	import flash.errors.IllegalOperationError;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 	import org.vostokframework.loadingmanagement.monitors.ILoadingMonitor;
+
+	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 
 	/**
 	 * description
@@ -122,7 +127,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			//if (_currentAttempt > _settings.policy.maxAttempts) return false;
 			
 			if (_status == AssetLoaderStatus.CANCELED) throw new IllegalOperationError("The current status is <AssetLoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
-			if (_status == AssetLoaderStatus.COMPLETED) throw new IllegalOperationError("The current status is <AssetLoaderStatus.COMPLETED>, therefore it is no longer allowed loadings.");
+			if (_status == AssetLoaderStatus.COMPLETE) throw new IllegalOperationError("The current status is <AssetLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
 			if (_status == AssetLoaderStatus.LOADING) throw new IllegalOperationError("The current status is <AssetLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
 			if (_status == AssetLoaderStatus.TRYING_TO_CONNECT) throw new IllegalOperationError("The current status is <AssetLoaderStatus.TRYING_TO_CONNECT>, therefore it is not allowed to start a new loading right now.");
 			
@@ -131,6 +136,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_currentAttempt++;
 			setStatus(AssetLoaderStatus.TRYING_TO_CONNECT);
 			
+			addFileLoaderListeners();
 			_fileLoader.load();
 			
 			return true;
@@ -157,6 +163,65 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			setStatus(AssetLoaderStatus.STOPPED);
 			cancelFileLoader();
+		}
+		
+		private function fileLoaderOpenHandler(event:Event):void
+		{
+			loadingStarted();
+		}
+		
+		private function fileLoaderCompleteHandler(event:FileLoaderEvent):void
+		{
+			loadingComplete();
+		}
+		
+		private function fileLoaderIOErrorHandler(event:IOErrorEvent):void
+		{
+			ioError(event);
+		}
+		
+		private function fileLoaderSecurityErrorHandler(event:SecurityErrorEvent):void
+		{
+			securityError(event);
+		}
+		
+		private function loadingStarted():void
+		{
+			setStatus(AssetLoaderStatus.LOADING);
+		}
+		
+		private function loadingComplete():void
+		{
+			setStatus(AssetLoaderStatus.COMPLETE);
+			removeFileLoaderListeners();
+		}
+		
+		private function ioError(event:IOErrorEvent):void
+		{
+			setStatus(AssetLoaderStatus.FAILED);
+			_failDescription = event.text;
+		}
+		
+		private function securityError(event:SecurityErrorEvent):void
+		{
+			setStatus(AssetLoaderStatus.FAILED);
+			_failDescription = event.text;
+		}
+
+		private function addFileLoaderListeners():void
+		{
+			_fileLoader.addEventListener(Event.OPEN, fileLoaderOpenHandler, false, 0, true);
+			_fileLoader.addEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false, 0, true);
+			_fileLoader.addEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false, 0, true);
+			_fileLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, fileLoaderSecurityErrorHandler, false, 0, true);
+		}
+		
+		private function removeFileLoaderListeners():void
+		{
+			_fileLoader.removeEventListener(Event.OPEN, fileLoaderOpenHandler, false);
+			_fileLoader.removeEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false);
+			_fileLoader.removeEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false);
+			_fileLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, fileLoaderSecurityErrorHandler, false);
 		}
 		
 		private function cancelFileLoader():void

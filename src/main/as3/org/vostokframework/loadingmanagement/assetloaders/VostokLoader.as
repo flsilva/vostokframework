@@ -28,8 +28,12 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+
+	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.events.Event;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 
@@ -74,6 +78,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 */
 		public function cancel(): void
 		{
+			removeFileLoaderListeners();
+			
 			try
 			{
 				_loader.close();
@@ -98,12 +104,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 			return _loader.contentLoaderInfo.hasEventListener(type);
 		}
 		
-		
 		/**
 		 * description
 		 */
 		public function load(): void
 		{
+			addFileLoaderListeners();
 			_loader.load(_request, _context);
 		}
 		
@@ -112,10 +118,41 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture);
 		}
 		
-		
 		public function willTrigger(type:String):Boolean
 		{
 			return _loader.contentLoaderInfo.willTrigger(type);
+		}
+		
+		private function addFileLoaderListeners():void
+		{
+			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
+		}
+		
+		private function removeFileLoaderListeners():void
+		{
+			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, completeHandler, false);
+		}
+		
+		private function completeHandler(event:Event):void
+		{
+			complete();
+		}
+		
+		private function complete():void
+		{
+			removeFileLoaderListeners();
+			
+			var data:DisplayObject;
+			
+			try
+			{
+				data = _loader.content;
+				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, data));
+			}
+			catch (error:SecurityError)
+			{
+				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
 		}
 
 	}
