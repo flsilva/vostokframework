@@ -159,56 +159,56 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(async)]
 		public function load_stubDispatchOpen_LOADING(): void
 		{
-			_fileLoader.eventToDispatch = new Event(Event.OPEN);
-			_loader.load();
-			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
 														{loader:_loader, expectedStatus:AssetLoaderStatus.LOADING},
 														timerTimeoutHandler),
 									false, 0, true);
+			
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN));
 			_timer.start();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchComplete_COMPLETE(): void
 		{
-			_fileLoader.eventToDispatch = new FileLoaderEvent(FileLoaderEvent.COMPLETE, null);
-			_loader.load();
-			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
 														{loader:_loader, expectedStatus:AssetLoaderStatus.COMPLETE},
 														timerTimeoutHandler),
 									false, 0, true);
+			
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, null));
 			_timer.start();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchIOError_FAILED(): void
 		{
-			_fileLoader.eventToDispatch = new IOErrorEvent(IOErrorEvent.IO_ERROR);
-			_loader.load();
-			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
 														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
 														timerTimeoutHandler),
 									false, 0, true);
+			
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 			_timer.start();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchSecurityError_FAILED(): void
 		{
-			_fileLoader.eventToDispatch = new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR);
-			_loader.load();
-			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
 														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
 														timerTimeoutHandler),
 									false, 0, true);
+			
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR));
 			_timer.start();
 		}
 		

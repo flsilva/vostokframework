@@ -147,8 +147,7 @@ package org.vostokframework.loadingmanagement.monitors
 									false, 0, true);
 			
 			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			_fileLoader.eventToDispatch = new Event(Event.OPEN);
-			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN));
 		}
 		
 		[Test(async)]
@@ -162,8 +161,7 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
 			_fileLoader.dispatchEvent(new Event(Event.OPEN));
-			_fileLoader.eventToDispatch = new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200);
-			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200));
 		}
 		
 		[Test(async)]
@@ -176,8 +174,7 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
 			_fileLoader.dispatchEvent(new Event(Event.OPEN));
-			_fileLoader.eventToDispatch = new FileLoaderEvent(FileLoaderEvent.COMPLETE, {});
-			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}));
 		}
 		
 		[Test(async)]

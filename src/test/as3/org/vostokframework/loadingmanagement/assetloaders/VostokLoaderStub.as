@@ -39,16 +39,17 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 */
 	public class VostokLoaderStub extends EventDispatcher implements IFileLoader
 	{
-		public var eventToDispatch:Event;
 		
 		public function VostokLoaderStub()
 		{
 			
 		}
 		
-		/**
-		 * description
-		 */
+		public function asyncDispatchEvent(event:Event, delay:int = 50):void
+		{
+			setTimeout(dispatchEvent, delay, event);
+		}
+		
 		public function cancel(): void
 		{
 			
@@ -61,9 +62,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function load(): void
 		{
-			if (!eventToDispatch) return;
 			
-			setTimeout(dispatchEvent, 50, eventToDispatch);
 		}
 
 	}
