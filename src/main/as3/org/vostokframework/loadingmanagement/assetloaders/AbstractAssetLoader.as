@@ -31,6 +31,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
+	import org.as3coreaddendum.system.IDisposable;
+	import org.as3coreaddendum.system.IEquatable;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 	import org.vostokframework.loadingmanagement.monitors.ILoadingMonitor;
@@ -45,7 +47,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractAssetLoader
+	public class AbstractAssetLoader implements IEquatable, IDisposable
 	{
 		/**
 		 * @private
@@ -54,6 +56,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		private var _failDescription:String;
 		private var _fileLoader:IFileLoader;
 		private var _historicalStatus:IList;
+		private var _id:String;
 		private var _monitor:ILoadingMonitor;
 		private var _settings:LoadingAssetSettings;
 		private var _status:AssetLoaderStatus;
@@ -62,6 +65,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * description
 		 */
 		public function get historicalStatus(): IList { return new ReadOnlyArrayList(_historicalStatus.toArray()); }
+		
+		/**
+		 * description
+		 */
+		public function get id(): String { return _id; }
 		
 		/**
 		 * description
@@ -79,12 +87,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function AbstractAssetLoader(fileLoader:IFileLoader, settings:LoadingAssetSettings): void
+		public function AbstractAssetLoader(id:String, fileLoader:IFileLoader, settings:LoadingAssetSettings): void
 		{
 			//if (ReflectionUtil.classPathEquals(this, AbstractAssetLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
 			if (!fileLoader) throw new ArgumentError("Argument <fileLoader> must not be null.");
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			
+			_id = id;
 			_fileLoader = fileLoader;
 			_settings = settings;
 			_currentAttempt = 1;
@@ -106,7 +115,29 @@ package org.vostokframework.loadingmanagement.assetloaders
 			setStatus(AssetLoaderStatus.CANCELED);
 			cancelFileLoader();
 		}
-
+		
+		public function dispose():void
+		{
+			_fileLoader.dispose();
+			_historicalStatus.clear();
+			_monitor.dispose();
+			
+			_fileLoader = null;
+			_historicalStatus = null;
+			_monitor = null;
+			_settings = null;
+			_status = null;
+		}
+		
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			if (!(other is AbstractAssetLoader)) return false;
+			
+			var otherLoader:AbstractAssetLoader = other as AbstractAssetLoader;
+			return _id == otherLoader.id;
+		}
+		
 		/**
 		 * description
 		 * 

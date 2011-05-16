@@ -68,7 +68,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
 			_fileLoader = new VostokLoaderStub();
-			_loader = new AbstractAssetLoader(_fileLoader, settings);
+			_loader = new AbstractAssetLoader("asset-loader", _fileLoader, settings);
 		}
 		
 		[After]

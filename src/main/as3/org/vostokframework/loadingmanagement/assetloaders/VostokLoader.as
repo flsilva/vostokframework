@@ -99,6 +99,26 @@ package org.vostokframework.loadingmanagement.assetloaders
 			return _loader.contentLoaderInfo.dispatchEvent(event);
 		}
 		
+		public function dispose():void
+		{
+			try
+			{
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
+			finally
+			{
+				_loader.unload();
+			}
+			
+			_loader = null;
+			_request = null;
+			_context = null;
+		}
+		
 		public function hasEventListener(type:String):Boolean
 		{
 			return _loader.contentLoaderInfo.hasEventListener(type);

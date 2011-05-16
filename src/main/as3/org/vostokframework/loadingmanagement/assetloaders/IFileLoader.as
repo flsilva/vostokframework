@@ -29,6 +29,8 @@
 
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.as3coreaddendum.system.IDisposable;
+
 	import flash.events.IEventDispatcher;
 
 	/**
@@ -36,7 +38,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IFileLoader extends IEventDispatcher
+	public interface IFileLoader extends IEventDispatcher, IDisposable
 	{
 		/**
 		 * description

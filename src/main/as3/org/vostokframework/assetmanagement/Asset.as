@@ -28,6 +28,7 @@
  */
 package org.vostokframework.assetmanagement
 {
+	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
@@ -38,7 +39,7 @@ package org.vostokframework.assetmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class Asset implements IEquatable
+	public class Asset implements IEquatable, IDisposable
 	{
 		/**
 		 * @private
@@ -99,6 +100,13 @@ package org.vostokframework.assetmanagement
 			_type = type;
 			_priority = priority;
 			_settings = settings;
+		}
+		
+		public function dispose():void
+		{
+			_priority = null;
+			_settings = null;
+			_type = null;
 		}
 		
 		public function equals(other : *): Boolean

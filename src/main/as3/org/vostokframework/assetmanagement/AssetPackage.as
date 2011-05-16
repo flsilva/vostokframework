@@ -28,6 +28,7 @@
  */
 package org.vostokframework.assetmanagement
 {
+	import org.as3coreaddendum.system.IDisposable;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -42,7 +43,7 @@ package org.vostokframework.assetmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetPackage implements IEquatable
+	public class AssetPackage implements IEquatable, IDisposable
 	{
 		private var _assets:IList;
 		private var _id:String;
@@ -136,6 +137,12 @@ package org.vostokframework.assetmanagement
 			
 			var asset:Asset = getAsset(assetId);
 			return _assets.contains(asset);
+		}
+		
+		public function dispose():void
+		{
+			clear();
+			_assets = null;
 		}
 		
 		public function equals(other : *): Boolean

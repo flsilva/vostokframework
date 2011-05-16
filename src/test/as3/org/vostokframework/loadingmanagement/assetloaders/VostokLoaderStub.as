@@ -54,6 +54,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 		}
 		
+		public function dispose():void
+		{
+			
+		}
+		
 		public function load(): void
 		{
 			if (!eventToDispatch) return;

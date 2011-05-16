@@ -75,6 +75,13 @@ package org.vostokframework.loadingmanagement.monitors
 			addLoaderEvents();
 		}
 		
+		public function dispose():void
+		{
+			_assetType = null;
+			_loader = null;
+			_monitoring = null;
+		}
+		
 		protected function createLoadingMonitoring():void
 		{
 			_monitoring = new LoadingMonitoring(_latency);
@@ -90,6 +97,18 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
+		}
+		
+		private function removeLoaderEvents():void
+		{
+			_loader.removeEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false);
+			_loader.removeEventListener(Event.INIT, loaderInitHandler, false);
+			_loader.removeEventListener(Event.OPEN, loaderOpenHandler, false);
+			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
+			_loader.removeEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false);
+			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
+			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false);
+			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
 		}
 		
 		private function createEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null):AssetLoadingMonitorEvent
