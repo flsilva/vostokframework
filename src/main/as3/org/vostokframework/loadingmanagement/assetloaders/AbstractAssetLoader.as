@@ -115,7 +115,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 			if (isExhaustedAttempts()) return;
 			
 			setStatus(AssetLoaderStatus.CANCELED);
-			cancelFileLoader();
+			
+			try
+			{
+				_fileLoader.cancel();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
 		}
 		
 		public function dispose():void
@@ -147,18 +155,6 @@ package org.vostokframework.loadingmanagement.assetloaders
  		 */
 		public function load(): Boolean
 		{
-			/*
-			//if (!_policy.allowLoading())
-			if (_currentAttempt > _settings.policy.maxAttempts)
-			{
-				setStatus(AssetLoaderStatus.FAILED);
-				_failDescription = "EXHAUSTED ATTEMPTS";//FAIL_DESCRIPTION_EXHAUSTED_ATTEMPTS
-				return false;
-			}
-			*/
-			
-			//if (_currentAttempt > _settings.policy.maxAttempts) return false;
-			
 			if (_status == AssetLoaderStatus.CANCELED) throw new IllegalOperationError("The current status is <AssetLoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
 			if (_status == AssetLoaderStatus.COMPLETE) throw new IllegalOperationError("The current status is <AssetLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
 			if (_status == AssetLoaderStatus.LOADING) throw new IllegalOperationError("The current status is <AssetLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
@@ -195,7 +191,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 			//then do nothing
 			
 			setStatus(AssetLoaderStatus.STOPPED);
-			stopFileLoader();
+			
+			try
+			{
+				_fileLoader.stop();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
 		}
 		
 		private function fileLoaderOpenHandler(event:Event):void
@@ -255,30 +259,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_fileLoader.removeEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false);
 			_fileLoader.removeEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false);
 			_fileLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, fileLoaderSecurityErrorHandler, false);
-		}
-		
-		private function cancelFileLoader():void
-		{
-			try
-			{
-				_fileLoader.cancel();
-			}
-			catch (error:Error)
-			{
-				//do nothing
-			}
-		}
-		
-		private function stopFileLoader():void
-		{
-			try
-			{
-				_fileLoader.stop();
-			}
-			catch (error:Error)
-			{
-				//do nothing
-			}
 		}
 		
 		private function isExhaustedAttempts():Boolean
