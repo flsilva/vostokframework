@@ -129,15 +129,10 @@ package org.vostokframework.loadingmanagement.monitors
 		[Test(async)]
 		public function dispatchEvent_stubDispatchOpen_INIT(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.INIT,
-									Async.asyncHandler(this, monitorEventHandler, 100,
-														{propertyName:"assetId", propertyValue:ASSET_ID},
-														asyncTimeoutHandler),
-									false, 0, true);
-			
-			_fileLoader.dispatchEvent(new Event(Event.INIT));
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 100, asyncTimeoutHandler);
+			_fileLoader.load();
 		}
-		
+
 		[Test(async)]
 		public function dispatchEvent_stubDispatchOpenCheckLatency_GreaterThanZero(): void
 		{
@@ -146,8 +141,7 @@ package org.vostokframework.loadingmanagement.monitors
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN));
+			_fileLoader.load();
 		}
 		
 		[Test(async)]
@@ -159,8 +153,7 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			_fileLoader.dispatchEvent(new Event(Event.OPEN));
+			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200));
 		}
 		
@@ -172,8 +165,7 @@ package org.vostokframework.loadingmanagement.monitors
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			_fileLoader.dispatchEvent(new Event(Event.OPEN));
+			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}));
 		}
 		
@@ -186,7 +178,7 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404));
+			_fileLoader.asyncDispatchEvent(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404));
 		}
 		
 		[Test(async)]
@@ -198,7 +190,7 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"));
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"));
 		}
 		
 		[Test(async)]
@@ -210,7 +202,7 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"));
+			_fileLoader.asyncDispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"));
 		}
 		
 		[Test(async)]
@@ -224,7 +216,19 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_fileLoader.cancel();
 		}
-		//TODO: test CANCELED and STOPPED
+		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchCancel_STOPPED(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.STOPPED,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"assetId", propertyValue:ASSET_ID},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.stop();
+		}
+
 		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);

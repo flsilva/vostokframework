@@ -48,6 +48,7 @@ package org.vostokframework.loadingmanagement.events
 		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
 		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
 		public static const SECURITY_ERROR:String = "VostokFramework.AssetLoadingMonitorEvent.SECURITY_ERROR";
+		public static const STOPPED:String = "VostokFramework.AssetLoadingMonitorEvent.STOPPED";
 		
 		/**
 		 * description

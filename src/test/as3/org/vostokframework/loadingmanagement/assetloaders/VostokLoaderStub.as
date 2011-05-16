@@ -64,6 +64,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function load(): void
 		{
+			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
+			asyncDispatchEvent(new Event(Event.INIT), 15);
 			asyncDispatchEvent(new Event(Event.OPEN), 25);
 		}
 		
