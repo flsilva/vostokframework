@@ -34,11 +34,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 	import org.vostokframework.loadingmanagement.monitors.ILoadingMonitor;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 
@@ -47,7 +49,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractAssetLoader implements IEquatable, IDisposable
+	public class AbstractAssetLoader extends EventDispatcher implements IEquatable, IDisposable
 	{
 		/**
 		 * @private
@@ -288,6 +290,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_status = status;
 			_historicalStatus.add(_status);
+			dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, _status));
 		}
 
 	}

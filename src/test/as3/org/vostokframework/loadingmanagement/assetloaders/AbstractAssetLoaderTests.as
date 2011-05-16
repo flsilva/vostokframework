@@ -33,9 +33,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
-	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
@@ -149,11 +149,19 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertTrue(allowedLoading);
 		}
 		
-		[Test]
+		[Test(async)]
 		public function load_checkStatus_TRYING_TO_CONNECT(): void
 		{
+			//_loader.load();
+			//Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+			
+			_loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED,
+									Async.asyncHandler(this, assetLoaderEventHandler, 100,
+														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
+														timerTimeoutHandler),
+									false, 0, true);
+			
 			_loader.load();
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		[Test(async)]
@@ -161,7 +169,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{loader:_loader, expectedStatus:AssetLoaderStatus.LOADING},
+														{propertyName:"status", propertyValue:AssetLoaderStatus.LOADING},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -174,7 +182,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{loader:_loader, expectedStatus:AssetLoaderStatus.COMPLETE},
+														{propertyName:"status", propertyValue:AssetLoaderStatus.COMPLETE},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -188,7 +196,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
+														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -202,7 +210,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{loader:_loader, expectedStatus:AssetLoaderStatus.FAILED},
+														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -213,7 +221,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
 		{
-			Assert.assertEquals(passThroughData["expectedStatus"], passThroughData["loader"]["status"]);
+			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
+		}
+		
+		public function assetLoaderEventHandler(event:AssetLoaderEvent, passThroughData:Object):void
+		{
+			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
 		public function timerTimeoutHandler(passThroughData:Object):void
