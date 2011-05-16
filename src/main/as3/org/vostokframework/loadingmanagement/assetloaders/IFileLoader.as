@@ -51,6 +51,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * 
  		 */
 		function load(): void;
+		
+		/**
+		 * description
+		 * 
+ 		 */
+		function stop(): void;
 	}
 
 }

@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.utils.setTimeout;
@@ -52,7 +54,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function cancel(): void
 		{
-			
+			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.CANCELED));
 		}
 		
 		public function dispose():void
@@ -62,7 +64,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function load(): void
 		{
-			
+			asyncDispatchEvent(new Event(Event.OPEN), 25);
+		}
+		
+		public function stop(): void
+		{
+			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED));
 		}
 
 	}

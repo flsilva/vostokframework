@@ -193,7 +193,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			//then do nothing
 			
 			setStatus(AssetLoaderStatus.STOPPED);
-			cancelFileLoader();
+			stopFileLoader();
 		}
 		
 		private function fileLoaderOpenHandler(event:Event):void
@@ -260,6 +260,18 @@ package org.vostokframework.loadingmanagement.assetloaders
 			try
 			{
 				_fileLoader.cancel();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
+		}
+		
+		private function stopFileLoader():void
+		{
+			try
+			{
+				_fileLoader.stop();
 			}
 			catch (error:Error)
 			{

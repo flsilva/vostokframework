@@ -37,7 +37,9 @@ package org.vostokframework.loadingmanagement.events
 	 */
 	public class FileLoaderEvent extends Event
 	{
+		public static const CANCELED:String = "VostokFramework.FileLoaderEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.FileLoaderEvent.COMPLETE";
+		public static const STOPPED:String = "VostokFramework.FileLoaderEvent.STOPPED";
 		public static const TRYING_TO_CONNECT:String = "VostokFramework.FileLoaderEvent.TRYING_TO_CONNECT";
 		
 		/**

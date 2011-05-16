@@ -212,7 +212,7 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_fileLoader.dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"));
 		}
-		
+		//TODO: test CANCELED and STOPPED
 		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);

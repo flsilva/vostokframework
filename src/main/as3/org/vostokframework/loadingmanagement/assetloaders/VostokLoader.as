@@ -91,6 +91,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			finally
 			{
 				_loader.unload();
+				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.CANCELED));
 			}
 		}
 		
@@ -138,6 +139,23 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
 			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture);
+		}
+		
+		public function stop():void
+		{
+			try
+			{
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				throw error;
+			}
+			finally
+			{
+				_loader.unload();
+				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED));
+			}
 		}
 		
 		public function willTrigger(type:String):Boolean

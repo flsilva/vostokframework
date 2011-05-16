@@ -166,7 +166,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 									false, 0, true);
 			
 			_loader.load();
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN));
 			_timer.start();
 		}
 		
