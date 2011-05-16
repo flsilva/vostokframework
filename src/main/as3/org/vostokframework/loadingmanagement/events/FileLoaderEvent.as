@@ -29,7 +29,6 @@
 package org.vostokframework.loadingmanagement.events
 {
 	import flash.events.Event;
-	import flash.system.LoaderContext;
 
 	/**
 	 * description
@@ -44,9 +43,9 @@ package org.vostokframework.loadingmanagement.events
 		/**
 		 * @private
  		 */
-		private var _loadedAssetData:LoaderContext;
+		private var _assetData:*;
 		
-		public function get loadedAssetData():* { return _loadedAssetData; }
+		public function get assetData():* { return _assetData; }
 		
 		/**
 		 * description
@@ -54,10 +53,10 @@ package org.vostokframework.loadingmanagement.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function FileLoaderEvent(type:String, loadedAssetData:* = null)
+		public function FileLoaderEvent(type:String, assetData:* = null)
 		{
 			super(type);
-			_loadedAssetData = loadedAssetData;
+			_assetData = assetData;
 		}
 		
 	}

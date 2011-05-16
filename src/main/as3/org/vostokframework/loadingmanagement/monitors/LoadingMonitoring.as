@@ -116,7 +116,7 @@ package org.vostokframework.loadingmanagement.monitors
 		/**
 		 * description
 		 */
-		public function reset(): void
+		internal function reset(): void
 		{
 			
 		}
@@ -126,7 +126,7 @@ package org.vostokframework.loadingmanagement.monitors
 		 * 
 		 * @param bytesLoaded
 		 */
-		public function update(bytesTotal:int, bytesLoaded:int): void
+		internal function update(bytesTotal:int, bytesLoaded:int): void
 		{
 			_bytesTotal = bytesTotal;
 			_bytesLoaded = bytesLoaded;

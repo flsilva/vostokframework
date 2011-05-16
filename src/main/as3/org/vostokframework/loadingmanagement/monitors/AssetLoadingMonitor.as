@@ -81,7 +81,8 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			_loader.addEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false, 0, true);
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
-			//_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
+			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
+			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 		}
 		
 		private function loaderTryingToConnectHandler(event:FileLoaderEvent):void
@@ -98,8 +99,19 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function loaderProgressHandler(event:ProgressEvent):void
 		{
-			_monitoring.update(event.bytesTotal, event.bytesLoaded);
+			loaderProgress(event.bytesTotal, event.bytesLoaded);
+		}
+		
+		private function loaderProgress(bytesTotal:int, bytesLoaded:int):void
+		{
+			_monitoring.update(bytesTotal, bytesLoaded);
 			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.PROGRESS, _assetId, _assetType, _monitoring));
+		}
+		
+		private function loaderCompleteHandler(event:FileLoaderEvent):void
+		{
+			loaderProgress(_monitoring.bytesTotal, _monitoring.bytesTotal);
+			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.assetData));
 		}
 		
 	}

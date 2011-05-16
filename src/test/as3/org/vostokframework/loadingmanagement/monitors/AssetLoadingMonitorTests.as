@@ -37,6 +37,7 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
 	import flash.events.Event;
+	import flash.events.ProgressEvent;
 	import flash.utils.Timer;
 
 	/**
@@ -114,7 +115,7 @@ package org.vostokframework.loadingmanagement.monitors
 		public function dispatchEvent_stubDispatchOpen_OPEN(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
-									Async.asyncHandler(this, fileLoaderOpenHandler, 100,
+									Async.asyncHandler(this, monitorEventHandler, 100,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -126,7 +127,7 @@ package org.vostokframework.loadingmanagement.monitors
 		public function dispatchEvent_stubDispatchOpenCheckLatency_GreaterThanZero(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
-									Async.asyncHandler(this, timerCompleteHandlerCheckLatency, 100,
+									Async.asyncHandler(this, monitorEventHandlerCheckLatency, 100,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
@@ -135,15 +136,54 @@ package org.vostokframework.loadingmanagement.monitors
 			_fileLoader.load();
 		}
 		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchProgress_PROGRESS(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.PROGRESS,
+									Async.asyncHandler(this, monitorEventHandlerCheckMonitoring, 100,
+														{propertyName:"percent", propertyValue:25},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
+			_fileLoader.dispatchEvent(new Event(Event.OPEN));
+			_fileLoader.eventToDispatch = new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200);
+			_fileLoader.load();
+		}
 		
-		public function fileLoaderOpenHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		[Test(async)]
+		public function dispatchEvent_stubDispatchOpen_COMPLETE(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.COMPLETE,
+									Async.asyncHandler(this, monitorEventHandlerCheckAssetData, 100,
+														null, asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
+			_fileLoader.dispatchEvent(new Event(Event.OPEN));
+			_fileLoader.eventToDispatch = new FileLoaderEvent(FileLoaderEvent.COMPLETE, {});
+			_fileLoader.load();
+		}
+		
+		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function timerCompleteHandlerCheckLatency(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckLatency(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertTrue(event.monitoring.latency > 0);
+			passThroughData = null;
+		}
+		
+		public function monitorEventHandlerCheckMonitoring(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		{
+			Assert.assertEquals(passThroughData["propertyValue"], event.monitoring[passThroughData["propertyName"]]);
+		}
+		
+		public function monitorEventHandlerCheckAssetData(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		{
+			Assert.assertNotNull(event.assetData);
 			passThroughData = null;
 		}
 		

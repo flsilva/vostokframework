@@ -40,8 +40,9 @@ package org.vostokframework.loadingmanagement.events
 	 */
 	public class AssetLoadingMonitorEvent extends Event
 	{
-		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
+		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";
 		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
 		
 		/**
 		 * description
