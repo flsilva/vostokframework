@@ -124,6 +124,18 @@ package org.vostokframework.loadingmanagement.monitors
 		}
 		
 		[Test(async)]
+		public function dispatchEvent_stubDispatchOpen_INIT(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.INIT,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"assetId", propertyValue:ASSET_ID},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new Event(Event.INIT));
+		}
+		
+		[Test(async)]
 		public function dispatchEvent_stubDispatchOpenCheckLatency_GreaterThanZero(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,

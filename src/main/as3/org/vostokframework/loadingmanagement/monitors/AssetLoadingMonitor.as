@@ -80,6 +80,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private function addLoaderEvents():void
 		{
 			_loader.addEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false, 0, true);
+			_loader.addEventListener(Event.INIT, loaderInitHandler, false, 0, true);
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
 			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
@@ -88,6 +89,11 @@ package org.vostokframework.loadingmanagement.monitors
 		private function loaderTryingToConnectHandler(event:FileLoaderEvent):void
 		{
 			_startedTimeTryingToConnect = getTimer();
+		}
+		
+		private function loaderInitHandler(event:Event):void
+		{
+			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.INIT, _assetId, _assetType));
 		}
 		
 		private function loaderOpenHandler(event:Event):void
