@@ -39,6 +39,7 @@ package org.vostokframework.loadingmanagement.monitors
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.getTimer;
 
 	/**
@@ -88,6 +89,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
+			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
 		}
 		
 		private function createEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null):AssetLoadingMonitorEvent
@@ -141,6 +143,13 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.IO_ERROR, _assetId, _assetType, _monitoring);
 			$event.ioErrorMessage = event.text;
+			dispatchEvent($event);
+		}
+		
+		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
+		{
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.SECURITY_ERROR, _assetId, _assetType, _monitoring);
+			$event.securityErrorMessage = event.text;
 			dispatchEvent($event);
 		}
 		

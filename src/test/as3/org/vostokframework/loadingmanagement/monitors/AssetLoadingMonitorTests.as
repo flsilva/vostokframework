@@ -40,6 +40,7 @@ package org.vostokframework.loadingmanagement.monitors
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.Timer;
 
 	/**
@@ -201,6 +202,18 @@ package org.vostokframework.loadingmanagement.monitors
 									false, 0, true);
 			
 			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"));
+		}
+		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchSecurityError_SECURITY_ERROR(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.SECURITY_ERROR,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"securityErrorMessage", propertyValue:"Security Error Test Text"},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"));
 		}
 		
 		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void

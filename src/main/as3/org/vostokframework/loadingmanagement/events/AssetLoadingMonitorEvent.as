@@ -46,6 +46,7 @@ package org.vostokframework.loadingmanagement.events
 		public static const IO_ERROR:String = "VostokFramework.AssetLoadingMonitorEvent.IO_ERROR";
 		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
 		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
+		public static const SECURITY_ERROR:String = "VostokFramework.AssetLoadingMonitorEvent.SECURITY_ERROR";
 		
 		/**
 		 * description
@@ -56,6 +57,7 @@ package org.vostokframework.loadingmanagement.events
 		private var _httpStatus:int;
 		private var _ioErrorMessage:String;
 		private var _monitoring:LoadingMonitoring;
+		private var _securityErrorMessage:String;
 		
 		/**
 		 * description
@@ -90,6 +92,13 @@ package org.vostokframework.loadingmanagement.events
 		 * description
 		 */
 		public function get monitoring(): LoadingMonitoring { return _monitoring; }
+		
+		/**
+		 * description
+		 */
+		public function get securityErrorMessage(): String { return _securityErrorMessage; }
+		
+		public function set securityErrorMessage(value:String): void { _securityErrorMessage = value; }
 		
 		/**
 		 * description
