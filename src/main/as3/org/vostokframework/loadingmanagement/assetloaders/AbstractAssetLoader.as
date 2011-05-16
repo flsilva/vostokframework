@@ -182,7 +182,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 				_status == AssetLoaderStatus.CANCELED ||
 				_status == AssetLoaderStatus.COMPLETE ||
 				_status == AssetLoaderStatus.FAILED)
+			{
 				return;
+			}
 			
 			if (isExhaustedAttempts()) return;
 			
