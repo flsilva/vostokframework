@@ -40,6 +40,7 @@ package org.vostokframework.loadingmanagement.events
 	 */
 	public class AssetLoadingMonitorEvent extends Event
 	{
+		public static const CANCELED:String = "VostokFramework.AssetLoadingMonitorEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";
 		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingMonitorEvent.HTTP_STATUS";
 		public static const INIT:String = "VostokFramework.AssetLoadingMonitorEvent.INIT";

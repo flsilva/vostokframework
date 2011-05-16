@@ -94,6 +94,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
 			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
+			_loader.addEventListener(FileLoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
 			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
@@ -106,6 +107,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.removeEventListener(Event.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
 			_loader.removeEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false);
+			_loader.removeEventListener(FileLoaderEvent.CANCELED, loaderCanceledHandler, false);
 			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
 			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false);
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
@@ -149,6 +151,11 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			loaderProgress(_monitoring.bytesTotal, _monitoring.bytesTotal);
 			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.assetData));
+		}
+		
+		private function loaderCanceledHandler(event:FileLoaderEvent):void
+		{
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.CANCELED, _assetId, _assetType, _monitoring));
 		}
 		
 		private function loaderHttpStatusHandler(event:HTTPStatusEvent):void

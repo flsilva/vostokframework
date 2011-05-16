@@ -212,6 +212,18 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_fileLoader.dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"));
 		}
+		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchCancel_CANCELED(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.CANCELED,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"assetId", propertyValue:ASSET_ID},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.cancel();
+		}
 		//TODO: test CANCELED and STOPPED
 		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
