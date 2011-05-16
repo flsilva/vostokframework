@@ -37,6 +37,8 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
 	import flash.events.Event;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.Timer;
 
@@ -175,6 +177,30 @@ package org.vostokframework.loadingmanagement.monitors
 			_fileLoader.dispatchEvent(new Event(Event.OPEN));
 			_fileLoader.eventToDispatch = new FileLoaderEvent(FileLoaderEvent.COMPLETE, {});
 			_fileLoader.load();
+		}
+		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchHttpStatus_HTTP_STATUS(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.HTTP_STATUS,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"httpStatus", propertyValue:404},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404));
+		}
+		
+		[Test(async)]
+		public function dispatchEvent_stubDispatchIoError_IO_ERROR(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.IO_ERROR,
+									Async.asyncHandler(this, monitorEventHandler, 100,
+														{propertyName:"ioErrorMessage", propertyValue:"IO Error Test Text"},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"));
 		}
 		
 		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void

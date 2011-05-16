@@ -36,6 +36,8 @@ package org.vostokframework.loadingmanagement.monitors
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.getTimer;
 
@@ -84,6 +86,13 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
 			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
+			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
+			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
+		}
+		
+		private function createEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null):AssetLoadingMonitorEvent
+		{
+			return new AssetLoadingMonitorEvent(type, assetId, assetType, monitoring, assetData);
 		}
 		
 		private function loaderTryingToConnectHandler(event:FileLoaderEvent):void
@@ -93,14 +102,14 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function loaderInitHandler(event:Event):void
 		{
-			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.INIT, _assetId, _assetType));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.INIT, _assetId, _assetType));
 		}
 		
 		private function loaderOpenHandler(event:Event):void
 		{
 			_latency = getTimer() - _startedTimeTryingToConnect;
 			createLoadingMonitoring();
-			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType, _monitoring));
 		}
 		
 		private function loaderProgressHandler(event:ProgressEvent):void
@@ -111,13 +120,28 @@ package org.vostokframework.loadingmanagement.monitors
 		private function loaderProgress(bytesTotal:int, bytesLoaded:int):void
 		{
 			_monitoring.update(bytesTotal, bytesLoaded);
-			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.PROGRESS, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.PROGRESS, _assetId, _assetType, _monitoring));
+			
 		}
 		
 		private function loaderCompleteHandler(event:FileLoaderEvent):void
 		{
 			loaderProgress(_monitoring.bytesTotal, _monitoring.bytesTotal);
-			dispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.assetData));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.assetData));
+		}
+		
+		private function loaderHttpStatusHandler(event:HTTPStatusEvent):void
+		{
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.HTTP_STATUS, _assetId, _assetType, _monitoring);
+			$event.httpStatus = event.status;
+			dispatchEvent($event);
+		}
+		
+		private function loaderIoErrorHandler(event:IOErrorEvent):void
+		{
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.IO_ERROR, _assetId, _assetType, _monitoring);
+			$event.ioErrorMessage = event.text;
+			dispatchEvent($event);
 		}
 		
 	}

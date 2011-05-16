@@ -41,7 +41,9 @@ package org.vostokframework.loadingmanagement.events
 	public class AssetLoadingMonitorEvent extends Event
 	{
 		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";
+		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingMonitorEvent.HTTP_STATUS";
 		public static const INIT:String = "VostokFramework.AssetLoadingMonitorEvent.INIT";
+		public static const IO_ERROR:String = "VostokFramework.AssetLoadingMonitorEvent.IO_ERROR";
 		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
 		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
 		
@@ -51,6 +53,8 @@ package org.vostokframework.loadingmanagement.events
 		private var _assetData:*;
 		private var _assetId:String;
 		private var _assetType:AssetType;
+		private var _httpStatus:int;
+		private var _ioErrorMessage:String;
 		private var _monitoring:LoadingMonitoring;
 		
 		/**
@@ -67,7 +71,21 @@ package org.vostokframework.loadingmanagement.events
 		 * description
 		 */
 		public function get assetType(): AssetType { return _assetType; }
-
+		
+		/**
+		 * description
+		 */
+		public function get httpStatus(): int { return _httpStatus; }
+		
+		public function set httpStatus(value:int): void { _httpStatus = value; }
+		
+		/**
+		 * description
+		 */
+		public function get ioErrorMessage(): String { return _ioErrorMessage; }
+		
+		public function set ioErrorMessage(value:String): void { _ioErrorMessage = value; }
+		
 		/**
 		 * description
 		 */
