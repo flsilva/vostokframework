@@ -178,17 +178,18 @@ package org.vostokframework.loadingmanagement.assetloaders
  		 */
 		public function stop(): void
 		{
-			if (_status == AssetLoaderStatus.STOPPED) return;
+			if (_status == AssetLoaderStatus.STOPPED ||
+				_status == AssetLoaderStatus.CANCELED ||
+				_status == AssetLoaderStatus.COMPLETE ||
+				_status == AssetLoaderStatus.FAILED)
+				return;
+			
 			if (isExhaustedAttempts()) return;
 			
 			if (_status == AssetLoaderStatus.TRYING_TO_CONNECT || _status == AssetLoaderStatus.LOADING)
 			{
 				_currentAttempt--;
 			}
-			
-			//if the status is AssetLoaderStatus.CANCELED,
-			//AssetLoaderStatus.COMPLETED or AssetLoaderStatus.FAILED
-			//then do nothing
 			
 			setStatus(AssetLoaderStatus.STOPPED);
 			
