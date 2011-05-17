@@ -32,6 +32,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.utils.clearTimeout;
 	import flash.utils.setTimeout;
 
 	/**
@@ -42,14 +43,17 @@ package org.vostokframework.loadingmanagement.assetloaders
 	public class VostokLoaderStub extends EventDispatcher implements IFileLoader
 	{
 		
+		private var _timeoutInit:int;
+		private var _timeoutOpen:int;
+		
 		public function VostokLoaderStub()
 		{
 			
 		}
 		
-		public function asyncDispatchEvent(event:Event, delay:int = 50):void
+		public function asyncDispatchEvent(event:Event, delay:int = 50):int
 		{
-			setTimeout(dispatchEvent, delay, event);
+			return setTimeout(dispatchEvent, delay, event);
 		}
 		
 		public function cancel(): void
@@ -65,12 +69,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load(): void
 		{
 			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			asyncDispatchEvent(new Event(Event.INIT), 15);
-			asyncDispatchEvent(new Event(Event.OPEN), 25);
+			_timeoutInit = asyncDispatchEvent(new Event(Event.INIT), 15);
+			_timeoutOpen = asyncDispatchEvent(new Event(Event.OPEN), 25);
 		}
 		
 		public function stop(): void
 		{
+			clearTimeout(_timeoutInit);
+			clearTimeout(_timeoutOpen);
+			
 			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED));
 		}
 

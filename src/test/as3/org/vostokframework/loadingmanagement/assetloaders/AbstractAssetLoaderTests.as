@@ -138,6 +138,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
 		}
 		
+		[Test]
+		public function cancel_doubleCallCheckStatus_CANCELED(): void
+		{
+			_loader.cancel();
+			_loader.cancel();
+			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
+		}
+		
 		//////////////////////////////////
 		// AbstractAssetLoader().load() //
 		//////////////////////////////////
@@ -147,6 +155,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			var allowedLoading:Boolean = _loader.load();
 			Assert.assertTrue(allowedLoading);
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function load_doubleCall_ThrowsError(): void
+		{
+			_loader.load();
+			_loader.load();
 		}
 		
 		[Test(async)]
@@ -245,6 +260,104 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.stop();
 			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
 		}
+		
+		[Test]
+		public function stop_doubleCallCheckStatus_STOPPED(): void
+		{
+			_loader.stop();
+			_loader.stop();
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
+		}
+		
+		////////////////////////////////////////////////////////////////
+		// AbstractAssetLoader().stop()-load()-cancel() - MIXED TESTS //
+		////////////////////////////////////////////////////////////////
+		
+		[Test]
+		public function loadAndStop_CheckStatus_STOPPED(): void
+		{
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
+		}
+		
+		[Test]
+		public function stopAndLoad_CheckStatus_TRYING_TO_CONNECT(): void
+		{
+			_loader.stop();
+			_loader.load();
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+		}
+		
+		[Test]
+		public function loadAndCancel_CheckStatus_CANCELED(): void
+		{
+			_loader.load();
+			_loader.cancel();
+			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function loadAndCancelAndLoad_illegalOperation_ThrowsError(): void
+		{
+			_loader.load();
+			_loader.cancel();
+			_loader.load();
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function cancelAndLoad_illegalOperation_ThrowsError(): void
+		{
+			_loader.cancel();
+			_loader.load();
+		}
+		
+		[Test]
+		public function loadAndStopAndLoad_CheckLoadReturn_True(): void
+		{
+			_loader.load();
+			_loader.stop();
+			var allowedLoading:Boolean = _loader.load();
+			Assert.assertTrue(allowedLoading);
+		}
+		
+		[Test]
+		public function stopAndLoadAndStop_CheckStatus_STOPPED(): void
+		{
+			_loader.stop();
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
+		}
+		
+		[Test]
+		public function loadAndStopAndLoadAndStop_CheckStatus_STOPPED(): void
+		{
+			_loader.load();
+			_loader.stop();
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
+		}
+		
+		[Test]
+		public function loadAndStopAndCancel_CheckStatus_CANCELED(): void
+		{
+			_loader.load();
+			_loader.stop();
+			_loader.cancel();
+			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function loadAndStopAndCancelAndLoad_illegalOperation_ThrowsError(): void
+		{
+			_loader.load();
+			_loader.stop();
+			_loader.cancel();
+			_loader.load();
+		}
+		
 		
 	}
 
