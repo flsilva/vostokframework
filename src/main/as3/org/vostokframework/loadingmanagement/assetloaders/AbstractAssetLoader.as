@@ -111,7 +111,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function cancel(): void
 		{
 			if (_status.equals(AssetLoaderStatus.CANCELED) || _status.equals(AssetLoaderStatus.COMPLETE)) return;
-			//if (isStatusFailed() && isExhaustedAttempts()) return;
 			if (_status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) return;
 			
 			setStatus(AssetLoaderStatus.CANCELED);
@@ -190,8 +189,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 			{
 				return;
 			}
-			
-			//if (isExhaustedAttempts()) return;
 			
 			if (_status.equals(AssetLoaderStatus.TRYING_TO_CONNECT) || _status.equals(AssetLoaderStatus.LOADING))
 			{

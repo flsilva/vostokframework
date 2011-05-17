@@ -166,6 +166,33 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.load();
 		}
 		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function loadStressTest_invalidSequence_ThrowsError(): void
+		{
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_loader.load();
+		}
+		
+		[Test]
+		public function loadStressTest_validSequenceCheckStatus_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_loader.stop();
+			_loader.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+		}
+		
 		[Test(async)]
 		public function load_checkStatus_TRYING_TO_CONNECT(): void
 		{
@@ -274,33 +301,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 									false, 0, true);
 			
 			_timer.start();
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function loadStressTest_invalidSequence_ThrowsError(): void
-		{
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_loader.load();
-		}
-		
-		[Test(order=100)]
-		public function loadStressTest_validSequenceCheckStatus_TRYING_TO_CONNECT(): void
-		{
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_loader.stop();
-			_loader.load();
-			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
