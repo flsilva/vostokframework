@@ -95,8 +95,88 @@ package org.vostokframework.loadingmanagement
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
+		/////////////////////////////////////////
+		// AssetLoaderQueueManager().getNext() //
+		/////////////////////////////////////////
 		
+		[Test]
+		public function getNext_simpleCall_AbstractAssetLoader(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			Assert.assertNotNull(loader);
+		}
 		
+		[Test]
+		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
+			Assert.assertNull(loader);
+		}
+		
+		/////////////////////////////////////////////////
+		// AssetLoaderQueueManager().activeConnections //
+		/////////////////////////////////////////////////
+		
+		[Test]
+		public function activeConnections_cancelAndCheckTotal_Int(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.load();
+			loader = _queueManager.getNext();
+			loader.load();
+			
+			Assert.assertEquals(2, _queueManager.activeConnections);
+		}
+		
+		////////////////////////////////////////////
+		// AssetLoaderQueueManager().totalCanceled //
+		////////////////////////////////////////////
+		
+		[Test]
+		public function totalCanceled_checkTotal_Int(): void
+		{
+			Assert.assertEquals(0, _queueManager.totalCanceled);
+		}
+		
+		[Test]
+		public function totalCanceled_cancelAndCheckTotal_Int(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.cancel();
+			
+			Assert.assertEquals(1, _queueManager.totalCanceled);
+		}
+		
+		////////////////////////////////////////////
+		// AssetLoaderQueueManager().totalLoading //
+		////////////////////////////////////////////
+		
+		[Test]
+		public function totalLoading_checkTotal_Int(): void
+		{
+			Assert.assertEquals(0, _queueManager.totalLoading);
+		}
+		
+		[Test]
+		public function totalLoading_loadAndCheckTotal_Int(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
+			loader.load();
+			
+			Assert.assertEquals(2, _queueManager.totalLoading);
+		}
 		
 		///////////////////////////////////////////
 		// AssetLoaderQueueManager().totalQueued //
@@ -106,6 +186,32 @@ package org.vostokframework.loadingmanagement
 		public function totalQueued_checkTotal_Int(): void
 		{
 			Assert.assertEquals(4, _queueManager.totalQueued);
+		}
+		
+		[Test]
+		public function totalQueued_getNextAndCheckTotal_Int(): void
+		{
+			_queueManager.getNext();
+			Assert.assertEquals(3, _queueManager.totalQueued);
+		}
+		
+		////////////////////////////////////////////
+		// AssetLoaderQueueManager().totalStopped //
+		////////////////////////////////////////////
+		
+		[Test]
+		public function totalStopped_checkTotal_Int(): void
+		{
+			Assert.assertEquals(0, _queueManager.totalStopped);
+		}
+		
+		[Test]
+		public function totalStopped_stopAndCheckTotal_Int(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.stop();
+			
+			Assert.assertEquals(1, _queueManager.totalStopped);
 		}
 		
 	}

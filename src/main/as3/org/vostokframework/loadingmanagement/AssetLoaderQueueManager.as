@@ -28,33 +28,64 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.queues.PriorityQueue;
+	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
+	import org.as3collections.lists.ArrayList;
+	import org.as3collections.queues.PriorityQueue;
+	import org.as3coreaddendum.system.IDisposable;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderQueueManager
+	public class AssetLoaderQueueManager implements IDisposable
 	{
 		/**
 		 * @private
 		 */
+		private var _assetLoaders:IList;
+		private var _canceledLoaders:IList;
+		private var _completeLoaders:IList;
 		private var _concurrentConnections:int;
+		private var _failedLoaders:IList;
+		private var _loadingLoaders:IList;
 		private var _queuedLoaders:IQueue;
+		private var _stoppedLoaders:IList;
 		
 		/**
 		 * description
 		 */
-		public function get activeConnections(): int { return 0; }
+		public function get activeConnections(): int { return _loadingLoaders.size(); }
+		
+		/**
+		 * description
+		 */
+		public function get totalCanceled(): int { return _canceledLoaders.size(); }
+		
+		/**
+		 * description
+		 */
+		public function get totalFailed(): int { return _failedLoaders.size(); }
+		
+		/**
+		 * description
+		 */
+		public function get totalLoading(): int { return _loadingLoaders.size(); }
 		
 		/**
 		 * description
 		 */
 		public function get totalQueued(): int { return _queuedLoaders.size(); }
+		
+		/**
+		 * description
+		 */
+		public function get totalStopped(): int { return _stoppedLoaders.size(); }
 
 		/**
 		 * description
@@ -67,10 +98,36 @@ package org.vostokframework.loadingmanagement
 			if (!assetLoaders || assetLoaders.isEmpty()) throw new ArgumentError("Argument <assetLoaders> must not be null nor empty.");
 			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero.");
 			
+			_assetLoaders = assetLoaders;
 			_concurrentConnections = concurrentConnections;
-			_queuedLoaders = new PriorityQueue(assetLoaders.toArray());
+			_queuedLoaders = new PriorityQueue(_assetLoaders.toArray());
+			_canceledLoaders = new ArrayList();
+			_completeLoaders = new ArrayList();
+			_loadingLoaders = new ArrayList();
+			_failedLoaders = new ArrayList();
+			_stoppedLoaders = new ArrayList();
 			
-			addLoaderListeners(assetLoaders);
+			addLoaderListeners();
+		}
+		
+		public function dispose():void
+		{
+			removeLoaderListeners();
+			_assetLoaders.clear();
+			_canceledLoaders.clear();
+			_completeLoaders.clear();
+			_loadingLoaders.clear();
+			_queuedLoaders.clear();
+			_failedLoaders.clear();
+			_stoppedLoaders.clear();
+			
+			_assetLoaders = null;
+			_canceledLoaders = null;
+			_completeLoaders = null;
+			_loadingLoaders = null;
+			_queuedLoaders = null;
+			_failedLoaders = null;
+			_stoppedLoaders = null;
 		}
 
 		/**
@@ -128,12 +185,70 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): AbstractAssetLoader
 		{
-			return null;
+			if (activeConnections >= _concurrentConnections) return null;
+			
+			return _queuedLoaders.poll();
 		}
 		
-		private function addLoaderListeners(loaders:IList):void
+		private function addLoaderListeners():void
 		{
+			var it:IIterator = _assetLoaders.iterator();
+			var loader:AbstractAssetLoader;
 			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
+			}
+		}
+		
+		private function removeLoaderListeners():void
+		{
+			var it:IIterator = _assetLoaders.iterator();
+			var loader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
+			}
+		}
+		
+		private function loaderStatusChangedHandler(event:AssetLoaderEvent):void
+		{
+			removeFromLists(event.target as AbstractAssetLoader);
+			
+			if (event.status.equals(AssetLoaderStatus.TRYING_TO_CONNECT))
+			{
+				_loadingLoaders.add(event.target);
+			}
+			else if (event.status.equals(AssetLoaderStatus.STOPPED))
+			{
+				_stoppedLoaders.add(event.target);
+			}
+			else if (event.status.equals(AssetLoaderStatus.CANCELED))
+			{
+				_canceledLoaders.add(event.target);
+			}
+			/*
+			else if (event.status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS))
+			{
+				_failedLoaders.add(event.target);
+			}
+			else
+			{
+				//_queuedLoaders.add(event.target);
+			}*/
+		}
+		
+		private function removeFromLists(loader:AbstractAssetLoader):void
+		{
+			_canceledLoaders.remove(loader);
+			_completeLoaders.remove(loader);
+			_loadingLoaders.remove(loader);
+			_queuedLoaders.remove(loader);
+			_failedLoaders.remove(loader);
+			_stoppedLoaders.remove(loader);
 		}
 
 	}
