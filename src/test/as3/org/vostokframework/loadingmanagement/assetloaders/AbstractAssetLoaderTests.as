@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 {
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
+	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
@@ -70,7 +71,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			_fileLoader = new VostokLoaderStub();
-			_loader = new AbstractAssetLoader("asset-loader", _fileLoader, settings);
+			_loader = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
 		}
 		
 		[After]
@@ -80,7 +81,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_timer = null;
 			_fileLoader = null;
 			_loader = null;
-			//_event = null;
 		}
 		
 		///////////////////////

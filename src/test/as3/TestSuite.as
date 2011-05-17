@@ -39,6 +39,7 @@ package
 	import org.vostokframework.assetmanagement.AssetTests;
 	import org.vostokframework.assetmanagement.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.utils.LocaleUtilTests;
+	import org.vostokframework.loadingmanagement.AssetLoaderQueueManagerTests;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
@@ -66,6 +67,9 @@ package
 		
 		//org.vostokframework.assetmanagement.utils
 		public var localeUtilTests:LocaleUtilTests;
+		
+		//org.vostokframework.loadingmanagement
+		public var assetLoaderQueueManagerTests:AssetLoaderQueueManagerTests;
 		
 		//org.vostokframework.loadingmanagement.assetloaders
 		public var abstractAssetLoaderTests:AbstractAssetLoaderTests;

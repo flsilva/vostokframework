@@ -28,11 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
+	import org.as3coreaddendum.system.IPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
@@ -48,7 +50,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractAssetLoader extends EventDispatcher implements IEquatable, IDisposable
+	public class AbstractAssetLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority
 	{
 		/**
 		 * @private
@@ -59,6 +61,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		private var _historicalStatus:IList;
 		private var _id:String;
 		//private var _monitor:ILoadingMonitor;
+		private var _priority:AssetLoadingPriority;
 		private var _settings:LoadingAssetSettings;
 		private var _status:AssetLoaderStatus;
 
@@ -76,7 +79,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * description
 		 */
 		//public function get monitor(): ILoadingMonitor { return _monitor; }
-
+		
+		/**
+		 * description
+		 */
+		public function get priority(): int { return _priority.ordinal; }
+		
+		public function set priority(value:int): void { return; }
+		
 		/**
 		 * description
 		 */
@@ -88,14 +98,16 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function AbstractAssetLoader(id:String, fileLoader:IFileLoader, settings:LoadingAssetSettings): void
+		public function AbstractAssetLoader(id:String, priority:AssetLoadingPriority, fileLoader:IFileLoader, settings:LoadingAssetSettings): void
 		{
 			//if (ReflectionUtil.classPathEquals(this, AbstractAssetLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (!fileLoader) throw new ArgumentError("Argument <fileLoader> must not be null.");
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			
 			_id = id;
 			_fileLoader = fileLoader;
+			_priority = priority;
 			_settings = settings;
 			_historicalStatus = new ArrayList();
 			
