@@ -33,8 +33,6 @@ package org.vostokframework.assetmanagement
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 
-	import flash.utils.getTimer;
-
 	/**
 	 * @author Flávio Silva
 	 */
