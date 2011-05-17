@@ -98,7 +98,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_id = id;
 			_fileLoader = fileLoader;
 			_settings = settings;
-			_currentAttempt = 1;
 			_historicalStatus = new ArrayList();
 			
 			setStatus(AssetLoaderStatus.QUEUED);
@@ -111,8 +110,9 @@ package org.vostokframework.loadingmanagement.assetloaders
  		 */
 		public function cancel(): void
 		{
-			if (_status == AssetLoaderStatus.CANCELED || _status == AssetLoaderStatus.COMPLETE) return;
-			if (_status == AssetLoaderStatus.FAILED && isExhaustedAttempts()) return;
+			if (_status.equals(AssetLoaderStatus.CANCELED) || _status.equals(AssetLoaderStatus.COMPLETE)) return;
+			//if (isStatusFailed() && isExhaustedAttempts()) return;
+			if (_status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) return;
 			
 			setStatus(AssetLoaderStatus.CANCELED);
 			
@@ -155,16 +155,21 @@ package org.vostokframework.loadingmanagement.assetloaders
  		 */
 		public function load(): Boolean
 		{
-			if (_status == AssetLoaderStatus.CANCELED) throw new IllegalOperationError("The current status is <AssetLoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
-			if (_status == AssetLoaderStatus.COMPLETE) throw new IllegalOperationError("The current status is <AssetLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
-			if (_status == AssetLoaderStatus.LOADING) throw new IllegalOperationError("The current status is <AssetLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
-			if (_status == AssetLoaderStatus.TRYING_TO_CONNECT) throw new IllegalOperationError("The current status is <AssetLoaderStatus.TRYING_TO_CONNECT>, therefore it is not allowed to start a new loading right now.");
-			
-			if (isExhaustedAttempts()) return false;
+			if (_status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS>, therefore it is no longer allowed loadings.");
+			if (_status.equals(AssetLoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
+			if (_status.equals(AssetLoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
+			if (_status.equals(AssetLoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
+			if (_status.equals(AssetLoaderStatus.TRYING_TO_CONNECT)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.TRYING_TO_CONNECT>, therefore it is not allowed to start a new loading right now.");
 			
 			_currentAttempt++;
-			setStatus(AssetLoaderStatus.TRYING_TO_CONNECT);
 			
+			if (isExhaustedAttempts())
+			{
+				setStatus(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS);
+				return false;
+			}
+			
+			setStatus(AssetLoaderStatus.TRYING_TO_CONNECT);
 			addFileLoaderListeners();
 			_fileLoader.load();
 			
@@ -178,17 +183,17 @@ package org.vostokframework.loadingmanagement.assetloaders
  		 */
 		public function stop(): void
 		{
-			if (_status == AssetLoaderStatus.STOPPED ||
-				_status == AssetLoaderStatus.CANCELED ||
-				_status == AssetLoaderStatus.COMPLETE ||
-				_status == AssetLoaderStatus.FAILED)
+			if (_status.equals(AssetLoaderStatus.STOPPED) ||
+				_status.equals(AssetLoaderStatus.CANCELED) ||
+				_status.equals(AssetLoaderStatus.COMPLETE) ||
+				_status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS))
 			{
 				return;
 			}
 			
-			if (isExhaustedAttempts()) return;
+			//if (isExhaustedAttempts()) return;
 			
-			if (_status == AssetLoaderStatus.TRYING_TO_CONNECT || _status == AssetLoaderStatus.LOADING)
+			if (_status.equals(AssetLoaderStatus.TRYING_TO_CONNECT) || _status.equals(AssetLoaderStatus.LOADING))
 			{
 				_currentAttempt--;
 			}
@@ -238,13 +243,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		private function ioError(event:IOErrorEvent):void
 		{
-			setStatus(AssetLoaderStatus.FAILED);
+			setStatus(AssetLoaderStatus.FAILED_IO_ERROR);
 			_failDescription = event.text;
 		}
 		
 		private function securityError(event:SecurityErrorEvent):void
 		{
-			setStatus(AssetLoaderStatus.FAILED);
+			setStatus(AssetLoaderStatus.FAILED_SECURITY_ERROR);
 			_failDescription = event.text;
 		}
 
@@ -268,7 +273,16 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			return _currentAttempt > _settings.policy.maxAttempts;
 		}
-		
+		/*
+		private function isStatusFailed():Boolean
+		{
+			return _status.equals(AssetLoaderStatus.FAILED_ASYNC_ERROR) ||
+					_status.equals(AssetLoaderStatus.FAILED_IO_ERROR) ||
+					_status.equals(AssetLoaderStatus.FAILED_LATENCY_TIMEOUT) ||
+					_status.equals(AssetLoaderStatus.FAILED_SECURITY_ERROR) ||
+					_status.equals(AssetLoaderStatus.FAILED_UNKNOWN_ERROR);
+		}
+		*/
 		private function setStatus(status:AssetLoaderStatus):void
 		{
 			_status = status;

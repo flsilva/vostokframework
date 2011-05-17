@@ -36,10 +36,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
+	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
+	import flash.utils.setTimeout;
 
 	/**
 	 * @author Flávio Silva
@@ -64,9 +66,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Before]
 		public function setUp(): void
 		{
-			_timer = new Timer(100, 1);
+			_timer = new Timer(200, 1);
 			
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			_fileLoader = new VostokLoaderStub();
 			_loader = new AbstractAssetLoader("asset-loader", _fileLoader, settings);
 		}
@@ -171,7 +173,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			//Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 			
 			_loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED,
-									Async.asyncHandler(this, assetLoaderEventHandler, 100,
+									Async.asyncHandler(this, assetLoaderEventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
 														timerTimeoutHandler),
 									false, 0, true);
@@ -183,12 +185,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load_stubDispatchOpen_LOADING(): void
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 100,
+									Async.asyncHandler(this, timerCompleteHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.LOADING},
 														timerTimeoutHandler),
 									false, 0, true);
 			
 			_loader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 15);
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
 			_timer.start();
 		}
 		
@@ -196,7 +200,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load_stubDispatchComplete_COMPLETE(): void
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 100,
+									Async.asyncHandler(this, timerCompleteHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.COMPLETE},
 														timerTimeoutHandler),
 									false, 0, true);
@@ -210,8 +214,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load_stubDispatchIOError_FAILED(): void
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED},
+									Async.asyncHandler(this, timerCompleteHandler, 200,
+														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_IO_ERROR},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -224,8 +228,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load_stubDispatchSecurityError_FAILED(): void
 		{
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 100,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED},
+									Async.asyncHandler(this, timerCompleteHandler, 200,
+														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_SECURITY_ERROR},
 														timerTimeoutHandler),
 									false, 0, true);
 			
@@ -234,8 +238,75 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_timer.start();
 		}
 		
+		[Test(async)]
+		public function loadStressTest_validSequence_LOADING(): void
+		{
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 25);
+			setTimeout(_loader.load, 50);
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 75);
+			setTimeout(_loader.load, 100);
+			
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 200,
+														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
+														timerTimeoutHandler),
+									false, 0, true);
+			
+			_timer.start();
+		}
+		
+		[Test(async)]
+		public function loadStressTest_validSequence_FAILED_EXHAUSTED_ATTEMPTS(): void
+		{
+			_loader.load();
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 25);
+			setTimeout(_loader.load, 50);
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 75);
+			setTimeout(_loader.load, 100);
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 125);
+			setTimeout(_loader.load, 150);
+			
+			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
+									Async.asyncHandler(this, timerCompleteHandler, 200,
+														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS},
+														timerTimeoutHandler),
+									false, 0, true);
+			
+			_timer.start();
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function loadStressTest_invalidSequence_ThrowsError(): void
+		{
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_loader.load();
+		}
+		
+		[Test(order=100)]
+		public function loadStressTest_validSequenceCheckStatus_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_loader.stop();
+			_loader.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+		}
+		
 		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
 		{
+			trace("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+			trace("_loader.historicalStatus: " + _loader.historicalStatus);
 			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
 		
@@ -357,7 +428,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.cancel();
 			_loader.load();
 		}
-		
 		
 	}
 

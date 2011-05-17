@@ -69,14 +69,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function load(): void
 		{
 			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			_timeoutInit = asyncDispatchEvent(new Event(Event.INIT), 15);
-			_timeoutOpen = asyncDispatchEvent(new Event(Event.OPEN), 25);
+			//_timeoutInit = asyncDispatchEvent(new Event(Event.INIT), 15);
+			//_timeoutOpen = asyncDispatchEvent(new Event(Event.OPEN), 25);
 		}
 		
 		public function stop(): void
 		{
-			clearTimeout(_timeoutInit);
-			clearTimeout(_timeoutOpen);
+			//clearTimeout(_timeoutInit);
+			//clearTimeout(_timeoutOpen);
 			
 			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED));
 		}

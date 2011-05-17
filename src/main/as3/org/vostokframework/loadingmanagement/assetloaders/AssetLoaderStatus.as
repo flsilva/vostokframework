@@ -41,11 +41,16 @@ package org.vostokframework.loadingmanagement.assetloaders
 	{
 		public static const CANCELED:AssetLoaderStatus = new AssetLoaderStatus("CANCELED", 0);
 		public static const COMPLETE:AssetLoaderStatus = new AssetLoaderStatus("COMPLETE", 1);
-		public static const FAILED:AssetLoaderStatus = new AssetLoaderStatus("FAILED", 2);
-		public static const LOADING:AssetLoaderStatus = new AssetLoaderStatus("LOADING", 3);
-		public static const QUEUED:AssetLoaderStatus = new AssetLoaderStatus("QUEUED", 4);
-		public static const STOPPED:AssetLoaderStatus = new AssetLoaderStatus("STOPPED", 5);
-		public static const TRYING_TO_CONNECT:AssetLoaderStatus = new AssetLoaderStatus("TRYING TO CONNECT", 6);
+		public static const FAILED_ASYNC_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED ASYNC ERROR", 2);
+		public static const FAILED_EXHAUSTED_ATTEMPTS:AssetLoaderStatus = new AssetLoaderStatus("FAILED EXHAUSTED ATTEMPTS", 3);
+		public static const FAILED_IO_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED IO ERROR", 4);
+		public static const FAILED_LATENCY_TIMEOUT:AssetLoaderStatus = new AssetLoaderStatus("FAILED LATENCY TIMEOUT", 5);
+		public static const FAILED_SECURITY_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED SECURITY ERROR", 6);
+		public static const FAILED_UNKNOWN_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED UNKNOWN ERROR", 7);
+		public static const LOADING:AssetLoaderStatus = new AssetLoaderStatus("LOADING", 8);
+		public static const QUEUED:AssetLoaderStatus = new AssetLoaderStatus("QUEUED", 9);
+		public static const STOPPED:AssetLoaderStatus = new AssetLoaderStatus("STOPPED", 10);
+		public static const TRYING_TO_CONNECT:AssetLoaderStatus = new AssetLoaderStatus("TRYING TO CONNECT", 11);
 		
 		/**
 		 * @private

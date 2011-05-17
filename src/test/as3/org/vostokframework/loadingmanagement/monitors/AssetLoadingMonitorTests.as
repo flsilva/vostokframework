@@ -123,14 +123,16 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.dispatchEvent(new Event(Event.OPEN));
+			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchOpen_INIT(): void
+		public function dispatchEvent_stubDispatchInit_INIT(): void
 		{
 			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 100, asyncTimeoutHandler);
 			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 15);
 		}
 
 		[Test(async)]
@@ -142,6 +144,7 @@ package org.vostokframework.loadingmanagement.monitors
 									false, 0, true);
 			
 			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
 		}
 		
 		[Test(async)]
@@ -154,6 +157,7 @@ package org.vostokframework.loadingmanagement.monitors
 									false, 0, true);
 			
 			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
 			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200));
 		}
 		
@@ -166,6 +170,7 @@ package org.vostokframework.loadingmanagement.monitors
 									false, 0, true);
 			
 			_fileLoader.load();
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
 			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}));
 		}
 		
