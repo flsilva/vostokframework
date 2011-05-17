@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
-	import org.as3coreaddendum.system.ICloneable;
 	import org.vostokframework.assetmanagement.AssetType;
 	import org.vostokframework.loadingmanagement.monitors.LoadingMonitoring;
 
@@ -39,7 +38,7 @@ package org.vostokframework.loadingmanagement.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingMonitorEvent extends Event implements ICloneable
+	public class AssetLoadingMonitorEvent extends Event
 	{
 		public static const CANCELED:String = "VostokFramework.AssetLoadingMonitorEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";

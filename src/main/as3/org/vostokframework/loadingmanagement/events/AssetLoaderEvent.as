@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
-	import org.as3coreaddendum.system.ICloneable;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 
 	import flash.events.Event;
@@ -38,7 +37,7 @@ package org.vostokframework.loadingmanagement.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderEvent extends Event implements ICloneable
+	public class AssetLoaderEvent extends Event
 	{
 		public static const STATUS_CHANGED:String = "VostokFramework.AssetLoaderEvent.STATUS_CHANGED";
 		
