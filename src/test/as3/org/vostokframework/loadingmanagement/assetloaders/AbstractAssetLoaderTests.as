@@ -305,8 +305,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
 		{
-			trace("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-			trace("_loader.historicalStatus: " + _loader.historicalStatus);
 			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
 		
