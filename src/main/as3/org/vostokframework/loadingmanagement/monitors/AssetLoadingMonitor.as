@@ -77,6 +77,8 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		public function dispose():void
 		{
+			removeLoaderEvents();
+			
 			_assetType = null;
 			_loader = null;
 			_monitoring = null;

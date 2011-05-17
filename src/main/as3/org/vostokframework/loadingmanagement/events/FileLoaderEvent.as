@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
+	import org.as3coreaddendum.system.ICloneable;
+
 	import flash.events.Event;
 
 	/**
@@ -35,7 +37,7 @@ package org.vostokframework.loadingmanagement.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoaderEvent extends Event
+	public class FileLoaderEvent extends Event implements ICloneable
 	{
 		public static const CANCELED:String = "VostokFramework.FileLoaderEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.FileLoaderEvent.COMPLETE";
@@ -59,6 +61,11 @@ package org.vostokframework.loadingmanagement.events
 		{
 			super(type);
 			_assetData = assetData;
+		}
+		
+		override public function clone():Event
+		{
+			return new FileLoaderEvent(type, _assetData);
 		}
 		
 	}

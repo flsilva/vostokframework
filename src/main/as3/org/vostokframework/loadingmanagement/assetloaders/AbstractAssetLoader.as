@@ -36,7 +36,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
-	import org.vostokframework.loadingmanagement.monitors.ILoadingMonitor;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
@@ -59,7 +58,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		private var _fileLoader:IFileLoader;
 		private var _historicalStatus:IList;
 		private var _id:String;
-		private var _monitor:ILoadingMonitor;
+		//private var _monitor:ILoadingMonitor;
 		private var _settings:LoadingAssetSettings;
 		private var _status:AssetLoaderStatus;
 
@@ -76,7 +75,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		/**
 		 * description
 		 */
-		public function get monitor(): ILoadingMonitor { return _monitor; }
+		//public function get monitor(): ILoadingMonitor { return _monitor; }
 
 		/**
 		 * description
@@ -129,11 +128,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_fileLoader.dispose();
 			_historicalStatus.clear();
-			_monitor.dispose();
+			//_monitor.dispose();
 			
 			_fileLoader = null;
 			_historicalStatus = null;
-			_monitor = null;
+			//_monitor = null;
 			_settings = null;
 			_status = null;
 		}
