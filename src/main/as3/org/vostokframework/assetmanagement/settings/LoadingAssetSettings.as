@@ -28,11 +28,6 @@
  */
 package org.vostokframework.assetmanagement.settings
 {
-	import org.vostokframework.assetmanagement.settings.LoadingAssetCacheSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetExtraSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetMediaSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSecuritySettings;
 
 	/**
 	 * description
