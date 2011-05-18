@@ -139,6 +139,28 @@ package org.vostokframework.loadingmanagement
 			Assert.assertNull(loader);
 		}
 		
+		[Test]
+		public function getNext_cancelAndCheckNext_AbstractAssetLoader(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getAssetLoaders().getAt(0);
+			loader.cancel();
+			
+			loader = _queueManager.getNext();
+			
+			Assert.assertEquals("asset-loader-1", loader.id);
+		}
+		
+		[Test]
+		public function getNext_stopAndCheckNext_AbstractAssetLoader(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getAssetLoaders().getAt(0);
+			loader.stop();
+			
+			loader = _queueManager.getNext();
+			
+			Assert.assertEquals("asset-loader-1", loader.id);
+		}
+		
 		/////////////////////////////////////////////////
 		// AssetLoaderQueueManager().activeConnections //
 		/////////////////////////////////////////////////
@@ -154,9 +176,9 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(2, _queueManager.activeConnections);
 		}
 		
-		////////////////////////////////////////////
+		/////////////////////////////////////////////
 		// AssetLoaderQueueManager().totalCanceled //
-		////////////////////////////////////////////
+		/////////////////////////////////////////////
 		
 		[Test]
 		public function totalCanceled_checkTotal_Int(): void

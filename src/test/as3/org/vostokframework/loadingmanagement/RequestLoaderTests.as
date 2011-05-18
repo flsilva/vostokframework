@@ -108,9 +108,9 @@ package org.vostokframework.loadingmanagement
 		}
 		*/
 		
-		//////////////////////////////////
+		////////////////////////////
 		// RequestLoader().status //
-		//////////////////////////////////
+		////////////////////////////
 		
 		[Test]
 		public function status_validGet_QUEUED(): void
@@ -125,9 +125,9 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.status);
 		}
 		
-		////////////////////////////////////////////
+		//////////////////////////////////////
 		// RequestLoader().historicalStatus //
-		////////////////////////////////////////////
+		//////////////////////////////////////
 		
 		[Test]
 		public function historicalStatus_validGet_QUEUED(): void
@@ -142,9 +142,9 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.historicalStatus.getAt(1));
 		}
 		
-		//////////////////////////////////
+		//////////////////////////////
 		// RequestLoader().cancel() //
-		//////////////////////////////////
+		//////////////////////////////
 		
 		[Test]
 		public function cancel_checkStatus_CANCELED(): void
@@ -161,9 +161,9 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(RequestLoaderStatus.CANCELED, _loader.status);
 		}
 		
-		//////////////////////////////////
+		////////////////////////////
 		// RequestLoader().load() //
-		//////////////////////////////////
+		////////////////////////////
 		
 		[Test]
 		public function load_checkReturn_True(): void
@@ -342,9 +342,9 @@ package org.vostokframework.loadingmanagement
 			passThroughData = null;
 		}
 		*/
-		//////////////////////////////////
+		////////////////////////////
 		// RequestLoader().stop() //
-		//////////////////////////////////
+		////////////////////////////
 		
 		[Test]
 		public function stop_checkStatus_STOPPED(): void
@@ -361,9 +361,9 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(RequestLoaderStatus.STOPPED, _loader.status);
 		}
 		
-		////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////
 		// RequestLoader().stop()-load()-cancel() - MIXED TESTS //
-		////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////
 		
 		[Test]
 		public function loadAndStop_CheckStatus_STOPPED(): void
@@ -450,6 +450,18 @@ package org.vostokframework.loadingmanagement
 			_loader.load();
 		}
 		
+		///////////////////////////////////////
+		// RequestLoader().stopAssetLoader() //
+		///////////////////////////////////////
+		/*
+		[Test]
+		public function loadAndStop_CheckStatus_STOPPED(): void
+		{
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(RequestLoaderStatus.STOPPED, _loader.status);
+		}
+		*/
 	}
 
 }
