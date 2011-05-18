@@ -107,6 +107,21 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
+		public function getNext_checkPriorityOrder_AbstractAssetLoader(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			Assert.assertEquals("asset-loader-3", loader.id);
+		}
+		
+		[Test]
+		public function getNext_checkPriorityOrder2_AbstractAssetLoader(): void
+		{
+			_queueManager.getNext();
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			Assert.assertEquals("asset-loader-1", loader.id);
+		}
+		
+		[Test]
 		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
 		{
 			var loader:AbstractAssetLoader = _queueManager.getNext();
