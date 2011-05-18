@@ -38,6 +38,7 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 
 	import flash.errors.IllegalOperationError;
@@ -99,6 +100,8 @@ package org.vostokframework.loadingmanagement
 			_priority = priority;
 			_historicalStatus = new ArrayList();
 			
+			addAssetLoaderListeners();
+			
 			setStatus(RequestLoaderStatus.QUEUED);
 		}
 		
@@ -144,9 +147,16 @@ package org.vostokframework.loadingmanagement
 		
 		public function dispose():void
 		{
+			removeAssetLoaderListeners();
+			_queueManager.dispose();
+			_historicalStatus.clear();
 			
+			_historicalStatus = null;
+			_priority = null;
+			_queueManager = null;
+			_status = null;
 		}
-		
+
 		public function equals(other : *): Boolean
 		{
 			if (this == other) return true;
@@ -237,6 +247,36 @@ package org.vostokframework.loadingmanagement
 		public function stopAssetLoader(assetLoaderId:String): void
 		{
 			
+		}
+		
+		private function addAssetLoaderListeners():void
+		{
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var loader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false, 0, true);
+			}
+		}
+		
+		private function removeAssetLoaderListeners():void
+		{
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var loader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
+			}
+		}
+		
+		private function assetLoaderStatusChangedHandler(event:AssetLoaderEvent):void
+		{
+			if (!_status.equals(RequestLoaderStatus.LOADING)) return;
+			loadNext();
 		}
 		
 		private function loadNext():void

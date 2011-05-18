@@ -193,6 +193,22 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader3.status);
 		}
 		
+		[Test]
+		public function load_checkAssetLoaderStatus2_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader4.status);
+		}
+		
+		[Test]
+		public function load_checkAssetLoaderStatus_QUEUED(): void
+		{
+			_loader.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.QUEUED, _assetLoader2.status);
+		}
+		
 		/*
 		[Test(async)]
 		public function load_stubDispatchOpen_LOADING(): void
