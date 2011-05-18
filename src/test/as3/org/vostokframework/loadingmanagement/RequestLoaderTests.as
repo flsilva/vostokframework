@@ -38,6 +38,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
 	import flash.utils.Timer;
 
@@ -199,6 +200,14 @@ package org.vostokframework.loadingmanagement
 			_loader.load();
 			
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader4.status);
+		}
+		
+		[Test]
+		public function load_checkAssetLoaderStatus3_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			_assetLoader3.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader2.status);
 		}
 		
 		[Test]

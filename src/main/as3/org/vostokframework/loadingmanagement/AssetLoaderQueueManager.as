@@ -71,6 +71,11 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
+		public function get totalComplete(): int { return _completeLoaders.size(); }
+		
+		/**
+		 * description
+		 */
 		public function get totalFailed(): int { return _failedLoaders.size(); }
 		
 		/**
@@ -238,6 +243,10 @@ package org.vostokframework.loadingmanagement
 			else if (event.status.equals(AssetLoaderStatus.CANCELED))
 			{
 				_canceledLoaders.add(event.target);
+			}
+			else if (event.status.equals(AssetLoaderStatus.COMPLETE))
+			{
+				_completeLoaders.add(event.target);
 			}
 			/*
 			else if (event.status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS))

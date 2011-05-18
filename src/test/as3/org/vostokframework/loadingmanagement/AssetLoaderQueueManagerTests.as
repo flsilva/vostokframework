@@ -36,7 +36,9 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
+	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
 	import flash.utils.Timer;
 
@@ -169,6 +171,26 @@ package org.vostokframework.loadingmanagement
 			loader.cancel();
 			
 			Assert.assertEquals(1, _queueManager.totalCanceled);
+		}
+		
+		/////////////////////////////////////////////
+		// AssetLoaderQueueManager().totalComplete //
+		/////////////////////////////////////////////
+		
+		[Test]
+		public function totalComplete_checkTotal_Int(): void
+		{
+			Assert.assertEquals(0, _queueManager.totalComplete);
+		}
+		
+		[Test]
+		public function totalComplete_loadAndCheckTotal_Int(): void
+		{
+			var loader:AbstractAssetLoader = _queueManager.getNext();
+			loader.load();
+			loader.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			
+			Assert.assertEquals(1, _queueManager.totalComplete);
 		}
 		
 		////////////////////////////////////////////
