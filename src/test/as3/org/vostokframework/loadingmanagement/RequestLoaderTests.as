@@ -218,7 +218,7 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(AssetLoaderStatus.QUEUED, _assetLoader2.status);
 		}
 		
-		[Test(async)]
+		[Test]
 		public function load_checkStatus_COMPLETE(): void
 		{
 			_loader.load();
