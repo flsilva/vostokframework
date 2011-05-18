@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
@@ -129,7 +130,15 @@ package org.vostokframework.loadingmanagement
 			_failedLoaders = null;
 			_stoppedLoaders = null;
 		}
-
+		
+		/**
+		 * description
+		 */
+		public function getAssetLoaders(): IList
+		{
+			return new ReadOnlyArrayList(_assetLoaders.toArray());
+		}
+		
 		/**
 		 * description
 		 */

@@ -28,7 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
+	import org.vostokframework.loadingmanagement.RequestLoaderStatus;
 
 	import flash.events.Event;
 
@@ -37,16 +37,16 @@ package org.vostokframework.loadingmanagement.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderEvent extends Event
+	public class RequestLoaderEvent extends Event
 	{
-		public static const STATUS_CHANGED:String = "VostokFramework.AssetLoaderEvent.STATUS_CHANGED";
+		public static const STATUS_CHANGED:String = "VostokFramework.RequestLoaderEvent.STATUS_CHANGED";
 		
 		/**
 		 * @private
  		 */
-		private var _status:AssetLoaderStatus;
+		private var _status:RequestLoaderStatus;
 		
-		public function get status():AssetLoaderStatus { return _status; }
+		public function get status():RequestLoaderStatus { return _status; }
 		
 		/**
 		 * description
@@ -54,7 +54,7 @@ package org.vostokframework.loadingmanagement.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function AssetLoaderEvent(type:String, status:AssetLoaderStatus)
+		public function RequestLoaderEvent(type:String, status:RequestLoaderStatus)
 		{
 			super(type);
 			_status = status;
@@ -62,7 +62,7 @@ package org.vostokframework.loadingmanagement.events
 		
 		override public function clone():Event
 		{
-			return new AssetLoaderEvent(type, _status);
+			return new RequestLoaderEvent(type, _status);
 		}
 		
 	}

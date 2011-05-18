@@ -71,10 +71,10 @@ package org.vostokframework.loadingmanagement
 			loader = new AbstractAssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
-			loader = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			loader = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
-			loader = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			loader = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
 			loader = new AbstractAssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);

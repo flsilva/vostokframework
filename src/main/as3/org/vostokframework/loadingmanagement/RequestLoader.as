@@ -29,22 +29,40 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.as3collections.ICollection;
+	import org.as3collections.IIterator;
+	import org.as3collections.IList;
+	import org.as3collections.lists.ArrayList;
+	import org.as3collections.lists.ReadOnlyArrayList;
+	import org.as3coreaddendum.system.IDisposable;
+	import org.as3coreaddendum.system.IEquatable;
+	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
+
+	import flash.errors.IllegalOperationError;
+	import flash.events.EventDispatcher;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class RequestLoader
+	public class RequestLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority
 	{
 		/**
 		 * description
 		 */
+		private var _historicalStatus:IList;
 		private var _id:String;
 		private var _priority:LoadingRequestPriority;
 		private var _queueManager:AssetLoaderQueueManager;
 		private var _status:RequestLoaderStatus;
+		
+		/**
+		 * description
+		 */
+		public function get historicalStatus(): IList { return new ReadOnlyArrayList(_historicalStatus.toArray()); }
 		
 		/**
 		 * description
@@ -54,7 +72,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function get priority(): LoadingRequestPriority { return _priority; }
+		public function get priority(): int { return _priority.ordinal; }
+		
+		public function set priority(value:int): void { return; }
 		
 		/**
 		 * description
@@ -77,11 +97,39 @@ package org.vostokframework.loadingmanagement
 			_id = id;
 			_queueManager = queueManager;
 			_priority = priority;
+			_historicalStatus = new ArrayList();
+			
+			setStatus(RequestLoaderStatus.QUEUED);
 		}
 		
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
 		public function cancel(): void
 		{
+			if (_status.equals(RequestLoaderStatus.CANCELED) ||
+				_status.equals(RequestLoaderStatus.COMPLETE) ||
+				_status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES)) return;
 			
+			setStatus(RequestLoaderStatus.CANCELED);
+			
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var assetLoader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				assetLoader = it.next();
+				try
+				{
+					assetLoader.cancel();
+				}
+				catch (error:Error)
+				{
+					//do nothing
+				}
+			}
 		}
 
 		/**
@@ -93,6 +141,20 @@ package org.vostokframework.loadingmanagement
 		{
 			
 		}
+		
+		public function dispose():void
+		{
+			
+		}
+		
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			if (!(other is RequestLoader)) return false;
+			
+			var otherLoader:RequestLoader = other as RequestLoader;
+			return _id == otherLoader.id;
+		}
 
 		/**
 		 * description
@@ -101,7 +163,18 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function load(): Boolean
 		{
-			return false;
+			if (_status.equals(RequestLoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
+			if (_status.equals(RequestLoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
+			if (_status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.COMPLETE_WITH_FAILURES>, therefore it is no longer allowed loadings.");
+			if (_status.equals(RequestLoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
+			
+			setStatus(RequestLoaderStatus.LOADING);
+			//addFileLoaderListeners();
+			//_fileLoader.load();
+			
+			loadNext();
+			
+			return true;
 		}
 
 		/**
@@ -129,7 +202,31 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function stop(): void
 		{
+			if (_status.equals(RequestLoaderStatus.STOPPED) ||
+				_status.equals(RequestLoaderStatus.CANCELED) ||
+				_status.equals(RequestLoaderStatus.COMPLETE) ||
+				_status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
+			{
+				return;
+			}
 			
+			setStatus(RequestLoaderStatus.STOPPED);
+			
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var assetLoader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				assetLoader = it.next();
+				try
+				{
+					assetLoader.stop();
+				}
+				catch (error:Error)
+				{
+					//do nothing
+				}
+			}
 		}
 
 		/**
@@ -140,6 +237,18 @@ package org.vostokframework.loadingmanagement
 		public function stopAssetLoader(assetLoaderId:String): void
 		{
 			
+		}
+		
+		private function loadNext():void
+		{
+			
+		}
+		
+		private function setStatus(status:RequestLoaderStatus):void
+		{
+			_status = status;
+			_historicalStatus.add(_status);
+			dispatchEvent(new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, _status));
 		}
 
 	}
