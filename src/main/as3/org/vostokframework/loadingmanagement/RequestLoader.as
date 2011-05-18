@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -246,7 +247,24 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function stopAssetLoader(assetLoaderId:String): void
 		{
+			if (StringUtil.isBlank(assetLoaderId)) throw new ArgumentError("Argument <assetLoaderId> must not be null nor an empty String.");
 			
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var loader:AbstractAssetLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (loader.id == assetLoaderId)
+				{
+					loader.stop();
+					return;
+				}
+			}
+			
+			var message:String = "There is no AssetLoader object stored with id:\n";
+			message += "<" + assetLoaderId + ">";
+			throw new AssetLoaderNotFoundError(assetLoaderId, message);
 		}
 		
 		private function addAssetLoaderListeners():void

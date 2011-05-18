@@ -453,15 +453,26 @@ package org.vostokframework.loadingmanagement
 		///////////////////////////////////////
 		// RequestLoader().stopAssetLoader() //
 		///////////////////////////////////////
-		/*
-		[Test]
-		public function loadAndStop_CheckStatus_STOPPED(): void
+		
+		[Test(expects="ArgumentError")]
+		public function stopAssetLoader_invalidId_ThrowsError(): void
 		{
-			_loader.load();
-			_loader.stop();
-			Assert.assertEquals(RequestLoaderStatus.STOPPED, _loader.status);
+			_loader.stopAssetLoader(null);
 		}
-		*/
+		
+		[Test(expects="org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError")]
+		public function stopAssetLoader_idNotAdded_ThrowsError(): void
+		{
+			_loader.stopAssetLoader("asset-loader-89745389543");
+		}
+		
+		[Test]
+		public function stopAssetLoader_CheckStatus_STOPPED(): void
+		{
+			_loader.stopAssetLoader("asset-loader-3");
+			Assert.assertEquals(AssetLoaderStatus.STOPPED, _assetLoader3.status);
+		}
+		
 	}
 
 }
