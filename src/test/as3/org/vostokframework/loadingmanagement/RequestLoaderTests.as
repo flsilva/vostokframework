@@ -218,6 +218,18 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(AssetLoaderStatus.QUEUED, _assetLoader2.status);
 		}
 		
+		[Test(async)]
+		public function load_checkStatus_COMPLETE(): void
+		{
+			_loader.load();
+			_assetLoader3.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			_assetLoader1.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			_assetLoader4.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			_assetLoader2.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			
+			Assert.assertEquals(RequestLoaderStatus.COMPLETE, _loader.status);
+		}
+		
 		/*
 		[Test(async)]
 		public function load_stubDispatchOpen_LOADING(): void
