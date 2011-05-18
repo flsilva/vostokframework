@@ -36,6 +36,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 
 	import flash.utils.Timer;
@@ -47,6 +48,10 @@ package org.vostokframework.loadingmanagement
 	public class RequestLoaderTests
 	{
 		
+		private var _assetLoader1:AbstractAssetLoader;
+		private var _assetLoader2:AbstractAssetLoader;
+		private var _assetLoader3:AbstractAssetLoader;
+		private var _assetLoader4:AbstractAssetLoader;
 		private var _loader:RequestLoader;
 		private var _timer:Timer;
 		
@@ -66,19 +71,16 @@ package org.vostokframework.loadingmanagement
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var assetLoaders:IList = new ArrayList();
-			var assetLoader:AbstractAssetLoader;
 			
-			assetLoader = new AbstractAssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			assetLoaders.add(assetLoader);
+			_assetLoader1 = new AbstractAssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			_assetLoader2 = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
+			_assetLoader3 = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
+			_assetLoader4 = new AbstractAssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 			
-			assetLoader = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
-			assetLoaders.add(assetLoader);
-			
-			assetLoader = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
-			assetLoaders.add(assetLoader);
-			
-			assetLoader = new AbstractAssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			assetLoaders.add(assetLoader);
+			assetLoaders.add(_assetLoader1);
+			assetLoaders.add(_assetLoader2);
+			assetLoaders.add(_assetLoader3);
+			assetLoaders.add(_assetLoader4);
 			
 			var queueManager:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders, 3);
 			
@@ -183,7 +185,13 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.status);
 		}
 		
-		
+		[Test]
+		public function load_checkAssetLoaderStatus_TRYING_TO_CONNECT(): void
+		{
+			_loader.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader3.status);
+		}
 		
 		/*
 		[Test(async)]

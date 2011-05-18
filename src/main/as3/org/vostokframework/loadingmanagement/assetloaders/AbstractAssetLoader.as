@@ -34,6 +34,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IPriority;
+	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
@@ -218,6 +219,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 			{
 				//do nothing
 			}
+		}
+		
+		override public function toString():String
+		{
+			return "[" + ReflectionUtil.getClassName(this) + " id<" + id + ">]";
 		}
 		
 		private function fileLoaderOpenHandler(event:Event):void

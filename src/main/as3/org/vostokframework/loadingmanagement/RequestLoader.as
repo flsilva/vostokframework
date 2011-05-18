@@ -241,9 +241,23 @@ package org.vostokframework.loadingmanagement
 		
 		private function loadNext():void
 		{
+			if (isLoadingComplete())
+			{
+				setStatus(RequestLoaderStatus.COMPLETE);
+				return;
+			}
 			
+			var assetLoader:AbstractAssetLoader = _queueManager.getNext();
+			if (assetLoader) assetLoader.load();
 		}
 		
+		private function isLoadingComplete():Boolean
+		{
+			return _queueManager.activeConnections == 0 &&
+					_queueManager.totalQueued == 0 &&
+					_queueManager.totalStopped == 0;
+		}
+
 		private function setStatus(status:RequestLoaderStatus):void
 		{
 			_status = status;
