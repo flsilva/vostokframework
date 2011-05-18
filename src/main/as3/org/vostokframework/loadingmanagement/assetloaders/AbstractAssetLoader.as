@@ -28,13 +28,14 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IPriority;
+	import org.as3utils.StringUtil;
+	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
@@ -101,6 +102,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function AbstractAssetLoader(id:String, priority:AssetLoadingPriority, fileLoader:IFileLoader, settings:LoadingAssetSettings): void
 		{
 			//if (ReflectionUtil.classPathEquals(this, AbstractAssetLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (!fileLoader) throw new ArgumentError("Argument <fileLoader> must not be null.");
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
