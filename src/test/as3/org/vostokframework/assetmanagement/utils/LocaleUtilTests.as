@@ -54,14 +54,14 @@ package org.vostokframework.assetmanagement.utils
 		}
 		
 		[Test]
-		public function composeId_validArgumentsWithoutLocale_String(): void
+		public function composeId_validArgumentsWithoutLocale_checkIfIdMatches_ReturnsTrue(): void
 		{
 			var id:String = LocaleUtil.composeId("1.xyz");
 			Assert.assertEquals("1.xyz-" + LocaleUtil.CROSS_LOCALE, id);
 		}
 		
 		[Test]
-		public function composeId_validArgumentsWithLocale_String(): void
+		public function composeId_validArgumentsWithLocale_checkIfIdMatches_ReturnsTrue(): void
 		{
 			var id:String = LocaleUtil.composeId("1.xyz", "en-US");
 			Assert.assertEquals("1.xyz-en-US", id);

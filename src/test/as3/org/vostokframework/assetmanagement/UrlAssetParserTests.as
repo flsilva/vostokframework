@@ -48,21 +48,21 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////////
 		
 		[Test]
-		public function getAssetType_unsupportedExtension_Null(): void
+		public function getAssetType_unsupportedExtension_ReturnsNull(): void
 		{
 			var type:AssetType = UrlAssetParser.getInstance().getAssetType("1.xyz");
 			Assert.assertNull(type);
 		}
 		
 		[Test]
-		public function getAssetType_validSource1_AssetType(): void
+		public function getAssetType_validSourceAACExtension_checkIfReturnedTypeMatches_ReturnsTrue(): void
 		{
 			var type:AssetType = UrlAssetParser.getInstance().getAssetType("1.aac");
 			Assert.assertEquals(AssetType.AAC, type);
 		}
 		
 		[Test]
-		public function getAssetType_validSource2_AssetType(): void
+		public function getAssetType_validSourceXMLExtension_checkIfReturnedTypeMatches_ReturnsTrue(): void
 		{
 			var type:AssetType = UrlAssetParser.getInstance().getAssetType("http://www.test.com/asset-path/test-asset.XML");
 			Assert.assertEquals(AssetType.XML, type);

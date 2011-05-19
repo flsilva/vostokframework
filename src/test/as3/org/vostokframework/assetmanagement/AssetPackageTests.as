@@ -50,17 +50,24 @@ package org.vostokframework.assetmanagement
 		///////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidArguments1_ThrowsError(): void
+		public function constructor_invalidId_ThrowsError(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage(null, null);
 			assetPackage = null;
 		}
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidArguments2_ThrowsError(): void
+		public function constructor_invalidLocale_ThrowsError(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", null);
 			assetPackage = null;
+		}
+		
+		[Test]
+		public function constructor_validInstantiation_ReturnsValidObject(): void
+		{
+			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
+			Assert.assertNotNull(assetPackage);
 		}
 		
 		/////////////////////////////
@@ -68,7 +75,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////
 		
 		[Test]
-		public function id_validGet_String(): void
+		public function id_instanciationWithId_checkIfIdMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			Assert.assertEquals("asset-package-1", assetPackage.id);
@@ -79,7 +86,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////
 		
 		[Test]
-		public function locale_validGet_String(): void
+		public function locale_instanciationWithLocale_checkIfLocaleMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			Assert.assertEquals("en-US", assetPackage.locale);
@@ -90,7 +97,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////
 		
 		[Test]
-		public function addAsset_validArgument_True(): void
+		public function addAsset_validArgument_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -103,7 +110,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function addAsset_dupplicatedAsset_False(): void
+		public function addAsset_dupplicatedAsset_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -129,7 +136,7 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////
 		
 		[Test]
-		public function addAssets_validArgument_True(): void
+		public function addAssets_validArgument_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -147,7 +154,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function addAssets_dupplicatedArgument_False(): void
+		public function addAssets_dupplicatedAssets_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -189,14 +196,16 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////
 		
 		[Test]
-		public function clear_emptyAssetPackage_Void(): void
+		public function clear_emptyAssetPackage_checkIfIsEmpty_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			assetPackage.clear();
+			
+			Assert.assertTrue(assetPackage.isEmpty());
 		}
 		
 		[Test]
-		public function clear_notEmptyAssetPackage1_Void(): void
+		public function clear_notEmptyAssetPackage_checkIfSizeIsZero_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -212,7 +221,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function clear_notEmptyAssetPackage2_Void(): void
+		public function clear_notEmptyAssetPackage_checkIfIsEmpty_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -232,7 +241,7 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////////
 		
 		[Test]
-		public function containsAsset_validArgument_True(): void
+		public function containsAsset_addedAsset_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -247,7 +256,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function containsAsset_validArgument_False(): void
+		public function containsAsset_notAddedAsset_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -264,7 +273,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////
 		
 		[Test]
-		public function getAsset_validArgument_Asset(): void
+		public function getAsset_addedAsset_ReturnsValidObject(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -278,7 +287,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function getAsset_notAddedAsset_Null(): void
+		public function getAsset_notAddedAsset_ReturnsNull(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var asset:Asset = assetPackage.getAsset("any-id-not-added");
@@ -291,7 +300,7 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////
 		
 		[Test]
-		public function getAssets_emptyAssetPackage_Null(): void
+		public function getAssets_emptyAssetPackage_ReturnsNull(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var list:IList = assetPackage.getAssets();
@@ -300,7 +309,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function getAssets_notEmptyAssetPackage_ReadOnlyArrayList(): void
+		public function getAssets_notEmptyAssetPackage_ReturnsIList(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -318,7 +327,7 @@ package org.vostokframework.assetmanagement
 		////////////////////////////////////
 		
 		[Test]
-		public function isEmpty_emptyAssetPackage_False(): void
+		public function isEmpty_emptyAssetPackage_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var empty:Boolean = assetPackage.isEmpty();
@@ -327,7 +336,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function isEmpty_notEmptyAssetPackage_True(): void
+		public function isEmpty_notEmptyAssetPackage_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -346,7 +355,7 @@ package org.vostokframework.assetmanagement
 		////////////////////////////////////////
 		
 		[Test]
-		public function removeAsset_emptyAssetPackage_False(): void
+		public function removeAsset_emptyAssetPackage_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var removed:Boolean = assetPackage.removeAsset("any-id-not-added");
@@ -355,7 +364,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function removeAsset_notEmptyAssetPackageNotAddedAsset_False(): void
+		public function removeAsset_notEmptyAssetPackage_notAddedAsset_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -370,7 +379,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function removeAsset_notEmptyAssetPackageAddedAsset_True(): void
+		public function removeAsset_notEmptyAssetPackage_addedAsset_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -389,7 +398,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////////
 		
 		[Test]
-		public function removeAssets_emptyAssetPackage_False(): void
+		public function removeAssets_emptyAssetPackage_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -404,7 +413,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function removeAssets_notEmptyAssetPackageNotAddedAsset_False(): void
+		public function removeAssets_notEmptyAssetPackage_notAddedAssets_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -423,7 +432,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function removeAssets_notEmptyAssetPackageAddedAssets_True(): void
+		public function removeAssets_notEmptyAssetPackage_addedAssets_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -447,7 +456,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////
 		
 		[Test]
-		public function size_emptyAssetPackage_Int(): void
+		public function size_emptyAssetPackage_checkIfSizeIsZero_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var size:int = assetPackage.size();
@@ -456,7 +465,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function size_notEmptyAssetPackage_Int(): void
+		public function size_oneAssetAdded_checkIfSizeIsOne_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			

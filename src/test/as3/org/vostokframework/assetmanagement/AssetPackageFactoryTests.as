@@ -49,10 +49,10 @@ package org.vostokframework.assetmanagement
 		///////////////////////
 		
 		[Test]
-		public function constructor_validArguments_Void(): void
+		public function constructor_validInstantiation_ReturnsValidObject(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
-			factory = null;
+			Assert.assertNotNull(factory);
 		}
 		
 		//////////////////////////////////////////
@@ -68,7 +68,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_validArguments_AssetPackage(): void
+		public function create_validArgumentsWithoutLocale_ReturnsValidObject(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
@@ -76,7 +76,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_notProvidingLocaleCheckId_AssetPackage(): void
+		public function create_validArgumentsWithoutLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
@@ -84,7 +84,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_providingCustomLocaleCheckId_AssetPackage(): void
+		public function create_validArgumentsWithLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
 			var assetPackage:AssetPackage = factory.create("package-id", "en-US");
@@ -92,7 +92,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_notProvidingLocaleCheckLocale_AssetPackage(): void
+		public function create_validArgumentsWithoutLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
@@ -100,7 +100,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_providingCustomLocaleCheckLocale_AssetPackage(): void
+		public function create_validArgumentsWithLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
 			var assetPackage:AssetPackage = factory.create("package-id", "en-US");

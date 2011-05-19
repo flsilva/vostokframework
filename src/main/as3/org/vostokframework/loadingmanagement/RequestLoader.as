@@ -301,7 +301,15 @@ package org.vostokframework.loadingmanagement
 		{
 			if (isLoadingComplete())
 			{
-				setStatus(RequestLoaderStatus.COMPLETE);
+				if (_queueManager.totalFailed > 0)
+				{
+					setStatus(RequestLoaderStatus.COMPLETE_WITH_FAILURES);
+				}
+				else
+				{
+					setStatus(RequestLoaderStatus.COMPLETE);
+				} 
+				
 				return;
 			}
 			

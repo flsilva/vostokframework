@@ -50,10 +50,10 @@ package org.vostokframework.assetmanagement
 		///////////////////////
 		
 		[Test]
-		public function constructor_validInstanciation_Void(): void
+		public function constructor_validInstantiation_ReturnsValidObject(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
-			repository = null;
+			Assert.assertNotNull(repository);
 		}
 		
 		////////////////////////////////////////////
@@ -61,11 +61,13 @@ package org.vostokframework.assetmanagement
 		////////////////////////////////////////////
 		
 		[Test]
-		public function add_validArgument_Void(): void
+		public function add_validArgument_checkIfAssetRepositoryContainsTheObject_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			repository.add(assetPackage);
+			
+			Assert.assertTrue(repository.exists(assetPackage.id));
 		}
 		
 		[Test(expects="org.vostokframework.assetmanagement.errors.DuplicateAssetPackageError")]
@@ -91,14 +93,16 @@ package org.vostokframework.assetmanagement
 		////////////////////////////////////////////
 		
 		[Test]
-		public function clear_emptyAssetPackageRepository_Void(): void
+		public function clear_emptyAssetPackageRepository_checkIfAssetPackageRepositoryIsEmpty_ReturnsTrue(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			repository.clear();
+			
+			Assert.assertTrue(repository.isEmpty());
 		}
 		
 		[Test]
-		public function clear_notEmptyAssetPackageRepository1_Void(): void
+		public function clear_notEmptyAssetPackageRepository_checkIfAssetPackageRepositorySizeIsZero_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -106,13 +110,11 @@ package org.vostokframework.assetmanagement
 			repository.add(assetPackage);
 			repository.clear();
 			
-			var size:int = repository.size();
-			
-			Assert.assertEquals(0, size);
+			Assert.assertEquals(0, repository.size());
 		}
 		
 		[Test]
-		public function clear_notEmptyAssetPackageRepository2_Void(): void
+		public function clear_notEmptyAssetPackageRepository_checkIfAssetPackageRepositoryIsEmpty_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -120,9 +122,7 @@ package org.vostokframework.assetmanagement
 			repository.add(assetPackage);
 			repository.clear();
 			
-			var empty:Boolean = repository.isEmpty();
-			
-			Assert.assertTrue(empty);
+			Assert.assertTrue(repository.isEmpty());
 		}
 		
 		/////////////////////////////////////////////
@@ -130,7 +130,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////////////
 		
 		[Test]
-		public function exists_assetPackageExists_True(): void
+		public function exists_addedAssetPackage_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -143,7 +143,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function exists_assetPackageNotExists_False(): void
+		public function exists_notAddedAssetPackage_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			
@@ -158,7 +158,7 @@ package org.vostokframework.assetmanagement
 		///////////////////////////////////////////
 		
 		[Test]
-		public function find_assetPackageExists_AssetPackage(): void
+		public function find_addedAssetPackage_ReturnsValidObject(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -170,7 +170,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function find_assetPackageNotExists_Null(): void
+		public function find_notAddedAssetPackage_ReturnsNull(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			
@@ -185,7 +185,7 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////////////
 		
 		[Test]
-		public function findAll_emptyAssetPackageRepository_Null(): void
+		public function findAll_emptyAssetPackageRepository_ReturnsNull(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			var list:IList = repository.findAll();
@@ -194,7 +194,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function findAll_notEmptyAssetPackageRepository_ReadOnlyArrayList(): void
+		public function findAll_notEmptyAssetPackageRepository_ReturnsIList(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -206,7 +206,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function findAll_notEmptyAssetPackageRepositoryCheckSize_ReadOnlyArrayList(): void
+		public function findAll_notEmptyAssetPackageRepository_checkIfReturnedListSizeMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -223,7 +223,7 @@ package org.vostokframework.assetmanagement
 		////////////////////////////////////////////////////////////////
 		
 		[Test]
-		public function findAssetPackageByAssetId_assetExists_AssetPackage(): void
+		public function findAssetPackageByAssetId_addedAsset_ReturnsValidObject(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -239,7 +239,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function findAssetPackageByAssetId_assetNotExists_Null(): void
+		public function findAssetPackageByAssetId_notAddedAsset_ReturnsNull(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			
@@ -254,24 +254,21 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////////////
 		
 		[Test]
-		public function isEmpty_emptyAssetPackageRepository_False(): void
+		public function isEmpty_emptyAssetPackageRepository_ReturnsTrue(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
-			var empty:Boolean = repository.isEmpty();
 			
-			Assert.assertTrue(empty);
+			Assert.assertTrue(repository.isEmpty());
 		}
 		
 		[Test]
-		public function isEmpty_notEmptyAssetPackageRepository_True(): void
+		public function isEmpty_notEmptyAssetPackageRepository_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			repository.add(assetPackage);
 			
-			var empty:Boolean = repository.isEmpty();
-			
-			Assert.assertFalse(empty);
+			Assert.assertFalse(repository.isEmpty());
 		}
 		
 		/////////////////////////////////////////////
@@ -279,7 +276,7 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////////////////
 		
 		[Test]
-		public function remove_emptyAssetPackageRepository_False(): void
+		public function remove_emptyAssetPackageRepository_ReturnsFalse(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			var removed:Boolean = repository.remove("any-id-not-added");
@@ -288,7 +285,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function remove_notEmptyAssetPackageRepositoryNotAddedAssetPackage_False(): void
+		public function remove_notEmptyAssetPackageRepository_notAddedAssetPackage_ReturnsFalse(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -300,7 +297,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function remove_notEmptyAssetPackageRepositoryAddedAssetPackage_True(): void
+		public function remove_notEmptyAssetPackageRepository_addedAssetPackage_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();
@@ -316,7 +313,7 @@ package org.vostokframework.assetmanagement
 		///////////////////////////////////////////
 		
 		[Test]
-		public function size_emptyAssetPackageRepository_Int(): void
+		public function size_emptyAssetPackageRepository_checkIfSizeIsZero_ReturnsTrue(): void
 		{
 			var repository:AssetPackageRepository = new AssetPackageRepository();
 			var size:int = repository.size();
@@ -325,7 +322,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function size_notEmptyAssetPackageRepository_Int(): void
+		public function size_notEmptyAssetPackageRepository_checkIfSizeMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
 			var repository:AssetPackageRepository = new AssetPackageRepository();

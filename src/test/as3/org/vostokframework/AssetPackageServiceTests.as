@@ -55,7 +55,7 @@ package org.vostokframework
 		/////////////////////////
 		
 		[Before]
-		public function startup(): void
+		public function setUp(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
@@ -70,7 +70,7 @@ package org.vostokframework
 		///////////////////////
 		
 		[Test]
-		public function constructor_validInstantiation_Void(): void
+		public function constructor_validInstantiation_ReturnsValidObject(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			Assert.assertNotNull(service);
@@ -81,14 +81,14 @@ package org.vostokframework
 		//////////////////////////////////////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function assetPackageExists_invalidAssetPackageId_False(): void
+		public function assetPackageExists_invalidAssetPackageId_ReturnsFalse(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			service.assetPackageExists(null);
 		}
 		
 		[Test]
-		public function assetPackageExists_notAddedAssetPackage_False(): void
+		public function assetPackageExists_assetPackageNotExists_ReturnsFalse(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var exists:Boolean = service.assetPackageExists("any-not-added-id");
@@ -96,7 +96,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function assetPackageExists_addedAssetPackageWithLocale_True(): void
+		public function assetPackageExists_assetPackageWithLocaleExists_ReturnsTrue(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var exists:Boolean = service.assetPackageExists(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
@@ -104,7 +104,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function assetPackageExists_addedAssetPackageWithoutLocale_True(): void
+		public function assetPackageExists_assetPackageWithoutLocaleExists_ReturnsTrue(): void
 		{
 			//testing asset package without sending locale
 			
@@ -123,7 +123,7 @@ package org.vostokframework
 		//////////////////////////////////////////////////////
 		
 		[Test]
-		public function createAssetPackage_validArguments_AssetPackage(): void
+		public function createAssetPackage_validArguments_ReturnsAssetPackage(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
@@ -133,25 +133,27 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function createAssetPackage_validArgumentsWithLocaleCheckAssetPackageRepository_True(): void
+		public function createAssetPackage_validArgumentsWithLocale_checkIfAssetPackageRepositoryContainsTheObject_ReturnsTrue(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
 			var service:AssetPackageService = new AssetPackageService();
 			service.createAssetPackage("asset-package-1", "en-US");
 			
-			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.exists(LocaleUtil.composeId("asset-package-1", "en-US")));
+			var composedId:String = LocaleUtil.composeId("asset-package-1", "en-US");
+			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.exists(composedId));
 		}
 		
 		[Test]
-		public function createAssetPackage_validArgumentsWithoutLocaleCheckAssetPackageRepository_True(): void
+		public function createAssetPackage_validArgumentsWithoutLocale_checkIfAssetPackageRepositoryContainsTheObject_ReturnsTrue(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
 			var service:AssetPackageService = new AssetPackageService();
 			service.createAssetPackage("asset-package-1");
 			
-			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.exists(LocaleUtil.composeId("asset-package-1")));
+			var composedId:String = LocaleUtil.composeId("asset-package-1");
+			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.exists(composedId));
 		}
 		
 		///////////////////////////////////////////////////////
@@ -159,7 +161,7 @@ package org.vostokframework
 		///////////////////////////////////////////////////////
 		
 		[Test]
-		public function getAllAssetPackages_emptyAssetPackageRepository_Null(): void
+		public function getAllAssetPackages_emptyAssetPackageRepository_ReturnsNull(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
@@ -170,7 +172,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function getAllAssetPackages_notEmptyAssetPackageRepository_IList(): void
+		public function getAllAssetPackages_notEmptyAssetPackageRepository_ReturnsIList(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var list:IList = service.getAllAssetPackages();
@@ -178,26 +180,26 @@ package org.vostokframework
 			Assert.assertNotNull(list);
 		}
 		
-		/////////////////////////////////////
+		///////////////////////////////////////////////////
 		// AssetPackageService().getAssetPackage() TESTS //
-		/////////////////////////////////////
+		///////////////////////////////////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function getAssetPackage_invalidAssetId_ThrowsError(): void
+		public function getAssetPackage_invalidAssetPackageId_ThrowsError(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			service.getAssetPackage(null);
 		}
 		
 		[Test(expects="org.vostokframework.assetmanagement.errors.AssetPackageNotFoundError")]
-		public function getAssetPackage_notAddedAsset_ThrowsError(): void
+		public function getAssetPackage_notAddedAssetPackage_ThrowsError(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			service.getAssetPackage("any-not-added-id");
 		}
 		
 		[Test]
-		public function getAssetPackage_addedAssetWithLocale_AssetPackage(): void
+		public function getAssetPackage_addedAssetPackageWithLocale_ReturnsAssetPackage(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var assetPackage:AssetPackage = service.getAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
@@ -206,9 +208,10 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function getAssetPackage_addedAssetWithoutLocale_AssetPackage(): void
+		public function getAssetPackage_addedAssetPackageWithoutLocale_ReturnsAssetPackage(): void
 		{
 			//testing asset without locale
+			//dupplication of certain code of the setUp() method needed here
 			
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
@@ -223,12 +226,12 @@ package org.vostokframework
 			Assert.assertNotNull(assetPackage);
 		}
 		
-		////////////////////////////////////////////
+		//////////////////////////////////////////////////////////
 		// AssetPackageService().removeAllAssetPackages() TESTS //
-		////////////////////////////////////////////
+		//////////////////////////////////////////////////////////
 		
 		[Test]
-		public function removeAllAssetPackages_emptyAssetPackageRepository_Void(): void
+		public function removeAllAssetPackages_emptyAssetPackageRepository_checkIfAssetPackageRepositoryIsEmpty_ReturnsTrue(): void
 		{
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
@@ -239,7 +242,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAllAssetPackages_notEmptyAssetPackageRepository_Void(): void
+		public function removeAllAssetPackages_notEmptyAssetPackageRepository_checkIfAssetPackageRepositoryIsEmpty_ReturnsTrue(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			service.removeAllAssetPackages();
@@ -247,9 +250,9 @@ package org.vostokframework
 			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.isEmpty());
 		}
 		
-		////////////////////////////////////////
+		//////////////////////////////////////////////////////
 		// AssetPackageService().removeAssetPackage() TESTS //
-		////////////////////////////////////////
+		//////////////////////////////////////////////////////
 		
 		[Test(expects="ArgumentError")]
 		public function removeAssetPackage_invalidAssetPackageId_ThrowsError(): void
@@ -259,7 +262,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAssetPackage_notAddedAssetPackage_False(): void
+		public function removeAssetPackage_notAddedAssetPackage_ReturnsFalse(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var removed:Boolean = service.removeAssetPackage("any-not-added-id");
@@ -268,12 +271,22 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAssetPackage_addedAssetPackage_True(): void
+		public function removeAssetPackage_addedAssetPackage_ReturnsTrue(): void
 		{
 			var service:AssetPackageService = new AssetPackageService();
 			var removed:Boolean = service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
 			Assert.assertTrue(removed);
+		}
+		
+		[Test]
+		public function removeAssetPackage_addedAssetPackage_checkIfAssetPackageRepositoryDoNotContainTheObjectRemoved_ReturnsFalse(): void
+		{
+			var service:AssetPackageService = new AssetPackageService();
+			service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			
+			var composedId:String = LocaleUtil.composeId(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			Assert.assertFalse(AssetsContext.getInstance().assetPackageRepository.exists(composedId));
 		}
 		
 	}

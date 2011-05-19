@@ -77,7 +77,7 @@ package org.vostokframework
 		///////////////////////
 		
 		[Test]
-		public function constructor_validInstantiation_Void(): void
+		public function constructor_validInstantiation_ReturnsValidObject(): void
 		{
 			var service:AssetService = new AssetService();
 			Assert.assertNotNull(service);
@@ -88,14 +88,14 @@ package org.vostokframework
 		////////////////////////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function assetExists_invalidAssetId_False(): void
+		public function assetExists_invalidAssetId_ReturnsFalse(): void
 		{
 			var service:AssetService = new AssetService();
 			service.assetExists(null);
 		}
 		
 		[Test]
-		public function assetExists_notAddedAsset_False(): void
+		public function assetExists_notAddedAsset_ReturnsFalse(): void
 		{
 			var service:AssetService = new AssetService();
 			var exists:Boolean = service.assetExists("any-not-added-id");
@@ -103,7 +103,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function assetExists_addedAssetWithLocale_True(): void
+		public function assetExists_addedAssetWithLocale_ReturnsTrue(): void
 		{
 			var service:AssetService = new AssetService();
 			var exists:Boolean = service.assetExists(ASSET_ID, ASSET_LOCALE);
@@ -111,7 +111,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function assetExists_addedAssetWithoutLocale_True(): void
+		public function assetExists_addedAssetWithoutLocale_ReturnsTrue(): void
 		{
 			//testing asset without sending locale
 			
@@ -154,7 +154,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function changeAssetPriority_addedAsset_Void(): void
+		public function changeAssetPriority_addedAsset_checkIfPriorityMatches_ReturnsTrue(): void
 		{
 			var service:AssetService = new AssetService();
 			service.changeAssetPriority(ASSET_ID, AssetLoadingPriority.HIGH, ASSET_LOCALE);
@@ -169,7 +169,7 @@ package org.vostokframework
 		////////////////////////////////////////
 		
 		[Test]
-		public function createAsset_validArguments_Asset(): void
+		public function createAsset_validArguments_ReturnsAsset(): void
 		{
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
@@ -181,7 +181,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function createAsset_validArgumentsCheckAssetRepository_True(): void
+		public function createAsset_validArguments_checkIfAssetRepositoryContainsTheObject_ReturnsTrue(): void
 		{
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
@@ -198,7 +198,7 @@ package org.vostokframework
 		/////////////////////////////////////////
 		
 		[Test]
-		public function getAllAssets_emptyAssetRepository_Null(): void
+		public function getAllAssets_emptyAssetRepository_ReturnsNull(): void
 		{
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
@@ -209,7 +209,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function getAllAssets_notEmptyAssetRepository_IList(): void
+		public function getAllAssets_notEmptyAssetRepository_ReturnsIList(): void
 		{
 			var service:AssetService = new AssetService();
 			var list:IList = service.getAllAssets();
@@ -236,7 +236,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function getAsset_addedAssetWithLocale_Asset(): void
+		public function getAsset_addedAssetWithLocale_ReturnsAsset(): void
 		{
 			var service:AssetService = new AssetService();
 			var asset:Asset = service.getAsset(ASSET_ID, ASSET_LOCALE);
@@ -245,7 +245,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function getAsset_addedAssetWithoutLocale_Asset(): void
+		public function getAsset_addedAssetWithoutLocale_ReturnsAsset(): void
 		{
 			//testing asset without locale
 			
@@ -281,7 +281,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAllAssets_notEmptyAssetRepository_Void(): void
+		public function removeAllAssets_notEmptyAssetRepository_checkIfAssetRepositoryIsEmpty_ReturnsTrue(): void
 		{
 			var service:AssetService = new AssetService();
 			service.removeAllAssets();
@@ -301,7 +301,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAsset_notAddedAsset_False(): void
+		public function removeAsset_notAddedAsset_ReturnsFalse(): void
 		{
 			var service:AssetService = new AssetService();
 			var removed:Boolean = service.removeAsset("any-not-added-id");
@@ -310,7 +310,7 @@ package org.vostokframework
 		}
 		
 		[Test]
-		public function removeAsset_addedAsset_True(): void
+		public function removeAsset_addedAsset_ReturnsTrue(): void
 		{
 			var service:AssetService = new AssetService();
 			var removed:Boolean = service.removeAsset(ASSET_ID, ASSET_LOCALE);

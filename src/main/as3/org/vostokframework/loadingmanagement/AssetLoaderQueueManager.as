@@ -232,6 +232,10 @@ package org.vostokframework.loadingmanagement
 		{
 			removeFromLists(event.target as AbstractAssetLoader);
 			
+			//it is not needed to validate AssetLoaderStatus.LOADING status
+			//because before it is setted the AssetLoaderStatus.TRYING_TO_CONNECT status
+			//is setted, and for the purpose of this object it has the same effect
+			//as the AssetLoaderStatus.LOADING status
 			if (event.status.equals(AssetLoaderStatus.TRYING_TO_CONNECT))
 			{
 				_loadingLoaders.add(event.target);
@@ -248,12 +252,27 @@ package org.vostokframework.loadingmanagement
 			{
 				_completeLoaders.add(event.target);
 			}
+			//TODO:terminar de implementar
 			/*
-			else if (event.status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS))
+			else if (event.status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS) ||
+					event.status.equals(AssetLoaderStatus.FAILED_SECURITY_ERROR))
 			{
 				_failedLoaders.add(event.target);
 			}
-			else
+			else if (event.status.equals(AssetLoaderStatus.FAILED_ASYNC_ERROR))
+			{
+				_failedLoaders.add(event.target);
+			}
+			else if (event.status.equals(AssetLoaderStatus.FAILED_IO_ERROR))
+			{
+				_failedLoaders.add(event.target);
+			}
+			else if (event.status.equals(AssetLoaderStatus.FAILED_UNKNOWN_ERROR))
+			{
+				_failedLoaders.add(event.target);
+			}
+			*/
+			/*else
 			{
 				//_queuedLoaders.add(event.target);
 			}*/

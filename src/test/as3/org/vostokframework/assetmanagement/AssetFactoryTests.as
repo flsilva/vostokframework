@@ -50,10 +50,10 @@ package org.vostokframework.assetmanagement
 		///////////////////////
 		
 		[Test]
-		public function constructor_validInstantiation1_Void(): void
+		public function constructor_validInstantiation_ReturnsValidObject(): void
 		{
 			var factory:AssetFactory = new AssetFactory();
-			factory = null;
+			Assert.assertNotNull(factory);
 		}
 		
 		//////////////////////////////////////////
@@ -61,14 +61,14 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////////
 		
 		[Test]
-		public function defaultPriority_validGet1_AssetLoadingPriority(): void
+		public function defaultPriority_instanciateWithoutPriority_ReturnsValidObject(): void
 		{
 			var factory:AssetFactory = new AssetFactory();
 			Assert.assertNotNull(factory.defaultPriority);
 		}
 		
 		[Test]
-		public function defaultPriority_validGet2_AssetLoadingPriority(): void
+		public function defaultPriority_instanciateWithPriority_checkIfObjectsMatch_ReturnsTrue(): void
 		{
 			var priority:AssetLoadingPriority = AssetLoadingPriority.LOW;
 			var factory:AssetFactory = new AssetFactory(null, priority);
@@ -80,7 +80,7 @@ package org.vostokframework.assetmanagement
 		///////////////////////////////////////////////
 		
 		[Test]
-		public function setDefaultPriority_validSet_AssetLoadingPriority(): void
+		public function setDefaultPriority_validArgument_checkIfObjectsMatch_ReturnTrue(): void
 		{
 			var priority:AssetLoadingPriority = AssetLoadingPriority.LOW;
 			var factory:AssetFactory = new AssetFactory(null, priority);
@@ -96,14 +96,14 @@ package org.vostokframework.assetmanagement
 		//////////////////////////////////////////
 		
 		[Test]
-		public function defaultSettings_validGet1_LoadingAssetSettings(): void
+		public function defaultSettings_instanciateWithoutArgument_ReturnsValidObject(): void
 		{
 			var factory:AssetFactory = new AssetFactory();
 			Assert.assertNotNull(factory.defaultSettings);
 		}
 		
 		[Test]
-		public function defaultSettings_validGet2_LoadingAssetSettings(): void
+		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
 		{
 			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings(5);
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
@@ -116,7 +116,7 @@ package org.vostokframework.assetmanagement
 		///////////////////////////////////////////////
 		
 		[Test]
-		public function setDefaultSettings_validSet_LoadingAssetSettings(): void
+		public function setDefaultSettings_validArgument_checkIfObjectsMatch_ReturnsTrue(): void
 		{
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
 			var factory:AssetFactory = new AssetFactory(settings);
@@ -151,7 +151,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_validArguments_Asset(): void
+		public function create_validArguments_ReturnsValidObject(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
 			
@@ -162,7 +162,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_validArgumentsCheckId1_Asset(): void
+		public function create_validArgumentsWithoutAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
 			
@@ -173,7 +173,7 @@ package org.vostokframework.assetmanagement
 		}
 		
 		[Test]
-		public function create_validArgumentsCheckId2_Asset(): void
+		public function create_validArgumentsWithAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
 			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
 			
