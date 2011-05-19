@@ -86,14 +86,41 @@ package org.vostokframework.loadingmanagement.assetloaders
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
-		/*
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function constructor_invalidInstantiation1_ThrowsError(): void
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidId_ThrowsError(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(null, null);
+			var loader:AbstractAssetLoader = new AbstractAssetLoader(null, null, null, null);
 			loader = null;
 		}
-		*/
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidPriority_ThrowsError(): void
+		{
+			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", null, null, null);
+			loader = null;
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidFileLoader_ThrowsError(): void
+		{
+			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, null, null);
+			loader = null;
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidSettings_ThrowsError(): void
+		{
+			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), null);
+			loader = null;
+		}
+		
+		[Test]
+		public function constructor_validInstanciation_ReturnsValidObject(): void
+		{
+			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+			loader = null;
+		}
 		
 		//////////////////////////////////
 		// AbstractAssetLoader().status //
@@ -196,13 +223,10 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(async)]
 		public function load_checkStatus_TRYING_TO_CONNECT(): void
 		{
-			//_loader.load();
-			//Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
-			
 			_loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED,
 									Async.asyncHandler(this, assetLoaderEventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
-														timerTimeoutHandler),
+														timeoutHandler),
 									false, 0, true);
 			
 			_loader.load();
@@ -211,58 +235,56 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(async)]
 		public function load_stubDispatchOpen_LOADING(): void
 		{
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+			_fileLoader.addEventListener(Event.OPEN,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.LOADING},
-														timerTimeoutHandler),
-									false, 0, true);
+														timeoutHandler),
+									false, -999, true);
 			
-			_loader.load();
-			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 15);
 			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
-			_timer.start();
+			_loader.load();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchComplete_COMPLETE(): void
 		{
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+			_fileLoader.addEventListener(FileLoaderEvent.COMPLETE,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.COMPLETE},
-														timerTimeoutHandler),
-									false, 0, true);
+														timeoutHandler),
+									false, -999, true);
 			
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, null), 50);
 			_loader.load();
-			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, null));
-			_timer.start();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchIOError_FAILED(): void
 		{
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+			_fileLoader.addEventListener(IOErrorEvent.IO_ERROR,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_IO_ERROR},
-														timerTimeoutHandler),
-									false, 0, true);
+														timeoutHandler),
+									false, -999, true);
 			
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
 			_loader.load();
-			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_timer.start();
 		}
 		
 		[Test(async)]
 		public function load_stubDispatchSecurityError_FAILED(): void
 		{
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+			_fileLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_SECURITY_ERROR},
-														timerTimeoutHandler),
-									false, 0, true);
+														timeoutHandler),
+									false, -999, true);
 			
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 25);
+			_fileLoader.asyncDispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
 			_loader.load();
-			_fileLoader.asyncDispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR));
-			_timer.start();
 		}
 		
 		[Test(async)]
@@ -275,9 +297,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			setTimeout(_loader.load, 100);
 			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
-														timerTimeoutHandler),
+														timeoutHandler),
 									false, 0, true);
 			
 			_timer.start();
@@ -295,15 +317,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 			setTimeout(_loader.load, 150);
 			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, timerCompleteHandler, 200,
+									Async.asyncHandler(this, eventHandler, 200,
 														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS},
-														timerTimeoutHandler),
+														timeoutHandler),
 									false, 0, true);
 			
 			_timer.start();
 		}
 		
-		public function timerCompleteHandler(event:TimerEvent, passThroughData:Object):void
+		public function eventHandler(event:Event, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
@@ -313,7 +335,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function timerTimeoutHandler(passThroughData:Object):void
+		public function timeoutHandler(passThroughData:Object):void
 		{
 			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
