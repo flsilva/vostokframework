@@ -29,6 +29,11 @@
 
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import mockolate.mock;
+	import mockolate.runner.MockolateRule;
+	import mockolate.strict;
+	import mockolate.verify;
+
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.AssetLoadingPriority;
@@ -50,9 +55,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 	[TestCase(order=12)]
 	public class AbstractAssetLoaderTests
 	{
+		[Rule]
+		public var mocks:MockolateRule = new MockolateRule();
+		
+		[Mock(type="strict",inject="false")]
+		public var _fileLoaderMockolate:IFileLoader;
 		
 		private var _fileLoader:VostokLoaderStub;
 		private var _loader:AbstractAssetLoader;
+		private var _loader2:AbstractAssetLoader;
 		private var _timer:Timer;
 		
 		public function AbstractAssetLoaderTests()
@@ -72,6 +83,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			_fileLoader = new VostokLoaderStub();
 			_loader = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
+			
+			_fileLoaderMockolate = strict(IFileLoader);
+			_loader2 = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoaderMockolate, settings);
 		}
 		
 		[After]
@@ -173,6 +187,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.cancel();
 			_loader.cancel();
 			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
+		}
+		
+		[Test]
+		public function cancel2_checkStatus_CANCELED(): void
+		{
+			mock(_fileLoaderMockolate).method("cancel");
+			_loader2.cancel();
+			verify(_fileLoaderMockolate);
 		}
 		
 		//////////////////////////////////
@@ -370,6 +392,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.load();
 			_loader.stop();
 			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
+		}
+		
+		[Test]
+		public function asdsadasd(): void
+		{
+			//_fileLoaderMockolate
 		}
 		
 		[Test]
