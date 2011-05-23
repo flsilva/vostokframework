@@ -55,7 +55,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=999)]
-	public class AbstractAssetLoaderTests
+	public class AssetLoaderTests
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -64,11 +64,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public var _fileLoaderMockolate:IFileLoader;
 		
 		private var _fileLoader:VostokLoaderStub;
-		private var _loader:AbstractAssetLoader;
-		private var _loader2:AbstractAssetLoader;
+		private var _loader:AssetLoader;
+		private var _loader2:AssetLoader;
 		private var _timer:Timer;
 		
-		public function AbstractAssetLoaderTests()
+		public function AssetLoaderTests()
 		{
 			
 		}
@@ -84,7 +84,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			_fileLoader = new VostokLoaderStub();
-			_loader = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
+			_loader = new AssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
 			
 			_fileLoaderMockolate = strict(IFileLoader);
 			stub(_fileLoaderMockolate).decorate(IFileLoader, EventDispatcherDecorator);
@@ -92,7 +92,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			//stub(_fileLoaderMockolate).method("addEventListener");
 			//stub(_fileLoaderMockolate).method("removeEventListener");
 			
-			_loader2 = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoaderMockolate, settings);
+			_loader2 = new AssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoaderMockolate, settings);
 		}
 		
 		[After]
@@ -111,35 +111,35 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidId_ThrowsError(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(null, null, null, null);
+			var loader:AssetLoader = new AssetLoader(null, null, null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidPriority_ThrowsError(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", null, null, null);
+			var loader:AssetLoader = new AssetLoader("id", null, null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidFileLoader_ThrowsError(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, null, null);
+			var loader:AssetLoader = new AssetLoader("id", AssetLoadingPriority.MEDIUM, null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidSettings_ThrowsError(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), null);
+			var loader:AssetLoader = new AssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), null);
 			loader = null;
 		}
 		
 		[Test]
 		public function constructor_validInstanciation_ReturnsValidObject(): void
 		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+			var loader:AssetLoader = new AssetLoader("id", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
 			loader = null;
 		}
 		

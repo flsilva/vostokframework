@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractAssetLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority
+	public class AssetLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority
 	{
 		/**
 		 * @private
@@ -100,7 +100,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function AbstractAssetLoader(id:String, priority:AssetLoadingPriority, fileLoader:IFileLoader, settings:LoadingAssetSettings): void
+		public function AssetLoader(id:String, priority:AssetLoadingPriority, fileLoader:IFileLoader, settings:LoadingAssetSettings)
 		{
 			//if (ReflectionUtil.classPathEquals(this, AbstractAssetLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
@@ -157,9 +157,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function equals(other : *): Boolean
 		{
 			if (this == other) return true;
-			if (!(other is AbstractAssetLoader)) return false;
+			if (!(other is AssetLoader)) return false;
 			
-			var otherLoader:AbstractAssetLoader = other as AbstractAssetLoader;
+			var otherLoader:AssetLoader = other as AssetLoader;
 			return _id == otherLoader.id;
 		}
 		
@@ -183,7 +183,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 				setStatus(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS);
 				return false;
 			}
-			trace("AbstractAssetLoader() - load()");
+			trace("AssetLoader() - load()");
 			setStatus(AssetLoaderStatus.TRYING_TO_CONNECT);
 			addFileLoaderListeners();
 			_fileLoader.load();
@@ -273,8 +273,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 
 		private function addFileLoaderListeners():void
 		{
-			trace("AbstractAssetLoader() - addFileLoaderListeners()");
-			
 			_fileLoader.addEventListener(Event.OPEN, fileLoaderOpenHandler, false, 0, true);
 			_fileLoader.addEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false, 0, true);
 			_fileLoader.addEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false, 0, true);
@@ -283,8 +281,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		private function removeFileLoaderListeners():void
 		{
-			trace("AbstractAssetLoader() - removeFileLoaderListeners()");
-			
 			_fileLoader.removeEventListener(Event.OPEN, fileLoaderOpenHandler, false);
 			_fileLoader.removeEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false);
 			_fileLoader.removeEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false);

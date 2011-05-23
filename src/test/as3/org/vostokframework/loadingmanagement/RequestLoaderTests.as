@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
@@ -49,10 +49,10 @@ package org.vostokframework.loadingmanagement
 	public class RequestLoaderTests
 	{
 		
-		private var _assetLoader1:AbstractAssetLoader;
-		private var _assetLoader2:AbstractAssetLoader;
-		private var _assetLoader3:AbstractAssetLoader;
-		private var _assetLoader4:AbstractAssetLoader;
+		private var _assetLoader1:AssetLoader;
+		private var _assetLoader2:AssetLoader;
+		private var _assetLoader3:AssetLoader;
+		private var _assetLoader4:AssetLoader;
 		private var _loader:RequestLoader;
 		private var _timer:Timer;
 		
@@ -73,10 +73,10 @@ package org.vostokframework.loadingmanagement
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var assetLoaders:IList = new ArrayList();
 			
-			_assetLoader1 = new AbstractAssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			_assetLoader2 = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
-			_assetLoader3 = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
-			_assetLoader4 = new AbstractAssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			_assetLoader1 = new AssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			_assetLoader2 = new AssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
+			_assetLoader3 = new AssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
+			_assetLoader4 = new AssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 			
 			assetLoaders.add(_assetLoader1);
 			assetLoaders.add(_assetLoader2);

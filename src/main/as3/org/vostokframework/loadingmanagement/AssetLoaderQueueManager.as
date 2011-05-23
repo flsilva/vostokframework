@@ -28,14 +28,14 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
+	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.queues.PriorityQueue;
 	import org.as3coreaddendum.system.IDisposable;
-	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
@@ -197,7 +197,7 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		public function getNext(): AbstractAssetLoader
+		public function getNext(): AssetLoader
 		{
 			if (activeConnections >= _concurrentConnections) return null;
 			
@@ -207,7 +207,7 @@ package org.vostokframework.loadingmanagement
 		private function addLoaderListeners():void
 		{
 			var it:IIterator = _assetLoaders.iterator();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -219,7 +219,7 @@ package org.vostokframework.loadingmanagement
 		private function removeLoaderListeners():void
 		{
 			var it:IIterator = _assetLoaders.iterator();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -230,7 +230,7 @@ package org.vostokframework.loadingmanagement
 		
 		private function loaderStatusChangedHandler(event:AssetLoaderEvent):void
 		{
-			removeFromLists(event.target as AbstractAssetLoader);
+			removeFromLists(event.target as AssetLoader);
 			
 			//it is not needed to validate AssetLoaderStatus.LOADING status
 			//because before it is setted the AssetLoaderStatus.TRYING_TO_CONNECT status
@@ -278,7 +278,7 @@ package org.vostokframework.loadingmanagement
 			}*/
 		}
 		
-		private function removeFromLists(loader:AbstractAssetLoader):void
+		private function removeFromLists(loader:AssetLoader):void
 		{
 			_canceledLoaders.remove(loader);
 			_completeLoaders.remove(loader);

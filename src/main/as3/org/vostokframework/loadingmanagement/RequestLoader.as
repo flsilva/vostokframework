@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -38,7 +37,8 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
+	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 
@@ -120,7 +120,7 @@ package org.vostokframework.loadingmanagement
 			setStatus(RequestLoaderStatus.CANCELED);
 			
 			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var assetLoader:AbstractAssetLoader;
+			var assetLoader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -224,7 +224,7 @@ package org.vostokframework.loadingmanagement
 			setStatus(RequestLoaderStatus.STOPPED);
 			
 			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var assetLoader:AbstractAssetLoader;
+			var assetLoader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -250,7 +250,7 @@ package org.vostokframework.loadingmanagement
 			if (StringUtil.isBlank(assetLoaderId)) throw new ArgumentError("Argument <assetLoaderId> must not be null nor an empty String.");
 			
 			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -270,7 +270,7 @@ package org.vostokframework.loadingmanagement
 		private function addAssetLoaderListeners():void
 		{
 			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -282,7 +282,7 @@ package org.vostokframework.loadingmanagement
 		private function removeAssetLoaderListeners():void
 		{
 			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
 			while (it.hasNext())
 			{
@@ -313,7 +313,7 @@ package org.vostokframework.loadingmanagement
 				return;
 			}
 			
-			var assetLoader:AbstractAssetLoader = _queueManager.getNext();
+			var assetLoader:AssetLoader = _queueManager.getNext();
 			if (assetLoader) assetLoader.load();
 		}
 		

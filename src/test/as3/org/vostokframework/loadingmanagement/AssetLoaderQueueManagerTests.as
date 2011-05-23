@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.assetloaders.AbstractAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
@@ -68,18 +68,18 @@ package org.vostokframework.loadingmanagement
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var loaders:IList = new ArrayList();
-			var loader:AbstractAssetLoader;
+			var loader:AssetLoader;
 			
-			loader = new AbstractAssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			loader = new AssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
-			loader = new AbstractAssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
+			loader = new AssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
-			loader = new AbstractAssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
+			loader = new AssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
-			loader = new AbstractAssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			loader = new AssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 			loaders.add(loader);
 			
 			_queueManager = new AssetLoaderQueueManager(loaders, 3);
@@ -102,31 +102,31 @@ package org.vostokframework.loadingmanagement
 		/////////////////////////////////////////
 		
 		[Test]
-		public function getNext_simpleCall_AbstractAssetLoader(): void
+		public function getNext_simpleCall_AssetLoader(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			Assert.assertNotNull(loader);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder_AbstractAssetLoader(): void
+		public function getNext_checkPriorityOrder_AssetLoader(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			Assert.assertEquals("asset-loader-3", loader.id);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder2_AbstractAssetLoader(): void
+		public function getNext_checkPriorityOrder2_AssetLoader(): void
 		{
 			_queueManager.getNext();
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			Assert.assertEquals("asset-loader-1", loader.id);
 		}
 		
 		[Test]
 		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
 			
 			loader = _queueManager.getNext();
@@ -140,9 +140,9 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_cancelAndCheckNext_AbstractAssetLoader(): void
+		public function getNext_cancelAndCheckNext_AssetLoader(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getAssetLoaders().getAt(0);
+			var loader:AssetLoader = _queueManager.getAssetLoaders().getAt(0);
 			loader.cancel();
 			
 			loader = _queueManager.getNext();
@@ -151,9 +151,9 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_stopAndCheckNext_AbstractAssetLoader(): void
+		public function getNext_stopAndCheckNext_AssetLoader(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getAssetLoaders().getAt(0);
+			var loader:AssetLoader = _queueManager.getAssetLoaders().getAt(0);
 			loader.stop();
 			
 			loader = _queueManager.getNext();
@@ -168,7 +168,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function activeConnections_cancelAndCheckTotal_Int(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
 			loader = _queueManager.getNext();
 			loader.load();
@@ -189,7 +189,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function totalCanceled_cancelAndCheckTotal_Int(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.cancel();
 			
 			Assert.assertEquals(1, _queueManager.totalCanceled);
@@ -208,7 +208,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function totalComplete_loadAndCheckTotal_Int(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
 			loader.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
 			
@@ -228,7 +228,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function totalLoading_loadAndCheckTotal_Int(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
 			
 			loader = _queueManager.getNext();
@@ -267,7 +267,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function totalStopped_stopAndCheckTotal_Int(): void
 		{
-			var loader:AbstractAssetLoader = _queueManager.getNext();
+			var loader:AssetLoader = _queueManager.getNext();
 			loader.stop();
 			
 			Assert.assertEquals(1, _queueManager.totalStopped);
