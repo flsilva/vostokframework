@@ -192,7 +192,6 @@ package org.vostokframework.assetmanagement
 		public function clear_emptyAssetPackage_checkIfIsEmpty_ReturnsTrue(): void
 		{
 			_assetPackage.clear();
-			
 			Assert.assertTrue(_assetPackage.isEmpty());
 		}
 		
