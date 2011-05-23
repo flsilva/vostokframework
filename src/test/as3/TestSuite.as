@@ -42,6 +42,7 @@ package
 	import org.vostokframework.loadingmanagement.AssetLoaderQueueManagerTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTestsLoad;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
 
@@ -75,6 +76,7 @@ package
 		
 		//org.vostokframework.loadingmanagement.assetloaders
 		public var assetLoaderTests:AssetLoaderTests;
+		public var assetLoaderTestsLoad:AssetLoaderTestsLoad;
 		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.monitors
