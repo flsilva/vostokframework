@@ -31,7 +31,6 @@ package org.vostokframework.assetmanagement
 {
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.utils.LocaleUtil;
 
 	/**
 	 * @author Flávio Silva
@@ -39,10 +38,36 @@ package org.vostokframework.assetmanagement
 	[TestCase(order=5)]
 	public class AssetRepositoryTests
 	{
+		private var _repository:AssetRepository;
 		
 		public function AssetRepositoryTests()
 		{
 			
+		}
+		
+		/////////////////////////
+		// TESTS CONFIGURATION //
+		/////////////////////////
+		
+		[Before]
+		public function setUp(): void
+		{
+			_repository = new AssetRepository();
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			_repository = null;
+		}
+		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getAsset():Asset
+		{
+			return new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
 		}
 		
 		///////////////////////
@@ -63,37 +88,24 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function add_validArgument_checkIfRepositoryContainsObject_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
+			var asset:Asset = getAsset();
+			_repository.add(asset);
 			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			Assert.assertTrue(repository.exists(asset.id));
+			var exists:Boolean = _repository.exists(asset.id);
+			Assert.assertTrue(exists);
 		}
 		
 		[Test(expects="org.vostokframework.assetmanagement.errors.DuplicateAssetError")]
 		public function add_dupplicateAsset_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			asset = assetFactory.create("a.aac", assetPackage);
-			repository.add(asset);
+			_repository.add(getAsset());
+			_repository.add(getAsset());
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function add_invalidArgument_ThrowsError(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(null);
+			_repository.add(null);
 		}
 		
 		/////////////////////////////////////
@@ -103,40 +115,29 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function clear_emptyAssetRepository_checkIfIsEmpty_ReturnsTrue(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			repository.clear();
-			Assert.assertTrue(repository.isEmpty());
+			_repository.clear();
+			
+			var empty:Boolean = _repository.isEmpty();
+			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function clear_notEmptyAssetRepository_checkIfSizeIsZero_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
+			_repository.clear();
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			repository.clear();
-			
-			var size:int = repository.size();
-			
+			var size:int = _repository.size();
 			Assert.assertEquals(0, size);
 		}
 		
 		[Test]
 		public function clear_notEmptyAssetRepository_checkIfRepositoryIsEmpty_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
+			_repository.clear();
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			repository.clear();
-			
-			var empty:Boolean = repository.isEmpty();
-			
+			var empty:Boolean = _repository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
@@ -147,28 +148,17 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function exists_addedAsset_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			var asset:Asset = getAsset();
+			_repository.add(asset);
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var exists:Boolean = repository.exists(asset.id);
-			
+			var exists:Boolean = _repository.exists(asset.id);
 			Assert.assertTrue(exists);
 		}
 		
 		[Test]
 		public function exists_notAddedAsset_ReturnsFalse(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			var repository:AssetRepository = new AssetRepository();
-			var exists:Boolean = repository.exists(asset.id);
-			
+			var exists:Boolean = _repository.exists("any-not-added-id");
 			Assert.assertFalse(exists);
 		}
 		
@@ -179,27 +169,19 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function find_addedAsset_checkIfReturnedIdMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			var asset:Asset = getAsset();
+			_repository.add(asset);
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
+			var id:String = asset.id;
+			asset = _repository.find(asset.id);
 			
-			var composedId:String = LocaleUtil.composeId("a.aac", "en-US");
-			asset = repository.find(composedId);
-			
-			Assert.assertEquals(composedId, asset.id);
+			Assert.assertEquals(id, asset.id);
 		}
 		
 		[Test]
 		public function find_notAddedAsset_ReturnsNull(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			
-			var composedId:String = LocaleUtil.composeId("any-id-not-added", "any-locale");
-			var asset:Asset = repository.find(composedId);
-			
+			var asset:Asset = _repository.find("any-not-added-id");
 			Assert.assertNull(asset);
 		}
 		
@@ -210,40 +192,26 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function findAll_emptyAssetRepository_ReturnsNull(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			var list:IList = repository.findAll();
-			
+			var list:IList = _repository.findAll();
 			Assert.assertNull(list);
 		}
 		
 		[Test]
 		public function findAll_notEmptyAssetRepository_ReturnsIList(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var list:IList = repository.findAll();
-			
+			var list:IList = _repository.findAll();
 			Assert.assertNotNull(list);
 		}
 		
 		[Test]
 		public function findAll_notEmptyAssetRepository_checkIfReturnedListSizeMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var list:IList = repository.findAll();
+			var list:IList = _repository.findAll();
 			var size:int = list.size();
-			
 			Assert.assertEquals(1, size);
 		}
 		
@@ -254,24 +222,16 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function isEmpty_emptyAssetRepository_ReturnsTrue(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			var empty:Boolean = repository.isEmpty();
-			
+			var empty:Boolean = _repository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function isEmpty_notEmptyAssetRepository_ReturnsFalse(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var empty:Boolean = repository.isEmpty();
-			
+			var empty:Boolean = _repository.isEmpty();
 			Assert.assertFalse(empty);
 		}
 		
@@ -282,39 +242,26 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function remove_emptyAssetRepository_ReturnsFalse(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			var removed:Boolean = repository.remove("any-id-not-added");
-			
+			var removed:Boolean = _repository.remove("any-id-not-added");
 			Assert.assertFalse(removed);
 		}
 		
 		[Test]
 		public function remove_notEmptyAssetRepository_notAddedAsset_ReturnsFalse(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var removed:Boolean = repository.remove("any-id-not-added");
-			
+			var removed:Boolean = _repository.remove("any-id-not-added");
 			Assert.assertFalse(removed);
 		}
 		
 		[Test]
 		public function remove_notEmptyAssetRepository_addedAsset_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			var asset:Asset = getAsset();
+			_repository.add(asset);
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var removed:Boolean = repository.remove(asset.id);
-			
+			var removed:Boolean = _repository.remove(asset.id);
 			Assert.assertTrue(removed);
 		}
 		
@@ -325,24 +272,16 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function size_emptyAssetRepository_checkIfSizeIsZero_ReturnsTrue(): void
 		{
-			var repository:AssetRepository = new AssetRepository();
-			var size:int = repository.size();
-			
+			var size:int = _repository.size();
 			Assert.assertEquals(0, size);
 		}
 		
 		[Test]
 		public function size_notEmptyAssetRepository_checkIfSizeMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
+			_repository.add(getAsset());
 			
-			var repository:AssetRepository = new AssetRepository();
-			repository.add(asset);
-			
-			var size:int = repository.size();
-			
+			var size:int = _repository.size();
 			Assert.assertEquals(1, size);
 		}
 		
