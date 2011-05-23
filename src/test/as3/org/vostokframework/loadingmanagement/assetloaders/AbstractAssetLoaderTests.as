@@ -29,9 +29,11 @@
 
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import mockolate.decorations.EventDispatcherDecorator;
 	import mockolate.mock;
 	import mockolate.runner.MockolateRule;
 	import mockolate.strict;
+	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.flexunit.Assert;
@@ -52,7 +54,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=12)]
+	[TestCase(order=999)]
 	public class AbstractAssetLoaderTests
 	{
 		[Rule]
@@ -85,6 +87,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
 			
 			_fileLoaderMockolate = strict(IFileLoader);
+			stub(_fileLoaderMockolate).decorate(IFileLoader, EventDispatcherDecorator);
+			//stub(_fileLoaderMockolate).method("addEventListener").answers(new MethodInvokingAnswer(target, methodName));
+			//stub(_fileLoaderMockolate).method("addEventListener");
+			//stub(_fileLoaderMockolate).method("removeEventListener");
+			
 			_loader2 = new AbstractAssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoaderMockolate, settings);
 		}
 		
@@ -141,13 +148,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function status_validGet_QUEUED(): void
+		public function status_freshObject_checkIfStatusIs_QUEUED_ReturnsTrue(): void
 		{
 			Assert.assertEquals(AssetLoaderStatus.QUEUED, _loader.status);
 		}
 		
 		[Test]
-		public function status_validGet_TRYING_TO_CONNECT(): void
+		public function status_afterCallLoad_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
 			_loader.load();
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
@@ -158,13 +165,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		////////////////////////////////////////////
 		
 		[Test]
-		public function historicalStatus_validGet_QUEUED(): void
+		public function historicalStatus_freshObject_checkIfFirstElementIs_QUEUED_ReturnsTrue(): void
 		{
 			Assert.assertEquals(AssetLoaderStatus.QUEUED, _loader.historicalStatus.getAt(0));
 		}
 		
 		[Test]
-		public function historicalStatus_validGet_TRYING_TO_CONNECT(): void
+		public function historicalStatus_afterCallLoad_checkIfSecondElementIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
 			_loader.load();
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.historicalStatus.getAt(1));
@@ -175,14 +182,14 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function cancel_checkStatus_CANCELED(): void
+		public function cancel_checkIfStatusIs_CANCELED_ReturnsTrue(): void
 		{
 			_loader.cancel();
 			Assert.assertEquals(AssetLoaderStatus.CANCELED, _loader.status);
 		}
 		
 		[Test]
-		public function cancel_doubleCallCheckStatus_CANCELED(): void
+		public function cancel_doubleCall_checkIfStatusIs_CANCELED_ReturnsTrue(): void
 		{
 			_loader.cancel();
 			_loader.cancel();
@@ -190,7 +197,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		}
 		
 		[Test]
-		public function cancel2_checkStatus_CANCELED(): void
+		public function cancel_checkIfMockWasCalled_Void(): void
 		{
 			mock(_fileLoaderMockolate).method("cancel");
 			_loader2.cancel();
@@ -202,10 +209,51 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function load_checkReturn_True(): void
+		public function load_simpleCallOnFreshObject_ReturnsTrue(): void
 		{
 			var allowedLoading:Boolean = _loader.load();
 			Assert.assertTrue(allowedLoading);
+		}
+		
+		[Test]
+		public function load_checkIfMockWasCalled_Void(): void
+		{
+			mock(_fileLoaderMockolate).method("load");
+			_loader2.load();
+			verify(_fileLoaderMockolate);
+		}
+		[Ignore]
+		[Test]
+		public function load_mockDispatchesOpen_checkIfStatusIs_LOADING_ReturnsTrue(): void
+		{
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN));
+			_loader2.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.LOADING, _loader2.status);
+		}
+		
+		[Ignore]
+		[Test(order=999)]
+		public function testEventDispacther(): void
+		{
+			//_fileLoaderMockolate.addEventListener(Event.OPEN, testHandler);
+			//trace("_fileLoaderMockolate.hasEventListener(Event.OPEN): " + _fileLoaderMockolate.hasEventListener(Event.OPEN));
+			//_fileLoaderMockolate.dispatchEvent(new Event(Event.OPEN));
+			
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN));
+			_loader2.load();
+			
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("_fileLoaderMockolate.hasEventListener(Event.OPEN): " + _fileLoaderMockolate.hasEventListener(Event.OPEN));
+			trace("_loader2.historicalStatus: " + _loader2.historicalStatus);
+			
+			Assert.assertEquals(AssetLoaderStatus.LOADING, _loader2.status);
+		}
+		
+		private function testHandler(event:Event):void
+		{
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("testHandler()");
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
@@ -215,21 +263,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.load();
 		}
 		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function loadStressTest_invalidSequence_ThrowsError(): void
-		{
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader.load();
-			_loader.load();
-		}
-		
 		[Test]
-		public function loadStressTest_validSequenceCheckStatus_TRYING_TO_CONNECT(): void
+		public function loadStressTest_validCallSequence_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
 			_loader.load();
 			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -241,9 +276,62 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
+		/*
+		[Test]
+		public function loadStressTest_validCallSequence2_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		{
+			var seq:Sequence = sequence();
+			
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN))
+				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "mockolate IO ERROR")).ordered(seq);
+			
+			_loader2.load();
+			//_loader2.load();
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader2.status);
+		}
+		*/
+		/*
+		[Test]
+		public function loadStressTest_validCallSequence2_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		{
+			var seq:Sequence = sequence();
+			
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN))
+				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR)).ordered(seq);
+			
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN))
+				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR)).ordered(seq);
+			
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN)).ordered(seq);
+			mock(_fileLoaderMockolate).method("stop").dispatches(new FileLoaderEvent(FileLoaderEvent.STOPPED)).ordered(seq);
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN)).ordered(seq);
+			
+			_loader2.load();
+			//_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader2.load();
+			//_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader2.load();
+			_loader2.stop();
+			_loader2.load();
+			
+			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader2.status);
+		}
+		*/
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function loadStressTest_invalidCallSequence_ThrowsError(): void
+		{
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			_loader.load();
+			_loader.load();
+		}
 		
 		[Test(async)]
-		public function load_checkStatus_TRYING_TO_CONNECT(): void
+		public function load_expectsForEvent_checkIfStatusOfEventObjectIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
 			_loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED,
 									Async.asyncHandler(this, assetLoaderEventHandler, 200,

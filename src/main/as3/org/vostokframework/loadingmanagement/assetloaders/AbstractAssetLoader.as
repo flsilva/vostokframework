@@ -128,6 +128,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			if (_status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) return;
 			
 			setStatus(AssetLoaderStatus.CANCELED);
+			removeFileLoaderListeners();
 			
 			try
 			{
@@ -141,6 +142,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function dispose():void
 		{
+			removeFileLoaderListeners();
 			_fileLoader.dispose();
 			_historicalStatus.clear();
 			//_monitor.dispose();
@@ -181,7 +183,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 				setStatus(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS);
 				return false;
 			}
-			
+			trace("AbstractAssetLoader() - load()");
 			setStatus(AssetLoaderStatus.TRYING_TO_CONNECT);
 			addFileLoaderListeners();
 			_fileLoader.load();
@@ -271,6 +273,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 
 		private function addFileLoaderListeners():void
 		{
+			trace("AbstractAssetLoader() - addFileLoaderListeners()");
+			
 			_fileLoader.addEventListener(Event.OPEN, fileLoaderOpenHandler, false, 0, true);
 			_fileLoader.addEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false, 0, true);
 			_fileLoader.addEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false, 0, true);
@@ -279,6 +283,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		private function removeFileLoaderListeners():void
 		{
+			trace("AbstractAssetLoader() - removeFileLoaderListeners()");
+			
 			_fileLoader.removeEventListener(Event.OPEN, fileLoaderOpenHandler, false);
 			_fileLoader.removeEventListener(FileLoaderEvent.COMPLETE, fileLoaderCompleteHandler, false);
 			_fileLoader.removeEventListener(IOErrorEvent.IO_ERROR, fileLoaderIOErrorHandler, false);
