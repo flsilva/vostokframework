@@ -39,10 +39,33 @@ package org.vostokframework.assetmanagement
 	[TestCase(order=1)]
 	public class AssetTests
 	{
+		private static const ASSET_ID:String = "asset-id";
+		private static const ASSET_SRC:String = "asset-path/asset.xml";
+		private static const ASSET_TYPE:AssetType = AssetType.XML;
+		private static const ASSET_PRIORITY:AssetLoadingPriority = AssetLoadingPriority.HIGH;
+		private static const ASSET_SETTINGS:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+		
+		private var _asset:Asset;
 		
 		public function AssetTests()
 		{
 			
+		}
+		
+		/////////////////////////
+		// TESTS CONFIGURATION //
+		/////////////////////////
+		
+		[Before]
+		public function setUp(): void
+		{
+			_asset = new Asset(ASSET_ID, ASSET_SRC, ASSET_TYPE, ASSET_PRIORITY, ASSET_SETTINGS);
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			_asset = null;
 		}
 		
 		///////////////////////
@@ -52,35 +75,41 @@ package org.vostokframework.assetmanagement
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidId_ThrowsError(): void
 		{
-			var asset:Asset = new Asset(null, null, null, null);
-			asset = null;
+			new Asset(null, null, null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidSrc_ThrowsError(): void
 		{
-			var asset:Asset = new Asset("asset-1", null, null, null);
-			asset = null;
+			new Asset("asset-id", null, null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidType_ThrowsError(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", null, null);
-			asset = null;
+			new Asset("asset-id", "asset-path/asset.xml", null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidPriority_ThrowsError(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, null);
-			asset = null;
+			new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, null);
 		}
 		
 		[Test]
-		public function constructor_validInstantiation_ReturnsValidObject(): void
+		public function constructor_validInstantiationWithoutSettings_ReturnsValidObject(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			Assert.assertNotNull(asset);
+		}
+		
+		[Test]
+		public function constructor_validInstantiationWithSettings_ReturnsValidObject(): void
+		{
+			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
+			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
+			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH, settings);
+			
 			Assert.assertNotNull(asset);
 		}
 		
@@ -91,17 +120,15 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function equals_compareTwoEqualAssets_ReturnsTrue(): void
 		{
-			var asset1:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			var asset2:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertTrue(asset1.equals(asset2));
+			var otherAsset:Asset = new Asset(_asset.id, _asset.src, _asset.type, _asset.priority);
+			Assert.assertTrue(_asset.equals(otherAsset));
 		}
 		
 		[Test]
 		public function equals_compareTwoDifferentAssets_ReturnsFalse(): void
 		{
-			var asset1:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			var asset2:Asset = new Asset("asset-2", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertFalse(asset1.equals(asset2));
+			var otherAsset:Asset = new Asset("other-asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			Assert.assertFalse(_asset.equals(otherAsset));
 		}
 		
 		//////////////////////
@@ -109,10 +136,9 @@ package org.vostokframework.assetmanagement
 		//////////////////////
 		
 		[Test]
-		public function id_instanciationWithId_checkIfIdMatches_ReturnsTrue(): void
+		public function id_checkIfIdMatches_ReturnsTrue(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertEquals("asset-1", asset.id);
+			Assert.assertEquals(ASSET_ID, _asset.id);
 		}
 		
 		////////////////////////////
@@ -120,10 +146,9 @@ package org.vostokframework.assetmanagement
 		///////////////////////////
 		
 		[Test]
-		public function priority_instanciationWithPriority_checkIfPriorityMatches_ReturnsTrue(): void
+		public function priority_checkIfPriorityMatches_ReturnsTrue(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertEquals(AssetLoadingPriority.HIGH, asset.priority);
+			Assert.assertEquals(ASSET_PRIORITY, _asset.priority);
 		}
 		
 		////////////////////////////
@@ -131,13 +156,9 @@ package org.vostokframework.assetmanagement
 		////////////////////////////
 		
 		[Test]
-		public function settings_instanciationWithSettings_checkIfSettingsMatches_ReturnsTrue(): void
+		public function settings_checkIfSettingsMatches_ReturnsTrue(): void
 		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings(5);
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
-			
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH, settings);
-			Assert.assertEquals(settings, asset.settings);
+			Assert.assertEquals(ASSET_SETTINGS, _asset.settings);
 		}
 		
 		///////////////////////
@@ -145,10 +166,9 @@ package org.vostokframework.assetmanagement
 		///////////////////////
 		
 		[Test]
-		public function src_instanciationWithSrc_checkIfSrcMatches_ReturnsTrue(): void
+		public function src_checkIfSrcMatches_ReturnsTrue(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertEquals("asset-path/asset.xml", asset.src);
+			Assert.assertEquals(ASSET_SRC, _asset.src);
 		}
 		
 		////////////////////////
@@ -156,10 +176,9 @@ package org.vostokframework.assetmanagement
 		////////////////////////
 		
 		[Test]
-		public function type_instanciationWithType_checkIfTypeMatches_ReturnsTrue(): void
+		public function type_checkIfTypeMatches_ReturnsTrue(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			Assert.assertEquals(AssetType.XML, asset.type);
+			Assert.assertEquals(ASSET_TYPE, _asset.type);
 		}
 		
 		/////////////////////////////////
@@ -169,17 +188,16 @@ package org.vostokframework.assetmanagement
 		[Test(expects="ArgumentError")]
 		public function setPriority_invalidArgument_ThrowsError(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			asset.setPriority(null);
+			_asset.setPriority(null);
 		}
 		
 		[Test]
 		public function setPriority_validArgument_checkIfPriorityMatches_ReturnsTrue(): void
 		{
-			var asset:Asset = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			asset.setPriority(AssetLoadingPriority.LOW);
+			var newPriority:AssetLoadingPriority = AssetLoadingPriority.LOW;
+			_asset.setPriority(newPriority);
 			
-			Assert.assertEquals(AssetLoadingPriority.LOW, asset.priority);
+			Assert.assertEquals(newPriority, _asset.priority);
 			//TODO: teste do evento disparado pela Asset
 		}
 		
