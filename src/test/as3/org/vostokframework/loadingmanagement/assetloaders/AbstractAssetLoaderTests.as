@@ -483,12 +483,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 		}
 		
 		[Test]
-		public function asdsadasd(): void
-		{
-			//_fileLoaderMockolate
-		}
-		
-		[Test]
 		public function stopAndLoad_CheckStatus_TRYING_TO_CONNECT(): void
 		{
 			_loader.stop();
