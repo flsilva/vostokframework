@@ -45,6 +45,20 @@ package org.vostokframework.assetmanagement
 			
 		}
 		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getFactory():AssetFactory
+		{
+			return new AssetFactory();
+		}
+		
+		private function getAssetPackage():AssetPackage
+		{
+			return new AssetPackage("package-id", "en-US");
+		}
+		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
@@ -105,9 +119,10 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
 		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings(5);
+			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
 			var factory:AssetFactory = new AssetFactory(settings);
+			
 			Assert.assertEquals(settings, factory.defaultSettings);
 		}
 		
@@ -121,7 +136,7 @@ package org.vostokframework.assetmanagement
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
 			var factory:AssetFactory = new AssetFactory(settings);
 			
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings(5);
+			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
 			var settings2:LoadingAssetSettings = new LoadingAssetSettings(policy);
 			factory.setDefaultSettings(settings2);
 			
@@ -135,28 +150,23 @@ package org.vostokframework.assetmanagement
 		[Test(expects="org.vostokframework.assetmanagement.errors.UnsupportedAssetTypeError")]
 		public function create_unsupportedAssetType_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
-			
-			var factory:AssetFactory = new AssetFactory();
-			var asset:Asset = factory.create("a.xyz", assetPackage);
+			var factory:AssetFactory = getFactory();
+			var asset:Asset = factory.create("a.xyz", getAssetPackage());
 			asset = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function create_invalidAssetPackageArgument_ThrowsError(): void
 		{
-			var factory:AssetFactory = new AssetFactory();
-			var asset:Asset = factory.create("a.aac", null);
-			asset = null;
+			var factory:AssetFactory = getFactory();
+			factory.create("a.aac", null);
 		}
 		
 		[Test]
 		public function create_validArguments_ReturnsValidObject(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
-			
-			var factory:AssetFactory = new AssetFactory();
-			var asset:Asset = factory.create("a.aac", assetPackage);
+			var factory:AssetFactory = getFactory();
+			var asset:Asset = factory.create("a.aac", getAssetPackage());
 			
 			Assert.assertNotNull(asset);
 		}
@@ -164,10 +174,8 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithoutAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
-			
-			var factory:AssetFactory = new AssetFactory();
-			var asset:Asset = factory.create("a.aac", assetPackage);
+			var factory:AssetFactory = getFactory();
+			var asset:Asset = factory.create("a.aac", getAssetPackage());
 			
 			Assert.assertEquals("a.aac-en-US", asset.id);
 		}
@@ -175,10 +183,8 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("package-id", "en-US");
-			
-			var factory:AssetFactory = new AssetFactory();
-			var asset:Asset = factory.create("a.aac", assetPackage, null, null, "asset-id");
+			var factory:AssetFactory = getFactory();
+			var asset:Asset = factory.create("a.aac", getAssetPackage(), null, null, "asset-id");
 			
 			Assert.assertEquals("asset-id-en-US", asset.id);
 		}
