@@ -44,6 +44,15 @@ package org.vostokframework.assetmanagement
 			
 		}
 		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getFactory():AssetPackageFactory
+		{
+			return new AssetPackageFactory();
+		}
+		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
@@ -62,15 +71,14 @@ package org.vostokframework.assetmanagement
 		[Test(expects="ArgumentError")]
 		public function create_invalidArguments_ThrowsError(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = factory.create(null);
-			assetPackage = null;
+			var factory:AssetPackageFactory = getFactory();
+			factory.create(null);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithoutLocale_ReturnsValidObject(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
+			var factory:AssetPackageFactory = getFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
 			Assert.assertNotNull(assetPackage);
 		}
@@ -78,7 +86,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithoutLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
+			var factory:AssetPackageFactory = getFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
 			Assert.assertEquals("package-id-" + LocaleUtil.CROSS_LOCALE, assetPackage.id);
 		}
@@ -86,7 +94,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
+			var factory:AssetPackageFactory = getFactory();
 			var assetPackage:AssetPackage = factory.create("package-id", "en-US");
 			Assert.assertEquals("package-id-en-US", assetPackage.id);
 		}
@@ -94,7 +102,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithoutLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
+			var factory:AssetPackageFactory = getFactory();
 			var assetPackage:AssetPackage = factory.create("package-id");
 			Assert.assertEquals(LocaleUtil.CROSS_LOCALE, assetPackage.locale);
 		}
@@ -102,7 +110,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function create_validArgumentsWithLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = new AssetPackageFactory();
+			var factory:AssetPackageFactory = getFactory();
 			var assetPackage:AssetPackage = factory.create("package-id", "en-US");
 			Assert.assertEquals("en-US", assetPackage.locale);
 		}
