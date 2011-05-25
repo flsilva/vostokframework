@@ -64,17 +64,6 @@ package org.vostokframework
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
 			_service = new AssetService();
-			
-			//var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			//var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1", ASSET_LOCALE);
-			
-			//var assetFactory:AssetFactory = new AssetFactory();
-			//var asset:Asset = assetFactory.create(ASSET_ID, assetPackage, ASSET_PRIORITY);
-			
-			//var composedId:String = 
-			//var asset:Asset = new Asset(ASSET_ID, "a.aac", AssetType.AAC, AssetLoadingPriority.MEDIUM);
-			
-			//AssetsContext.getInstance().assetRepository.add(asset);
 		}
 		
 		[After]
