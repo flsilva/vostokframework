@@ -102,7 +102,7 @@ package org.vostokframework.loadingmanagement
 		public function AssetLoaderQueueManager(assetLoaders:IList, concurrentConnections:int)
 		{
 			if (!assetLoaders || assetLoaders.isEmpty()) throw new ArgumentError("Argument <assetLoaders> must not be null nor empty.");
-			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero.");
+			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero. Received: <" + concurrentConnections + ">");
 			
 			_concurrentConnections = concurrentConnections;
 			_queuedLoaders = new PriorityQueue(assetLoaders.toArray());

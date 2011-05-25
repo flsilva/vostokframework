@@ -40,8 +40,6 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
-	import flash.utils.Timer;
-
 	/**
 	 * @author Flávio Silva
 	 */
@@ -54,7 +52,6 @@ package org.vostokframework.loadingmanagement
 		private var _assetLoader3:AssetLoader;
 		private var _assetLoader4:AssetLoader;
 		private var _loader:RequestLoader;
-		private var _timer:Timer;
 		
 		public function RequestLoaderTests()
 		{
@@ -68,8 +65,6 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_timer = new Timer(200, 1);
-			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var assetLoaders:IList = new ArrayList();
 			
@@ -91,22 +86,18 @@ package org.vostokframework.loadingmanagement
 		[After]
 		public function tearDown(): void
 		{
-			_timer.stop();
-			_timer = null;
 			_loader = null;
+			_assetLoader1 = null;
+			_assetLoader2 = null;
+			_assetLoader3 = null;
+			_assetLoader4 = null;
 		}
 		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
-		/*
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function constructor_invalidInstantiation1_ThrowsError(): void
-		{
-			var loader:AbstractAssetLoader = new AbstractAssetLoader(null, null);
-			loader = null;
-		}
-		*/
+		
+		
 		
 		////////////////////////////
 		// RequestLoader().status //
