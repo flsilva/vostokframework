@@ -125,9 +125,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			loader = null;
 		}
 		
-		//////////////////////////////////
-		// AbstractAssetLoader().status //
-		//////////////////////////////////
+		//////////////////////////
+		// AssetLoader().status //
+		//////////////////////////
 		
 		[Test]
 		public function status_freshObject_checkIfStatusIs_QUEUED_ReturnsTrue(): void
@@ -142,9 +142,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
-		////////////////////////////////////////////
-		// AbstractAssetLoader().historicalStatus //
-		////////////////////////////////////////////
+		////////////////////////////////////
+		// AssetLoader().historicalStatus //
+		////////////////////////////////////
 		
 		[Test]
 		public function historicalStatus_freshObject_checkIfFirstElementIs_QUEUED_ReturnsTrue(): void
@@ -159,9 +159,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.historicalStatus.getAt(1));
 		}
 		
-		//////////////////////////////////
-		// AbstractAssetLoader().cancel() //
-		//////////////////////////////////
+		////////////////////////////
+		// AssetLoader().cancel() //
+		////////////////////////////
 		
 		[Test]
 		public function cancel_checkIfStatusIs_CANCELED_ReturnsTrue(): void
@@ -186,9 +186,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			verify(_fileLoaderMockolate);
 		}
 		
-		//////////////////////////////////
-		// AbstractAssetLoader().stop() //
-		//////////////////////////////////
+		//////////////////////////
+		// AssetLoader().stop() //
+		//////////////////////////
 		
 		[Test]
 		public function stop_checkStatus_STOPPED(): void
@@ -205,9 +205,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(AssetLoaderStatus.STOPPED, _loader.status);
 		}
 		
-		////////////////////////////////////////////////////////////////
-		// AbstractAssetLoader().stop()-load()-cancel() - MIXED TESTS //
-		////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////
+		// AssetLoader().stop()-load()-cancel() - MIXED TESTS //
+		////////////////////////////////////////////////////////
 		
 		[Test]
 		public function loadAndStop_CheckStatus_STOPPED(): void
