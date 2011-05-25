@@ -121,7 +121,8 @@ package org.vostokframework
 				
 				var message:String = "There is already an Asset object stored with id:\n";
 				message += "<" + error.assetId + ">\n";
-				message += "It belongs to the AssetPackage <" + $assetPackage.id + ">\n";
+				message += "It belongs to the AssetPackage:\n";
+				message += "<" + $assetPackage + ">\n";
 				message += "Use the method <AssetService().assetExists()> to check if an Asset object already exists.\n";
 				message += "In addition, make sure you have provided the correct <assetId>, <src> and <AssetPackage> arguments:\n";
 				message += "Provided <assetId>:\n";
