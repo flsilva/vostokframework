@@ -106,7 +106,7 @@ package org.vostokframework.assetmanagement
 			var it:IIterator = assets.iterator();
 			while (it.hasNext())
 			{
-				if (!it.next()) throw new ArgumentError("Argument <assets> must not contain any null element. A null element was found at index " + it.pointer());
+				if (!it.next()) throw new ArgumentError("Argument <assets> must not contain any null element. A null element was found at index <" + it.pointer() + ">");
 			}
 			
 			return _assets.addAll(assets);

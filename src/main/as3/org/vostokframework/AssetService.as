@@ -119,15 +119,19 @@ package org.vostokframework
 			{
 				var $assetPackage:AssetPackage = _context.assetPackageRepository.findAssetPackageByAssetId(error.assetId);
 				
-				var message:String = error.message;
-				message += "\n";
+				var message:String = "There is already an Asset object stored with id:\n";
+				message += "<" + error.assetId + ">\n";
 				message += "It belongs to the AssetPackage <" + $assetPackage.id + ">\n";
 				message += "Use the method <AssetService().assetExists()> to check if an Asset object already exists.\n";
 				message += "In addition, make sure you have provided the correct <assetId>, <src> and <AssetPackage> arguments:\n";
-				message += "Provided <assetId>: " + assetId + "\n";
-				message += "Provided <src>: " + src + "\n";
-				message += "Provided <AssetPackage>: " + assetPackage + "\n";
-				message += "Final composed Asset id: " + error.assetId + "\n";
+				message += "Provided <assetId>:\n";
+				message += "<" + assetId + ">\n";
+				message += "Provided <src>:\n";
+				message += "<" + src + ">\n";
+				message += "Provided <AssetPackage>:\n";
+				message += "<" + assetPackage + ">\n";
+				message += "Final composed Asset id:\n <" + error.assetId + ">\n";
+				message += "<" + error.assetId + ">\n";
 				message += "For further information please read the documentation section about the Asset object.";
 				
 				throw new DuplicateAssetError(error.assetId, message);

@@ -133,8 +133,6 @@ package org.vostokframework
 		[Test]
 		public function assetExists_addedAssetWithoutLocale_ReturnsTrue(): void
 		{
-			//testing asset without sending locale
-			
 			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			
 			var exists:Boolean = _service.assetExists(ASSET_ID);
@@ -178,22 +176,34 @@ package org.vostokframework
 		////////////////////////////////////////
 		
 		[Test]
-		public function createAsset_validArguments_ReturnsAsset(): void
+		public function createAsset_srcWithExtension_ReturnsValidObject(): void
 		{
 			var asset:Asset = _service.createAsset("a.aac", getAssetPackage());
 			Assert.assertNotNull(asset);
 		}
 		
 		[Test]
-		public function createAsset_validArguments_checkIfAssetRepositoryContainsTheObject_ReturnsTrue(): void
+		public function createAsset_srcWithExtension_checkIfAssetRepositoryContainsTheObject_ReturnsTrue(): void
 		{
-			var asset:Asset = _service.createAsset("a.aac", getAssetPackage());
+			var asset:Asset = _service.createAsset("http://domain.com/a.aac", getAssetPackage());
 			
 			var exists:Boolean = AssetsContext.getInstance().assetRepository.exists(asset.id);
 			Assert.assertTrue(exists);
 		}
-		//TODO:src sem extensao parseável sem enviar type: esperar erro.
-		//TODO:src sem extensao parseável mas enviando type: receber asset corretamente.
+		
+		[Test(expects="org.vostokframework.assetmanagement.errors.UnsupportedAssetTypeError")]
+		public function createAsset_srcWithoutExtensionAndWithoutSendType_ThrowsError(): void
+		{
+			_service.createAsset("http://domain.com/dynamic-asset", getAssetPackage());
+		}
+		
+		[Test]
+		public function createAsset_srcWithoutExtensionAndSendType_ReturnsValidObject(): void
+		{
+			var asset:Asset = _service.createAsset("http://domain.com/dynamic-asset", getAssetPackage(), null, null, null, AssetType.SWF);
+			Assert.assertNotNull(asset);
+		}
+		
 		/////////////////////////////////////////
 		// AssetService().getAllAssets() TESTS //
 		/////////////////////////////////////////

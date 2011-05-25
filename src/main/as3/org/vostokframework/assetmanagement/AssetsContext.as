@@ -110,6 +110,7 @@ package org.vostokframework.assetmanagement
 		public function setAssetFactory(factory:AssetFactory): void
 		{
 			_assetFactory = factory;
+			//TODO:validar null
 		}
 
 		/**
@@ -120,6 +121,7 @@ package org.vostokframework.assetmanagement
 		public function setAssetPackageFactory(factory:AssetPackageFactory): void
 		{
 			_assetPackageFactory = factory;
+			//TODO:validar null
 		}
 
 		/**
@@ -130,6 +132,7 @@ package org.vostokframework.assetmanagement
 		public function setAssetPackageRepository(repository:AssetPackageRepository): void
 		{
 			_assetPackageRepository = repository;
+			//TODO:validar null
 		}
 
 		/**
@@ -140,6 +143,7 @@ package org.vostokframework.assetmanagement
 		public function setAssetRepository(repository:AssetRepository): void
 		{
 			_assetRepository = repository;
+			//TODO:validar null
 		}
 
 	}

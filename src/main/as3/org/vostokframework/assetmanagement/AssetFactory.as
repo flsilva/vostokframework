@@ -101,10 +101,10 @@ package org.vostokframework.assetmanagement
 			
 			if (!type)
 			{
-				var message:String = "It was not possible to get the correct asset type over the <url> argument or the type is not supported for the <url> argument:\n";
-				message += src + "\n";
-				message += "Provided id: " + id + "\n";
-				message += "Final composed id: " + composedId + "\n";
+				var message:String = "It was not possible to get the correct asset type over the provided <url> argument OR the provided <url> argument contains an extension that is not supported.\n";
+				message += "Provided src: <" + src + ">\n";
+				message += "Provided id: <" + id + ">\n";
+				message += "Final composed id: <" + composedId + ">\n";
 				message += "For further information please read the documentation section about the supported Asset types.";
 				
 				throw new UnsupportedAssetTypeError(composedId, message);

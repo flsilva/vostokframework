@@ -69,7 +69,7 @@ package org.vostokframework.assetmanagement
 			
 			if (_assetPackageMap.containsKey(assetPackage.id))
 			{
-				var message:String = "There is already an AssetPackage object stored with id:\n";
+				var message:String = "There is already an AssetPackage object stored with id ";
 				message += "<" + assetPackage.id + ">\n";
 				message += "Use the method <AssetPackageRepository().exists()> to check if an AssetPackage object already exists.\n";
 				message += "For further information please read the documentation section about the AssetPackage object.";
