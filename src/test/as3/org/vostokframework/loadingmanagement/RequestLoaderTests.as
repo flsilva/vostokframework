@@ -342,7 +342,7 @@ package org.vostokframework.loadingmanagement
 		[Test(expects="org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError")]
 		public function stopAssetLoader_idNotAdded_ThrowsError(): void
 		{
-			_loader.stopAssetLoader("asset-loader-89745389543");
+			_loader.stopAssetLoader("any-not-added-id");
 		}
 		
 		[Test]
