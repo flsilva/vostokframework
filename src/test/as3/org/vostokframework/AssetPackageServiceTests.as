@@ -59,13 +59,6 @@ package org.vostokframework
 		[Before]
 		public function setUp(): void
 		{
-			/*AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
-			
-			var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = assetPackageFactory.create(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
-			
-			AssetsContext.getInstance().assetPackageRepository.add(assetPackage);*/
-			
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
 			_service = new AssetPackageService();
