@@ -71,6 +71,27 @@ package org.vostokframework.assetmanagement
 		}
 		
 		//////////////////////////////////////////
+		// AssetFactory().defaultSettings TESTS //
+		//////////////////////////////////////////
+		
+		[Test]
+		public function defaultSettings_instanciateWithoutArgument_ReturnsValidObject(): void
+		{
+			var factory:AssetFactory = new AssetFactory();
+			Assert.assertNotNull(factory.defaultSettings);
+		}
+		
+		[Test]
+		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
+		{
+			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
+			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
+			var factory:AssetFactory = new AssetFactory(settings);
+			
+			Assert.assertEquals(settings, factory.defaultSettings);
+		}
+		
+		//////////////////////////////////////////
 		// AssetFactory().defaultPriority TESTS //
 		//////////////////////////////////////////
 		
@@ -105,27 +126,6 @@ package org.vostokframework.assetmanagement
 			Assert.assertEquals(priority2, factory.defaultPriority);
 		}
 		
-		//////////////////////////////////////////
-		// AssetFactory().defaultSettings TESTS //
-		//////////////////////////////////////////
-		
-		[Test]
-		public function defaultSettings_instanciateWithoutArgument_ReturnsValidObject(): void
-		{
-			var factory:AssetFactory = new AssetFactory();
-			Assert.assertNotNull(factory.defaultSettings);
-		}
-		
-		[Test]
-		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
-		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
-			var factory:AssetFactory = new AssetFactory(settings);
-			
-			Assert.assertEquals(settings, factory.defaultSettings);
-		}
-		
 		///////////////////////////////////////////////
 		// AssetFactory().setDefaultSettings() TESTS //
 		///////////////////////////////////////////////
@@ -151,8 +151,7 @@ package org.vostokframework.assetmanagement
 		public function create_unsupportedAssetType_ThrowsError(): void
 		{
 			var factory:AssetFactory = getFactory();
-			var asset:Asset = factory.create("a.xyz", getAssetPackage());
-			asset = null;
+			factory.create("a.xyz", getAssetPackage());
 		}
 		
 		[Test(expects="ArgumentError")]
@@ -167,7 +166,6 @@ package org.vostokframework.assetmanagement
 		{
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage());
-			
 			Assert.assertNotNull(asset);
 		}
 		
@@ -176,7 +174,6 @@ package org.vostokframework.assetmanagement
 		{
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage());
-			
 			Assert.assertEquals("a.aac-en-US", asset.id);
 		}
 		
@@ -185,7 +182,6 @@ package org.vostokframework.assetmanagement
 		{
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage(), null, null, "asset-id");
-			
 			Assert.assertEquals("asset-id-en-US", asset.id);
 		}
 		
