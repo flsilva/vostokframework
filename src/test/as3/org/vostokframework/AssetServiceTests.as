@@ -32,11 +32,10 @@ package org.vostokframework
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.assetmanagement.Asset;
-	import org.vostokframework.assetmanagement.AssetFactory;
 	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.AssetPackage;
-	import org.vostokframework.assetmanagement.AssetPackageFactory;
 	import org.vostokframework.assetmanagement.AssetRepository;
+	import org.vostokframework.assetmanagement.AssetType;
 	import org.vostokframework.assetmanagement.AssetsContext;
 	import org.vostokframework.assetmanagement.utils.LocaleUtil;
 
@@ -45,9 +44,10 @@ package org.vostokframework
 	 */
 	public class AssetServiceTests
 	{
-		private static const ASSET_ID:String = "a.aac";
+		private static const ASSET_ID:String = "asset-id";
 		private static const ASSET_LOCALE:String = "en-US";
-		private static const ASSET_PRIORITY:AssetLoadingPriority = AssetLoadingPriority.LOW;
+		
+		private var _service:AssetService;
 		
 		public function AssetServiceTests()
 		{
@@ -59,17 +59,49 @@ package org.vostokframework
 		/////////////////////////
 		
 		[Before]
-		public function startup(): void
+		public function setUp(): void
 		{
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1", ASSET_LOCALE);
+			_service = new AssetService();
 			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create(ASSET_ID, assetPackage, ASSET_PRIORITY);
+			//var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
+			//var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1", ASSET_LOCALE);
 			
-			AssetsContext.getInstance().assetRepository.add(asset);
+			//var assetFactory:AssetFactory = new AssetFactory();
+			//var asset:Asset = assetFactory.create(ASSET_ID, assetPackage, ASSET_PRIORITY);
+			
+			//var composedId:String = 
+			//var asset:Asset = new Asset(ASSET_ID, "a.aac", AssetType.AAC, AssetLoadingPriority.MEDIUM);
+			
+			//AssetsContext.getInstance().assetRepository.add(asset);
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			_service = null;
+		}
+		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getAssetWithLocale():Asset
+		{
+			var composedId:String = LocaleUtil.composeId(ASSET_ID, ASSET_LOCALE);
+			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+		}
+		
+		private function getAssetWithoutLocale():Asset
+		{
+			var composedId:String = LocaleUtil.composeId(ASSET_ID);
+			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+		}
+		
+		private function getAssetPackage():AssetPackage
+		{
+			return new AssetPackage("asset-package-1", ASSET_LOCALE);
 		}
 		
 		///////////////////////
@@ -90,23 +122,22 @@ package org.vostokframework
 		[Test(expects="ArgumentError")]
 		public function assetExists_invalidAssetId_ReturnsFalse(): void
 		{
-			var service:AssetService = new AssetService();
-			service.assetExists(null);
+			_service.assetExists(null);
 		}
 		
 		[Test]
 		public function assetExists_notAddedAsset_ReturnsFalse(): void
 		{
-			var service:AssetService = new AssetService();
-			var exists:Boolean = service.assetExists("any-not-added-id");
+			var exists:Boolean = _service.assetExists("any-not-added-id");
 			Assert.assertFalse(exists);
 		}
 		
 		[Test]
 		public function assetExists_addedAssetWithLocale_ReturnsTrue(): void
 		{
-			var service:AssetService = new AssetService();
-			var exists:Boolean = service.assetExists(ASSET_ID, ASSET_LOCALE);
+			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
+			
+			var exists:Boolean = _service.assetExists(ASSET_ID, ASSET_LOCALE);
 			Assert.assertTrue(exists);
 		}
 		
@@ -115,16 +146,9 @@ package org.vostokframework
 		{
 			//testing asset without sending locale
 			
-			var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1");
+			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			AssetsContext.getInstance().assetRepository.add(asset);
-			
-			var service:AssetService = new AssetService();
-			var exists:Boolean = service.assetExists("a.aac");
+			var exists:Boolean = _service.assetExists(ASSET_ID);
 			Assert.assertTrue(exists);
 		}
 		
@@ -135,32 +159,28 @@ package org.vostokframework
 		[Test(expects="ArgumentError")]
 		public function changeAssetPriority_invalidAssetId_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.changeAssetPriority(null, AssetLoadingPriority.HIGH);
+			_service.changeAssetPriority(null, AssetLoadingPriority.HIGH);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function changeAssetPriority_invalidAssetPriority_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.changeAssetPriority("any-not-added-id", null);
+			_service.changeAssetPriority("any-not-added-id", null);
 		}
 		
 		[Test(expects="org.vostokframework.assetmanagement.errors.AssetNotFoundError")]
 		public function changeAssetPriority_notAddedAsset_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.changeAssetPriority("any-not-added-id", AssetLoadingPriority.HIGH);
+			_service.changeAssetPriority("any-not-added-id", AssetLoadingPriority.HIGH);
 		}
 		
 		[Test]
 		public function changeAssetPriority_addedAsset_checkIfPriorityMatches_ReturnsTrue(): void
 		{
-			var service:AssetService = new AssetService();
-			service.changeAssetPriority(ASSET_ID, AssetLoadingPriority.HIGH, ASSET_LOCALE);
+			var asset:Asset = getAssetWithLocale();
+			AssetsContext.getInstance().assetRepository.add(asset);
 			
-			var asset:Asset = AssetsContext.getInstance().assetRepository.find(LocaleUtil.composeId(ASSET_ID, ASSET_LOCALE));
-			
+			_service.changeAssetPriority(ASSET_ID, AssetLoadingPriority.HIGH, ASSET_LOCALE);
 			Assert.assertEquals(AssetLoadingPriority.HIGH, asset.priority);
 		}
 		
@@ -171,28 +191,20 @@ package org.vostokframework
 		[Test]
 		public function createAsset_validArguments_ReturnsAsset(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
-			
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			
-			var service:AssetService = new AssetService();
-			var asset:Asset = service.createAsset("a.aac", assetPackage);
+			var asset:Asset = _service.createAsset("a.aac", getAssetPackage());
 			Assert.assertNotNull(asset);
 		}
 		
 		[Test]
 		public function createAsset_validArguments_checkIfAssetRepositoryContainsTheObject_ReturnsTrue(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
+			var asset:Asset = _service.createAsset("a.aac", getAssetPackage());
 			
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			
-			var service:AssetService = new AssetService();
-			service.createAsset("a.aac", assetPackage);
-			
-			Assert.assertTrue(AssetsContext.getInstance().assetRepository.exists(LocaleUtil.composeId("a.aac", "en-US")));
+			var exists:Boolean = AssetsContext.getInstance().assetRepository.exists(asset.id);
+			Assert.assertTrue(exists);
 		}
-		
+		//TODO:src sem extensao parseável sem enviar type: esperar erro.
+		//TODO:src sem extensao parseável mas enviando type: receber asset corretamente.
 		/////////////////////////////////////////
 		// AssetService().getAllAssets() TESTS //
 		/////////////////////////////////////////
@@ -200,20 +212,16 @@ package org.vostokframework
 		[Test]
 		public function getAllAssets_emptyAssetRepository_ReturnsNull(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
-			
-			var service:AssetService = new AssetService();
-			var list:IList = service.getAllAssets();
-			
+			var list:IList = _service.getAllAssets();
 			Assert.assertNull(list);
 		}
 		
 		[Test]
 		public function getAllAssets_notEmptyAssetRepository_ReturnsIList(): void
 		{
-			var service:AssetService = new AssetService();
-			var list:IList = service.getAllAssets();
+			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
+			var list:IList = _service.getAllAssets();
 			Assert.assertNotNull(list);
 		}
 		
@@ -224,23 +232,21 @@ package org.vostokframework
 		[Test(expects="ArgumentError")]
 		public function getAsset_invalidAssetId_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.getAsset(null);
+			_service.getAsset(null);
 		}
 		
 		[Test(expects="org.vostokframework.assetmanagement.errors.AssetNotFoundError")]
 		public function getAsset_notAddedAsset_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.getAsset("any-not-added-id");
+			_service.getAsset("any-not-added-id");
 		}
 		
 		[Test]
 		public function getAsset_addedAssetWithLocale_ReturnsAsset(): void
 		{
-			var service:AssetService = new AssetService();
-			var asset:Asset = service.getAsset(ASSET_ID, ASSET_LOCALE);
+			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
+			var asset:Asset = _service.getAsset(ASSET_ID, ASSET_LOCALE);
 			Assert.assertNotNull(asset);
 		}
 		
@@ -249,19 +255,9 @@ package org.vostokframework
 		{
 			//testing asset without locale
 			
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
+			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			
-			var assetPackageFactory:AssetPackageFactory = new AssetPackageFactory();
-			var assetPackage:AssetPackage = assetPackageFactory.create("asset-package-1");
-			
-			var assetFactory:AssetFactory = new AssetFactory();
-			var asset:Asset = assetFactory.create("a.aac", assetPackage);
-			
-			AssetsContext.getInstance().assetRepository.add(asset);
-			
-			var service:AssetService = new AssetService();
-			asset = service.getAsset("a.aac");
-			
+			var asset:Asset = _service.getAsset(ASSET_ID);
 			Assert.assertNotNull(asset);
 		}
 		
@@ -272,21 +268,20 @@ package org.vostokframework
 		[Test]
 		public function removeAllAssets_emptyAssetRepository_Void(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
+			_service.removeAllAssets();
 			
-			var service:AssetService = new AssetService();
-			service.removeAllAssets();
-			
-			Assert.assertTrue(AssetsContext.getInstance().assetRepository.isEmpty());
+			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
+			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function removeAllAssets_notEmptyAssetRepository_checkIfAssetRepositoryIsEmpty_ReturnsTrue(): void
 		{
-			var service:AssetService = new AssetService();
-			service.removeAllAssets();
+			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
+			_service.removeAllAssets();
 			
-			Assert.assertTrue(AssetsContext.getInstance().assetRepository.isEmpty());
+			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
+			Assert.assertTrue(empty);
 		}
 		
 		////////////////////////////////////////
@@ -296,25 +291,22 @@ package org.vostokframework
 		[Test(expects="ArgumentError")]
 		public function removeAsset_invalidAssetId_ThrowsError(): void
 		{
-			var service:AssetService = new AssetService();
-			service.removeAsset(null);
+			_service.removeAsset(null);
 		}
 		
 		[Test]
 		public function removeAsset_notAddedAsset_ReturnsFalse(): void
 		{
-			var service:AssetService = new AssetService();
-			var removed:Boolean = service.removeAsset("any-not-added-id");
-			
+			var removed:Boolean = _service.removeAsset("any-not-added-id");
 			Assert.assertFalse(removed);
 		}
 		
 		[Test]
 		public function removeAsset_addedAsset_ReturnsTrue(): void
 		{
-			var service:AssetService = new AssetService();
-			var removed:Boolean = service.removeAsset(ASSET_ID, ASSET_LOCALE);
+			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
+			var removed:Boolean = _service.removeAsset(ASSET_ID, ASSET_LOCALE);
 			Assert.assertTrue(removed);
 		}
 		
