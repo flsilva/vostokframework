@@ -130,7 +130,7 @@ package org.vostokframework
 				message += "<" + src + ">\n";
 				message += "Provided <AssetPackage>:\n";
 				message += "<" + assetPackage + ">\n";
-				message += "Final composed Asset id:\n <" + error.assetId + ">\n";
+				message += "Final composed Asset id:\n";
 				message += "<" + error.assetId + ">\n";
 				message += "For further information please read the documentation section about the Asset object.";
 				
