@@ -38,19 +38,27 @@ package org.vostokframework.assetmanagement
 	[TestCase(order=4)]
 	public class AssetPackageFactoryTests
 	{
+		private var _factory:AssetPackageFactory;
 		
 		public function AssetPackageFactoryTests()
 		{
 			
 		}
 		
-		////////////////////
-		// HELPER METHODS //
-		////////////////////
+		/////////////////////////
+		// TESTS CONFIGURATION //
+		/////////////////////////
 		
-		private function getFactory():AssetPackageFactory
+		[Before]
+		public function setUp(): void
 		{
-			return new AssetPackageFactory();
+			_factory = new AssetPackageFactory();
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			_factory = null;
 		}
 		
 		///////////////////////
@@ -71,47 +79,43 @@ package org.vostokframework.assetmanagement
 		[Test(expects="ArgumentError")]
 		public function create_invalidArguments_ThrowsError(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			factory.create(null);
+			_factory.create(null);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithoutLocale_ReturnsValidObject(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			var assetPackage:AssetPackage = factory.create("package-id");
+			var assetPackage:AssetPackage = _factory.create("package-id");
 			Assert.assertNotNull(assetPackage);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithoutLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			var assetPackage:AssetPackage = factory.create("package-id");
-			Assert.assertEquals("package-id-" + LocaleUtil.CROSS_LOCALE, assetPackage.id);
+			var assetPackage:AssetPackage = _factory.create("package-id");
+			
+			var composedId:String = "package-id-" + LocaleUtil.CROSS_LOCALE;
+			Assert.assertEquals(composedId, assetPackage.id);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			var assetPackage:AssetPackage = factory.create("package-id", "en-US");
+			var assetPackage:AssetPackage = _factory.create("package-id", "en-US");
 			Assert.assertEquals("package-id-en-US", assetPackage.id);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithoutLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			var assetPackage:AssetPackage = factory.create("package-id");
+			var assetPackage:AssetPackage = _factory.create("package-id");
 			Assert.assertEquals(LocaleUtil.CROSS_LOCALE, assetPackage.locale);
 		}
 		
 		[Test]
 		public function create_validArgumentsWithLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
 		{
-			var factory:AssetPackageFactory = getFactory();
-			var assetPackage:AssetPackage = factory.create("package-id", "en-US");
+			var assetPackage:AssetPackage = _factory.create("package-id", "en-US");
 			Assert.assertEquals("en-US", assetPackage.locale);
 		}
 		
