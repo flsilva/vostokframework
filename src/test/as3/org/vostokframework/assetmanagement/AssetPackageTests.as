@@ -39,9 +39,10 @@ package org.vostokframework.assetmanagement
 	[TestCase(order=2)]
 	public class AssetPackageTests
 	{
+		private static const ASSET_PACKAGE_ID:String = "asset-package-id";
+		private static const ASSET_PACKAGE_LOCALE:String = "en-US";
+		
 		private var _assetPackage:AssetPackage;
-		private var _asset1:Asset;
-		private var _asset2:Asset;
 		
 		public function AssetPackageTests()
 		{
@@ -55,18 +56,27 @@ package org.vostokframework.assetmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_assetPackage = new AssetPackage("asset-package-1", "en-US");
-			
-			_asset1 = new Asset("asset-1", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
-			_asset2 = new Asset("asset-2", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			_assetPackage = new AssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
 			_assetPackage = null;
-			_asset1 = null;
-			_asset2 = null;
+		}
+		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getAssetA():Asset
+		{
+			return new Asset("asset-A", "asset-path/asset-A.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+		}
+		
+		private function getAssetB():Asset
+		{
+			return new Asset("asset-B", "asset-path/asset-B.xml", AssetType.XML, AssetLoadingPriority.HIGH);
 		}
 		
 		///////////////////////
@@ -76,15 +86,13 @@ package org.vostokframework.assetmanagement
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidId_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage(null, null);
-			assetPackage = null;
+			new AssetPackage(null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidLocale_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", null);
-			assetPackage = null;
+			new AssetPackage("asset-package-1", null);
 		}
 		
 		[Test]
@@ -99,10 +107,9 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////
 		
 		[Test]
-		public function id_instanciationWithId_checkIfIdMatches_ReturnsTrue(): void
+		public function id_checkIfIdMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			Assert.assertEquals("asset-package-1", assetPackage.id);
+			Assert.assertEquals(ASSET_PACKAGE_ID, _assetPackage.id);
 		}
 		
 		/////////////////////////////////
@@ -110,10 +117,9 @@ package org.vostokframework.assetmanagement
 		/////////////////////////////////
 		
 		[Test]
-		public function locale_instanciationWithLocale_checkIfLocaleMatches_ReturnsTrue(): void
+		public function locale_checkIfLocaleMatches_ReturnsTrue(): void
 		{
-			var assetPackage:AssetPackage = new AssetPackage("asset-package-1", "en-US");
-			Assert.assertEquals("en-US", assetPackage.locale);
+			Assert.assertEquals(ASSET_PACKAGE_LOCALE, _assetPackage.locale);
 		}
 		
 		/////////////////////////////////////
@@ -123,15 +129,15 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function addAsset_validArgument_ReturnsTrue(): void
 		{
-			var added:Boolean = _assetPackage.addAsset(_asset1);
+			var added:Boolean = _assetPackage.addAsset(getAssetA());
 			Assert.assertTrue(added);
 		}
 		
 		[Test]
 		public function addAsset_dupplicatedAsset_ReturnsFalse(): void
 		{
-			_assetPackage.addAsset(_asset1);
-			var added:Boolean = _assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
+			var added:Boolean = _assetPackage.addAsset(getAssetA());
 			
 			Assert.assertFalse(added);
 		}
@@ -150,26 +156,24 @@ package org.vostokframework.assetmanagement
 		public function addAssets_validArgument_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			
 			var added:Boolean = _assetPackage.addAssets(list);
-			
 			Assert.assertTrue(added);
 		}
 		
 		[Test]
 		public function addAssets_dupplicatedAssets_ReturnsFalse(): void
 		{
-			_assetPackage.addAsset(_asset1);
-			_assetPackage.addAsset(_asset2);
+			_assetPackage.addAsset(getAssetA());
+			_assetPackage.addAsset(getAssetB());
 			
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			
 			var added:Boolean = _assetPackage.addAssets(list);
-			
 			Assert.assertFalse(added);
 		}
 		
@@ -177,8 +181,8 @@ package org.vostokframework.assetmanagement
 		public function addAssets_invalidArgument_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			list.add(null);
 			
 			_assetPackage.addAssets(list);
@@ -198,7 +202,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function clear_notEmptyAssetPackage_checkIfSizeIsZero_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			_assetPackage.clear();
 			
 			var size:int = _assetPackage.size();
@@ -208,7 +212,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function clear_notEmptyAssetPackage_checkIfIsEmpty_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			_assetPackage.clear();
 			
 			var empty:Boolean = _assetPackage.isEmpty();
@@ -222,16 +226,17 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function containsAsset_addedAsset_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			var asset:Asset = getAssetA();
+			_assetPackage.addAsset(asset);
 			
-			var contains:Boolean = _assetPackage.containsAsset(_asset1.id);
+			var contains:Boolean = _assetPackage.containsAsset(asset.id);
 			Assert.assertTrue(contains);
 		}
 		
 		[Test]
 		public function containsAsset_notAddedAsset_ReturnsFalse(): void
 		{
-			var contains:Boolean = _assetPackage.containsAsset(_asset1.id);
+			var contains:Boolean = _assetPackage.containsAsset("any-not-added-id");
 			Assert.assertFalse(contains);
 		}
 		
@@ -242,9 +247,10 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function getAsset_addedAsset_ReturnsValidObject(): void
 		{
-			_assetPackage.addAsset(_asset1);
-			var asset:Asset = _assetPackage.getAsset(_asset1.id);
+			var asset:Asset = getAssetA();
+			_assetPackage.addAsset(asset);
 			
+			asset = _assetPackage.getAsset(asset.id);
 			Assert.assertNotNull(asset);
 		}
 		
@@ -269,7 +275,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function getAssets_notEmptyAssetPackage_ReturnsIList(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var list:IList = _assetPackage.getAssets();
 			Assert.assertNotNull(list);
@@ -289,7 +295,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function isEmpty_notEmptyAssetPackage_ReturnsFalse(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var empty:Boolean = _assetPackage.isEmpty();
 			Assert.assertFalse(empty);
@@ -309,7 +315,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAsset_notEmptyAssetPackage_notAddedAsset_ReturnsFalse(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var removed:Boolean = _assetPackage.removeAsset("any-id-not-added");
 			Assert.assertFalse(removed);
@@ -318,9 +324,10 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAsset_notEmptyAssetPackage_addedAsset_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			var asset:Asset = getAssetA();
+			_assetPackage.addAsset(asset);
 			
-			var removed:Boolean = _assetPackage.removeAsset(_asset1.id);
+			var removed:Boolean = _assetPackage.removeAsset(asset.id);
 			Assert.assertTrue(removed);
 		}
 		
@@ -332,7 +339,7 @@ package org.vostokframework.assetmanagement
 		public function removeAssets_emptyAssetPackage_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
-			list.add(_asset1);
+			list.add(getAssetA());
 			
 			var removed:Boolean = _assetPackage.removeAssets(list);
 			Assert.assertFalse(removed);
@@ -341,10 +348,10 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAssets_notEmptyAssetPackage_notAddedAssets_ReturnsFalse(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var list:IList = new ArrayList();
-			list.add(_asset2);
+			list.add(getAssetB());
 			
 			var removed:Boolean = _assetPackage.removeAssets(list);
 			Assert.assertFalse(removed);
@@ -353,11 +360,11 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAssets_notEmptyAssetPackage_addedAssets_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			
 			var removed:Boolean = _assetPackage.removeAssets(list);
 			Assert.assertTrue(removed);
@@ -366,11 +373,11 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAssets_notEmptyAssetPackage_addedAssets_checkIfIsEmpty_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			
 			_assetPackage.removeAssets(list);
 			
@@ -381,11 +388,11 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function removeAssets_notEmptyAssetPackage_addedAssets_checkIfSizeIsZero_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var list:IList = new ArrayList();
-			list.add(_asset1);
-			list.add(_asset2);
+			list.add(getAssetA());
+			list.add(getAssetB());
 			
 			_assetPackage.removeAssets(list);
 			
@@ -407,7 +414,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function size_oneAssetAdded_checkIfSizeIsOne_ReturnsTrue(): void
 		{
-			_assetPackage.addAsset(_asset1);
+			_assetPackage.addAsset(getAssetA());
 			
 			var size:int = _assetPackage.size();
 			Assert.assertEquals(1, size);
