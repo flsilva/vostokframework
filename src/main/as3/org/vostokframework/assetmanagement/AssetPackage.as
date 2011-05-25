@@ -249,7 +249,7 @@ package org.vostokframework.assetmanagement
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + " id<" + id + "> locale<" + locale + ">]";
+			return "[" + ReflectionUtil.getClassName(this) + " id <" + id + "> locale <" + locale + ">]";
 		}
 
 	}

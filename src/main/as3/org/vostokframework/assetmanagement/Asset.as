@@ -138,7 +138,7 @@ package org.vostokframework.assetmanagement
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + " id<" + id + ">]";
+			return "[" + ReflectionUtil.getClassName(this) + " id <" + id + ">]";
 		}
 
 	}
