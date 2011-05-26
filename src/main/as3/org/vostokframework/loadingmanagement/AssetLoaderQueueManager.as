@@ -149,7 +149,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllCanceled(): void
 		{
-			
+			//TODO
 		}
 
 		/**
@@ -157,7 +157,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllFailed(): void
 		{
-			
+			//TODO
 		}
 
 		/**
@@ -165,7 +165,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllLoaded(): void
 		{
-			
+			//TODO
 		}
 
 		/**
@@ -173,7 +173,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllLoading(): void
 		{
-			
+			//TODO
 		}
 
 		/**
@@ -181,7 +181,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllQueued(): void
 		{
-			
+			//TODO
 		}
 
 		/**
@@ -189,7 +189,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function getAllStopped(): void
 		{
-			
+			//TODO
 		}
 
 		/**
