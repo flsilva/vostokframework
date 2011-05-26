@@ -81,6 +81,9 @@ package org.vostokframework.loadingmanagement.monitors
 		public function tearDown(): void
 		{
 			_monitor = null;
+			_stubAssetLoadingMonitor1 = null;
+			_stubAssetLoadingMonitor2 = null;
+			_stubAssetLoadingMonitor3 = null;
 		}
 		
 		////////////////////
@@ -90,6 +93,11 @@ package org.vostokframework.loadingmanagement.monitors
 		private function getAssetLoadingMonitor(id:String):StubAssetLoadingMonitor
 		{
 			return new StubAssetLoadingMonitor(id);
+		}
+		
+		private function createAssetLoadingMonitorEvent(type:String, stub:StubAssetLoadingMonitor):AssetLoadingMonitorEvent
+		{
+			return new AssetLoadingMonitorEvent(type, stub.assetId, AssetType.XML, stub.monitoring);
 		}
 		
 		///////////////////////
@@ -122,60 +130,138 @@ package org.vostokframework.loadingmanagement.monitors
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
 		{
 			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(new AssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3.assetId, AssetType.XML, _stubAssetLoadingMonitor3.monitoring), 50);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
-		/*
+		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfAssetIdOfEventMatches(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
+			_monitor.addEventListener(RequestLoadingMonitorEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
-														{propertyName:"assetId", propertyValue:ASSET_ID},
+														{propertyName:"requestId", propertyValue:REQUEST_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
+			_monitor.addEventListener(RequestLoadingMonitorEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 200,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
-		public function addEventListener_stubDispatchesInitEvent_mustCatchStubEventAndDispatchOwnInitEvent(): void
+		public function addEventListener_stubDispatchesOpenEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesInitEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
 		{
 			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 200, asyncTimeoutHandler);
-			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 50);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.INIT, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
-		public function addEventListener_stubDispatchesProgressEvent_mustCatchStubEventAndDispatchOwnProgressEvent(): void
+		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
-			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS), 100);
+			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
-		public function addEventListener_stubDispatchesProgressEventWithControlledBytes_mustCatchStubEventAndDispatchOwnProgressEvent_checkIfMonitoringPercentMatches(): void
+		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs100(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.PROGRESS,
+			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
-														{propertyName:"percent", propertyValue:25},
+														{propertyName:"percent", propertyValue:100},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
-			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200), 100);
+			_stubAssetLoadingMonitor1.monitoring.update(1260, 1260);
+			_stubAssetLoadingMonitor2.monitoring.update(395, 395);
+			_stubAssetLoadingMonitor3.monitoring.update(900, 900);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
+		[Test(async)]
+		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIsZero(): void
+		{
+			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
+														{propertyName:"percent", propertyValue:0},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_stubAssetLoadingMonitor1.monitoring.update(0, 0);
+			_stubAssetLoadingMonitor2.monitoring.update(395, 0);
+			_stubAssetLoadingMonitor3.monitoring.update(900, 0);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs72(): void
+		{
+			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
+														{propertyName:"percent", propertyValue:72},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			//general bytesTotal: 4700
+			//general bytesLoaded: 3384
+			//general percent: 72%
+			_stubAssetLoadingMonitor1.monitoring.update(2365, 1909);
+			_stubAssetLoadingMonitor2.monitoring.update(860, 0);
+			_stubAssetLoadingMonitor3.monitoring.update(1475, 1475);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs75(): void
+		{
+			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
+														{propertyName:"percent", propertyValue:31},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			//general bytesTotal: 1.089312 (with fake calculation for bytesTotal=0)
+			//general bytesLoaded: 342929
+			//general percent: 31%
+			_stubAssetLoadingMonitor1.monitoring.update(725361, 342698);
+			_stubAssetLoadingMonitor2.monitoring.update(0, 0);
+			_stubAssetLoadingMonitor3.monitoring.update(847, 231);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+		}
+		
+		/*
 		[Test(async)]
 		public function addEventListener_stubDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
 		{
@@ -291,28 +377,28 @@ package org.vostokframework.loadingmanagement.monitors
 			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED), 50);
 		}
 		*/
-		public function monitorEventHandlerCheckEventProperty(event:Event, passThroughData:Object):void
+		public function monitorEventHandlerCheckEventProperty(event:RequestLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:RequestLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertTrue(event.monitoring.latency > 0);
 			passThroughData = null;
 		}
 		
-		public function monitorEventHandlerCheckMonitoringProperty(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckMonitoringProperty(event:RequestLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event.monitoring[passThroughData["propertyName"]]);
 		}
-		
-		public function monitorEventHandlerCheckAssetData(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		/*
+		public function monitorEventHandlerCheckAssetData(event:RequestLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertNotNull(event.assetData);
 			passThroughData = null;
 		}
-		
+		*/
 		public function asyncTimeoutHandler(passThroughData:Object):void
 		{
 			Assert.fail("Asynchronous Test Failed: Timeout");

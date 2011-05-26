@@ -157,8 +157,8 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			createLoadingMonitoring(event.monitoring.latency);
 			removeAssetLoadingMonitorOpenListener();
-			_timer.start();
 			dispatchEvent(createEvent(RequestLoadingMonitorEvent.OPEN, _requestId, _monitoring));
+			_timer.start();
 		}
 		
 		private function addTimerListener():void
