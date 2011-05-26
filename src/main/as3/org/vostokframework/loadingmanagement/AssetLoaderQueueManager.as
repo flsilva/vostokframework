@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement
 		private var _assetLoaders:IList;
 		private var _canceledLoaders:IList;
 		private var _completeLoaders:IList;
-		private var _concurrentConnections:int;
+		private var _maxConcurrentConnections:int;
 		private var _failedLoaders:IList;
 		private var _loadingLoaders:IList;
 		private var _queuedLoaders:IQueue;
@@ -99,12 +99,12 @@ package org.vostokframework.loadingmanagement
 		 * @param assetLoaders
 		 * @param concurrentConnections
 		 */
-		public function AssetLoaderQueueManager(assetLoaders:IList, concurrentConnections:int)
+		public function AssetLoaderQueueManager(assetLoaders:IList, maxConcurrentConnections:int)
 		{
 			if (!assetLoaders || assetLoaders.isEmpty()) throw new ArgumentError("Argument <assetLoaders> must not be null nor empty.");
-			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero. Received: <" + concurrentConnections + ">");
+			if (maxConcurrentConnections < 1) throw new ArgumentError("Argument <maxConcurrentConnections> must be greater than zero. Received: <" + maxConcurrentConnections + ">");
 			
-			_concurrentConnections = concurrentConnections;
+			_maxConcurrentConnections = maxConcurrentConnections;
 			_queuedLoaders = new PriorityQueue(assetLoaders.toArray());
 			_assetLoaders = new ArrayList(_queuedLoaders.toArray());
 			_canceledLoaders = new ArrayList();
@@ -199,7 +199,7 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): AssetLoader
 		{
-			if (activeConnections >= _concurrentConnections) return null;
+			if (activeConnections >= _maxConcurrentConnections) return null;
 			
 			return _queuedLoaders.poll();
 		}
