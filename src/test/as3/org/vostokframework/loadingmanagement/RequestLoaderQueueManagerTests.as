@@ -60,26 +60,20 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var assetLoaders1:IList = new ArrayList();
 			var assetLoaders2:IList = new ArrayList();
 			
-			var assetLoader1:AssetLoader = new AssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			var assetLoader2:AssetLoader = new AssetLoader("asset-loader-2", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			var assetLoader3:AssetLoader = new AssetLoader("asset-loader-3", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			var assetLoader4:AssetLoader = new AssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			
-			assetLoaders1.add(assetLoader1);
-			assetLoaders1.add(assetLoader2);
-			assetLoaders1.add(assetLoader3);
-			assetLoaders1.add(assetLoader4);
+			assetLoaders1.add(getAssetLoader("asset-loader-1"));
+			assetLoaders1.add(getAssetLoader("asset-loader-2"));
+			assetLoaders1.add(getAssetLoader("asset-loader-3"));
+			assetLoaders1.add(getAssetLoader("asset-loader-4"));
 			
 			var queueManager1:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders1, 3);
 			var requestLoader1:RequestLoader = new RequestLoader("request-loader-1", queueManager1, LoadingRequestPriority.HIGH);
 			
-			assetLoaders2.add(assetLoader1);
-			assetLoaders2.add(assetLoader2);
-			assetLoaders2.add(assetLoader3);
+			assetLoaders2.add(getAssetLoader("asset-loader-1"));
+			assetLoaders2.add(getAssetLoader("asset-loader-2"));
+			assetLoaders2.add(getAssetLoader("asset-loader-3"));
 			
 			var queueManager2:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders2, 3);
 			var requestLoader2:RequestLoader = new RequestLoader("request-loader-2", queueManager2, LoadingRequestPriority.MEDIUM);
@@ -97,6 +91,16 @@ package org.vostokframework.loadingmanagement
 		public function tearDown(): void
 		{
 			_queueManager = null;
+		}
+		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		private function getAssetLoader(id:String):AssetLoader
+		{
+			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
+			return new AssetLoader(id, AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 		}
 		
 		///////////////////////
