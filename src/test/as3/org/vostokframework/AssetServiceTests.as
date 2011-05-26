@@ -204,6 +204,16 @@ package org.vostokframework
 			Assert.assertNotNull(asset);
 		}
 		
+		[Test]
+		public function createAsset_checkIfAssetPackageContainsTheObject_ReturnsTrue(): void
+		{
+			var assetPackage:AssetPackage = getAssetPackage();
+			var asset:Asset = _service.createAsset("http://domain.com/a.aac", assetPackage);
+			
+			var contains:Boolean = assetPackage.containsAsset(asset.id);
+			Assert.assertTrue(contains);
+		}
+		
 		/////////////////////////////////////////
 		// AssetService().getAllAssets() TESTS //
 		/////////////////////////////////////////

@@ -138,6 +138,9 @@ package org.vostokframework
 				throw new DuplicateAssetError(error.assetId, message);
 			}
 			
+			//TODO:try-catch here as above
+			assetPackage.addAsset(asset);
+			
 			return asset;
 		}
 
