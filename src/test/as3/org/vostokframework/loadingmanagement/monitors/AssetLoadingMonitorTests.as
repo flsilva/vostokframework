@@ -83,92 +83,117 @@ package org.vostokframework.loadingmanagement.monitors
 		///////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidArguments1_ThrowsError(): void
+		public function constructor_invalidAssetId_ThrowsError(): void
 		{
 			new AssetLoadingMonitor(null, null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidArguments2_ThrowsError(): void
+		public function constructor_invalidAssetType_ThrowsError(): void
 		{
 			new AssetLoadingMonitor("id", null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidArguments3_ThrowsError(): void
+		public function constructor_invalidLoader_ThrowsError(): void
 		{
-			new AssetLoadingMonitor(null, AssetType.SWF, null);
+			new AssetLoadingMonitor("id", AssetType.SWF, null);
 		}
 		
-		//////////////////////////////////////
-		// AssetLoadingMonitor Events TESTS //
-		//////////////////////////////////////
+		////////////////////////////////////////////////////
+		// AssetLoadingMonitor().addEventListener() TESTS //
+		////////////////////////////////////////////////////
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchOpen_OPEN(): void
+		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfAssetIdOfEventMatches(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
-									Async.asyncHandler(this, monitorEventHandler, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchInit_INIT(): void
-		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 200, asyncTimeoutHandler);
-			_fileLoader.load();
-			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 50);
-		}
-
-		[Test(async)]
-		public function dispatchEvent_stubDispatchOpenCheckLatency_GreaterThanZero(): void
+		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
-									Async.asyncHandler(this, monitorEventHandlerCheckLatency, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 200,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchProgress_PROGRESS(): void
+		public function addEventListener_stubDispatchesInitEvent_mustCatchStubEventAndDispatchOwnInitEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new Event(Event.INIT), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesProgressEvent_mustCatchStubEventAndDispatchOwnProgressEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
+			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS), 100);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesProgressEventWithControlledBytes_mustCatchStubEventAndDispatchOwnProgressEvent_checkIfMonitoringPercentMatches(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.PROGRESS,
-									Async.asyncHandler(this, monitorEventHandlerCheckMonitoring, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
 														{propertyName:"percent", propertyValue:25},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
 			_fileLoader.asyncDispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200), 100);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchOpen_COMPLETE(): void
+		public function addEventListener_stubDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.COMPLETE, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}), 100);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesCompleteEventWithGenericAssetData_mustCatchStubEventAndDispatchOwnCompleteEvent_checkIfAssetDataIsValidGenericObject(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.COMPLETE,
 									Async.asyncHandler(this, monitorEventHandlerCheckAssetData, 200,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.load();
 			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
 			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}), 100);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchHttpStatus_HTTP_STATUS(): void
+		public function addEventListener_stubDispatchesHttpStatusEvent_mustCatchStubEventAndDispatchOwnHttpStatusEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.HTTP_STATUS, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesHttpStatusEventWithControlledStatusValue_mustCatchStubEventAndDispatchOwnHttpStatusEvent_checkIfStatusValueMatches(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.HTTP_STATUS,
-									Async.asyncHandler(this, monitorEventHandler, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
 														{propertyName:"httpStatus", propertyValue:404},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -177,10 +202,17 @@ package org.vostokframework.loadingmanagement.monitors
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchIoError_IO_ERROR(): void
+		public function addEventListener_stubDispatchesIoErrorEvent_mustCatchStubEventAndDispatchOwnIoErrorEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.IO_ERROR, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesIoErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnIoErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.IO_ERROR,
-									Async.asyncHandler(this, monitorEventHandler, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
 														{propertyName:"ioErrorMessage", propertyValue:"IO Error Test Text"},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -189,10 +221,17 @@ package org.vostokframework.loadingmanagement.monitors
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchSecurityError_SECURITY_ERROR(): void
+		public function addEventListener_stubDispatchesSecurityErrorEvent_mustCatchStubEventAndDispatchOwnSecurityErrorEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.SECURITY_ERROR, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesSecurityErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnSecurityErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			_monitor.addEventListener(AssetLoadingMonitorEvent.SECURITY_ERROR,
-									Async.asyncHandler(this, monitorEventHandler, 200,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
 														{propertyName:"securityErrorMessage", propertyValue:"Security Error Test Text"},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -201,41 +240,55 @@ package org.vostokframework.loadingmanagement.monitors
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchCancel_CANCELED(): void
+		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.CANCELED,
-									Async.asyncHandler(this, monitorEventHandler, 200,
-														{propertyName:"assetId", propertyValue:ASSET_ID},
-														asyncTimeoutHandler),
-									false, 0, true);
-			
-			_fileLoader.cancel();
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.CANCELED, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.CANCELED), 50);
 		}
 		
 		[Test(async)]
-		public function dispatchEvent_stubDispatchCancel_STOPPED(): void
+		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent_checkIfAssetIdMatches(): void
 		{
-			_monitor.addEventListener(AssetLoadingMonitorEvent.STOPPED,
-									Async.asyncHandler(this, monitorEventHandler, 200,
+			_monitor.addEventListener(AssetLoadingMonitorEvent.CANCELED,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			_fileLoader.stop();
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.CANCELED), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.STOPPED, 200, asyncTimeoutHandler);
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED), 50);
+		}
+		
+		[Test(async)]
+		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent_checkIfAssetIdMatches(): void
+		{
+			_monitor.addEventListener(AssetLoadingMonitorEvent.STOPPED,
+									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
+														{propertyName:"assetId", propertyValue:ASSET_ID},
+														asyncTimeoutHandler),
+									false, 0, true);
+			
+			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED), 50);
 		}
 
-		public function monitorEventHandler(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckEventProperty(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function monitorEventHandlerCheckLatency(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertTrue(event.monitoring.latency > 0);
 			passThroughData = null;
 		}
 		
-		public function monitorEventHandlerCheckMonitoring(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckMonitoringProperty(event:AssetLoadingMonitorEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event.monitoring[passThroughData["propertyName"]]);
 		}
