@@ -102,7 +102,6 @@ package org.vostokframework.loadingmanagement
 			_historicalStatus = new ArrayList();
 			
 			addAssetLoaderListeners();
-			
 			setStatus(RequestLoaderStatus.QUEUED);
 		}
 		
@@ -118,22 +117,7 @@ package org.vostokframework.loadingmanagement
 				_status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES)) return;
 			
 			setStatus(RequestLoaderStatus.CANCELED);
-			
-			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var assetLoader:AssetLoader;
-			
-			while (it.hasNext())
-			{
-				assetLoader = it.next();
-				try
-				{
-					assetLoader.cancel();
-				}
-				catch (error:Error)
-				{
-					//do nothing
-				}
-			}
+			cancelAssetLoaders();
 		}
 
 		/**
@@ -180,9 +164,6 @@ package org.vostokframework.loadingmanagement
 			if (_status.equals(RequestLoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
 			
 			setStatus(RequestLoaderStatus.LOADING);
-			//addFileLoaderListeners();
-			//_fileLoader.load();
-			
 			loadNext();
 			
 			return true;
@@ -222,22 +203,7 @@ package org.vostokframework.loadingmanagement
 			}
 			
 			setStatus(RequestLoaderStatus.STOPPED);
-			
-			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var assetLoader:AssetLoader;
-			
-			while (it.hasNext())
-			{
-				assetLoader = it.next();
-				try
-				{
-					assetLoader.stop();
-				}
-				catch (error:Error)
-				{
-					//do nothing
-				}
-			}
+			stopAssetLoaders();
 		}
 
 		/**
@@ -257,7 +223,15 @@ package org.vostokframework.loadingmanagement
 				loader = it.next();
 				if (loader.id == assetLoaderId)
 				{
-					loader.stop();
+					try
+					{
+						loader.stop();
+					}
+					catch (error:Error)
+					{
+						//do nothing
+					}
+					
 					return;
 				}
 			}
@@ -279,22 +253,30 @@ package org.vostokframework.loadingmanagement
 			}
 		}
 		
-		private function removeAssetLoaderListeners():void
-		{
-			var it:IIterator = _queueManager.getAssetLoaders().iterator();
-			var loader:AssetLoader;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
-			}
-		}
-		
 		private function assetLoaderStatusChangedHandler(event:AssetLoaderEvent):void
 		{
 			if (!_status.equals(RequestLoaderStatus.LOADING)) return;
 			loadNext();
+		}
+		
+		private function cancelAssetLoaders():void
+		{
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var assetLoader:AssetLoader;
+			
+			while (it.hasNext())
+			{
+				assetLoader = it.next();
+				
+				try
+				{
+					assetLoader.cancel();
+				}
+				catch (error:Error)
+				{
+					//do nothing
+				}
+			}
 		}
 		
 		private function loadNext():void
@@ -322,6 +304,37 @@ package org.vostokframework.loadingmanagement
 			return _queueManager.activeConnections == 0 &&
 					_queueManager.totalQueued == 0 &&
 					_queueManager.totalStopped == 0;
+		}
+		
+		private function removeAssetLoaderListeners():void
+		{
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var loader:AssetLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
+			}
+		}
+		
+		private function stopAssetLoaders():void
+		{
+			var it:IIterator = _queueManager.getAssetLoaders().iterator();
+			var assetLoader:AssetLoader;
+			
+			while (it.hasNext())
+			{
+				assetLoader = it.next();
+				try
+				{
+					assetLoader.stop();
+				}
+				catch (error:Error)
+				{
+					//do nothing
+				}
+			}
 		}
 
 		private function setStatus(status:RequestLoaderStatus):void
