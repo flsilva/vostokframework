@@ -132,7 +132,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private function addAssetLoadingMonitorOpenListener():void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitor:ILoadingMonitor;
 			
 			while (it.hasNext())
 			{
@@ -144,7 +144,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private function addMonitorsListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitor:ILoadingMonitor;
 			
 			while (it.hasNext())
 			{
@@ -185,20 +185,20 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function monitorsHasEventListener(type:String):Boolean
 		{
-			var assetLoadingMonitor:AssetLoadingMonitor = _assetLoadingMonitors.getAt(0);
+			var assetLoadingMonitor:ILoadingMonitor = _assetLoadingMonitors.getAt(0);
 			return assetLoadingMonitor.hasEventListener(type);
 		}
 		
 		private function monitorsWillTrigger(type:String):Boolean
 		{
-			var assetLoadingMonitor:AssetLoadingMonitor = _assetLoadingMonitors.getAt(0);
+			var assetLoadingMonitor:ILoadingMonitor = _assetLoadingMonitors.getAt(0);
 			return assetLoadingMonitor.willTrigger(type);
 		}
 		
 		private function progress():void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitor:ILoadingMonitor;
 			
 			var bytesLoaded:int;
 			var bytesTotal:int;
@@ -232,7 +232,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private function removeAssetLoadingMonitorOpenListener():void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitor:ILoadingMonitor;
 			
 			while (it.hasNext())
 			{
@@ -244,7 +244,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private function removeMonitorsListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitor:ILoadingMonitor;
 			
 			while (it.hasNext())
 			{
