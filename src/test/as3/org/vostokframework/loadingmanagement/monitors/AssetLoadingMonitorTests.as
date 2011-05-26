@@ -100,9 +100,9 @@ package org.vostokframework.loadingmanagement.monitors
 			new AssetLoadingMonitor(null, AssetType.SWF, null);
 		}
 		
-		/////////////////////////////////////
-		// AssetLoadingMonitor Events TESTS//
-		/////////////////////////////////////
+		//////////////////////////////////////
+		// AssetLoadingMonitor Events TESTS //
+		//////////////////////////////////////
 		
 		[Test(async)]
 		public function dispatchEvent_stubDispatchOpen_OPEN(): void

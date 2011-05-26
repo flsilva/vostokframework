@@ -39,7 +39,7 @@ package org.vostokframework.loadingmanagement.monitors
 	 */
 	public interface ILoadingMonitor extends IEventDispatcher, IDisposable
 	{
-
+		function get monitoring():LoadingMonitoring;
 	}
 
 }

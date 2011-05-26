@@ -55,7 +55,9 @@ package org.vostokframework.loadingmanagement.monitors
 		private var _loader:IFileLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _startedTimeTryingToConnect:int;
-
+		
+		public function get monitoring():LoadingMonitoring { return _monitoring; }
+		
 		/**
 		 * 
 		 * @param assetId
@@ -72,12 +74,12 @@ package org.vostokframework.loadingmanagement.monitors
 			_assetType = assetType;
 			_loader = loader;
 			
-			addLoaderEvents();
+			addLoaderListeners();
 		}
 		
 		public function dispose():void
 		{
-			removeLoaderEvents();
+			removeLoaderListeners();
 			
 			_assetType = null;
 			_loader = null;
@@ -89,7 +91,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_monitoring = new LoadingMonitoring(_latency);
 		}
 		
-		private function addLoaderEvents():void
+		private function addLoaderListeners():void
 		{
 			_loader.addEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false, 0, true);
 			_loader.addEventListener(Event.INIT, loaderInitHandler, false, 0, true);
@@ -103,7 +105,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
 		}
 		
-		private function removeLoaderEvents():void
+		private function removeLoaderListeners():void
 		{
 			_loader.removeEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false);
 			_loader.removeEventListener(Event.INIT, loaderInitHandler, false);

@@ -83,6 +83,7 @@ package
 		
 		//org.vostokframework.loadingmanagement.monitors
 		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
+		//public var requestLoadingMonitorTests:RequestLoadingMonitorTests;
 		
 		public function TestSuite()
 		{
