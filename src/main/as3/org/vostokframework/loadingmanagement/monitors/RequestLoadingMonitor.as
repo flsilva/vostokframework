@@ -30,8 +30,10 @@ package org.vostokframework.loadingmanagement.monitors
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.as3utils.StringUtil;
+	import org.vostokframework.loadingmanagement.RequestLoader;
+	import org.vostokframework.loadingmanagement.RequestLoaderStatus;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoadingMonitorEvent;
 
 	import flash.events.EventDispatcher;
@@ -48,8 +50,8 @@ package org.vostokframework.loadingmanagement.monitors
 		private static const TIMER_DELAY:int = 50;
 		
 		private var _assetLoadingMonitors:IList;
+		private var _loader:RequestLoader;
 		private var _monitoring:LoadingMonitoring;
-		private var _requestId:String;
 		private var _timer:Timer;
 		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
@@ -60,15 +62,16 @@ package org.vostokframework.loadingmanagement.monitors
 		 * @param requestId
 		 * @param loaders
 		 */
-		public function RequestLoadingMonitor(requestId:String, assetLoadingMonitors:IList): void
+		public function RequestLoadingMonitor(loader:RequestLoader, assetLoadingMonitors:IList): void
 		{
-			if (StringUtil.isBlank(requestId)) throw new ArgumentError("Argument <requestId> must not be null nor an empty String.");
+			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!assetLoadingMonitors || assetLoadingMonitors.isEmpty()) throw new ArgumentError("Argument <assetLoadingMonitors> must not be null nor empty.");
 			
-			_requestId = requestId;
+			_loader = loader;
 			_assetLoadingMonitors = assetLoadingMonitors;
 			
 			addAssetLoadingMonitorOpenListener();
+			addLoaderListeners();
 			createTimer();
 		}
 		
@@ -87,6 +90,7 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			_assetLoadingMonitors.clear();
 			removeTimerListener();
+			removeLoaderListeners();
 			
 			_assetLoadingMonitors = null;
 			_monitoring = null;
@@ -141,6 +145,11 @@ package org.vostokframework.loadingmanagement.monitors
 			}
 		}
 		
+		private function addLoaderListeners():void
+		{
+			_loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
+		}
+		
 		private function addMonitorsListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
 			var it:IIterator = _assetLoadingMonitors.iterator();
@@ -157,7 +166,7 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			createLoadingMonitoring(event.monitoring.latency);
 			removeAssetLoadingMonitorOpenListener();
-			dispatchEvent(createEvent(RequestLoadingMonitorEvent.OPEN, _requestId, _monitoring));
+			dispatchEvent(createEvent(RequestLoadingMonitorEvent.OPEN, _loader.id, _monitoring));
 			_timer.start();
 		}
 		
@@ -181,6 +190,22 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			//TODO:refatorar e referenciar uma constate estática: AssetLoadingMonitorEvent.EVENT_NAME_PREFIX
 			return type.indexOf("AssetLoadingMonitorEvent") != -1;
+		}
+		
+		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void
+		{
+			/*if (event.status.equals(RequestLoaderStatus.CANCELED))
+			{
+				dispatchEvent(createEvent(RequestLoadingMonitorEvent.CANCELED, _loader.id, _monitoring));
+			}
+			else */if (event.status.equals(RequestLoaderStatus.COMPLETE) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
+			{
+				dispatchEvent(createEvent(RequestLoadingMonitorEvent.COMPLETE, _loader.id, _monitoring));
+			}/*
+			else if (event.status.equals(RequestLoaderStatus.STOPPED) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
+			{
+				dispatchEvent(createEvent(RequestLoadingMonitorEvent.STOPPED, _loader.id, _monitoring));
+			}*/
 		}
 		
 		private function monitorsHasEventListener(type:String):Boolean
@@ -226,7 +251,7 @@ package org.vostokframework.loadingmanagement.monitors
 			}
 			
 			_monitoring.update(bytesTotal, bytesLoaded);
-			dispatchEvent(createEvent(RequestLoadingMonitorEvent.PROGRESS, _requestId, _monitoring));
+			dispatchEvent(createEvent(RequestLoadingMonitorEvent.PROGRESS, _loader.id, _monitoring));
 		}
 
 		private function removeAssetLoadingMonitorOpenListener():void
@@ -239,6 +264,11 @@ package org.vostokframework.loadingmanagement.monitors
 				assetLoadingMonitor = it.next();
 				assetLoadingMonitor.removeEventListener(AssetLoadingMonitorEvent.OPEN, assetLoadingMonitorOpenHandler, false);
 			}
+		}
+		
+		private function removeLoaderListeners():void
+		{
+			_loader.removeEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
 		}
 		
 		private function removeMonitorsListener(type:String, listener:Function, useCapture:Boolean = false):void

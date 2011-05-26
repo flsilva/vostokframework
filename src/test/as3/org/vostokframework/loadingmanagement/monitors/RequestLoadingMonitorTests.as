@@ -34,10 +34,11 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.AssetType;
+	import org.vostokframework.loadingmanagement.RequestLoaderStatus;
+	import org.vostokframework.loadingmanagement.StubRequestLoader;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoadingMonitorEvent;
-
-	import flash.events.Event;
 
 	/**
 	 * @author Flávio Silva
@@ -49,6 +50,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private static const REQUEST_ID:String = "request-id";
 
 		private var _monitor:ILoadingMonitor;
+		private var _requestLoader:StubRequestLoader;
 		private var _stubAssetLoadingMonitor1:StubAssetLoadingMonitor;
 		private var _stubAssetLoadingMonitor2:StubAssetLoadingMonitor;
 		private var _stubAssetLoadingMonitor3:StubAssetLoadingMonitor;
@@ -74,7 +76,8 @@ package org.vostokframework.loadingmanagement.monitors
 			assetLoadingMonitors.add(_stubAssetLoadingMonitor2);
 			assetLoadingMonitors.add(_stubAssetLoadingMonitor3);
 			
-			_monitor = new RequestLoadingMonitor(REQUEST_ID, assetLoadingMonitors);
+			_requestLoader = new StubRequestLoader(REQUEST_ID);
+			_monitor = new RequestLoadingMonitor(_requestLoader, assetLoadingMonitors);
 		}
 		
 		[After]
@@ -261,15 +264,24 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
-		/*
 		[Test(async)]
-		public function addEventListener_stubDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
+		public function addEventListener_stubDispatchesProgressEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
 		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.COMPLETE, 200, asyncTimeoutHandler);
-			_fileLoader.asyncDispatchEvent(new Event(Event.OPEN), 50);
-			_fileLoader.asyncDispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, {}), 100);
+			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
+			
+			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.PROGRESS, _stubAssetLoadingMonitor3);
+			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
+		[Test(async)]
+		public function addEventListener_stubsDispatchStatusChangedCompleteEvent_mustCatchStubEventsAndDispatchOwnCompleteEvent(): void
+		{
+			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.COMPLETE, 200, asyncTimeoutHandler);
+			
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.COMPLETE);
+			_requestLoader.asyncDispatchEvent(event, 50);
+		}
+		/*
 		[Test(async)]
 		public function addEventListener_stubDispatchesCompleteEventWithGenericAssetData_mustCatchStubEventAndDispatchOwnCompleteEvent_checkIfAssetDataIsValidGenericObject(): void
 		{
