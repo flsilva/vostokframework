@@ -43,8 +43,8 @@ package org.vostokframework.loadingmanagement
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
 		//private var _assetLoaderFactory:AbstractAssetLoaderFactory;
-		private var _concurrentConnections:int;
-		private var _concurrentRequests:int;
+		private var _maxConcurrentConnections:int;
+		private var _maxConcurrentRequests:int;
 		//private var _requestLoaderFactory:AbstractRequestLoaderFactory;
 		
 		/**
@@ -61,12 +61,12 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function get concurrentConnections(): int { return _concurrentConnections; }
+		public function get maxConcurrentConnections(): int { return _maxConcurrentConnections; }
 
 		/**
 		 * description
 		 */
-		public function get concurrentRequests(): int { return _concurrentRequests; }
+		public function get maxConcurrentRequests(): int { return _maxConcurrentRequests; }
 		
 		/**
 		 * description
@@ -80,8 +80,8 @@ package org.vostokframework.loadingmanagement
 		{
 			if (_created) throw new IllegalOperationError("<LoadingManagementContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
-			_concurrentConnections = 6;
-			_concurrentRequests = 3;
+			_maxConcurrentConnections = 6;
+			_maxConcurrentRequests = 3;
 		}
 		
 		/**
@@ -109,7 +109,7 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param value
 		 */
-		public function setConcurrentConnections(value:int): void
+		public function setMaxConcurrentConnections(value:int): void
 		{
 			
 		}
@@ -119,7 +119,7 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param value
 		 */
-		public function setConcurrentRequests(value:int): void
+		public function setMaxConcurrentRequests(value:int): void
 		{
 			
 		}

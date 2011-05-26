@@ -193,7 +193,7 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): RequestLoader
 		{
-			if (activeConnections >= LoadingManagementContext.getInstance().concurrentRequests) return null;
+			if (activeConnections >= LoadingManagementContext.getInstance().maxConcurrentRequests) return null;
 			
 			return _queuedLoaders.poll();
 		}

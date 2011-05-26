@@ -52,9 +52,9 @@ package org.vostokframework.loadingmanagement
 		private var _assetLoaders:IList;
 		private var _canceledLoaders:IList;
 		private var _completeLoaders:IList;
-		private var _maxConcurrentConnections:int;
 		private var _failedLoaders:IList;
 		private var _loadingLoaders:IList;
+		private var _maxConcurrentConnections:int;
 		private var _queuedLoaders:IQueue;
 		private var _stoppedLoaders:IList;
 		
