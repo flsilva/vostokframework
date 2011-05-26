@@ -40,8 +40,6 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 
-	import flash.utils.Timer;
-
 	/**
 	 * @author Flávio Silva
 	 */
@@ -50,7 +48,6 @@ package org.vostokframework.loadingmanagement
 	{
 		
 		private var _queueManager:AssetLoaderQueueManager;
-		private var _timer:Timer;
 		
 		public function AssetLoaderQueueManagerTests()
 		{
@@ -64,23 +61,20 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_timer = new Timer(200, 1);
-			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var loaders:IList = new ArrayList();
-			var loader:AssetLoader;
 			
-			loader = new AssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			loaders.add(loader);
+			var loader1:AssetLoader = new AssetLoader("asset-loader-1", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
+			var loader2:AssetLoader = new AssetLoader("asset-loader-2", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			var loader3:AssetLoader = new AssetLoader("asset-loader-3", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			var loader4:AssetLoader = new AssetLoader("asset-loader-4", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
 			
-			loader = new AssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
-			loaders.add(loader);
-			
-			loader = new AssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
-			loaders.add(loader);
-			
-			loader = new AssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			loaders.add(loader);
+			//added without order purposely
+			// to test if the queue will correctly sort it (by priority)
+			loaders.add(loader3);
+			loaders.add(loader2);
+			loaders.add(loader1);
+			loaders.add(loader4);
 			
 			_queueManager = new AssetLoaderQueueManager(loaders, 3);
 		}
@@ -88,8 +82,6 @@ package org.vostokframework.loadingmanagement
 		[After]
 		public function tearDown(): void
 		{
-			_timer.stop();
-			_timer = null;
 			_queueManager = null;
 		}
 		
@@ -102,25 +94,25 @@ package org.vostokframework.loadingmanagement
 		/////////////////////////////////////////
 		
 		[Test]
-		public function getNext_simpleCall_AssetLoader(): void
+		public function getNext_simpleCall_ReturnsValidObject(): void
 		{
 			var loader:AssetLoader = _queueManager.getNext();
 			Assert.assertNotNull(loader);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder_AssetLoader(): void
+		public function getNext_simpleCall_checkPriorityOrder_ReturnsValidObject(): void
 		{
 			var loader:AssetLoader = _queueManager.getNext();
-			Assert.assertEquals("asset-loader-3", loader.id);
+			Assert.assertEquals("asset-loader-1", loader.id);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder2_AssetLoader(): void
+		public function getNext_checkPriorityOrder2_ReturnsValidObject(): void
 		{
 			_queueManager.getNext();
 			var loader:AssetLoader = _queueManager.getNext();
-			Assert.assertEquals("asset-loader-1", loader.id);
+			Assert.assertEquals("asset-loader-2", loader.id);
 		}
 		
 		[Test]
@@ -147,7 +139,7 @@ package org.vostokframework.loadingmanagement
 			
 			loader = _queueManager.getNext();
 			
-			Assert.assertEquals("asset-loader-1", loader.id);
+			Assert.assertEquals("asset-loader-2", loader.id);
 		}
 		
 		[Test]
@@ -158,7 +150,7 @@ package org.vostokframework.loadingmanagement
 			
 			loader = _queueManager.getNext();
 			
-			Assert.assertEquals("asset-loader-1", loader.id);
+			Assert.assertEquals("asset-loader-2", loader.id);
 		}
 		
 		/////////////////////////////////////////////////
@@ -166,7 +158,7 @@ package org.vostokframework.loadingmanagement
 		/////////////////////////////////////////////////
 		
 		[Test]
-		public function activeConnections_cancelAndCheckTotal_Int(): void
+		public function activeConnections_loadAndCheckTotal_Int(): void
 		{
 			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
