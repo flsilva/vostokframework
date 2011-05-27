@@ -39,9 +39,10 @@ package org.vostokframework.loadingmanagement
 	public class StubRequestLoader extends RequestLoader
 	{
 		
-		public function StubRequestLoader(id:String)
+		public function StubRequestLoader(id:String, priority:LoadingRequestPriority = null)
 		{
-			super(id, new StubAssetLoaderQueueManager(), LoadingRequestPriority.MEDIUM);
+			priority = (priority) ? priority : LoadingRequestPriority.MEDIUM;
+			super(id, new StubAssetLoaderQueueManager(), priority);
 		}
 		
 		public function asyncDispatchEvent(event:Event, delay:int = 50):int

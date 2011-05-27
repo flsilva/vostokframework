@@ -29,14 +29,7 @@
 
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.IList;
-	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 
 	/**
@@ -60,54 +53,16 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			var assetLoaders1:IList = new ArrayList();
-			var assetLoaders2:IList = new ArrayList();
-			var assetLoaders3:IList = new ArrayList();
-			
-			assetLoaders1.add(getAssetLoader("asset-loader-1"));
-			assetLoaders1.add(getAssetLoader("asset-loader-2"));
-			assetLoaders1.add(getAssetLoader("asset-loader-3"));
-			assetLoaders1.add(getAssetLoader("asset-loader-4"));
-			
-			var queueManager1:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders1, 3);
-			var requestLoader1:RequestLoader = new RequestLoader("request-loader-1", queueManager1, LoadingRequestPriority.HIGH);
-			
-			assetLoaders2.add(getAssetLoader("asset-loader-1"));
-			assetLoaders2.add(getAssetLoader("asset-loader-2"));
-			assetLoaders2.add(getAssetLoader("asset-loader-3"));
-			
-			var queueManager2:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders2, 3);
-			var requestLoader2:RequestLoader = new RequestLoader("request-loader-2", queueManager2, LoadingRequestPriority.MEDIUM);
-			
-			assetLoaders3.add(getAssetLoader("asset-loader-2"));
-			assetLoaders3.add(getAssetLoader("asset-loader-3"));
-			
-			var queueManager3:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders3, 3);
-			var requestLoader3:RequestLoader = new RequestLoader("request-loader-3", queueManager3, LoadingRequestPriority.LOW);
-			
 			_queueManager = new RequestLoaderQueueManager();
-			
-			//added without order purposely
-			// to test if the queue will correctly sort it (by priority)
-			_queueManager.addLoader(requestLoader2);
-			_queueManager.addLoader(requestLoader1);
-			_queueManager.addLoader(requestLoader3);
+			_queueManager.addLoader(new StubRequestLoader("request-loader-1"));
+			_queueManager.addLoader(new StubRequestLoader("request-loader-2"));
+			_queueManager.addLoader(new StubRequestLoader("request-loader-3"));
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
 			_queueManager = null;
-		}
-		
-		////////////////////
-		// HELPER METHODS //
-		////////////////////
-		
-		private function getAssetLoader(id:String):AssetLoader
-		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
-			return new AssetLoader(id, AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
 		}
 		
 		///////////////////////
@@ -119,68 +74,6 @@ package org.vostokframework.loadingmanagement
 		/////////////////////////////////////////////
 		
 		//TODO:test dupplication element
-		
-		///////////////////////////////////////////
-		// RequestLoaderQueueManager().getNext() //
-		///////////////////////////////////////////
-		
-		[Test]
-		public function getNext_validCall_ReturnsValidObject(): void
-		{
-			var loader:RequestLoader = _queueManager.getNext();
-			Assert.assertNotNull(loader);
-		}
-		
-		[Test]
-		public function getNext_validCall_checkIfReturnedObjectCorrespondsToPriorityOrder(): void
-		{
-			var loader:RequestLoader = _queueManager.getNext();
-			Assert.assertEquals("request-loader-1", loader.id);
-		}
-		
-		[Test]
-		public function getNext_validDoubleCall_checkIfReturnedObjectCorrespondsToPriorityOrder(): void
-		{
-			_queueManager.getNext();
-			
-			var loader:RequestLoader = _queueManager.getNext();
-			Assert.assertEquals("request-loader-2", loader.id);
-		}
-		
-		[Test]
-		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
-		{
-			LoadingManagementContext.getInstance().setMaxConcurrentRequests(2);
-			
-			var loader:RequestLoader = _queueManager.getNext();
-			loader.load();
-			
-			loader = _queueManager.getNext();
-			loader.load();
-			
-			loader = _queueManager.getNext();
-			Assert.assertNull(loader);
-		}
-		
-		[Test]
-		public function getNext_cancelAndCheckNext_AssetLoader(): void
-		{
-			var loader:RequestLoader = _queueManager.getRequestLoaders().getAt(0);
-			loader.cancel();
-			
-			loader = _queueManager.getNext();
-			Assert.assertEquals("request-loader-2", loader.id);
-		}
-		
-		[Test]
-		public function getNext_stopAndCheckNext_AssetLoader(): void
-		{
-			var loader:RequestLoader = _queueManager.getRequestLoaders().getAt(0);
-			loader.stop();
-			
-			loader = _queueManager.getNext();
-			Assert.assertEquals("request-loader-2", loader.id);
-		}
 		
 		///////////////////////////////////////////////////
 		// RequestLoaderQueueManager().activeConnections //

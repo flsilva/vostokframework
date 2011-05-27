@@ -42,6 +42,7 @@ package
 	import org.vostokframework.loadingmanagement.AssetLoaderQueueManagerTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderManagerTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderQueueManagerTests;
+	import org.vostokframework.loadingmanagement.RequestLoaderQueueManagerTestsGetNextSimplePriority;
 	import org.vostokframework.loadingmanagement.RequestLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTestsLoad;
@@ -78,6 +79,7 @@ package
 		public var requestLoaderTests:RequestLoaderTests;
 		public var requestLoaderManagerTests:RequestLoaderManagerTests;
 		public var requestLoaderQueueManagerTests:RequestLoaderQueueManagerTests;
+		public var requestLoaderQueueManagerTestsGetNextSimplePriority:RequestLoaderQueueManagerTestsGetNextSimplePriority;
 		
 		//org.vostokframework.loadingmanagement.assetloaders
 		public var assetLoaderTests:AssetLoaderTests;
