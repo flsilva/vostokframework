@@ -38,6 +38,10 @@ package org.vostokframework.loadingmanagement
 	 */
 	public class StubRequestLoader extends RequestLoader
 	{
+		private var _activeConnections:int;
+		
+		override public function get activeConnections():int { return _activeConnections; }
+		public function set activeConnections(value:int):void { _activeConnections = value; } 
 		
 		public function StubRequestLoader(id:String, priority:LoadingRequestPriority = null)
 		{

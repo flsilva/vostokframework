@@ -65,6 +65,11 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
+		public function get activeConnections(): int { return _queueManager.activeConnections; }
+		
+		/**
+		 * description
+		 */
 		public function get historicalStatus(): IList { return new ReadOnlyArrayList(_historicalStatus.toArray()); }
 		
 		/**

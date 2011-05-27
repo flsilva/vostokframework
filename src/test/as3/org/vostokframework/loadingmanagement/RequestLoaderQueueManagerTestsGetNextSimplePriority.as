@@ -95,7 +95,7 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
+		public function getNext_exceedsConcurrentRequests_ReturnsNull(): void
 		{
 			LoadingManagementContext.getInstance().setMaxConcurrentRequests(2);
 			
@@ -104,6 +104,19 @@ package org.vostokframework.loadingmanagement
 			
 			loader = _queueManager.getNext();
 			loader.load();
+			
+			loader = _queueManager.getNext();
+			Assert.assertNull(loader);
+		}
+		
+		[Test]
+		public function getNext_exceededConcurrentConnections_ReturnsNull(): void
+		{
+			LoadingManagementContext.getInstance().setMaxConcurrentRequests(3);
+			LoadingManagementContext.getInstance().setMaxConcurrentConnections(6);
+			
+			var loader:RequestLoader = _queueManager.getRequestLoaders().getAt(0);
+			(loader as StubRequestLoader).activeConnections = 6;
 			
 			loader = _queueManager.getNext();
 			Assert.assertNull(loader);

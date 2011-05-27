@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
@@ -57,7 +58,12 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function get activeConnections(): int { return _loadingLoaders.size(); }
+		public function get activeConnections(): int { return getActiveConnections(); }
+		
+		/**
+		 * description
+		 */
+		public function get activeRequests(): int { return _loadingLoaders.size(); }
 		
 		/**
 		 * description
@@ -97,7 +103,7 @@ package org.vostokframework.loadingmanagement
 		public function RequestLoaderQueueManager()
 		{
 			_queuedLoaders = new PriorityQueue();
-			_requestLoaders = new ArrayList(_queuedLoaders.toArray());
+			_requestLoaders = new ArrayList();
 			_canceledLoaders = new ArrayList();
 			_completeLoaders = new ArrayList();
 			_loadingLoaders = new ArrayList();
@@ -194,7 +200,8 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): RequestLoader
 		{
-			if (activeConnections >= LoadingManagementContext.getInstance().maxConcurrentRequests) return null;
+			if (activeRequests >= LoadingManagementContext.getInstance().maxConcurrentRequests) return null;
+			if (activeConnections >= LoadingManagementContext.getInstance().maxConcurrentConnections) return null;
 			
 			return _queuedLoaders.poll();
 		}
@@ -204,11 +211,23 @@ package org.vostokframework.loadingmanagement
 			loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
 		}
 		
-		private function removeLoaderListeners(loader:RequestLoader):void
+		private function getActiveConnections():int
 		{
-			loader.removeEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
+			if (_requestLoaders.isEmpty()) return 0;
+			
+			var it:IIterator = _requestLoaders.iterator();
+			var loader:RequestLoader;
+			var activeConnections:int;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				activeConnections += loader.activeConnections;
+			}
+			
+			return activeConnections;
 		}
-		
+
 		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void
 		{
 			removeFromLists(event.target as RequestLoader);
@@ -230,6 +249,11 @@ package org.vostokframework.loadingmanagement
 			{
 				_completeLoaders.add(event.target);
 			}
+		}
+		
+		private function removeLoaderListeners(loader:RequestLoader):void
+		{
+			loader.removeEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
 		}
 		
 		private function removeFromLists(loader:RequestLoader):void

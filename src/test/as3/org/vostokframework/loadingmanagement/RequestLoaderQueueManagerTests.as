@@ -75,25 +75,25 @@ package org.vostokframework.loadingmanagement
 		
 		//TODO:test dupplication element
 		
-		///////////////////////////////////////////////////
-		// RequestLoaderQueueManager().activeConnections //
-		///////////////////////////////////////////////////
+		////////////////////////////////////////////////
+		// RequestLoaderQueueManager().activeRequests //
+		////////////////////////////////////////////////
 		
 		[Test]
-		public function activeConnections_noLoadingCheckTotal_ReturnsZero(): void
+		public function activeRequests_noLoadingCheckTotal_ReturnsZero(): void
 		{
-			Assert.assertEquals(0, _queueManager.activeConnections);
+			Assert.assertEquals(0, _queueManager.activeRequests);
 		}
 		
 		[Test]
-		public function activeConnections_twoLoadCall_checkTotal_ReturnsTwo(): void
+		public function activeRequests_twoLoadCall_checkTotal_ReturnsTwo(): void
 		{
 			var loader:RequestLoader = _queueManager.getNext();
 			loader.load();
 			loader = _queueManager.getNext();
 			loader.load();
 			
-			Assert.assertEquals(2, _queueManager.activeConnections);
+			Assert.assertEquals(2, _queueManager.activeRequests);
 		}
 		
 		///////////////////////////////////////////////
