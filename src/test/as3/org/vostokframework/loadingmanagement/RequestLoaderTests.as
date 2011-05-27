@@ -110,10 +110,10 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function status_loadAndCheckStatus_LOADING(): void
+		public function status_loadAndCheckStatus_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
-			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.status);
+			Assert.assertEquals(RequestLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		//////////////////////////////////////
@@ -127,10 +127,10 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function historicalStatus_validGet_LOADING(): void
+		public function historicalStatus_validGet_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
-			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.historicalStatus.getAt(1));
+			Assert.assertEquals(RequestLoaderStatus.TRYING_TO_CONNECT, _loader.historicalStatus.getAt(1));
 		}
 		
 		//////////////////////////////
@@ -171,10 +171,10 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function load_checkStatus_LOADING(): void
+		public function load_checkStatus_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
-			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.status);
+			Assert.assertEquals(RequestLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		[Test]
@@ -253,11 +253,11 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function stopAndLoad_CheckStatus_LOADING(): void
+		public function stopAndLoad_CheckStatus_TRYING_TO_CONNECT(): void
 		{
 			_loader.stop();
 			_loader.load();
-			Assert.assertEquals(RequestLoaderStatus.LOADING, _loader.status);
+			Assert.assertEquals(RequestLoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		[Test]

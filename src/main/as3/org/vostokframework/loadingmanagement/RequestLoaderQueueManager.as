@@ -226,7 +226,7 @@ package org.vostokframework.loadingmanagement
 		{
 			removeFromLists(event.target as RequestLoader);
 			
-			if (event.status.equals(RequestLoaderStatus.LOADING))
+			if (event.status.equals(RequestLoaderStatus.TRYING_TO_CONNECT))
 			{
 				_loadingLoaders.add(event.target);
 			}

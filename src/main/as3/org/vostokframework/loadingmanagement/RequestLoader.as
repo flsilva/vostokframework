@@ -38,6 +38,7 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
@@ -162,8 +163,9 @@ package org.vostokframework.loadingmanagement
 			if (_status.equals(RequestLoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
 			if (_status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.COMPLETE_WITH_FAILURES>, therefore it is no longer allowed loadings.");
 			if (_status.equals(RequestLoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
+			if (_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT)) throw new IllegalOperationError("The current status is <RequestLoaderStatus.TRYING_TO_CONNECT>, therefore it is not allowed to start a new loading right now.");
 			
-			setStatus(RequestLoaderStatus.LOADING);
+			setStatus(RequestLoaderStatus.TRYING_TO_CONNECT);
 			loadNext();
 			
 			return true;
@@ -255,7 +257,12 @@ package org.vostokframework.loadingmanagement
 		
 		private function assetLoaderStatusChangedHandler(event:AssetLoaderEvent):void
 		{
-			if (!_status.equals(RequestLoaderStatus.LOADING)) return;
+			if (event.status.equals(AssetLoaderStatus.LOADING) &&
+				!_status.equals(RequestLoaderStatus.LOADING)) setStatus(RequestLoaderStatus.LOADING);
+			
+			if (!_status.equals(RequestLoaderStatus.LOADING) &&
+				!_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT)) return;
+			
 			loadNext();
 		}
 		

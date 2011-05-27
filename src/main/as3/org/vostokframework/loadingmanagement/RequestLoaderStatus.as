@@ -45,6 +45,7 @@ package org.vostokframework.loadingmanagement
 		public static const LOADING:RequestLoaderStatus = new RequestLoaderStatus("LOADING", 3);
 		public static const QUEUED:RequestLoaderStatus = new RequestLoaderStatus("QUEUED", 4);
 		public static const STOPPED:RequestLoaderStatus = new RequestLoaderStatus("STOPPED", 5);
+		public static const TRYING_TO_CONNECT:RequestLoaderStatus = new RequestLoaderStatus("TRYING TO CONNECT", 6);
 		
 		/**
 		 * @private
