@@ -62,6 +62,7 @@ package org.vostokframework.loadingmanagement
 		{
 			var assetLoaders1:IList = new ArrayList();
 			var assetLoaders2:IList = new ArrayList();
+			var assetLoaders3:IList = new ArrayList();
 			
 			assetLoaders1.add(getAssetLoader("asset-loader-1"));
 			assetLoaders1.add(getAssetLoader("asset-loader-2"));
@@ -78,12 +79,19 @@ package org.vostokframework.loadingmanagement
 			var queueManager2:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders2, 3);
 			var requestLoader2:RequestLoader = new RequestLoader("request-loader-2", queueManager2, LoadingRequestPriority.MEDIUM);
 			
+			assetLoaders3.add(getAssetLoader("asset-loader-2"));
+			assetLoaders3.add(getAssetLoader("asset-loader-3"));
+			
+			var queueManager3:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders3, 3);
+			var requestLoader3:RequestLoader = new RequestLoader("request-loader-3", queueManager3, LoadingRequestPriority.LOW);
+			
 			_queueManager = new RequestLoaderQueueManager();
 			
 			//added without order purposely
 			// to test if the queue will correctly sort it (by priority)
 			_queueManager.addLoader(requestLoader2);
 			_queueManager.addLoader(requestLoader1);
+			_queueManager.addLoader(requestLoader3);
 		}
 		
 		[After]
@@ -117,21 +125,21 @@ package org.vostokframework.loadingmanagement
 		///////////////////////////////////////////
 		
 		[Test]
-		public function getNext_simpleCall_ReturnsValidObject(): void
+		public function getNext_validCall_ReturnsValidObject(): void
 		{
 			var loader:RequestLoader = _queueManager.getNext();
 			Assert.assertNotNull(loader);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder_ReturnsValidObject(): void
+		public function getNext_validCall_checkIfReturnedObjectCorrespondsToPriorityOrder(): void
 		{
 			var loader:RequestLoader = _queueManager.getNext();
 			Assert.assertEquals("request-loader-1", loader.id);
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder2_ReturnsValidObject(): void
+		public function getNext_validDoubleCall_checkIfReturnedObjectCorrespondsToPriorityOrder(): void
 		{
 			_queueManager.getNext();
 			
@@ -142,6 +150,8 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
 		{
+			LoadingManagementContext.getInstance().setMaxConcurrentRequests(2);
+			
 			var loader:RequestLoader = _queueManager.getNext();
 			loader.load();
 			
@@ -261,14 +271,14 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function totalQueued_checkTotal_ReturnsTwo(): void
 		{
-			Assert.assertEquals(2, _queueManager.totalQueued);
+			Assert.assertEquals(3, _queueManager.totalQueued);
 		}
 		
 		[Test]
 		public function totalQueued_getNextAndCheckTotal_ReturnsOne(): void
 		{
 			_queueManager.getNext();
-			Assert.assertEquals(1, _queueManager.totalQueued);
+			Assert.assertEquals(2, _queueManager.totalQueued);
 		}
 		
 		//////////////////////////////////////////////

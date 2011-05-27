@@ -111,7 +111,8 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function setMaxConcurrentConnections(value:int): void
 		{
-			
+			_maxConcurrentConnections = value;
+			//TODO:validar null, zero e negativo
 		}
 
 		/**
@@ -121,7 +122,8 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function setMaxConcurrentRequests(value:int): void
 		{
-			
+			_maxConcurrentRequests = value;
+			//TODO:validar null, zero e negativo
 		}
 
 		/**
