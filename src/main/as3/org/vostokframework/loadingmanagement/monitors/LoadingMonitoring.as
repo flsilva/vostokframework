@@ -131,7 +131,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_bytesTotal = bytesTotal;
 			_bytesLoaded = bytesLoaded;
 			
-			_percent = (_bytesTotal > 0) ? Math.floor((_bytesLoaded * 100) / _bytesTotal) : 0;
+			var tempPercent:int = (_bytesTotal > 0) ? Math.floor((_bytesLoaded * 100) / _bytesTotal) : 0;
+			if (tempPercent > _percent) _percent = tempPercent;
 		}
 
 	}
