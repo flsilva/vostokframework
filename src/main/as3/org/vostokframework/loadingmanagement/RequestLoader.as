@@ -91,7 +91,7 @@ package org.vostokframework.loadingmanagement
 		 * @param queueManager
 		 * @param priority
 		 */
-		public function RequestLoader(id:String, queueManager:AssetLoaderQueueManager, priority:LoadingRequestPriority): void
+		public function RequestLoader(id:String, queueManager:AssetLoaderQueueManager, priority:LoadingRequestPriority)
 		{
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!queueManager) throw new ArgumentError("Argument <queueManager> must not be null.");

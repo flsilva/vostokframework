@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
@@ -95,24 +94,26 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param requestLoaders
 		 */
-		public function RequestLoaderQueueManager(requestLoaders:IList)
+		public function RequestLoaderQueueManager()
 		{
-			if (!requestLoaders || requestLoaders.isEmpty()) throw new ArgumentError("Argument <requestLoaders> must not be null nor empty.");
-			
-			_queuedLoaders = new PriorityQueue(requestLoaders.toArray());
+			_queuedLoaders = new PriorityQueue();
 			_requestLoaders = new ArrayList(_queuedLoaders.toArray());
 			_canceledLoaders = new ArrayList();
 			_completeLoaders = new ArrayList();
 			_loadingLoaders = new ArrayList();
 			_failedLoaders = new ArrayList();
 			_stoppedLoaders = new ArrayList();
-			
-			addLoaderListeners();
+		}
+		
+		public function addLoader(loader:RequestLoader):void
+		{
+			_queuedLoaders.add(loader);
+			_requestLoaders = new ArrayList(_queuedLoaders.toArray());
+			addLoaderListeners(loader);
 		}
 		
 		public function dispose():void
 		{
-			removeLoaderListeners();
 			_requestLoaders.clear();
 			_canceledLoaders.clear();
 			_completeLoaders.clear();
@@ -198,28 +199,14 @@ package org.vostokframework.loadingmanagement
 			return _queuedLoaders.poll();
 		}
 		
-		private function addLoaderListeners():void
+		private function addLoaderListeners(loader:RequestLoader):void
 		{
-			var it:IIterator = _requestLoaders.iterator();
-			var loader:RequestLoader;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
-			}
+			loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
 		}
 		
-		private function removeLoaderListeners():void
+		private function removeLoaderListeners(loader:RequestLoader):void
 		{
-			var it:IIterator = _requestLoaders.iterator();
-			var loader:RequestLoader;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				loader.removeEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
-			}
+			loader.removeEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
 		}
 		
 		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void

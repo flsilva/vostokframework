@@ -78,13 +78,12 @@ package org.vostokframework.loadingmanagement
 			var queueManager2:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders2, 3);
 			var requestLoader2:RequestLoader = new RequestLoader("request-loader-2", queueManager2, LoadingRequestPriority.MEDIUM);
 			
-			var requestLoaders:IList = new ArrayList();
+			_queueManager = new RequestLoaderQueueManager();
+			
 			//added without order purposely
 			// to test if the queue will correctly sort it (by priority)
-			requestLoaders.add(requestLoader2);
-			requestLoaders.add(requestLoader1);
-			
-			_queueManager = new RequestLoaderQueueManager(requestLoaders);
+			_queueManager.addLoader(requestLoader2);
+			_queueManager.addLoader(requestLoader1);
 		}
 		
 		[After]
@@ -106,6 +105,12 @@ package org.vostokframework.loadingmanagement
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
+		
+		/////////////////////////////////////////////
+		// RequestLoaderQueueManager().addLoader() //
+		/////////////////////////////////////////////
+		
+		//TODO:test dupplication element
 		
 		///////////////////////////////////////////
 		// RequestLoaderQueueManager().getNext() //
