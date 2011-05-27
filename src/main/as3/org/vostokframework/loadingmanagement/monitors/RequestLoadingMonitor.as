@@ -50,6 +50,8 @@ package org.vostokframework.loadingmanagement.monitors
 		private static const TIMER_DELAY:int = 50;
 		
 		private var _assetLoadingMonitors:IList;
+		private var _isFirstProgressDispatch:Boolean;
+		private var _lastPercent:int;
 		private var _loader:RequestLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _startedTimeTryingToConnect:int;
@@ -70,6 +72,7 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_loader = loader;
 			_assetLoadingMonitors = assetLoadingMonitors;
+			_isFirstProgressDispatch = true;
 			
 			addLoaderListeners();
 			createTimer();
@@ -245,8 +248,12 @@ package org.vostokframework.loadingmanagement.monitors
 				bytesTotal += fakeBytes * totalLoadersHasNotBytesTotal;
 			}
 			
+			_lastPercent = _monitoring.percent;
 			_monitoring.update(bytesTotal, bytesLoaded);
-			dispatchEvent(createEvent(RequestLoadingMonitorEvent.PROGRESS, _loader.id, _monitoring));
+			
+			if (_monitoring.percent != _lastPercent || _isFirstProgressDispatch) dispatchEvent(createEvent(RequestLoadingMonitorEvent.PROGRESS, _loader.id, _monitoring));
+			
+			_isFirstProgressDispatch = false;
 		}
 		
 		private function removeLoaderListeners():void

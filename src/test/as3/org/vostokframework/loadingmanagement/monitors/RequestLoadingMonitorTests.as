@@ -84,6 +84,7 @@ package org.vostokframework.loadingmanagement.monitors
 		public function tearDown(): void
 		{
 			_monitor = null;
+			_requestLoader = null;
 			_stubAssetLoadingMonitor1 = null;
 			_stubAssetLoadingMonitor2 = null;
 			_stubAssetLoadingMonitor3 = null;
