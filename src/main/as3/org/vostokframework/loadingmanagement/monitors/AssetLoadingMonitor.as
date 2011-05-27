@@ -51,7 +51,6 @@ package org.vostokframework.loadingmanagement.monitors
 	{
 		private var _assetId:String;
 		private var _assetType:AssetType;
-		private var _latency:int;
 		private var _loader:IFileLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _startedTimeTryingToConnect:int;
@@ -86,9 +85,9 @@ package org.vostokframework.loadingmanagement.monitors
 			_monitoring = null;
 		}
 		
-		protected function createLoadingMonitoring():void
+		protected function createLoadingMonitoring(latency:int):void
 		{
-			_monitoring = new LoadingMonitoring(_latency);
+			_monitoring = new LoadingMonitoring(latency);
 		}
 		
 		private function addLoaderListeners():void
@@ -136,8 +135,8 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function loaderOpenHandler(event:Event):void
 		{
-			_latency = getTimer() - _startedTimeTryingToConnect;
-			createLoadingMonitoring();
+			var latency:int = getTimer() - _startedTimeTryingToConnect;
+			createLoadingMonitoring(latency);
 			dispatchEvent(createEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType, _monitoring));
 		}
 		
