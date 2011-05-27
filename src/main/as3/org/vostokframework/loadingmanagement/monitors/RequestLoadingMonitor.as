@@ -189,14 +189,17 @@ package org.vostokframework.loadingmanagement.monitors
 			else if (event.status.equals(RequestLoaderStatus.CANCELED))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.CANCELED, _loader.id, _monitoring));
+				_timer.stop();
 			}
 			else if (event.status.equals(RequestLoaderStatus.COMPLETE) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.COMPLETE, _loader.id, _monitoring));
+				_timer.stop();
 			}
 			else if (event.status.equals(RequestLoaderStatus.STOPPED) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.STOPPED, _loader.id, _monitoring));
+				_timer.stop();
 			}
 		}
 		
