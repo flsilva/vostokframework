@@ -194,18 +194,18 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void
 		{
-			/*if (event.status.equals(RequestLoaderStatus.CANCELED))
+			if (event.status.equals(RequestLoaderStatus.CANCELED))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.CANCELED, _loader.id, _monitoring));
 			}
-			else */if (event.status.equals(RequestLoaderStatus.COMPLETE) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
+			else if (event.status.equals(RequestLoaderStatus.COMPLETE) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.COMPLETE, _loader.id, _monitoring));
-			}/*
+			}
 			else if (event.status.equals(RequestLoaderStatus.STOPPED) || event.status.equals(RequestLoaderStatus.COMPLETE_WITH_FAILURES))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.STOPPED, _loader.id, _monitoring));
-			}*/
+			}
 		}
 		
 		private function monitorsHasEventListener(type:String):Boolean
