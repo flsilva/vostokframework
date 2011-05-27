@@ -260,10 +260,8 @@ package org.vostokframework.loadingmanagement
 			if (event.status.equals(AssetLoaderStatus.LOADING) &&
 				!_status.equals(RequestLoaderStatus.LOADING)) setStatus(RequestLoaderStatus.LOADING);
 			
-			if (!_status.equals(RequestLoaderStatus.LOADING) &&
-				!_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT)) return;
-			
-			loadNext();
+			if (_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT) ||
+				_status.equals(RequestLoaderStatus.LOADING)) loadNext();
 		}
 		
 		private function cancelAssetLoaders():void
