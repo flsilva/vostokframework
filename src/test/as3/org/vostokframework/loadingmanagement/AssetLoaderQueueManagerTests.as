@@ -132,6 +132,18 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
+		public function getNext_exceedsGlobalConcurrentConnections_ReturnsNull(): void
+		{
+			LoadingManagementContext.getInstance().setMaxConcurrentConnections(2);
+			
+			var loader:AssetLoader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
+			Assert.assertNull(loader);
+		}
+		
+		[Test]
 		public function getNext_cancelAndCheckNext_AssetLoader(): void
 		{
 			var loader:AssetLoader = _queueManager.getAssetLoaders().getAt(0);
