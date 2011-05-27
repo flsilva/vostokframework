@@ -134,8 +134,8 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -147,8 +147,8 @@ package org.vostokframework.loadingmanagement.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -159,8 +159,8 @@ package org.vostokframework.loadingmanagement.monitors
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -186,8 +186,8 @@ package org.vostokframework.loadingmanagement.monitors
 		{
 			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -203,8 +203,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(395, 395);
 			_stubAssetLoadingMonitor3.monitoring.update(900, 900);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -220,8 +220,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(395, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(900, 0);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -240,8 +240,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(860, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(1475, 1475);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
@@ -260,8 +260,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(0, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(847, 231);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
-			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
+			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
+			_requestLoader.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]

@@ -32,13 +32,13 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.as3collections.IList;
 	import org.vostokframework.loadingmanagement.RequestLoader;
 	import org.vostokframework.loadingmanagement.RequestLoaderStatus;
-	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoadingMonitorEvent;
 
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
+	import flash.utils.getTimer;
 
 	/**
 	 * description
@@ -52,6 +52,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private var _assetLoadingMonitors:IList;
 		private var _loader:RequestLoader;
 		private var _monitoring:LoadingMonitoring;
+		private var _startedTimeTryingToConnect:int;
 		private var _timer:Timer;
 		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
@@ -70,7 +71,6 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader = loader;
 			_assetLoadingMonitors = assetLoadingMonitors;
 			
-			addAssetLoadingMonitorOpenListener();
 			addLoaderListeners();
 			createTimer();
 		}
@@ -89,7 +89,6 @@ package org.vostokframework.loadingmanagement.monitors
 		public function dispose():void
 		{
 			_assetLoadingMonitors.clear();
-			removeAssetLoadingMonitorOpenListener();
 			removeLoaderListeners();
 			removeTimerListener();
 			_timer.stop();
@@ -135,18 +134,6 @@ package org.vostokframework.loadingmanagement.monitors
 			_monitoring = new LoadingMonitoring(latency);
 		}
 		
-		private function addAssetLoadingMonitorOpenListener():void
-		{
-			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:ILoadingMonitor;
-			
-			while (it.hasNext())
-			{
-				assetLoadingMonitor = it.next();
-				assetLoadingMonitor.addEventListener(AssetLoadingMonitorEvent.OPEN, assetLoadingMonitorOpenHandler, false, 0, true);
-			}
-		}
-		
 		private function addLoaderListeners():void
 		{
 			_loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
@@ -162,14 +149,6 @@ package org.vostokframework.loadingmanagement.monitors
 				assetLoadingMonitor = it.next();
 				assetLoadingMonitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
 			}
-		}
-		
-		private function assetLoadingMonitorOpenHandler(event:AssetLoadingMonitorEvent):void
-		{
-			createLoadingMonitoring(event.monitoring.latency);
-			removeAssetLoadingMonitorOpenListener();
-			dispatchEvent(createEvent(RequestLoadingMonitorEvent.OPEN, _loader.id, _monitoring));
-			_timer.start();
 		}
 		
 		private function addTimerListener():void
@@ -196,7 +175,18 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void
 		{
-			if (event.status.equals(RequestLoaderStatus.CANCELED))
+			if (event.status.equals(RequestLoaderStatus.TRYING_TO_CONNECT))
+			{
+				_startedTimeTryingToConnect = getTimer();
+			}
+			else if (event.status.equals(RequestLoaderStatus.LOADING))
+			{
+				var latency:int = getTimer() - _startedTimeTryingToConnect;
+				createLoadingMonitoring(latency);
+				dispatchEvent(createEvent(RequestLoadingMonitorEvent.OPEN, _loader.id, _monitoring));
+				_timer.start();
+			}
+			else if (event.status.equals(RequestLoaderStatus.CANCELED))
 			{
 				dispatchEvent(createEvent(RequestLoadingMonitorEvent.CANCELED, _loader.id, _monitoring));
 			}
@@ -254,18 +244,6 @@ package org.vostokframework.loadingmanagement.monitors
 			
 			_monitoring.update(bytesTotal, bytesLoaded);
 			dispatchEvent(createEvent(RequestLoadingMonitorEvent.PROGRESS, _loader.id, _monitoring));
-		}
-
-		private function removeAssetLoadingMonitorOpenListener():void
-		{
-			var it:IIterator = _assetLoadingMonitors.iterator();
-			var assetLoadingMonitor:ILoadingMonitor;
-			
-			while (it.hasNext())
-			{
-				assetLoadingMonitor = it.next();
-				assetLoadingMonitor.removeEventListener(AssetLoadingMonitorEvent.OPEN, assetLoadingMonitorOpenHandler, false);
-			}
 		}
 		
 		private function removeLoaderListeners():void
