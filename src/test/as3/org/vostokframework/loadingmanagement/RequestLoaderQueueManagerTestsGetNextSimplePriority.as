@@ -30,11 +30,6 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 
 	/**
 	 * @author Flávio Silva

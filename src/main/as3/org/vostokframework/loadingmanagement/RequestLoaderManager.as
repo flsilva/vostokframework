@@ -40,7 +40,6 @@ package org.vostokframework.loadingmanagement
 	{
 		private var _context:LoadingManagementContext;
 		private var _queueManager:RequestLoaderQueueManager;
-		private var _requestLoaderQueueManager: RequestLoaderQueueManager;
 		
 		/**
 		 * description
