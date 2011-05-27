@@ -113,7 +113,7 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
 			_loader.removeEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(FileLoaderEvent.CANCELED, loaderCanceledHandler, false);
-			_loader.addEventListener(FileLoaderEvent.STOPPED, loaderStoppedHandler, false);
+			_loader.removeEventListener(FileLoaderEvent.STOPPED, loaderStoppedHandler, false);
 			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
 			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false);
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);

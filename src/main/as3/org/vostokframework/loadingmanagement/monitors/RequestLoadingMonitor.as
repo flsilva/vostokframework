@@ -89,8 +89,10 @@ package org.vostokframework.loadingmanagement.monitors
 		public function dispose():void
 		{
 			_assetLoadingMonitors.clear();
-			removeTimerListener();
+			removeAssetLoadingMonitorOpenListener();
 			removeLoaderListeners();
+			removeTimerListener();
+			_timer.stop();
 			
 			_assetLoadingMonitors = null;
 			_monitoring = null;
