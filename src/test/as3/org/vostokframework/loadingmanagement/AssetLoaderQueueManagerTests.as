@@ -39,6 +39,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -48,6 +49,7 @@ package org.vostokframework.loadingmanagement
 	{
 		
 		private var _queueManager:AssetLoaderQueueManager;
+		private var _policy:StubAssetLoadingPolicy;
 		
 		public function AssetLoaderQueueManagerTests()
 		{
@@ -70,19 +72,25 @@ package org.vostokframework.loadingmanagement
 			var loader4:AssetLoader = new AssetLoader("asset-loader-4", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
 			
 			//added without order purposely
-			// to test if the queue will correctly sort it (by priority)
+			//to test if the queue will correctly sort it (by priority)
 			loaders.add(loader3);
 			loaders.add(loader2);
 			loaders.add(loader1);
 			loaders.add(loader4);
 			
-			_queueManager = new AssetLoaderQueueManager(loaders, 3);
+			_policy = new StubAssetLoadingPolicy();
+			_policy.localMaxConnections = 6;
+			_policy.globalMaxConnections = 6;
+			_policy.totalGlobalConnections = 0;
+			
+			_queueManager = new AssetLoaderQueueManager(loaders, _policy);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
 			_queueManager = null;
+			_policy = null;
 		}
 		
 		///////////////////////
@@ -108,7 +116,7 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_checkPriorityOrder2_ReturnsValidObject(): void
+		public function getNext_doubleCall_checkPriorityOrder_ReturnsValidObject(): void
 		{
 			_queueManager.getNext();
 			var loader:AssetLoader = _queueManager.getNext();
@@ -116,8 +124,12 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_exceedsConcurrentConnections_ReturnsNull(): void
+		public function getNext_exceedsLocalMaxConnections_ReturnsNull(): void
 		{
+			_policy.localMaxConnections = 3;
+			_policy.globalMaxConnections = 4;
+			_policy.totalGlobalConnections = 0;
+			
 			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
 			
@@ -132,14 +144,13 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_exceedsGlobalConcurrentConnections_ReturnsNull(): void
+		public function getNext_exceedsGlobalMaxConnections_ReturnsNull(): void
 		{
-			LoadingManagementContext.getInstance().setMaxConcurrentConnections(2);
+			_policy.localMaxConnections = 3;
+			_policy.globalMaxConnections = 4;
+			_policy.totalGlobalConnections = 4;
 			
 			var loader:AssetLoader = _queueManager.getNext();
-			loader.load();
-			
-			loader = _queueManager.getNext();
 			Assert.assertNull(loader);
 		}
 		
@@ -150,7 +161,6 @@ package org.vostokframework.loadingmanagement
 			loader.cancel();
 			
 			loader = _queueManager.getNext();
-			
 			Assert.assertEquals("asset-loader-2", loader.id);
 		}
 		

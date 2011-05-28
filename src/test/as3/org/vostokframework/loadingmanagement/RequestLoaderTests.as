@@ -39,6 +39,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -78,7 +79,12 @@ package org.vostokframework.loadingmanagement
 			assetLoaders.add(_assetLoader3);
 			assetLoaders.add(_assetLoader4);
 			
-			var queueManager:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders, 3);
+			var policy:StubAssetLoadingPolicy = new StubAssetLoadingPolicy();
+			policy.globalMaxConnections = 6;
+			policy.localMaxConnections = 3;
+			policy.totalGlobalConnections = 0;
+			
+			var queueManager:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders, policy);
 			
 			_loader = new RequestLoader("request-loader", queueManager, LoadingRequestPriority.MEDIUM);
 		}

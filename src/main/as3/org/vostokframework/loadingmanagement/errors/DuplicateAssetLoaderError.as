@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2011 (c) Flávio Silva, flsilva.com
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,23 +26,31 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
-{
-	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
-	import org.as3collections.lists.ArrayList;
-	import org.vostokframework.loadingmanagement.assetloaders.StubAssetLoader;
 
+package org.vostokframework.loadingmanagement.errors
+{
+	import org.vostokframework.errors.VostokFrameworkError;
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoaderQueueManager extends AssetLoaderQueueManager
+	public class DuplicateAssetLoaderError extends VostokFrameworkError
 	{
+		private var _loaderId:String;
 		
-		public function StubAssetLoaderQueueManager()
+		public function get loaderId():String { return _loaderId; }
+		
+		/**
+		 * Constructor, creates a new DuplicateAssetLoaderError instance.
+		 * 
+		 * @param message 	A string associated with the error object.
+		 */
+		public function DuplicateAssetLoaderError(loaderId:String, message:String = null)
 		{
-			super(new ArrayList([new StubAssetLoader("StubAssetLoader")]), new StubAssetLoadingPolicy());
+			super(message);
+			name = "DuplicateAssetLoaderError";
+			_loaderId = loaderId;
 		}
 
 	}

@@ -26,23 +26,29 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.policies
 {
-	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
-	import org.as3collections.lists.ArrayList;
-	import org.vostokframework.loadingmanagement.assetloaders.StubAssetLoader;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoaderQueueManager extends AssetLoaderQueueManager
+	public class StubAssetLoadingPolicy extends AssetLoadingPolicy
 	{
+		public var globalMaxConnections:int;
+		public var localMaxConnections:int;
+		public var totalGlobalConnections:int;
 		
-		public function StubAssetLoaderQueueManager()
+		public function StubAssetLoadingPolicy()
 		{
-			super(new ArrayList([new StubAssetLoader("StubAssetLoader")]), new StubAssetLoadingPolicy());
+			super(1, 1, new AssetLoaderRepository());
+		}
+		
+		override public function allow(localActiveConnections:int):Boolean
+		{
+			return localActiveConnections < localMaxConnections && totalGlobalConnections < globalMaxConnections;
 		}
 
 	}
