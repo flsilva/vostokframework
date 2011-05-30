@@ -55,7 +55,7 @@ package org.vostokframework.loadingmanagement.policies
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
 			_localMaxConnections = value;
 		}
-				
+		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 

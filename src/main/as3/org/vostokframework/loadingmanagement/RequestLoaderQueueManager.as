@@ -212,6 +212,10 @@ package org.vostokframework.loadingmanagement
 		{
 			removeFromLists(event.target as RequestLoader);
 			
+			//it is not needed to validate RequestLoaderStatus.LOADING status
+			//because before it is setted the RequestLoaderStatus.TRYING_TO_CONNECT status
+			//is setted, and for the purpose of this object it has the same effect
+			//as the RequestLoaderStatus.LOADING status
 			if (event.status.equals(RequestLoaderStatus.TRYING_TO_CONNECT))
 			{
 				_loadingLoaders.add(event.target);
