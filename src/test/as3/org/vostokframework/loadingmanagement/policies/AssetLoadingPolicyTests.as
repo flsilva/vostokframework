@@ -60,10 +60,11 @@ package org.vostokframework.loadingmanagement.policies
 			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
 			repository.$totalLoading = 0;
 			
-			//AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
-			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(3, 6, repository);
-			var allowed:Boolean = policy.allow(0);
+			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
 			
+			var allowed:Boolean = policy.allow(0);
 			Assert.assertTrue(allowed);
 		}
 		
@@ -73,10 +74,11 @@ package org.vostokframework.loadingmanagement.policies
 			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
 			repository.$totalLoading = 0;
 			
-			//AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
-			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(3, 6, repository);
-			var allowed:Boolean = policy.allow(2);
+			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
 			
+			var allowed:Boolean = policy.allow(2);
 			Assert.assertTrue(allowed);
 		}
 		
@@ -86,10 +88,11 @@ package org.vostokframework.loadingmanagement.policies
 			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
 			repository.$totalLoading = 0;
 			
-			//AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
-			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(3, 6, repository);
-			var allowed:Boolean = policy.allow(3);
+			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
 			
+			var allowed:Boolean = policy.allow(3);
 			Assert.assertFalse(allowed);
 		}
 		
@@ -99,10 +102,11 @@ package org.vostokframework.loadingmanagement.policies
 			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
 			repository.$totalLoading = 5;
 			
-			//AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
-			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(3, 6, repository);
-			var allowed:Boolean = policy.allow(0);
+			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
 			
+			var allowed:Boolean = policy.allow(0);
 			Assert.assertTrue(allowed);
 		}
 		
@@ -112,10 +116,11 @@ package org.vostokframework.loadingmanagement.policies
 			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
 			repository.$totalLoading = 6;
 			
-			//AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
-			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(3, 6, repository);
-			var allowed:Boolean = policy.allow(0);
+			var policy:AssetLoadingPolicy = new AssetLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
 			
+			var allowed:Boolean = policy.allow(0);
 			Assert.assertFalse(allowed);
 		}
 		

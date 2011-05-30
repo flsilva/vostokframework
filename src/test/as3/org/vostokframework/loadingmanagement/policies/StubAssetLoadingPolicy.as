@@ -37,20 +37,22 @@ package org.vostokframework.loadingmanagement.policies
 	 */
 	public class StubAssetLoadingPolicy extends AssetLoadingPolicy
 	{
-		public var globalMaxConnections:int;
-		public var localMaxConnections:int;
+		private var _globalMaxConnections:int;
+		private var _localMaxConnections:int;
 		public var totalGlobalConnections:int;
+		
+		override public function set globalMaxConnections(value:int):void { _globalMaxConnections = value; }
+		
+		override public function set localMaxConnections(value:int):void { _localMaxConnections = value; }
 		
 		public function StubAssetLoadingPolicy()
 		{
-			localMaxConnections = 1;
-			globalMaxConnections = 1;
-			super(localMaxConnections, globalMaxConnections, new AssetLoaderRepository());
+			super(new AssetLoaderRepository());
 		}
 		
 		override public function allow(localActiveConnections:int):Boolean
 		{
-			return localActiveConnections < localMaxConnections && totalGlobalConnections < globalMaxConnections;
+			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
 		}
 
 	}

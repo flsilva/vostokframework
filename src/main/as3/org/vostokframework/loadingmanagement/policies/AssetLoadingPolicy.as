@@ -41,22 +41,30 @@ package org.vostokframework.loadingmanagement.policies
 		private var _assetLoaderRepository:AssetLoaderRepository;
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
-		//TODO:create tests
+		
 		private function get totalGlobalConnections():int { return _assetLoaderRepository.totalLoading(); }
 		
+		public function set globalMaxConnections(value:int):void
+		{
+			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
+			_globalMaxConnections = value;
+		}
+		
+		public function set localMaxConnections(value:int):void
+		{
+			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
+			_localMaxConnections = value;
+		}
+				
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
+		public function AssetLoadingPolicy(assetLoaderRepository:AssetLoaderRepository)
 		{
-			if (localMaxConnections < 1) throw new ArgumentError("Argument <localMaxConnections> must be greater than zero. Received: <" + localMaxConnections + ">");
-			if (globalMaxConnections < 1) throw new ArgumentError("Argument <globalMaxConnections> must be greater than zero. Received: <" + globalMaxConnections + ">");
 			if (!assetLoaderRepository) throw new ArgumentError("Argument <assetLoaderRepository> must not be null.");
 			
-			_localMaxConnections = localMaxConnections;
-			_globalMaxConnections = globalMaxConnections;
 			_assetLoaderRepository = assetLoaderRepository;
 		}
 		
