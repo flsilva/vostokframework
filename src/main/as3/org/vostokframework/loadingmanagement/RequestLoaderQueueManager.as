@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
@@ -36,6 +35,7 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.queues.PriorityQueue;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
+	import org.vostokframework.loadingmanagement.policies.RequestLoadingPolicy;
 
 	/**
 	 * description
@@ -51,6 +51,7 @@ package org.vostokframework.loadingmanagement
 		private var _completeLoaders:IList;
 		private var _failedLoaders:IList;
 		private var _loadingLoaders:IList;
+		private var _policy:RequestLoadingPolicy;
 		private var _queuedLoaders:IQueue;
 		private var _requestLoaders:IList;
 		private var _stoppedLoaders:IList;
@@ -58,12 +59,7 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function get activeConnections(): int { return getActiveConnections(); }
-		
-		/**
-		 * description
-		 */
-		public function get activeRequests(): int { return _loadingLoaders.size(); }
+		public function get activeConnections(): int { return _loadingLoaders.size(); }
 		
 		/**
 		 * description
@@ -100,8 +96,9 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param requestLoaders
 		 */
-		public function RequestLoaderQueueManager()
+		public function RequestLoaderQueueManager(policy:RequestLoadingPolicy)
 		{
+			_policy = policy;
 			_queuedLoaders = new PriorityQueue();
 			_requestLoaders = new ArrayList();
 			_canceledLoaders = new ArrayList();
@@ -200,8 +197,8 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): RequestLoader
 		{
-			if (activeRequests >= LoadingManagementContext.getInstance().maxConcurrentRequests) return null;
-			if (activeConnections >= LoadingManagementContext.getInstance().maxConcurrentConnections) return null;
+			if (_queuedLoaders.isEmpty()) return null;
+			if (!_policy.allow(activeConnections, _loadingLoaders, _queuedLoaders.peek())) return null;
 			
 			return _queuedLoaders.poll();
 		}
@@ -211,23 +208,6 @@ package org.vostokframework.loadingmanagement
 			loader.addEventListener(RequestLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
 		}
 		
-		private function getActiveConnections():int
-		{
-			if (_requestLoaders.isEmpty()) return 0;
-			
-			var it:IIterator = _requestLoaders.iterator();
-			var loader:RequestLoader;
-			var activeConnections:int;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				activeConnections += loader.activeConnections;
-			}
-			
-			return activeConnections;
-		}
-
 		private function loaderStatusChangedHandler(event:RequestLoaderEvent):void
 		{
 			removeFromLists(event.target as RequestLoader);

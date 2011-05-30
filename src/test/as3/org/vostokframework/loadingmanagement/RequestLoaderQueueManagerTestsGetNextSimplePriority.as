@@ -30,6 +30,7 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.flexunit.Assert;
+	import org.vostokframework.loadingmanagement.policies.StubRequestLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -37,8 +38,8 @@ package org.vostokframework.loadingmanagement
 	[TestCase(order=13)]
 	public class RequestLoaderQueueManagerTestsGetNextSimplePriority
 	{
-		
 		private var _queueManager:RequestLoaderQueueManager;
+		private var _policy:StubRequestLoadingPolicy;
 		
 		public function RequestLoaderQueueManagerTestsGetNextSimplePriority()
 		{
@@ -52,7 +53,13 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_queueManager = new RequestLoaderQueueManager();
+			_policy = new StubRequestLoadingPolicy();
+			_policy.containsOnlyLowest = false;
+			_policy.globalMaxConnections = 6;
+			_policy.localMaxConnections = 3;
+			_policy.totalGlobalConnections = 0;
+			
+			_queueManager = new RequestLoaderQueueManager(_policy);
 			
 			//added without order purposely
 			//to test if the queue will correctly sort it (by priority)
@@ -65,6 +72,7 @@ package org.vostokframework.loadingmanagement
 		public function tearDown(): void
 		{
 			_queueManager = null;
+			_policy = null;
 		}
 		
 		///////////////////////////////////////////
@@ -97,9 +105,10 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function getNext_exceedsConcurrentRequests_ReturnsNull(): void
 		{
-			LoadingManagementContext.getInstance().setMaxConcurrentRequests(2);
-			
 			var loader:RequestLoader = _queueManager.getNext();
+			loader.load();
+			
+			loader = _queueManager.getNext();
 			loader.load();
 			
 			loader = _queueManager.getNext();
@@ -112,13 +121,9 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function getNext_exceededConcurrentConnections_ReturnsNull(): void
 		{
-			LoadingManagementContext.getInstance().setMaxConcurrentRequests(3);
-			LoadingManagementContext.getInstance().setMaxConcurrentConnections(6);
+			_policy.totalGlobalConnections = 6;
 			
-			var loader:RequestLoader = _queueManager.getRequestLoaders().getAt(0);
-			(loader as StubRequestLoader).activeConnections = 6;
-			
-			loader = _queueManager.getNext();
+			var loader:RequestLoader = _queueManager.getNext();
 			Assert.assertNull(loader);
 		}
 		

@@ -28,6 +28,9 @@
  */
 package org.vostokframework.loadingmanagement.policies
 {
+	import org.as3collections.IList;
+	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
+	import org.vostokframework.loadingmanagement.RequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
 	/**
@@ -35,21 +38,25 @@ package org.vostokframework.loadingmanagement.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoadingPolicy extends AssetLoadingPolicy
+	public class StubRequestLoadingPolicy extends RequestLoadingPolicy
 	{
+		public var containsOnlyLowest:Boolean;
 		public var globalMaxConnections:int;
 		public var localMaxConnections:int;
 		public var totalGlobalConnections:int;
 		
-		public function StubAssetLoadingPolicy()
+		public function StubRequestLoadingPolicy()
 		{
 			localMaxConnections = 1;
 			globalMaxConnections = 1;
 			super(localMaxConnections, globalMaxConnections, new AssetLoaderRepository());
 		}
 		
-		override public function allow(localActiveConnections:int):Boolean
+		override public function allow(localActiveConnections:int, activeLoadings:IList, allowLoader:RequestLoader):Boolean
 		{
+			if (LoadingRequestPriority.getByOrdinal(allowLoader.priority).equals(LoadingRequestPriority.LOWEST) &&
+				!containsOnlyLowest) return false;
+			
 			return localActiveConnections < localMaxConnections && totalGlobalConnections < globalMaxConnections;
 		}
 

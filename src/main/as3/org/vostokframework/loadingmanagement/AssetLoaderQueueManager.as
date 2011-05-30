@@ -200,6 +200,7 @@ package org.vostokframework.loadingmanagement
  		 */
 		public function getNext(): AssetLoader
 		{
+			if (_queuedLoaders.isEmpty()) return null;
 			if (!_policy.allow(activeConnections)) return null;
 			
 			return _queuedLoaders.poll();

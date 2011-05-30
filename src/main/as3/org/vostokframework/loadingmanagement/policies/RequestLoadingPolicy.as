@@ -29,7 +29,10 @@
 
 package org.vostokframework.loadingmanagement.policies
 {
+	import org.as3collections.IIterator;
 	import org.as3collections.IList;
+	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
+	import org.vostokframework.loadingmanagement.RequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
 	/**
@@ -37,7 +40,7 @@ package org.vostokframework.loadingmanagement.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingPolicy
+	public class RequestLoadingPolicy
 	{
 		private var _assetLoaderRepository:AssetLoaderRepository;
 		private var _globalMaxConnections:int;
@@ -55,7 +58,7 @@ package org.vostokframework.loadingmanagement.policies
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AssetLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
+		public function RequestLoadingPolicy(localMaxConnections:int, globalMaxConnections:int, assetLoaderRepository:AssetLoaderRepository)
 		{
 			if (localMaxConnections < 1) throw new ArgumentError("Argument <localMaxConnections> must be greater than zero. Received: <" + localMaxConnections + ">");
 			if (globalMaxConnections < 1) throw new ArgumentError("Argument <globalMaxConnections> must be greater than zero. Received: <" + globalMaxConnections + ">");
@@ -66,11 +69,32 @@ package org.vostokframework.loadingmanagement.policies
 			_assetLoaderRepository = assetLoaderRepository;
 		}
 		
-		public function allow(localActiveConnections:int):Boolean
+		public function allow(localActiveConnections:int, activeLoadings:IList, allowLoader:RequestLoader):Boolean
 		{
 			if (localActiveConnections < 0) throw new ArgumentError("Argument <localActiveConnections> must be a positive integer. Received: <" + localActiveConnections + ">");
+			if (!activeLoadings) throw new ArgumentError("Argument <activeLoadings> must not be null.");
+			if (!allowLoader) throw new ArgumentError("Argument <allowLoader> must not be null.");
+			
+			if (LoadingRequestPriority.getByOrdinal(allowLoader.priority).equals(LoadingRequestPriority.LOWEST) &&
+				!containsOnlyLowest(activeLoadings)) return false;
 			
 			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
+		}
+		
+		private function containsOnlyLowest(activeLoadings:IList):Boolean
+		{
+			if (activeLoadings.isEmpty()) return true;
+			
+			var it:IIterator = activeLoadings.iterator();
+			var loader:RequestLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (!LoadingRequestPriority.getByOrdinal(loader.priority).equals(LoadingRequestPriority.LOWEST)) return false;
+			}
+			
+			return true;
 		}
 
 	}

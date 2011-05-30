@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement
 {
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
+	import org.vostokframework.loadingmanagement.policies.StubRequestLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -53,7 +54,13 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_queueManager = new RequestLoaderQueueManager();
+			var policy:StubRequestLoadingPolicy = new StubRequestLoadingPolicy();
+			policy.containsOnlyLowest = false;
+			policy.globalMaxConnections = 6;
+			policy.localMaxConnections = 3;
+			policy.totalGlobalConnections = 0;
+			
+			_queueManager = new RequestLoaderQueueManager(policy);
 			_queueManager.addLoader(new StubRequestLoader("request-loader-1"));
 			_queueManager.addLoader(new StubRequestLoader("request-loader-2"));
 			_queueManager.addLoader(new StubRequestLoader("request-loader-3"));
@@ -75,25 +82,25 @@ package org.vostokframework.loadingmanagement
 		
 		//TODO:test dupplication element
 		
-		////////////////////////////////////////////////
-		// RequestLoaderQueueManager().activeRequests //
-		////////////////////////////////////////////////
+		///////////////////////////////////////////////////
+		// RequestLoaderQueueManager().activeConnections //
+		///////////////////////////////////////////////////
 		
 		[Test]
-		public function activeRequests_noLoadingCheckTotal_ReturnsZero(): void
+		public function activeConnections_noLoadingCheckTotal_ReturnsZero(): void
 		{
-			Assert.assertEquals(0, _queueManager.activeRequests);
+			Assert.assertEquals(0, _queueManager.activeConnections);
 		}
 		
 		[Test]
-		public function activeRequests_twoLoadCall_checkTotal_ReturnsTwo(): void
+		public function activeConnections_twoLoadCall_checkTotal_ReturnsTwo(): void
 		{
 			var loader:RequestLoader = _queueManager.getNext();
 			loader.load();
 			loader = _queueManager.getNext();
 			loader.load();
 			
-			Assert.assertEquals(2, _queueManager.activeRequests);
+			Assert.assertEquals(2, _queueManager.activeConnections);
 		}
 		
 		///////////////////////////////////////////////

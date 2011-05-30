@@ -65,6 +65,47 @@ package org.vostokframework.loadingmanagement
 			super(name, ordinal);
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
+		
+		/**
+		 * description
+		 * 
+		 * @param ordinal
+		 */
+		public static function getByOrdinal(ordinal:int):LoadingRequestPriority
+		{
+			switch(ordinal)
+			{
+				case 0:
+				{
+					return LOWEST;
+				}
+				
+				case 1:
+				{
+					return LOW;
+				}
+				
+				case 2:
+				{
+					return MEDIUM;
+				}
+				
+				case 3:
+				{
+					return HIGH;
+				}
+				
+				case 4:
+				{
+					return HIGHEST;
+				}
+				
+				default:
+				{
+					throw new ArgumentError("There's no Enum with ordinal <" + ordinal + ">");
+				}
+			}
+		}
 
 	}
 

@@ -30,6 +30,7 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.flexunit.Assert;
+	import org.vostokframework.loadingmanagement.policies.StubRequestLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -52,7 +53,9 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_requestLoaderManager = new RequestLoaderManager(new RequestLoaderQueueManager());
+			var policy:StubRequestLoadingPolicy = new StubRequestLoadingPolicy();
+			
+			_requestLoaderManager = new RequestLoaderManager(new RequestLoaderQueueManager(policy));
 		}
 		
 		[After]
