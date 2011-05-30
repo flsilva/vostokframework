@@ -45,7 +45,7 @@ package org.vostokframework.loadingmanagement.policies
 		private var _assetLoaderRepository:AssetLoaderRepository;
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
-		
+		//TODO:create tests
 		private function get totalGlobalConnections():int
 		{
 			var list:IList = _assetLoaderRepository.findAllLoading();
