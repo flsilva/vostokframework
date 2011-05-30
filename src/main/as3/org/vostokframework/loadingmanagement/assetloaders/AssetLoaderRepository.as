@@ -201,6 +201,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			return "[" + ReflectionUtil.getClassName(this) + "] <" + _loaderMap.getValues() + ">";
 		}
+		
+		public function totalLoading():int
+		{
+			var loadings:IList = findAllLoading();
+			if (!loadings) return 0;
+			return loadings.size();
+		}
 
 	}
 

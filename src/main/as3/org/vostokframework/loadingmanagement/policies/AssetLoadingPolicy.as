@@ -29,7 +29,6 @@
 
 package org.vostokframework.loadingmanagement.policies
 {
-	import org.as3collections.IList;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
 	/**
@@ -43,12 +42,7 @@ package org.vostokframework.loadingmanagement.policies
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
 		//TODO:create tests
-		private function get totalGlobalConnections():int
-		{
-			var list:IList = _assetLoaderRepository.findAllLoading();
-			if (!list) return 0;
-			return list.size();
-		}
+		private function get totalGlobalConnections():int { return _assetLoaderRepository.totalLoading(); }
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
