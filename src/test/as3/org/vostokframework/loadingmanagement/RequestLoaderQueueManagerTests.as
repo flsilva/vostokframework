@@ -97,6 +97,7 @@ package org.vostokframework.loadingmanagement
 		{
 			var loader:RequestLoader = _queueManager.getNext();
 			loader.load();
+			
 			loader = _queueManager.getNext();
 			loader.load();
 			

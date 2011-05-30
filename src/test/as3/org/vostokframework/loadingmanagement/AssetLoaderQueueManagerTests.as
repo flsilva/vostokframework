@@ -171,7 +171,6 @@ package org.vostokframework.loadingmanagement
 			loader.stop();
 			
 			loader = _queueManager.getNext();
-			
 			Assert.assertEquals("asset-loader-2", loader.id);
 		}
 		
@@ -184,6 +183,7 @@ package org.vostokframework.loadingmanagement
 		{
 			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
+			
 			loader = _queueManager.getNext();
 			loader.load();
 			

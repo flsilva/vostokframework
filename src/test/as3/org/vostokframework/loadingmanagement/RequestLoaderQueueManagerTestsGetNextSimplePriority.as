@@ -119,7 +119,7 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function getNext_exceededConcurrentConnections_ReturnsNull(): void
+		public function getNext_exceedsGlobalConcurrentConnections_ReturnsNull(): void
 		{
 			_policy.totalGlobalConnections = 6;
 			
