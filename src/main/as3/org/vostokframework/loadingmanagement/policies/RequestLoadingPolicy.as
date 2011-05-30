@@ -46,12 +46,7 @@ package org.vostokframework.loadingmanagement.policies
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
 		
-		private function get totalGlobalConnections():int
-		{
-			var list:IList = _assetLoaderRepository.findAllLoading();
-			if (!list) return 0;
-			return list.size();
-		}
+		private function get totalGlobalConnections():int { return _assetLoaderRepository.totalLoading(); }
 		
 		public function set globalMaxConnections(value:int):void
 		{

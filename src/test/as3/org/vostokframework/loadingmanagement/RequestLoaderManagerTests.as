@@ -54,6 +54,8 @@ package org.vostokframework.loadingmanagement
 		public function setUp(): void
 		{
 			var policy:StubRequestLoadingPolicy = new StubRequestLoadingPolicy();
+			policy.globalMaxConnections = 6;
+			policy.localMaxConnections = 3;
 			
 			_requestLoaderManager = new RequestLoaderManager(new RequestLoaderQueueManager(policy));
 		}
@@ -87,8 +89,6 @@ package org.vostokframework.loadingmanagement
 			_requestLoaderManager.load(requestLoader);
 			Assert.assertEquals(RequestLoaderStatus.TRYING_TO_CONNECT, requestLoader.status);
 		}
-		
-		
 		
 	}
 

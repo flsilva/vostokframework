@@ -50,6 +50,7 @@ package
 	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.monitors.RequestLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.policies.AssetLoadingPolicyTests;
+	import org.vostokframework.loadingmanagement.policies.RequestLoadingPolicyTests;
 
 	/**
 	 * @author Flávio Silva
@@ -93,6 +94,7 @@ package
 		
 		//org.vostokframework.loadingmanagement.policies
 		public var assetLoadingPolicyTests:AssetLoadingPolicyTests;
+		public var requestLoadingPolicyTests:RequestLoadingPolicyTests;
 		
 		public function TestSuite()
 		{
