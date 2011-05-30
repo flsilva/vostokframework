@@ -29,8 +29,10 @@
 
 package org.vostokframework.loadingmanagement.policies
 {
+	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
 	import org.vostokframework.loadingmanagement.StubRequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.StubAssetLoaderRepository;
 
@@ -124,6 +126,40 @@ package org.vostokframework.loadingmanagement.policies
 			
 			var allowed:Boolean = policy.allow(0, new ArrayList(), new StubRequestLoader("request-loader-id"));
 			Assert.assertFalse(allowed);
+		}
+		
+		[Test]
+		public function allow_withinLocalAndGlobalMaxConnections_sendingLoaderLowestPriorityWithLoadingListNotContainingOnlyLowestPriority_ReturnsFalse(): void
+		{
+			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			repository.$totalLoading = 0;
+			
+			var policy:RequestLoadingPolicy = new RequestLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
+			
+			var loading:IList = new ArrayList();
+			loading.add(new StubRequestLoader("request-loader-id", LoadingRequestPriority.HIGH));
+			
+			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			Assert.assertFalse(allowed);
+		}
+		
+		[Test]
+		public function allow_withinLocalAndGlobalMaxConnections_sendingLoaderLowestPriorityWithLoadingListContainingOnlyLowestPriority_ReturnsTrue(): void
+		{
+			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			repository.$totalLoading = 5;
+			
+			var policy:RequestLoadingPolicy = new RequestLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
+			
+			var loading:IList = new ArrayList();
+			loading.add(new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			
+			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			Assert.assertTrue(allowed);
 		}
 		
 	}
