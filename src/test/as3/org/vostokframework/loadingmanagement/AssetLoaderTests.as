@@ -30,8 +30,10 @@
 package org.vostokframework.loadingmanagement
 {
 	import mockolate.decorations.EventDispatcherDecorator;
+	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
 	import mockolate.runner.MockolateRule;
+	import mockolate.sequence;
 	import mockolate.strict;
 	import mockolate.stub;
 	import mockolate.verify;
@@ -87,7 +89,7 @@ package org.vostokframework.loadingmanagement
 			_loader = new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fileLoader, settings);
 			
 			_fileLoaderMockolate = strict(PlainLoader, null, ["id"]);
-			stub(_fileLoaderMockolate).decorate(PlainLoader, EventDispatcherDecorator);
+			//stub(_fileLoaderMockolate).decorate(PlainLoader, EventDispatcherDecorator);
 			//stub(_fileLoaderMockolate).method("addEventListener").answers(new MethodInvokingAnswer(target, methodName));
 			//stub(_fileLoaderMockolate).method("addEventListener");
 			//stub(_fileLoaderMockolate).method("removeEventListener");
@@ -120,7 +122,7 @@ package org.vostokframework.loadingmanagement
 		[Test]
 		public function load_checkIfMockWasCalled_Void(): void
 		{
-			mock(_fileLoaderMockolate).method("load");
+			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN));
 			_loader2.load();
 			verify(_fileLoaderMockolate);
 		}
@@ -134,28 +136,14 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(LoaderStatus.LOADING, _loader2.status);
 		}
 		
-		[Ignore]
-		[Test(order=999)]
+		
+		[Test]
 		public function testEventDispacther(): void
 		{
-			//_fileLoaderMockolate.addEventListener(Event.OPEN, testHandler);
-			//trace("_fileLoaderMockolate.hasEventListener(Event.OPEN): " + _fileLoaderMockolate.hasEventListener(Event.OPEN));
-			//_fileLoaderMockolate.dispatchEvent(new Event(Event.OPEN));
-			
 			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN));
 			_loader2.load();
 			
-			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-			trace("_fileLoaderMockolate.hasEventListener(Event.OPEN): " + _fileLoaderMockolate.hasEventListener(Event.OPEN));
-			trace("_loader2.historicalStatus: " + _loader2.statusHistory);
-			
 			Assert.assertEquals(LoaderStatus.LOADING, _loader2.status);
-		}
-		
-		private function testHandler(event:Event):void
-		{
-			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-			trace("testHandler()");
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
@@ -192,8 +180,8 @@ package org.vostokframework.loadingmanagement
 			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader2.status);
 		}
 		*/
-		/*
-		[Test]
+		[Ignore]
+		[Test(order=999)]
 		public function loadStressTest_validCallSequence2_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
 			var seq:Sequence = sequence();
@@ -205,20 +193,42 @@ package org.vostokframework.loadingmanagement
 				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR)).ordered(seq);
 			
 			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN)).ordered(seq);
-			mock(_fileLoaderMockolate).method("stop").dispatches(new FileLoaderEvent(FileLoaderEvent.STOPPED)).ordered(seq);
-			mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN)).ordered(seq);
+			//mock(_fileLoaderMockolate).method("stop").dispatches(new FileLoaderEvent(FileLoaderEvent.STOPPED)).ordered(seq);
+			//mock(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN)).ordered(seq);
 			
-			_loader2.load();
+			//_loader2.load();
 			//_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader2.load();
+			//_loader2.load();
 			//_fileLoader.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			_loader2.load();
-			_loader2.stop();
-			_loader2.load();
+			//_loader2.load();
+			//_loader2.stop();
+			//_loader2.load();
+			
+			_fileLoaderMockolate.addEventListener(Event.OPEN, loadEventHandler);
+			_fileLoaderMockolate.addEventListener(IOErrorEvent.IO_ERROR, ioErrorEventHandler);
+			
+			_fileLoaderMockolate.load();
+			_fileLoaderMockolate.load();
+			_fileLoaderMockolate.load();
+			
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("_loader2.historicalStatus: " + _loader2.statusHistory);
 			
 			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader2.status);
 		}
-		*/
+		
+		private function loadEventHandler(event:Event):void
+		{
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("loadEventHandler()");
+		}
+		
+		private function ioErrorEventHandler(event:Event):void
+		{
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("ioErrorEventHandler()");
+		}
+		
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function loadStressTest_invalidCallSequence_ThrowsError(): void
 		{
