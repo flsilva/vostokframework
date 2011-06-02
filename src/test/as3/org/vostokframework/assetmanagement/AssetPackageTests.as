@@ -32,6 +32,7 @@ package org.vostokframework.assetmanagement
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -71,12 +72,12 @@ package org.vostokframework.assetmanagement
 		
 		private function getAssetA():Asset
 		{
-			return new Asset("asset-A", "asset-path/asset-A.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			return new Asset("asset-A", "asset-path/asset-A.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		private function getAssetB():Asset
 		{
-			return new Asset("asset-B", "asset-path/asset-B.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			return new Asset("asset-B", "asset-path/asset-B.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		///////////////////////

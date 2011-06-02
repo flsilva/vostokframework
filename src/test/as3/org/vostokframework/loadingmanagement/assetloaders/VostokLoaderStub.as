@@ -44,7 +44,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function VostokLoaderStub()
 		{
-			super("id");
+			
 		}
 		
 		public function asyncDispatchEvent(event:Event, delay:int = 50):int

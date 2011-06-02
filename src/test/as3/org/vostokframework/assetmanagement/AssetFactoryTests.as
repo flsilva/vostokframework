@@ -32,6 +32,7 @@ package org.vostokframework.assetmanagement
 	import org.flexunit.Assert;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -105,7 +106,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function defaultPriority_instanciateWithPriority_checkIfObjectsMatch_ReturnsTrue(): void
 		{
-			var priority:AssetLoadingPriority = AssetLoadingPriority.LOW;
+			var priority:LoadPriority = LoadPriority.LOW;
 			var factory:AssetFactory = new AssetFactory(null, priority);
 			Assert.assertEquals(priority, factory.defaultPriority);
 		}
@@ -117,10 +118,10 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function setDefaultPriority_validArgument_checkIfObjectsMatch_ReturnTrue(): void
 		{
-			var priority:AssetLoadingPriority = AssetLoadingPriority.LOW;
+			var priority:LoadPriority = LoadPriority.LOW;
 			var factory:AssetFactory = new AssetFactory(null, priority);
 			
-			var priority2:AssetLoadingPriority = AssetLoadingPriority.HIGH;
+			var priority2:LoadPriority = LoadPriority.HIGH;
 			factory.setDefaultPriority(priority2);
 			
 			Assert.assertEquals(priority2, factory.defaultPriority);

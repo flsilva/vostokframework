@@ -33,6 +33,7 @@ package org.vostokframework.assetmanagement
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * description
@@ -45,7 +46,7 @@ package org.vostokframework.assetmanagement
 		 * @private
 		 */
 		private var _id:String;
-		private var _priority:AssetLoadingPriority;
+		private var _priority:LoadPriority;
 		private var _settings:LoadingAssetSettings;
 		private var _src:String;
 		private var _type:AssetType;
@@ -58,7 +59,7 @@ package org.vostokframework.assetmanagement
 		/**
 		 * description
 		 */
-		public function get priority(): AssetLoadingPriority { return _priority; }
+		public function get priority(): LoadPriority { return _priority; }
 
 		/**
 		 * description
@@ -88,7 +89,7 @@ package org.vostokframework.assetmanagement
 		 * @throws 	ArgumentError 	if the <code>type</code> argument is <code>null</code>.
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code>.
 		 */
-		public function Asset(id:String, src:String, type:AssetType, priority:AssetLoadingPriority, settings:LoadingAssetSettings = null)
+		public function Asset(id:String, src:String, type:AssetType, priority:LoadPriority, settings:LoadingAssetSettings = null)
 		{
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
@@ -124,7 +125,7 @@ package org.vostokframework.assetmanagement
 		 * @param priority
 		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
 		 */
-		public function setPriority(priority:AssetLoadingPriority): void
+		public function setPriority(priority:LoadPriority): void
 		{
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			_priority = priority;

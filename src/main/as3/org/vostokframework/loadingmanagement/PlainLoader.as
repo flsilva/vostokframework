@@ -30,9 +30,7 @@ package org.vostokframework.loadingmanagement
 {
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
-	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
@@ -42,29 +40,16 @@ package org.vostokframework.loadingmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class PlainLoader extends EventDispatcher implements IEquatable, IDisposable
+	public class PlainLoader extends EventDispatcher implements IDisposable
 	{
-		/**
-		 * description
-		 */
-		private var _id:String;
-		
-		/**
-		 * description
-		 */
-		public function get id(): String { return _id; }
 		
 		/**
 		 * description
 		 * 
-		 * @param id
 		 */
-		public function PlainLoader(id:String)
+		public function PlainLoader()
 		{
 			if (ReflectionUtil.classPathEquals(this, PlainLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
-			
-			_id = id;
 		}
 		
 		/**
@@ -80,15 +65,6 @@ package org.vostokframework.loadingmanagement
 		public function dispose():void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-
-		public function equals(other : *): Boolean
-		{
-			if (this == other) return true;
-			if (!(other is PlainLoader)) return false;
-			
-			var otherLoader:PlainLoader = other as PlainLoader;
-			return _id == otherLoader.id;
 		}
 
 		/**

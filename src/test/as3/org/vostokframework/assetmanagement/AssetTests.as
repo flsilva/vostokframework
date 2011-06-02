@@ -32,6 +32,7 @@ package org.vostokframework.assetmanagement
 	import org.flexunit.Assert;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -42,7 +43,7 @@ package org.vostokframework.assetmanagement
 		private static const ASSET_ID:String = "asset-id";
 		private static const ASSET_SRC:String = "asset-path/asset.xml";
 		private static const ASSET_TYPE:AssetType = AssetType.XML;
-		private static const ASSET_PRIORITY:AssetLoadingPriority = AssetLoadingPriority.HIGH;
+		private static const ASSET_PRIORITY:LoadPriority = LoadPriority.HIGH;
 		private static const ASSET_SETTINGS:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
 		
 		private var _asset:Asset;
@@ -99,7 +100,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function constructor_validInstantiationWithoutSettings_ReturnsValidObject(): void
 		{
-			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 			Assert.assertNotNull(asset);
 		}
 		
@@ -108,7 +109,7 @@ package org.vostokframework.assetmanagement
 		{
 			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
-			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH, settings);
+			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH, settings);
 			
 			Assert.assertNotNull(asset);
 		}
@@ -127,7 +128,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function equals_compareTwoDifferentAssets_ReturnsFalse(): void
 		{
-			var otherAsset:Asset = new Asset("other-asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			var otherAsset:Asset = new Asset("other-asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 			Assert.assertFalse(_asset.equals(otherAsset));
 		}
 		
@@ -194,7 +195,7 @@ package org.vostokframework.assetmanagement
 		[Test]
 		public function setPriority_validArgument_checkIfPriorityMatches_ReturnsTrue(): void
 		{
-			var newPriority:AssetLoadingPriority = AssetLoadingPriority.LOW;
+			var newPriority:LoadPriority = LoadPriority.LOW;
 			_asset.setPriority(newPriority);
 			
 			Assert.assertEquals(newPriority, _asset.priority);

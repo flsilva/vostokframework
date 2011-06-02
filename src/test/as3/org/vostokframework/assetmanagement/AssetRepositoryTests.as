@@ -31,6 +31,7 @@ package org.vostokframework.assetmanagement
 {
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -67,7 +68,7 @@ package org.vostokframework.assetmanagement
 		
 		private function getAsset():Asset
 		{
-			return new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			return new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		///////////////////////

@@ -32,8 +32,10 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
+	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
+	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
@@ -44,7 +46,7 @@ package org.vostokframework.loadingmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class RefinedLoader extends PlainLoader implements IPriority
+	public class RefinedLoader extends PlainLoader implements IEquatable, IPriority
 	{
 		/**
 		 * @private
@@ -54,11 +56,16 @@ package org.vostokframework.loadingmanagement
 		private var _settings:LoadingAssetSettings;
 		private var _status:LoaderStatus;
 		private var _statusHistory:IList;
-
+		
 		/**
 		 * description
 		 */
-		public function get statusHistory(): IList { return new ReadOnlyArrayList(_statusHistory.toArray()); }
+		private var _id:String;
+		
+		/**
+		 * description
+		 */
+		public function get id(): String { return _id; }
 		
 		/**
 		 * description
@@ -71,7 +78,12 @@ package org.vostokframework.loadingmanagement
 		 * description
 		 */
 		public function get status(): LoaderStatus { return _status; }
-
+		
+		/**
+		 * description
+		 */
+		public function get statusHistory(): IList { return new ReadOnlyArrayList(_statusHistory.toArray()); }
+		
 		/**
 		 * description
 		 * 
@@ -80,12 +92,12 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function RefinedLoader(id:String, priority:LoadPriority, settings:LoadingAssetSettings)
 		{
-			super(id);
-			
 			if (ReflectionUtil.classPathEquals(this, RefinedLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			
+			_id = id;
 			_priority = priority;
 			_settings = settings;
 			_statusHistory = new ArrayList();
@@ -114,6 +126,15 @@ package org.vostokframework.loadingmanagement
 			_statusHistory = null;
 			_settings = null;
 			_status = null;
+		}
+		
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			if (!(other is RefinedLoader)) return false;
+			
+			var otherLoader:RefinedLoader = other as RefinedLoader;
+			return _id == otherLoader.id;
 		}
 		
 		/**

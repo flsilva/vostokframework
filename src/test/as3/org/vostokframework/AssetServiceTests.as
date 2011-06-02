@@ -32,12 +32,12 @@ package org.vostokframework
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.assetmanagement.Asset;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.AssetPackage;
 	import org.vostokframework.assetmanagement.AssetRepository;
 	import org.vostokframework.assetmanagement.AssetType;
 	import org.vostokframework.assetmanagement.AssetsContext;
 	import org.vostokframework.assetmanagement.utils.LocaleUtil;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -79,13 +79,13 @@ package org.vostokframework
 		private function getAssetWithLocale():Asset
 		{
 			var composedId:String = LocaleUtil.composeId(ASSET_ID, ASSET_LOCALE);
-			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		private function getAssetWithoutLocale():Asset
 		{
 			var composedId:String = LocaleUtil.composeId(ASSET_ID);
-			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, AssetLoadingPriority.HIGH);
+			return new Asset(composedId, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		private function getAssetPackage():AssetPackage
@@ -146,7 +146,7 @@ package org.vostokframework
 		[Test(expects="ArgumentError")]
 		public function changeAssetPriority_invalidAssetId_ThrowsError(): void
 		{
-			_service.changeAssetPriority(null, AssetLoadingPriority.HIGH);
+			_service.changeAssetPriority(null, LoadPriority.HIGH);
 		}
 		
 		[Test(expects="ArgumentError")]
@@ -158,7 +158,7 @@ package org.vostokframework
 		[Test(expects="org.vostokframework.assetmanagement.errors.AssetNotFoundError")]
 		public function changeAssetPriority_notAddedAsset_ThrowsError(): void
 		{
-			_service.changeAssetPriority("any-not-added-id", AssetLoadingPriority.HIGH);
+			_service.changeAssetPriority("any-not-added-id", LoadPriority.HIGH);
 		}
 		
 		[Test]
@@ -167,8 +167,8 @@ package org.vostokframework
 			var asset:Asset = getAssetWithLocale();
 			AssetsContext.getInstance().assetRepository.add(asset);
 			
-			_service.changeAssetPriority(ASSET_ID, AssetLoadingPriority.HIGH, ASSET_LOCALE);
-			Assert.assertEquals(AssetLoadingPriority.HIGH, asset.priority);
+			_service.changeAssetPriority(ASSET_ID, LoadPriority.HIGH, ASSET_LOCALE);
+			Assert.assertEquals(LoadPriority.HIGH, asset.priority);
 		}
 		
 		////////////////////////////////////////

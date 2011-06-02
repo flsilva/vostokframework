@@ -37,6 +37,7 @@ package org.vostokframework.assetmanagement
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSecuritySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.assetmanagement.utils.LocaleUtil;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * description
@@ -48,7 +49,7 @@ package org.vostokframework.assetmanagement
 		/**
 		 * description
 		 */
-		private var _defaultPriority:AssetLoadingPriority;
+		private var _defaultPriority:LoadPriority;
 		
 		/**
 		 * description
@@ -58,14 +59,14 @@ package org.vostokframework.assetmanagement
 		/**
 		 * description
 		 */
-		public function get defaultPriority(): AssetLoadingPriority { return _defaultPriority; }
+		public function get defaultPriority(): LoadPriority { return _defaultPriority; }
 		
 		/**
 		 * description
 		 */
 		public function get defaultSettings(): LoadingAssetSettings { return _defaultSettings; }
 
-		public function AssetFactory(defaultSettings:LoadingAssetSettings = null, defaultPriority:AssetLoadingPriority = null)
+		public function AssetFactory(defaultSettings:LoadingAssetSettings = null, defaultPriority:LoadPriority = null)
 		{
 			if (!defaultSettings) defaultSettings = createDefaultSettings();
 			setDefaultSettings(defaultSettings);
@@ -88,7 +89,7 @@ package org.vostokframework.assetmanagement
 		 * @throws 	org.vostokframework.assetmanagement.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
 		 * @return
 		 */
-		public function create(src:String, assetPackage:AssetPackage, priority:AssetLoadingPriority = null, settings:LoadingAssetSettings = null, id:String = null, type:AssetType = null): Asset
+		public function create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, id:String = null, type:AssetType = null): Asset
 		{
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
 			if (!assetPackage) throw new ArgumentError("Argument <assetPackage> must not be null.");
@@ -119,7 +120,7 @@ package org.vostokframework.assetmanagement
 		 * @param settings
 		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
 		 */
-		public function setDefaultPriority(priority:AssetLoadingPriority): void
+		public function setDefaultPriority(priority:LoadPriority): void
 		{
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			_defaultPriority = priority;
@@ -140,7 +141,7 @@ package org.vostokframework.assetmanagement
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:String, src:String, type:AssetType, priority:AssetLoadingPriority, settings:LoadingAssetSettings): Asset
+		protected function instanciate(id:String, src:String, type:AssetType, priority:LoadPriority, settings:LoadingAssetSettings): Asset
 		{
 			return new Asset(id, src, type, priority, settings);
 		}
@@ -167,9 +168,9 @@ package org.vostokframework.assetmanagement
 		/**
 		 * @private
 		 */
-		private function createDefaultPriority(): AssetLoadingPriority
+		private function createDefaultPriority(): LoadPriority
 		{
-			return AssetLoadingPriority.MEDIUM;
+			return LoadPriority.MEDIUM;
 		}
 		
 		/**

@@ -61,8 +61,6 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 */
 		public function VostokLoader(loader:Loader, request:URLRequest, context:LoaderContext = null)
 		{
-			super("id");
-			
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!request) throw new ArgumentError("Argument <request> must not be null.");
 			

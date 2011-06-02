@@ -31,7 +31,6 @@ package org.vostokframework
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.Asset;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.AssetPackage;
 	import org.vostokframework.assetmanagement.AssetType;
 	import org.vostokframework.assetmanagement.AssetsContext;
@@ -39,6 +38,7 @@ package org.vostokframework
 	import org.vostokframework.assetmanagement.errors.DuplicateAssetError;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.assetmanagement.utils.LocaleUtil;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	/**
 	 * description
@@ -85,7 +85,7 @@ package org.vostokframework
 		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
 		 * @throws 	org.vostokframework.assetmanagement.errors.AssetNotFoundError 	if do not exist an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>locale</code>.
 		 */
-		public function changeAssetPriority(assetId:String, priority:AssetLoadingPriority, locale:String = null): void
+		public function changeAssetPriority(assetId:String, priority:LoadPriority, locale:String = null): void
 		{
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
@@ -107,7 +107,7 @@ package org.vostokframework
 		 * @throws 	org.vostokframework.assetmanagement.errors.DuplicateAssetError 	if already exists an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>assetPackage.locale</code>.
 		 * @return
 		 */
-		public function createAsset(src:String, assetPackage:AssetPackage, priority:AssetLoadingPriority = null, settings:LoadingAssetSettings = null, assetId:String = null, type:AssetType = null): Asset
+		public function createAsset(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, assetId:String = null, type:AssetType = null): Asset
 		{
 			var asset:Asset = _context.assetFactory.create(src, assetPackage, priority, settings, assetId, type);
 			

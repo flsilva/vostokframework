@@ -29,7 +29,6 @@
 
 package org.vostokframework.loadingmanagement
 {
-	import mockolate.decorations.EventDispatcherDecorator;
 	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
 	import mockolate.runner.MockolateRule;
@@ -88,7 +87,7 @@ package org.vostokframework.loadingmanagement
 			_fileLoader = new VostokLoaderStub();
 			_loader = new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fileLoader, settings);
 			
-			_fileLoaderMockolate = strict(PlainLoader, null, ["id"]);
+			_fileLoaderMockolate = strict(PlainLoader, null);
 			//stub(_fileLoaderMockolate).decorate(PlainLoader, EventDispatcherDecorator);
 			//stub(_fileLoaderMockolate).method("addEventListener").answers(new MethodInvokingAnswer(target, methodName));
 			//stub(_fileLoaderMockolate).method("addEventListener");
