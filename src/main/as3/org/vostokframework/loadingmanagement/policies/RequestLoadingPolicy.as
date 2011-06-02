@@ -31,7 +31,7 @@ package org.vostokframework.loadingmanagement.policies
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 	import org.vostokframework.loadingmanagement.RequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
@@ -78,7 +78,7 @@ package org.vostokframework.loadingmanagement.policies
 			if (!activeLoadings) throw new ArgumentError("Argument <activeLoadings> must not be null.");
 			if (!allowLoader) throw new ArgumentError("Argument <allowLoader> must not be null.");
 			
-			if (LoadingRequestPriority.getByOrdinal(allowLoader.priority).equals(LoadingRequestPriority.LOWEST) &&
+			if (LoadPriority.getByOrdinal(allowLoader.priority).equals(LoadPriority.LOWEST) &&
 				!containsOnlyLowest(activeLoadings)) return false;
 			
 			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
@@ -94,7 +94,7 @@ package org.vostokframework.loadingmanagement.policies
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (!LoadingRequestPriority.getByOrdinal(loader.priority).equals(LoadingRequestPriority.LOWEST)) return false;
+				if (!LoadPriority.getByOrdinal(loader.priority).equals(LoadPriority.LOWEST)) return false;
 			}
 			
 			return true;

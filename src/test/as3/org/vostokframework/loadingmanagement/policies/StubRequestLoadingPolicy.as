@@ -29,7 +29,7 @@
 package org.vostokframework.loadingmanagement.policies
 {
 	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 	import org.vostokframework.loadingmanagement.RequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
@@ -57,7 +57,7 @@ package org.vostokframework.loadingmanagement.policies
 		
 		override public function allow(localActiveConnections:int, activeLoadings:IList, allowLoader:RequestLoader):Boolean
 		{
-			if (LoadingRequestPriority.getByOrdinal(allowLoader.priority).equals(LoadingRequestPriority.LOWEST) &&
+			if (LoadPriority.getByOrdinal(allowLoader.priority).equals(LoadPriority.LOWEST) &&
 				!containsOnlyLowest) return false;
 			
 			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;

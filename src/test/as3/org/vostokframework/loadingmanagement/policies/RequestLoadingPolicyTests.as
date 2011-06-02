@@ -32,7 +32,7 @@ package org.vostokframework.loadingmanagement.policies
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.LoadingRequestPriority;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 	import org.vostokframework.loadingmanagement.StubRequestLoader;
 	import org.vostokframework.loadingmanagement.assetloaders.StubAssetLoaderRepository;
 
@@ -139,9 +139,9 @@ package org.vostokframework.loadingmanagement.policies
 			policy.globalMaxConnections = 6;
 			
 			var loading:IList = new ArrayList();
-			loading.add(new StubRequestLoader("request-loader-id", LoadingRequestPriority.HIGH));
+			loading.add(new StubRequestLoader("request-loader-id", LoadPriority.HIGH));
 			
-			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadPriority.LOWEST));
 			Assert.assertFalse(allowed);
 		}
 		
@@ -156,9 +156,9 @@ package org.vostokframework.loadingmanagement.policies
 			policy.globalMaxConnections = 6;
 			
 			var loading:IList = new ArrayList();
-			loading.add(new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			loading.add(new StubRequestLoader("request-loader-id", LoadPriority.LOWEST));
 			
-			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadingRequestPriority.LOWEST));
+			var allowed:Boolean = policy.allow(0, loading, new StubRequestLoader("request-loader-id", LoadPriority.LOWEST));
 			Assert.assertTrue(allowed);
 		}
 		

@@ -43,9 +43,9 @@ package org.vostokframework.loadingmanagement
 		override public function get activeConnections():int { return _activeConnections; }
 		public function set activeConnections(value:int):void { _activeConnections = value; } 
 		
-		public function StubRequestLoader(id:String, priority:LoadingRequestPriority = null)
+		public function StubRequestLoader(id:String, priority:LoadPriority = null)
 		{
-			priority = (priority) ? priority : LoadingRequestPriority.MEDIUM;
+			priority = (priority) ? priority : LoadPriority.MEDIUM;
 			super(id, new StubAssetLoaderQueueManager(), priority);
 		}
 		

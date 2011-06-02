@@ -63,9 +63,9 @@ package org.vostokframework.loadingmanagement
 			
 			//added without order purposely
 			//to test if the queue will correctly sort it (by priority)
-			_queueManager.addLoader(new StubRequestLoader("request-loader-2", LoadingRequestPriority.MEDIUM));
-			_queueManager.addLoader(new StubRequestLoader("request-loader-3", LoadingRequestPriority.LOW));
-			_queueManager.addLoader(new StubRequestLoader("request-loader-1", LoadingRequestPriority.HIGH));
+			_queueManager.addLoader(new StubRequestLoader("request-loader-2", LoadPriority.MEDIUM));
+			_queueManager.addLoader(new StubRequestLoader("request-loader-3", LoadPriority.LOW));
+			_queueManager.addLoader(new StubRequestLoader("request-loader-1", LoadPriority.HIGH));
 		}
 		
 		[After]

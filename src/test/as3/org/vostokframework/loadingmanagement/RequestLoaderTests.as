@@ -83,7 +83,7 @@ package org.vostokframework.loadingmanagement
 			
 			var queueManager:AssetLoaderQueueManager = new AssetLoaderQueueManager(assetLoaders, policy);
 			
-			_loader = new RequestLoader("request-loader", queueManager, LoadingRequestPriority.MEDIUM);
+			_loader = new RequestLoader("request-loader", queueManager, LoadPriority.MEDIUM);
 		}
 		
 		[After]
