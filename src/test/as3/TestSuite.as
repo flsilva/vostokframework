@@ -40,12 +40,12 @@ package
 	import org.vostokframework.assetmanagement.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.utils.LocaleUtilTests;
 	import org.vostokframework.loadingmanagement.AssetLoaderQueueManagerTests;
+	import org.vostokframework.loadingmanagement.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.RefinedLoaderTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderManagerTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderQueueManagerTests;
 	import org.vostokframework.loadingmanagement.RequestLoaderQueueManagerTestsGetNextSimplePriority;
 	import org.vostokframework.loadingmanagement.RequestLoaderTests;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTests;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderTestsLoad;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.monitors.RequestLoadingMonitorTests;
@@ -78,6 +78,7 @@ package
 		
 		//org.vostokframework.loadingmanagement
 		public var assetLoaderQueueManagerTests:AssetLoaderQueueManagerTests;
+		public var eefinedLoaderTests:RefinedLoaderTests;
 		public var requestLoaderTests:RequestLoaderTests;
 		public var requestLoaderManagerTests:RequestLoaderManagerTests;
 		public var requestLoaderQueueManagerTests:RequestLoaderQueueManagerTests;
@@ -85,7 +86,6 @@ package
 		
 		//org.vostokframework.loadingmanagement.assetloaders
 		public var assetLoaderTests:AssetLoaderTests;
-		public var assetLoaderTestsLoad:AssetLoaderTestsLoad;
 		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.monitors

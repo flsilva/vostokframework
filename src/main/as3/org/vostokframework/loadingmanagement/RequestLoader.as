@@ -37,10 +37,8 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
-	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
 
 	import flash.errors.IllegalOperationError;
@@ -256,13 +254,13 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false, 0, true);
 			}
 		}
 		
-		private function assetLoaderStatusChangedHandler(event:AssetLoaderEvent):void
+		private function assetLoaderStatusChangedHandler(event:LoaderEvent):void
 		{
-			if (event.status.equals(AssetLoaderStatus.LOADING) &&
+			if (event.status.equals(LoaderStatus.LOADING) &&
 				!_status.equals(RequestLoaderStatus.LOADING)) setStatus(RequestLoaderStatus.LOADING);
 			
 			if (_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT) ||
@@ -324,7 +322,7 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
 			}
 		}
 		

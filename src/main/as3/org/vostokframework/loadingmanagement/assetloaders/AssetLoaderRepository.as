@@ -37,6 +37,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.loadingmanagement.AssetLoader;
+	import org.vostokframework.loadingmanagement.LoaderStatus;
 	import org.vostokframework.loadingmanagement.errors.DuplicateAssetLoaderError;
 
 	/**
@@ -148,8 +150,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (loader.status.equals(AssetLoaderStatus.TRYING_TO_CONNECT) ||
-					loader.status.equals(AssetLoaderStatus.LOADING))
+				if (loader.status.equals(LoaderStatus.TRYING_TO_CONNECT) ||
+					loader.status.equals(LoaderStatus.LOADING))
 				{
 					list.add(loader);
 				}

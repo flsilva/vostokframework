@@ -32,13 +32,10 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
-	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
 
 	/**
@@ -69,10 +66,10 @@ package org.vostokframework.loadingmanagement
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var assetLoaders:IList = new ArrayList();
 			
-			_assetLoader1 = new AssetLoader("asset-loader-1", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
-			_assetLoader2 = new AssetLoader("asset-loader-2", AssetLoadingPriority.LOW, new VostokLoaderStub(), settings);
-			_assetLoader3 = new AssetLoader("asset-loader-3", AssetLoadingPriority.HIGH, new VostokLoaderStub(), settings);
-			_assetLoader4 = new AssetLoader("asset-loader-4", AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), settings);
+			_assetLoader1 = new AssetLoader("asset-loader-1", LoadPriority.MEDIUM, new VostokLoaderStub(), settings);
+			_assetLoader2 = new AssetLoader("asset-loader-2", LoadPriority.LOW, new VostokLoaderStub(), settings);
+			_assetLoader3 = new AssetLoader("asset-loader-3", LoadPriority.HIGH, new VostokLoaderStub(), settings);
+			_assetLoader4 = new AssetLoader("asset-loader-4", LoadPriority.MEDIUM, new VostokLoaderStub(), settings);
 			
 			assetLoaders.add(_assetLoader1);
 			assetLoaders.add(_assetLoader2);
@@ -184,45 +181,45 @@ package org.vostokframework.loadingmanagement
 		}
 		
 		[Test]
-		public function load_checkAssetLoaderStatus_TRYING_TO_CONNECT(): void
+		public function load_checkLoaderStatus_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader3.status);
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _assetLoader3.status);
 		}
 		
 		[Test]
-		public function load_checkAssetLoaderStatus2_TRYING_TO_CONNECT(): void
+		public function load_checkLoaderStatus2_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader4.status);
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _assetLoader4.status);
 		}
 		
 		[Test]
-		public function load_checkAssetLoaderStatus3_TRYING_TO_CONNECT(): void
+		public function load_checkLoaderStatus3_TRYING_TO_CONNECT(): void
 		{
 			_loader.load();
-			_assetLoader3.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _assetLoader2.status);
+			_assetLoader3.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _assetLoader2.status);
 		}
 		
 		[Test]
-		public function load_checkAssetLoaderStatus_QUEUED(): void
+		public function load_checkLoaderStatus_QUEUED(): void
 		{
 			_loader.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.QUEUED, _assetLoader2.status);
+			Assert.assertEquals(LoaderStatus.QUEUED, _assetLoader2.status);
 		}
 		
 		[Test]
 		public function load_checkStatus_COMPLETE(): void
 		{
 			_loader.load();
-			_assetLoader3.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
-			_assetLoader1.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
-			_assetLoader4.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
-			_assetLoader2.dispatchEvent(new AssetLoaderEvent(AssetLoaderEvent.STATUS_CHANGED, AssetLoaderStatus.COMPLETE));
+			_assetLoader3.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
+			_assetLoader1.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
+			_assetLoader4.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
+			_assetLoader2.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
 			
 			Assert.assertEquals(RequestLoaderStatus.COMPLETE, _loader.status);
 		}
@@ -355,7 +352,7 @@ package org.vostokframework.loadingmanagement
 		public function stopAssetLoader_CheckStatus_STOPPED(): void
 		{
 			_loader.stopAssetLoader("asset-loader-3");
-			Assert.assertEquals(AssetLoaderStatus.STOPPED, _assetLoader3.status);
+			Assert.assertEquals(LoaderStatus.STOPPED, _assetLoader3.status);
 		}
 		
 	}

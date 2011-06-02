@@ -28,9 +28,10 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.AssetLoader;
+	import org.vostokframework.loadingmanagement.LoadPriority;
 
 	import flash.events.Event;
 	import flash.utils.setTimeout;
@@ -45,7 +46,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		public function StubAssetLoader(id:String)
 		{
-			super(id, AssetLoadingPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+			super(id, LoadPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
 		}
 		
 		public function asyncDispatchEvent(event:Event, delay:int = 50):int

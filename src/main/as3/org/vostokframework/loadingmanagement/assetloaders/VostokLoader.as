@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.vostokframework.loadingmanagement.PlainLoader;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
 	import flash.display.DisplayObject;
@@ -42,7 +43,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoader implements IFileLoader
+	public class VostokLoader extends PlainLoader
 	{
 		/**
 		 * @private
@@ -60,6 +61,8 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 */
 		public function VostokLoader(loader:Loader, request:URLRequest, context:LoaderContext = null)
 		{
+			super("id");
+			
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!request) throw new ArgumentError("Argument <request> must not be null.");
 			
@@ -68,7 +71,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_context = context;
 		}
 		
-		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
+		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
 			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
@@ -76,7 +79,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		/**
 		 * description
 		 */
-		public function cancel(): void
+		override public function cancel(): void
 		{
 			removeFileLoaderListeners();
 			
@@ -95,12 +98,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 			}
 		}
 		
-		public function dispatchEvent(event:Event):Boolean
+		override public function dispatchEvent(event:Event):Boolean
 		{
 			return _loader.contentLoaderInfo.dispatchEvent(event);
 		}
 		
-		public function dispose():void
+		override public function dispose():void
 		{
 			try
 			{
@@ -120,7 +123,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_context = null;
 		}
 		
-		public function hasEventListener(type:String):Boolean
+		override public function hasEventListener(type:String):Boolean
 		{
 			return _loader.contentLoaderInfo.hasEventListener(type);
 		}
@@ -128,7 +131,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		/**
 		 * description
 		 */
-		public function load(): void
+		override public function load(): void
 		{
 			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
 			
@@ -136,12 +139,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.load(_request, _context);
 		}
 		
-		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
 			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture);
 		}
 		
-		public function stop():void
+		override public function stop():void
 		{
 			try
 			{
@@ -158,7 +161,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			}
 		}
 		
-		public function willTrigger(type:String):Boolean
+		override public function willTrigger(type:String):Boolean
 		{
 			return _loader.contentLoaderInfo.willTrigger(type);
 		}

@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,37 +26,39 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement
 {
-	import org.as3coreaddendum.system.IDisposable;
-
-	import flash.events.IEventDispatcher;
+	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
+	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 
 	/**
-	 * Description
+	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IFileLoader extends IEventDispatcher, IDisposable
+	public class StubRefinedLoader extends RefinedLoader
 	{
-		/**
-		 * description
-		 * 
- 		 */
-		function cancel(): void;
-
-		/**
-		 * description
-		 * 
- 		 */
-		function load(): void;
 		
-		/**
-		 * description
-		 * 
- 		 */
-		function stop(): void;
+		public function StubRefinedLoader(id:String)
+		{
+			super(id, LoadPriority.MEDIUM, new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+		}
+		
+		override protected function doCancel(): void
+		{
+			
+		}
+		
+		override protected function doLoad(): void
+		{
+			
+		}
+
+		override protected function doStop(): void
+		{
+			
+		}
+
 	}
 
 }

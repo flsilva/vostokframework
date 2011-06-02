@@ -30,7 +30,7 @@ package org.vostokframework.loadingmanagement.monitors
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.AssetType;
-	import org.vostokframework.loadingmanagement.assetloaders.IFileLoader;
+	import org.vostokframework.loadingmanagement.PlainLoader;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
 
@@ -51,7 +51,7 @@ package org.vostokframework.loadingmanagement.monitors
 	{
 		private var _assetId:String;
 		private var _assetType:AssetType;
-		private var _loader:IFileLoader;
+		private var _loader:PlainLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _startedTimeTryingToConnect:int;
 		
@@ -63,7 +63,7 @@ package org.vostokframework.loadingmanagement.monitors
 		 * @param assetType
 		 * @param loader
 		 */
-		public function AssetLoadingMonitor(assetId:String, assetType:AssetType, loader:IFileLoader)
+		public function AssetLoadingMonitor(assetId:String, assetType:AssetType, loader:PlainLoader)
 		{
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			if (!assetType) throw new ArgumentError("Argument <assetType> must not be null.");

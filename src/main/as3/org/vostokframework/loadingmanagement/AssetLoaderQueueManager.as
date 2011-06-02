@@ -35,9 +35,7 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.queues.PriorityQueue;
 	import org.as3coreaddendum.system.IDisposable;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderStatus;
-	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.policies.AssetLoadingPolicy;
 
 	/**
@@ -214,7 +212,7 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false, 0, true);
 			}
 		}
 		
@@ -226,50 +224,50 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.removeEventListener(AssetLoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.STATUS_CHANGED, loaderStatusChangedHandler, false);
 			}
 		}
 		
-		private function loaderStatusChangedHandler(event:AssetLoaderEvent):void
+		private function loaderStatusChangedHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as AssetLoader);
 			
-			//it is not needed to validate AssetLoaderStatus.LOADING status
-			//because before it is setted the AssetLoaderStatus.TRYING_TO_CONNECT status
+			//it is not needed to validate LoaderStatus.LOADING status
+			//because before it is setted the LoaderStatus.TRYING_TO_CONNECT status
 			//is setted, and for the purpose of this object it has the same effect
-			//as the AssetLoaderStatus.LOADING status
-			if (event.status.equals(AssetLoaderStatus.TRYING_TO_CONNECT))
+			//as the LoaderStatus.LOADING status
+			if (event.status.equals(LoaderStatus.TRYING_TO_CONNECT))
 			{
 				_loadingLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.STOPPED))
+			else if (event.status.equals(LoaderStatus.STOPPED))
 			{
 				_stoppedLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.CANCELED))
+			else if (event.status.equals(LoaderStatus.CANCELED))
 			{
 				_canceledLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.COMPLETE))
+			else if (event.status.equals(LoaderStatus.COMPLETE))
 			{
 				_completeLoaders.add(event.target);
 			}
 			//TODO:terminar de implementar
 			/*
-			else if (event.status.equals(AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS) ||
-					event.status.equals(AssetLoaderStatus.FAILED_SECURITY_ERROR))
+			else if (event.status.equals(LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS) ||
+					event.status.equals(LoaderStatus.FAILED_SECURITY_ERROR))
 			{
 				_failedLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.FAILED_ASYNC_ERROR))
+			else if (event.status.equals(LoaderStatus.FAILED_ASYNC_ERROR))
 			{
 				_failedLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.FAILED_IO_ERROR))
+			else if (event.status.equals(LoaderStatus.FAILED_IO_ERROR))
 			{
 				_failedLoaders.add(event.target);
 			}
-			else if (event.status.equals(AssetLoaderStatus.FAILED_UNKNOWN_ERROR))
+			else if (event.status.equals(LoaderStatus.FAILED_UNKNOWN_ERROR))
 			{
 				_failedLoaders.add(event.target);
 			}

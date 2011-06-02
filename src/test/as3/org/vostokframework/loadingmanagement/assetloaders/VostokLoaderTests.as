@@ -29,6 +29,8 @@
 
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.vostokframework.loadingmanagement.PlainLoader;
+
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 
@@ -51,21 +53,21 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidInstantiation1_ThrowsError(): void
 		{
-			var loader:IFileLoader = new VostokLoader(null, null);
+			var loader:PlainLoader = new VostokLoader(null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidInstantiation2_ThrowsError(): void
 		{
-			var loader:IFileLoader = new VostokLoader(new Loader(), null);
+			var loader:PlainLoader = new VostokLoader(new Loader(), null);
 			loader = null;
 		}
 		
 		[Test]
 		public function constructor_validInstantiation_Void(): void
 		{
-			var loader:IFileLoader = new VostokLoader(new Loader(), new URLRequest());
+			var loader:PlainLoader = new VostokLoader(new Loader(), new URLRequest());
 			loader = null;
 		}
 		
@@ -77,7 +79,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		public function loaderDispatcher_validGet_IEventDispatcher(): void
 		{
 			var flashLoader:Loader = new Loader();
-			var loader:IFileLoader = new VostokLoader(flashLoader, new URLRequest());
+			var loader:PlainLoader = new VostokLoader(flashLoader, new URLRequest());
 			
 			Assert.assertNotNull(loader.loadingDispatcher);
 			

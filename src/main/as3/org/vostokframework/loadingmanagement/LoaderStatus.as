@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement
 {
 	import org.as3coreaddendum.system.Enum;
 
@@ -37,20 +37,20 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderStatus extends Enum
+	public class LoaderStatus extends Enum
 	{
-		public static const CANCELED:AssetLoaderStatus = new AssetLoaderStatus("CANCELED", 0);
-		public static const COMPLETE:AssetLoaderStatus = new AssetLoaderStatus("COMPLETE", 1);
-		public static const FAILED_ASYNC_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED ASYNC ERROR", 2);
-		public static const FAILED_EXHAUSTED_ATTEMPTS:AssetLoaderStatus = new AssetLoaderStatus("FAILED EXHAUSTED ATTEMPTS", 3);
-		public static const FAILED_IO_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED IO ERROR", 4);
-		public static const FAILED_LATENCY_TIMEOUT:AssetLoaderStatus = new AssetLoaderStatus("FAILED LATENCY TIMEOUT", 5);
-		public static const FAILED_SECURITY_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED SECURITY ERROR", 6);
-		public static const FAILED_UNKNOWN_ERROR:AssetLoaderStatus = new AssetLoaderStatus("FAILED UNKNOWN ERROR", 7);
-		public static const LOADING:AssetLoaderStatus = new AssetLoaderStatus("LOADING", 8);
-		public static const QUEUED:AssetLoaderStatus = new AssetLoaderStatus("QUEUED", 9);
-		public static const STOPPED:AssetLoaderStatus = new AssetLoaderStatus("STOPPED", 10);
-		public static const TRYING_TO_CONNECT:AssetLoaderStatus = new AssetLoaderStatus("TRYING TO CONNECT", 11);
+		public static const CANCELED:LoaderStatus = new LoaderStatus("CANCELED", 0);
+		public static const COMPLETE:LoaderStatus = new LoaderStatus("COMPLETE", 1);
+		public static const FAILED_ASYNC_ERROR:LoaderStatus = new LoaderStatus("FAILED ASYNC ERROR", 2);
+		public static const FAILED_EXHAUSTED_ATTEMPTS:LoaderStatus = new LoaderStatus("FAILED EXHAUSTED ATTEMPTS", 3);
+		public static const FAILED_IO_ERROR:LoaderStatus = new LoaderStatus("FAILED IO ERROR", 4);
+		public static const FAILED_LATENCY_TIMEOUT:LoaderStatus = new LoaderStatus("FAILED LATENCY TIMEOUT", 5);
+		public static const FAILED_SECURITY_ERROR:LoaderStatus = new LoaderStatus("FAILED SECURITY ERROR", 6);
+		public static const FAILED_UNKNOWN_ERROR:LoaderStatus = new LoaderStatus("FAILED UNKNOWN ERROR", 7);
+		public static const LOADING:LoaderStatus = new LoaderStatus("LOADING", 8);
+		public static const QUEUED:LoaderStatus = new LoaderStatus("QUEUED", 9);
+		public static const STOPPED:LoaderStatus = new LoaderStatus("STOPPED", 10);
+		public static const TRYING_TO_CONNECT:LoaderStatus = new LoaderStatus("TRYING TO CONNECT", 11);
 		
 		/**
 		 * @private
@@ -60,19 +60,19 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_created = true;
 		}
-
+		
 		/**
 		 * description
 		 * 
 		 * @param name
 		 * @param ordinal
 		 */
-		public function AssetLoaderStatus(name:String, ordinal:int)
+		public function LoaderStatus(name:String, ordinal:int): void
 		{
 			super(name, ordinal);
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
-		
+
 	}
 
 }

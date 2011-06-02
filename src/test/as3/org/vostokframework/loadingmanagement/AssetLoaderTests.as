@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement
 {
 	import mockolate.decorations.EventDispatcherDecorator;
 	import mockolate.mock;
@@ -38,11 +38,11 @@ package org.vostokframework.loadingmanagement.assetloaders
 
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.assetmanagement.AssetLoadingPriority;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.events.AssetLoaderEvent;
+	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
@@ -55,20 +55,20 @@ package org.vostokframework.loadingmanagement.assetloaders
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=999)]
-	public class AssetLoaderTestsLoad
+	public class AssetLoaderTests
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
 		[Mock(type="strict",inject="false")]
-		public var _fileLoaderMockolate:IFileLoader;
+		public var _fileLoaderMockolate:PlainLoader;
 		
 		private var _fileLoader:VostokLoaderStub;
 		private var _loader:AssetLoader;
 		private var _loader2:AssetLoader;
 		private var _timer:Timer;
 		
-		public function AssetLoaderTestsLoad()
+		public function AssetLoaderTests()
 		{
 			
 		}
@@ -84,15 +84,15 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			_fileLoader = new VostokLoaderStub();
-			_loader = new AssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoader, settings);
+			_loader = new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fileLoader, settings);
 			
-			_fileLoaderMockolate = strict(IFileLoader);
-			stub(_fileLoaderMockolate).decorate(IFileLoader, EventDispatcherDecorator);
+			_fileLoaderMockolate = strict(PlainLoader, null, ["id"]);
+			stub(_fileLoaderMockolate).decorate(PlainLoader, EventDispatcherDecorator);
 			//stub(_fileLoaderMockolate).method("addEventListener").answers(new MethodInvokingAnswer(target, methodName));
 			//stub(_fileLoaderMockolate).method("addEventListener");
 			//stub(_fileLoaderMockolate).method("removeEventListener");
 			
-			_loader2 = new AssetLoader("asset-loader", AssetLoadingPriority.MEDIUM, _fileLoaderMockolate, settings);
+			_loader2 = new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fileLoaderMockolate, settings);
 		}
 		
 		[After]
@@ -111,10 +111,10 @@ package org.vostokframework.loadingmanagement.assetloaders
 		//////////////////////////////////
 		
 		[Test]
-		public function load_simpleCallOnFreshObject_ReturnsTrue(): void
+		public function load_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
-			var allowedLoading:Boolean = _loader.load();
-			Assert.assertTrue(allowedLoading);
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		
 		[Test]
@@ -131,7 +131,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			stub(_fileLoaderMockolate).method("load").dispatches(new Event(Event.OPEN));
 			_loader2.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.LOADING, _loader2.status);
+			Assert.assertEquals(LoaderStatus.LOADING, _loader2.status);
 		}
 		
 		[Ignore]
@@ -147,9 +147,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 			trace("_fileLoaderMockolate.hasEventListener(Event.OPEN): " + _fileLoaderMockolate.hasEventListener(Event.OPEN));
-			trace("_loader2.historicalStatus: " + _loader2.historicalStatus);
+			trace("_loader2.historicalStatus: " + _loader2.statusHistory);
 			
-			Assert.assertEquals(AssetLoaderStatus.LOADING, _loader2.status);
+			Assert.assertEquals(LoaderStatus.LOADING, _loader2.status);
 		}
 		
 		private function testHandler(event:Event):void
@@ -176,7 +176,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader.stop();
 			_loader.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader.status);
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader.status);
 		}
 		/*
 		[Test]
@@ -189,7 +189,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			_loader2.load();
 			//_loader2.load();
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader2.status);
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader2.status);
 		}
 		*/
 		/*
@@ -216,7 +216,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			_loader2.stop();
 			_loader2.load();
 			
-			Assert.assertEquals(AssetLoaderStatus.TRYING_TO_CONNECT, _loader2.status);
+			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _loader2.status);
 		}
 		*/
 		[Test(expects="flash.errors.IllegalOperationError")]
@@ -235,9 +235,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 		[Test(async)]
 		public function load_expectsForEvent_checkIfStatusOfEventObjectIs_TRYING_TO_CONNECT_ReturnsTrue(): void
 		{
-			_loader.addEventListener(AssetLoaderEvent.STATUS_CHANGED,
+			_loader.addEventListener(LoaderEvent.STATUS_CHANGED,
 									Async.asyncHandler(this, assetLoaderEventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
+														{propertyName:"status", propertyValue:LoaderStatus.TRYING_TO_CONNECT},
 														timeoutHandler),
 									false, 0, true);
 			
@@ -249,7 +249,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_fileLoader.addEventListener(Event.OPEN,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.LOADING},
+														{propertyName:"status", propertyValue:LoaderStatus.LOADING},
 														timeoutHandler),
 									false, -999, true);
 			
@@ -262,7 +262,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_fileLoader.addEventListener(FileLoaderEvent.COMPLETE,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.COMPLETE},
+														{propertyName:"status", propertyValue:LoaderStatus.COMPLETE},
 														timeoutHandler),
 									false, -999, true);
 			
@@ -276,7 +276,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_fileLoader.addEventListener(IOErrorEvent.IO_ERROR,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_IO_ERROR},
+														{propertyName:"status", propertyValue:LoaderStatus.FAILED_IO_ERROR},
 														timeoutHandler),
 									false, -999, true);
 			
@@ -290,7 +290,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			_fileLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_SECURITY_ERROR},
+														{propertyName:"status", propertyValue:LoaderStatus.FAILED_SECURITY_ERROR},
 														timeoutHandler),
 									false, -999, true);
 			
@@ -310,7 +310,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.TRYING_TO_CONNECT},
+														{propertyName:"status", propertyValue:LoaderStatus.TRYING_TO_CONNECT},
 														timeoutHandler),
 									false, 0, true);
 			
@@ -330,7 +330,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS},
+														{propertyName:"status", propertyValue:LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS},
 														timeoutHandler),
 									false, 0, true);
 			
@@ -342,7 +342,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
 		
-		public function assetLoaderEventHandler(event:AssetLoaderEvent, passThroughData:Object):void
+		public function assetLoaderEventHandler(event:LoaderEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
