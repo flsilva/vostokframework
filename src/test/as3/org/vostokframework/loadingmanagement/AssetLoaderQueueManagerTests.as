@@ -32,8 +32,6 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderStub;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.policies.StubAssetLoadingPolicy;
@@ -60,13 +58,12 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings(3));
 			var loaders:IList = new ArrayList();
 			
-			var loader1:AssetLoader = new AssetLoader("asset-loader-1", LoadPriority.HIGH, new VostokLoaderStub(), settings);
-			var loader2:AssetLoader = new AssetLoader("asset-loader-2", LoadPriority.MEDIUM, new VostokLoaderStub(), settings);
-			var loader3:AssetLoader = new AssetLoader("asset-loader-3", LoadPriority.MEDIUM, new VostokLoaderStub(), settings);
-			var loader4:AssetLoader = new AssetLoader("asset-loader-4", LoadPriority.LOW, new VostokLoaderStub(), settings);
+			var loader1:AssetLoader = new AssetLoader("asset-loader-1", LoadPriority.HIGH, new VostokLoaderStub(), 3);
+			var loader2:AssetLoader = new AssetLoader("asset-loader-2", LoadPriority.MEDIUM, new VostokLoaderStub(), 3);
+			var loader3:AssetLoader = new AssetLoader("asset-loader-3", LoadPriority.MEDIUM, new VostokLoaderStub(), 3);
+			var loader4:AssetLoader = new AssetLoader("asset-loader-4", LoadPriority.LOW, new VostokLoaderStub(), 3);
 			
 			//added without order purposely
 			//to test if the queue will correctly sort it (by priority)
@@ -221,7 +218,7 @@ package org.vostokframework.loadingmanagement
 		{
 			var loader:AssetLoader = _queueManager.getNext();
 			loader.load();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, LoaderStatus.COMPLETE));
+			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
 			
 			Assert.assertEquals(1, _queueManager.totalComplete);
 		}

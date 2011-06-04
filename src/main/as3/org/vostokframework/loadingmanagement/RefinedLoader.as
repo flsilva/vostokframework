@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.as3coreaddendum.system.IIndexable;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
@@ -36,26 +37,34 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
 	import flash.errors.IllegalOperationError;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class RefinedLoader extends PlainLoader implements IEquatable, IPriority
+	public class RefinedLoader extends PlainLoader implements IEquatable, IPriority, IIndexable
 	{
 		/**
 		 * @private
 		 */
+		private static const DELAY_FIRST_LOAD:int = 50;//milliseconds
+		
 		private var _currentAttempt:int;
+		private var _delayLoadAfterError:int;
+		private var _errorHistory:IList;
+		private var _failDescription:String;
+		private var _index:int;
+		private var _maxAttempts:int;
 		private var _priority:LoadPriority;
-		private var _settings:LoadingAssetSettings;
 		private var _status:LoaderStatus;
 		private var _statusHistory:IList;
+		private var _timerLoadDelay:Timer;
 		
 		/**
 		 * description
@@ -65,14 +74,30 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
+		public function get delayLoadAfterError(): int { return _delayLoadAfterError; }
+		public function set delayLoadAfterError(value:int): void { _delayLoadAfterError = value; }//TODO:VALIDATE
+		
+		/**
+		 * description
+		 */
+		public function get errorHistory(): IList { return _errorHistory; }
+		
+		/**
+		 * description
+		 */
 		public function get id(): String { return _id; }
 		
 		/**
 		 * description
 		 */
-		public function get priority(): int { return _priority.ordinal; }
+		public function get index(): int { return _index; }
+		public function set index(value:int): void { _index = value; }
 		
-		public function set priority(value:int): void { return; }
+		/**
+		 * description
+		 */
+		public function get priority(): int { return _priority.ordinal; }
+		public function set priority(value:int): void { return; }//TODO:implementar
 		
 		/**
 		 * description
@@ -90,17 +115,22 @@ package org.vostokframework.loadingmanagement
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function RefinedLoader(id:String, priority:LoadPriority, settings:LoadingAssetSettings)
+		public function RefinedLoader(id:String, priority:LoadPriority, maxAttempts:int)
 		{
 			if (ReflectionUtil.classPathEquals(this, RefinedLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
-			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
+			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
 			_id = id;
 			_priority = priority;
-			_settings = settings;
+			_maxAttempts = maxAttempts;
+			_delayLoadAfterError = 5000;
+			_errorHistory = new ArrayList();
 			_statusHistory = new ArrayList();
+			
+			_timerLoadDelay = new Timer(DELAY_FIRST_LOAD);
+			_timerLoadDelay.addEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false, 0, true);
 			
 			setStatus(LoaderStatus.QUEUED);
 		}
@@ -110,22 +140,30 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		override public final function cancel(): void
+		override public function cancel(): void
 		{
-			if (_status.equals(LoaderStatus.CANCELED) || _status.equals(LoaderStatus.COMPLETE)) return;
-			if (_status.equals(LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) return;
+			if (_status.equals(LoaderStatus.CANCELED) ||
+				_status.equals(LoaderStatus.COMPLETE) ||
+				_status.equals(LoaderStatus.FAILED)) return;
 			
+			_timerLoadDelay.stop();
 			setStatus(LoaderStatus.CANCELED);
+			dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
 			doCancel();
 		}
 		
 		override public function dispose():void
 		{
+			_errorHistory.clear();
 			_statusHistory.clear();
+			_timerLoadDelay.removeEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false);
 			
+			_errorHistory = null;
 			_statusHistory = null;
-			_settings = null;
 			_status = null;
+			_timerLoadDelay = null;
+			
+			super.dispose();
 		}
 		
 		public function equals(other : *): Boolean
@@ -142,24 +180,15 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		override public final function load(): void
+		override public function load(): void
 		{
-			if (_status.equals(LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS>, therefore it is no longer allowed loadings.");
-			if (_status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
-			if (_status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
+			if (_status.equals(LoaderStatus.CONNECTING)) throw new IllegalOperationError("The current status is <LoaderStatus.CONNECTING>, therefore it is not allowed to start a new loading right now.");
 			if (_status.equals(LoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <LoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
-			if (_status.equals(LoaderStatus.TRYING_TO_CONNECT)) throw new IllegalOperationError("The current status is <LoaderStatus.TRYING_TO_CONNECT>, therefore it is not allowed to start a new loading right now.");
+			if (_status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
+			if (_status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS>, therefore it is no longer allowed loadings.");
+			if (_status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
 			
-			_currentAttempt++;
-			
-			if (isExhaustedAttempts())
-			{
-				setStatus(LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS);
-				return;
-			}
-			
-			setStatus(LoaderStatus.TRYING_TO_CONNECT);
-			doLoad();
+			_load();
 		}
 
 		/**
@@ -167,22 +196,24 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		override public final function stop(): void
+		override public function stop(): void
 		{
 			if (_status.equals(LoaderStatus.STOPPED) ||
 				_status.equals(LoaderStatus.CANCELED) ||
 				_status.equals(LoaderStatus.COMPLETE) ||
-				_status.equals(LoaderStatus.FAILED_EXHAUSTED_ATTEMPTS))
+				_status.equals(LoaderStatus.FAILED))
 			{
 				return;
 			}
 			
-			if (_status.equals(LoaderStatus.TRYING_TO_CONNECT) || _status.equals(LoaderStatus.LOADING))
+			if (_status.equals(LoaderStatus.CONNECTING) || _status.equals(LoaderStatus.LOADING))
 			{
 				_currentAttempt--;
 			}
 			
+			_timerLoadDelay.stop();
 			setStatus(LoaderStatus.STOPPED);
+			dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
 			doStop();
 		}
 		
@@ -191,14 +222,37 @@ package org.vostokframework.loadingmanagement
 			return "[" + ReflectionUtil.getClassName(this) + " id <" + id + ">]";
 		}
 		
-		protected function loadingStarted():void
+		protected function error(error:LoadError, errorDescription:String):void
 		{
-			setStatus(LoaderStatus.LOADING);
+			_failDescription = errorDescription;
+			_errorHistory.add(error);
+			_timerLoadDelay.delay = _delayLoadAfterError;
+			setStatus(LoaderStatus.CONNECTION_ERROR);
+			
+			if (error.equals(LoadError.SECURITY_ERROR))
+			{
+				failed();
+				return;
+			}
+			
+			_load();
 		}
 		
-		protected function loadingComplete():void
+		protected function loadingInit(data:* = null):void
+		{
+			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+		}
+		
+		protected function loadingStarted(data:* = null):void
+		{
+			setStatus(LoaderStatus.LOADING);
+			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data));
+		}
+		
+		protected function loadingComplete(data:* = null):void
 		{
 			setStatus(LoaderStatus.COMPLETE);
+			dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
 		}
 		
 		protected function doCancel():void
@@ -216,11 +270,31 @@ package org.vostokframework.loadingmanagement
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		protected final function setStatus(status:LoaderStatus):void
+		private function failed():void
 		{
-			_status = status;
-			_statusHistory.add(_status);
-			dispatchEvent(new LoaderEvent(LoaderEvent.STATUS_CHANGED, _status));
+			setStatus(LoaderStatus.FAILED);
+			dispatchEvent(new LoaderEvent(LoaderEvent.FAILED));
+		}
+		
+		private function _load():void
+		{
+			_currentAttempt++;
+			
+			if (isExhaustedAttempts())
+			{
+				failed();
+				return;
+			}
+			
+			setStatus(LoaderStatus.CONNECTING);
+			dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
+			_timerLoadDelay.start();
+		}
+
+		private function timerLoadDelayHandler(event:TimerEvent):void
+		{
+			_timerLoadDelay.stop();
+			doLoad();
 		}
 		
 		/**
@@ -228,7 +302,13 @@ package org.vostokframework.loadingmanagement
 		 */
 		private function isExhaustedAttempts():Boolean
 		{
-			return _currentAttempt > _settings.policy.maxAttempts;
+			return _currentAttempt > _maxAttempts;
+		}
+		
+		private function setStatus(status:LoaderStatus):void
+		{
+			_status = status;
+			_statusHistory.add(_status);
 		}
 
 	}

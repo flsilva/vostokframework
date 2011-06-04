@@ -28,8 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.assetloaders
 {
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.AssetLoader;
 	import org.vostokframework.loadingmanagement.LoadPriority;
 
@@ -44,9 +42,9 @@ package org.vostokframework.loadingmanagement.assetloaders
 	public class StubAssetLoader extends AssetLoader
 	{
 		
-		public function StubAssetLoader(id:String)
+		public function StubAssetLoader(id:String, maxAttempts:int)
 		{
-			super(id, LoadPriority.MEDIUM, new VostokLoaderStub(), new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+			super(id, LoadPriority.MEDIUM, new VostokLoaderStub(), maxAttempts);
 		}
 		
 		public function asyncDispatchEvent(event:Event, delay:int = 50):int

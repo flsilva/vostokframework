@@ -42,7 +42,7 @@ package org.vostokframework.loadingmanagement
 		
 		public function StubAssetLoaderQueueManager()
 		{
-			super(new ArrayList([new StubAssetLoader("StubAssetLoader")]), new StubAssetLoadingPolicy());
+			super(new ArrayList([new StubAssetLoader("StubAssetLoader", 3)]), new StubAssetLoadingPolicy());
 		}
 
 	}

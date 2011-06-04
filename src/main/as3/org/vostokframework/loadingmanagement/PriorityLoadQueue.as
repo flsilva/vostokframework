@@ -33,12 +33,14 @@ package org.vostokframework.loadingmanagement
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
-	import org.as3collections.queues.PriorityQueue;
+	import org.as3collections.queues.IndexablePriorityQueue;
+	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
+	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.events.QueueEvent;
-	import org.vostokframework.loadingmanagement.policies.AssetLoadingPolicy;
 
+	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 
 	/**
@@ -46,31 +48,32 @@ package org.vostokframework.loadingmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderQueueManager extends EventDispatcher implements IDisposable
+	public class PriorityLoadQueue extends EventDispatcher implements IDisposable
 	{
 		/**
 		 * @private
 		 */
-		private var _assetLoaders:IList;
 		private var _canceledLoaders:IList;
 		private var _completeLoaders:IList;
 		private var _failedLoaders:IList;
+		private var _index:int;
+		private var _loaders:IQueue;
 		private var _loadingLoaders:IList;
-		private var _policy:AssetLoadingPolicy;
 		private var _queuedLoaders:IQueue;
 		private var _stoppedLoaders:IList;
 		
 		/**
-		 * description
+		 * @private
 		 */
-		public function get activeConnections(): int { return _loadingLoaders.size(); }
+		protected function get loadingLoaders():IList { return _loadingLoaders; }
+		protected function get queuedLoaders():IQueue { return _queuedLoaders; }
 		
 		/**
 		 * description
 		 */
 		public function get isComplete(): Boolean
 		{
-			return activeConnections == 0 && totalQueued == 0 && totalStopped == 0;
+			return totalLoading == 0 && totalQueued == 0 && totalStopped == 0;
 		}
 		
 		/**
@@ -106,30 +109,34 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 * 
-		 * @param assetLoaders
-		 * @param concurrentConnections
+		 * @param requestLoaders
 		 */
-		public function AssetLoaderQueueManager(assetLoaders:IList, policy:AssetLoadingPolicy)
+		public function PriorityLoadQueue()
 		{
-			if (!assetLoaders || assetLoaders.isEmpty()) throw new ArgumentError("Argument <assetLoaders> must not be null nor empty.");
-			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
+			if (ReflectionUtil.classPathEquals(this, PriorityLoadQueue))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
 			
-			_policy = policy;
-			_queuedLoaders = new PriorityQueue(assetLoaders.toArray());
-			_assetLoaders = new ArrayList(_queuedLoaders.toArray());
+			_queuedLoaders = new IndexablePriorityQueue();
+			_loaders = new IndexablePriorityQueue();
 			_canceledLoaders = new ArrayList();
 			_completeLoaders = new ArrayList();
 			_loadingLoaders = new ArrayList();
 			_failedLoaders = new ArrayList();
 			_stoppedLoaders = new ArrayList();
-			
-			addLoaderListeners();
+		}
+		
+		public function addLoader(loader:RefinedLoader):void
+		{
+			loader.index = _index++;
+			_queuedLoaders.add(loader);
+			_loaders.add(loader);
+			addLoaderListeners(loader);
 		}
 		
 		public function dispose():void
 		{
-			removeLoaderListeners();
-			_assetLoaders.clear();
+			removeLoadersListeners();
+			
+			_loaders.clear();
 			_canceledLoaders.clear();
 			_completeLoaders.clear();
 			_loadingLoaders.clear();
@@ -137,7 +144,7 @@ package org.vostokframework.loadingmanagement
 			_failedLoaders.clear();
 			_stoppedLoaders.clear();
 			
-			_assetLoaders = null;
+			_loaders = null;
 			_canceledLoaders = null;
 			_completeLoaders = null;
 			_loadingLoaders = null;
@@ -149,9 +156,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function getAssetLoaders(): IList
+		public function getLoaders(): IList
 		{
-			return new ReadOnlyArrayList(_assetLoaders.toArray());
+			return new ReadOnlyArrayList(_loaders.toArray());
 		}
 		
 		/**
@@ -207,74 +214,76 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		public function getNext(): AssetLoader
+		public function getNext(): RefinedLoader
 		{
 			if (_queuedLoaders.isEmpty()) return null;
-			if (!_policy.allow(activeConnections)) return null;
-			
-			return _queuedLoaders.poll();
+			if (!allowGetNext()) return null;
+			return doGetNext();
 		}
 		
-		private function addLoaderListeners():void
+		protected function allowGetNext():Boolean
 		{
-			var it:IIterator = _assetLoaders.iterator();
-			var loader:AssetLoader;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
-				loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
-				loader.addEventListener(LoaderEvent.FAILED, loaderFailedHandler, false, 0, true);
-				loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
-				loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
-			}
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doGetNext():RefinedLoader
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		private function addLoaderListeners(loader:RefinedLoader):void
+		{
+			loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
+			loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
+			loader.addEventListener(LoaderEvent.FAILED, loaderFailedHandler, false, 0, true);
+			loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
+			loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
 		}
 		
 		private function changed():void
 		{
-			dispatchEvent(new QueueEvent(QueueEvent.QUEUE_CHANGED, activeConnections));
+			dispatchEvent(new QueueEvent(QueueEvent.QUEUE_CHANGED, totalLoading));
 		}
 		
 		private function loaderCanceledHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as AssetLoader);
+			removeFromLists(event.target as RefinedLoader);
 			_canceledLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as AssetLoader);
+			removeFromLists(event.target as RefinedLoader);
 			_completeLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderFailedHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as AssetLoader);
+			removeFromLists(event.target as RefinedLoader);
 			_failedLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderStoppedHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as AssetLoader);
+			removeFromLists(event.target as RefinedLoader);
 			_stoppedLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderConnectingHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as AssetLoader);
+			removeFromLists(event.target as RefinedLoader);
 			_loadingLoaders.add(event.target);
 			changed();
 		}
 		
-		private function removeLoaderListeners():void
+		private function removeLoadersListeners():void
 		{
-			var it:IIterator = _assetLoaders.iterator();
-			var loader:AssetLoader;
+			var it:IIterator = _loaders.iterator();
+			var loader:RefinedLoader;
 			
 			while (it.hasNext())
 			{
@@ -287,7 +296,7 @@ package org.vostokframework.loadingmanagement
 			}
 		}
 		
-		private function removeFromLists(loader:AssetLoader):void
+		private function removeFromLists(loader:RefinedLoader):void
 		{
 			_canceledLoaders.remove(loader);
 			_completeLoaders.remove(loader);

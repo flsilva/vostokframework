@@ -29,6 +29,7 @@
 
 package org.vostokframework.loadingmanagement.assetloaders
 {
+	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.PlainLoader;
 
 	import flash.display.Loader;
@@ -46,46 +47,41 @@ package org.vostokframework.loadingmanagement.assetloaders
 			
 		}
 		
+		///////////////////////////////
+		// ASYNC TESTS CONFIGURATION //
+		///////////////////////////////
+		
+		public function asyncTimeoutHandler(passThroughData:Object):void
+		{
+			Assert.fail("Asynchronous Test Failed: Timeout");
+			passThroughData = null;
+		}
+		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidInstantiation1_ThrowsError(): void
+		public function constructor_invalidLoader_ThrowsError(): void
 		{
 			var loader:PlainLoader = new VostokLoader(null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidInstantiation2_ThrowsError(): void
+		public function constructor_invalidURLRequest_ThrowsError(): void
 		{
 			var loader:PlainLoader = new VostokLoader(new Loader(), null);
 			loader = null;
 		}
 		
 		[Test]
-		public function constructor_validInstantiation_Void(): void
+		public function constructor_validInstantiation_ReturnsValidInstance(): void
 		{
 			var loader:PlainLoader = new VostokLoader(new Loader(), new URLRequest());
-			loader = null;
+			Assert.assertNotNull(loader);
 		}
 		
-		///////////////////////////////////////////
-		// VostokLoader().loaderDispatcher TESTS //
-		//////////////////////////////////////////
-		/*
-		[Test]
-		public function loaderDispatcher_validGet_IEventDispatcher(): void
-		{
-			var flashLoader:Loader = new Loader();
-			var loader:PlainLoader = new VostokLoader(flashLoader, new URLRequest());
-			
-			Assert.assertNotNull(loader.loadingDispatcher);
-			
-			//Assert.assertEquals(flashLoader.loaderInfo, loader.loaderDispatcher);
-		}
-		*/
 	}
 
 }

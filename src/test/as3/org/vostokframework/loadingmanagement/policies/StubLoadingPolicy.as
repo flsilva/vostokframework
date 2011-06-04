@@ -26,49 +26,33 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement.policies
 {
-	import org.vostokframework.loadingmanagement.PlainLoader;
-
-	import flash.events.Event;
-	import flash.utils.setTimeout;
+	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoaderStub extends PlainLoader
+	public class StubLoadingPolicy extends LoadingPolicy
 	{
+		private var _globalMaxConnections:int;
+		private var _localMaxConnections:int;
+		public var totalGlobalConnections:int;
 		
-		public function VostokLoaderStub()
+		override public function set globalMaxConnections(value:int):void { _globalMaxConnections = value; }
+		
+		override public function set localMaxConnections(value:int):void { _localMaxConnections = value; }
+		
+		public function StubLoadingPolicy()
 		{
-			
+			super(new AssetLoaderRepository());
 		}
 		
-		public function asyncDispatchEvent(event:Event, delay:int = 50):int
+		override public function allow(localActiveConnections:int):Boolean
 		{
-			return setTimeout(dispatchEvent, delay, event);
-		}
-		
-		override public function cancel(): void
-		{
-			
-		}
-		
-		override public function dispose():void
-		{
-			
-		}
-		
-		override public function load(): void
-		{
-			
-		}
-		
-		override public function stop(): void
-		{
-			
+			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
 		}
 
 	}

@@ -26,44 +26,41 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.events
+package org.vostokframework.loadingmanagement
 {
-	import flash.events.Event;
+	import org.vostokframework.loadingmanagement.policies.LoadingPolicy;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoaderEvent extends Event
+	public class PlainPriorityLoadQueue extends PriorityLoadQueue
 	{
-		public static const CANCELED:String = "VostokFramework.FileLoaderEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.FileLoaderEvent.COMPLETE";
-		public static const STOPPED:String = "VostokFramework.FileLoaderEvent.STOPPED";
-		public static const TRYING_TO_CONNECT:String = "VostokFramework.FileLoaderEvent.TRYING_TO_CONNECT";
-		
 		/**
 		 * @private
- 		 */
-		private var _assetData:*;
-		
-		public function get assetData():* { return _assetData; }
-		
+		 */
+		private var _policy:LoadingPolicy;
+
 		/**
 		 * description
 		 * 
-		 * @param type
-		 * @param loadedAssetData
+		 * @param requestLoaders
 		 */
-		public function FileLoaderEvent(type:String, assetData:* = null)
+		public function PlainPriorityLoadQueue(policy:LoadingPolicy)
 		{
-			super(type);
-			_assetData = assetData;
+			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
+			_policy = policy;
 		}
 		
-		override public function clone():Event
+		override protected function allowGetNext():Boolean
 		{
-			return new FileLoaderEvent(type, _assetData);
+			return _policy.allow(totalLoading);
+		}
+		
+		override protected function doGetNext():RefinedLoader
+		{
+			return queuedLoaders.poll();
 		}
 		
 	}

@@ -254,15 +254,22 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.addEventListener(LoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.CANCELED, loaderChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.COMPLETE, loaderChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.FAILED, loaderChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.STOPPED, loaderChangedHandler, false, 0, true);
+				loader.addEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false, 0, true);
 			}
 		}
 		
-		private function assetLoaderStatusChangedHandler(event:LoaderEvent):void
+		private function loaderTryingToConnectHandler(event:LoaderEvent):void
 		{
-			if (event.status.equals(LoaderStatus.LOADING) &&
-				!_status.equals(RequestLoaderStatus.LOADING)) setStatus(RequestLoaderStatus.LOADING);
-			
+			if (!_status.equals(RequestLoaderStatus.LOADING)) setStatus(RequestLoaderStatus.LOADING);
+			loadNext();
+		}
+		
+		private function loaderChangedHandler(event:LoaderEvent):void
+		{
 			if (_status.equals(RequestLoaderStatus.TRYING_TO_CONNECT) ||
 				_status.equals(RequestLoaderStatus.LOADING)) loadNext();
 		}
@@ -322,7 +329,11 @@ package org.vostokframework.loadingmanagement
 			while (it.hasNext())
 			{
 				loader = it.next();
-				loader.removeEventListener(LoaderEvent.STATUS_CHANGED, assetLoaderStatusChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.CANCELED, loaderChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.COMPLETE, loaderChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.FAILED, loaderChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.STOPPED, loaderChangedHandler, false);
+				loader.removeEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false);
 			}
 		}
 		

@@ -33,13 +33,15 @@ package org.vostokframework.loadingmanagement
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
+	import flash.events.Event;
+
 	/**
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=999)]
 	public class RefinedLoaderTests
 	{
-		public var _fakeLoader:RefinedLoader;
+		public var _loader:RefinedLoader;
 		
 		public function RefinedLoaderTests()
 		{
@@ -53,13 +55,13 @@ package org.vostokframework.loadingmanagement
 		[Before]
 		public function setUp(): void
 		{
-			_fakeLoader = getLoader();
+			_loader = getLoader();
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
-			_fakeLoader = null;
+			_loader = null;
 		}
 		
 		////////////////////
@@ -68,20 +70,24 @@ package org.vostokframework.loadingmanagement
 		
 		public function getLoader():RefinedLoader
 		{
-			return new StubRefinedLoader("id");
+			return new StubRefinedLoader("id", 3);
 		}
 		
 		///////////////////////////////
 		// ASYNC TESTS CONFIGURATION //
 		///////////////////////////////
 		
-		public function eventHandler(event:LoaderEvent, passThroughData:Object):void
+		public function validateLoaderPropertyEventHandler(event:Event, passThroughData:Object):void
 		{
-			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
+			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
 		
-		public function timeoutHandler(passThroughData:Object):void
+		public function asyncTimeoutHandler(passThroughData:Object):void
 		{
+			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+			trace("asyncTimeoutHandler() - _loader.statusHistory: " + _loader.statusHistory);
+			trace("asyncTimeoutHandler() - _loader.errorHistory: " + _loader.errorHistory);
+			
 			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
 		}
@@ -97,16 +103,16 @@ package org.vostokframework.loadingmanagement
 		////////////////////////////
 		
 		[Test]
-		public function status_freshObject_checkIfStatusIs_QUEUED_ReturnsTrue(): void
+		public function status_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
 		{
-			Assert.assertEquals(LoaderStatus.QUEUED, _fakeLoader.status);
+			Assert.assertEquals(LoaderStatus.QUEUED, _loader.status);
 		}
 		
 		[Test]
-		public function status_afterCallLoad_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		public function status_afterCallLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _fakeLoader.status);
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
 		}
 		
 		///////////////////////////////////
@@ -114,16 +120,16 @@ package org.vostokframework.loadingmanagement
 		///////////////////////////////////
 		
 		[Test]
-		public function statusHistory_freshObject_checkIfFirstElementIs_QUEUED_ReturnsTrue(): void
+		public function statusHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
 		{
-			Assert.assertEquals(LoaderStatus.QUEUED, _fakeLoader.statusHistory.getAt(0));
+			Assert.assertEquals(LoaderStatus.QUEUED, _loader.statusHistory.getAt(0));
 		}
 		
 		[Test]
-		public function statusHistory_afterCallLoad_checkIfSecondElementIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		public function statusHistory_afterCallLoad_checkIfSecondElementIsTryingToConnect_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _fakeLoader.statusHistory.getAt(1));
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.statusHistory.getAt(1));
 		}
 		
 		//////////////////////////////
@@ -131,30 +137,25 @@ package org.vostokframework.loadingmanagement
 		//////////////////////////////
 		
 		[Test]
-		public function cancel_checkIfStatusIs_CANCELED_ReturnsTrue(): void
+		public function cancel_simpleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
 		{
-			_fakeLoader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _fakeLoader.status);
+			_loader.cancel();
+			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
 		}
 		
 		[Test]
-		public function cancel_doubleCall_checkIfStatusIs_CANCELED_ReturnsTrue(): void
+		public function cancel_doubleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
 		{
-			_fakeLoader.cancel();
-			_fakeLoader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _fakeLoader.status);
+			_loader.cancel();
+			_loader.cancel();
+			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
 		}
 		
 		[Test(async)]
-		public function cancel_expectsForLoaderStatusEvent_checkIfStatusOfEventIs_CANCELED_ReturnsTrue(): void
+		public function cancel_simpleCall_waitCanceledLoaderEvent(): void
 		{
-			_fakeLoader.addEventListener(LoaderEvent.STATUS_CHANGED,
-									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:LoaderStatus.CANCELED},
-														timeoutHandler),
-									false, 0, true);
-			
-			_fakeLoader.cancel();
+			Async.proceedOnEvent(this, _loader, LoaderEvent.CANCELED, 50, asyncTimeoutHandler);
+			_loader.cancel();
 		}
 		
 		////////////////////////////
@@ -162,29 +163,24 @@ package org.vostokframework.loadingmanagement
 		////////////////////////////
 		
 		[Test]
-		public function load_checkIfStatusIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		public function load_simpleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _fakeLoader.status);
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function load_doubleCall_ThrowsError(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.load();
+			_loader.load();
+			_loader.load();
 		}
 		
 		[Test(async)]
-		public function load_expectsForLoaderStatusEvent_checkIfStatusOfEventIs_TRYING_TO_CONNECT_ReturnsTrue(): void
+		public function load_simpleCall_waitTryingToConnectLoaderEvent(): void
 		{
-			_fakeLoader.addEventListener(LoaderEvent.STATUS_CHANGED,
-									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:LoaderStatus.TRYING_TO_CONNECT},
-														timeoutHandler),
-									false, 0, true);
-			
-			_fakeLoader.load();
+			Async.proceedOnEvent(this, _loader, LoaderEvent.CONNECTING, 50, asyncTimeoutHandler);
+			_loader.load();
 		}
 		
 		////////////////////////////
@@ -192,30 +188,25 @@ package org.vostokframework.loadingmanagement
 		////////////////////////////
 		
 		[Test]
-		public function stop_checkStatus_STOPPED(): void
+		public function stop_simpleCall_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
-			_fakeLoader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _fakeLoader.status);
+			_loader.stop();
+			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
 		}
 		
 		[Test]
-		public function stop_doubleCallCheckStatus_STOPPED(): void
+		public function stop_doubleCall_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
-			_fakeLoader.stop();
-			_fakeLoader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _fakeLoader.status);
+			_loader.stop();
+			_loader.stop();
+			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
 		}
 		
 		[Test(async)]
-		public function stop_expectsForLoaderStatusEvent_checkIfStatusOfEventIs_STOPPED_ReturnsTrue(): void
+		public function stop_simpleCall_waitStoppedLoaderEvent(): void
 		{
-			_fakeLoader.addEventListener(LoaderEvent.STATUS_CHANGED,
-									Async.asyncHandler(this, eventHandler, 500,
-														{propertyName:"status", propertyValue:LoaderStatus.STOPPED},
-														timeoutHandler),
-									false, 0, true);
-			
-			_fakeLoader.stop();
+			Async.proceedOnEvent(this, _loader, LoaderEvent.STOPPED, 50, asyncTimeoutHandler);
+			_loader.stop();
 		}
 		
 		//////////////////////////////////////////////////////////
@@ -223,88 +214,88 @@ package org.vostokframework.loadingmanagement
 		//////////////////////////////////////////////////////////
 		
 		[Test]
-		public function loadAndStop_CheckStatus_STOPPED(): void
+		public function loadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _fakeLoader.status);
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
 		}
 		
 		[Test]
-		public function stopAndLoad_CheckStatus_TRYING_TO_CONNECT(): void
+		public function stopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
-			_fakeLoader.stop();
-			_fakeLoader.load();
-			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _fakeLoader.status);
+			_loader.stop();
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
 		}
 		
 		[Test]
-		public function loadAndCancel_CheckStatus_CANCELED(): void
+		public function loadAndCancel_checkIfStatusIsCanceled_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _fakeLoader.status);
+			_loader.load();
+			_loader.cancel();
+			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function loadAndCancelAndLoad_illegalOperation_ThrowsError(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.cancel();
-			_fakeLoader.load();
+			_loader.load();
+			_loader.cancel();
+			_loader.load();
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function cancelAndLoad_illegalOperation_ThrowsError(): void
 		{
-			_fakeLoader.cancel();
-			_fakeLoader.load();
+			_loader.cancel();
+			_loader.load();
 		}
 		
 		[Test]
-		public function loadAndStopAndLoad_CheckStatus_TRYING_TO_CONNECT(): void
+		public function loadAndStopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			_fakeLoader.load();
-			Assert.assertEquals(LoaderStatus.TRYING_TO_CONNECT, _fakeLoader.status);
+			_loader.load();
+			_loader.stop();
+			_loader.load();
+			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
 		}
 		
 		[Test]
-		public function stopAndLoadAndStop_CheckStatus_STOPPED(): void
+		public function stopAndLoadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
-			_fakeLoader.stop();
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _fakeLoader.status);
+			_loader.stop();
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
 		}
 		
 		[Test]
-		public function loadAndStopAndLoadAndStop_CheckStatus_STOPPED(): void
+		public function loadAndStopAndLoadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _fakeLoader.status);
+			_loader.load();
+			_loader.stop();
+			_loader.load();
+			_loader.stop();
+			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
 		}
 		
 		[Test]
-		public function loadAndStopAndCancel_CheckStatus_CANCELED(): void
+		public function loadAndStopAndCancel_checkIfStatusIsCanceled_ReturnsTrue(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			_fakeLoader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _fakeLoader.status);
+			_loader.load();
+			_loader.stop();
+			_loader.cancel();
+			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function loadAndStopAndCancelAndLoad_illegalOperation_ThrowsError(): void
 		{
-			_fakeLoader.load();
-			_fakeLoader.stop();
-			_fakeLoader.cancel();
-			_fakeLoader.load();
+			_loader.load();
+			_loader.stop();
+			_loader.cancel();
+			_loader.load();
 		}
 		
 	}

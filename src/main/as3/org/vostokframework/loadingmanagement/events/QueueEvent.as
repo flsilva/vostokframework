@@ -26,51 +26,43 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement.events
 {
-	import org.vostokframework.loadingmanagement.PlainLoader;
-
 	import flash.events.Event;
-	import flash.utils.setTimeout;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoaderStub extends PlainLoader
+	public class QueueEvent extends Event
 	{
+		public static const QUEUE_CHANGED:String = "VostokFramework.QueueEvent.QUEUE_CHANGED";
 		
-		public function VostokLoaderStub()
+		/**
+		 * @private
+ 		 */
+		private var _activeConnections:int;
+		
+		public function get activeConnections():int { return _activeConnections; }
+		
+		/**
+		 * description
+		 * 
+		 * @param type
+		 * @param loadedAssetData
+		 */
+		public function QueueEvent(type:String, activeConnections:int)
 		{
-			
+			super(type, true);
+			_activeConnections = activeConnections;
 		}
 		
-		public function asyncDispatchEvent(event:Event, delay:int = 50):int
+		override public function clone():Event
 		{
-			return setTimeout(dispatchEvent, delay, event);
+			return new LoaderEvent(type, _activeConnections);
 		}
 		
-		override public function cancel(): void
-		{
-			
-		}
-		
-		override public function dispose():void
-		{
-			
-		}
-		
-		override public function load(): void
-		{
-			
-		}
-		
-		override public function stop(): void
-		{
-			
-		}
-
 	}
 
 }

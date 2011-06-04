@@ -28,8 +28,6 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 
 	/**
 	 * description
@@ -39,9 +37,10 @@ package org.vostokframework.loadingmanagement
 	public class StubRefinedLoader extends RefinedLoader
 	{
 		
-		public function StubRefinedLoader(id:String)
+		public function StubRefinedLoader(id:String, maxAttempts:int, priority:LoadPriority = null)
 		{
-			super(id, LoadPriority.MEDIUM, new LoadingAssetSettings(new LoadingAssetPolicySettings()));
+			if (!priority) priority = LoadPriority.MEDIUM;
+			super(id, priority, maxAttempts);
 		}
 		
 		override protected function doCancel(): void

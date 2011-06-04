@@ -32,7 +32,7 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.vostokframework.assetmanagement.AssetType;
 	import org.vostokframework.loadingmanagement.PlainLoader;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
-	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -92,13 +92,13 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function addLoaderListeners():void
 		{
-			_loader.addEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false, 0, true);
 			_loader.addEventListener(Event.INIT, loaderInitHandler, false, 0, true);
 			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
-			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
-			_loader.addEventListener(FileLoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
-			_loader.addEventListener(FileLoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
 			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
@@ -106,13 +106,13 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function removeLoaderListeners():void
 		{
-			_loader.removeEventListener(FileLoaderEvent.TRYING_TO_CONNECT, loaderTryingToConnectHandler, false);
+			_loader.removeEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false);
 			_loader.removeEventListener(Event.INIT, loaderInitHandler, false);
 			_loader.removeEventListener(Event.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
-			_loader.removeEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false);
-			_loader.removeEventListener(FileLoaderEvent.CANCELED, loaderCanceledHandler, false);
-			_loader.removeEventListener(FileLoaderEvent.STOPPED, loaderStoppedHandler, false);
+			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
+			_loader.removeEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false);
+			_loader.removeEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false);
 			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
 			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false);
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
@@ -123,7 +123,7 @@ package org.vostokframework.loadingmanagement.monitors
 			return new AssetLoadingMonitorEvent(type, assetId, assetType, monitoring, assetData);
 		}
 		
-		private function loaderTryingToConnectHandler(event:FileLoaderEvent):void
+		private function loaderTryingToConnectHandler(event:LoaderEvent):void
 		{
 			_startedTimeTryingToConnect = getTimer();
 		}
@@ -152,18 +152,18 @@ package org.vostokframework.loadingmanagement.monitors
 			
 		}
 		
-		private function loaderCompleteHandler(event:FileLoaderEvent):void
+		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
 			loaderProgress(_monitoring.bytesTotal, _monitoring.bytesTotal);
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.assetData));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.data));
 		}
 		
-		private function loaderCanceledHandler(event:FileLoaderEvent):void
+		private function loaderCanceledHandler(event:LoaderEvent):void
 		{
 			dispatchEvent(createEvent(AssetLoadingMonitorEvent.CANCELED, _assetId, _assetType, _monitoring));
 		}
 		
-		private function loaderStoppedHandler(event:FileLoaderEvent):void
+		private function loaderStoppedHandler(event:LoaderEvent):void
 		{
 			dispatchEvent(createEvent(AssetLoadingMonitorEvent.STOPPED, _assetId, _assetType, _monitoring));
 		}

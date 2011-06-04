@@ -29,7 +29,7 @@
 package org.vostokframework.loadingmanagement.assetloaders
 {
 	import org.vostokframework.loadingmanagement.PlainLoader;
-	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
@@ -71,7 +71,13 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
-			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				_loader.contentLoaderInfo.addEventListener(type, listener, useCapture, priority, useWeakReference);
+				return;
+			}
+			
+			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
 		/**
@@ -92,13 +98,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			finally
 			{
 				_loader.unload();
-				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.CANCELED));
 			}
-		}
-		
-		override public function dispatchEvent(event:Event):Boolean
-		{
-			return _loader.contentLoaderInfo.dispatchEvent(event);
 		}
 		
 		override public function dispose():void
@@ -123,7 +123,12 @@ package org.vostokframework.loadingmanagement.assetloaders
 		
 		override public function hasEventListener(type:String):Boolean
 		{
-			return _loader.contentLoaderInfo.hasEventListener(type);
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.contentLoaderInfo.hasEventListener(type);
+			}
+			
+			return super.hasEventListener(type);
 		}
 		
 		/**
@@ -131,15 +136,19 @@ package org.vostokframework.loadingmanagement.assetloaders
 		 */
 		override public function load(): void
 		{
-			dispatchEvent(new FileLoaderEvent(FileLoaderEvent.TRYING_TO_CONNECT));
-			
 			addFileLoaderListeners();
 			_loader.load(_request, _context);
 		}
 		
 		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
-			_loader.contentLoaderInfo.addEventListener(type, listener, useCapture);
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				_loader.contentLoaderInfo.removeEventListener(type, listener, useCapture);
+				return;
+			}
+			
+			super.removeEventListener(type, listener, useCapture);
 		}
 		
 		override public function stop():void
@@ -155,23 +164,57 @@ package org.vostokframework.loadingmanagement.assetloaders
 			finally
 			{
 				_loader.unload();
-				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.STOPPED));
 			}
 		}
 		
 		override public function willTrigger(type:String):Boolean
 		{
-			return _loader.contentLoaderInfo.willTrigger(type);
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.contentLoaderInfo.willTrigger(type);
+			}
+			
+			return super.willTrigger(type);
 		}
 		
 		private function addFileLoaderListeners():void
 		{
+			_loader.contentLoaderInfo.addEventListener(Event.INIT, initHandler, false, 0, true);
+			_loader.contentLoaderInfo.addEventListener(Event.OPEN, openHandler, false, 0, true);
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
 		}
 		
 		private function removeFileLoaderListeners():void
 		{
+			_loader.contentLoaderInfo.removeEventListener(Event.INIT, initHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(Event.OPEN, openHandler, false);
 			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, completeHandler, false);
+		}
+		
+		private function initHandler(event:Event):void
+		{
+			try
+			{
+				var data:DisplayObject = _loader.content;
+				dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+			}
+			catch (error:SecurityError)
+			{
+				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
+		}
+		
+		private function openHandler(event:Event):void
+		{
+			try
+			{
+				var data:DisplayObject = _loader.content;
+				dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data));
+			}
+			catch (error:SecurityError)
+			{
+				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
 		}
 		
 		private function completeHandler(event:Event):void
@@ -183,12 +226,10 @@ package org.vostokframework.loadingmanagement.assetloaders
 		{
 			removeFileLoaderListeners();
 			
-			var data:DisplayObject;
-			
 			try
 			{
-				data = _loader.content;
-				dispatchEvent(new FileLoaderEvent(FileLoaderEvent.COMPLETE, data));
+				var data:DisplayObject = _loader.content;
+				dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
 			}
 			catch (error:SecurityError)
 			{

@@ -29,9 +29,8 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.events.FileLoaderEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
-	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 
@@ -45,7 +44,6 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * @private
 		 */
-		private var _failDescription:String;
 		private var _loader:PlainLoader;
 
 		/**
@@ -54,12 +52,23 @@ package org.vostokframework.loadingmanagement
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function AssetLoader(id:String, priority:LoadPriority, loader:PlainLoader, settings:LoadingAssetSettings)
+		public function AssetLoader(id:String, priority:LoadPriority, loader:PlainLoader, maxAttempts:int)
 		{
-			super(id, priority, settings);
+			super(id, priority, maxAttempts);
 			
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			_loader = loader;
+		}
+		
+		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				_loader.addEventListener(type, listener, useCapture, priority, useWeakReference);
+				return;
+			}
+			
+			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
 		override public function dispose():void
@@ -70,6 +79,37 @@ package org.vostokframework.loadingmanagement
 			_loader = null;
 			
 			super.dispose();
+		}
+		
+		override public function hasEventListener(type:String):Boolean
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.hasEventListener(type);
+			}
+			
+			return super.hasEventListener(type);
+		}
+		
+		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				_loader.removeEventListener(type, listener, useCapture);
+				return;
+			}
+			
+			super.removeEventListener(type, listener, useCapture);
+		}
+		
+		override public function willTrigger(type:String):Boolean
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.willTrigger(type);
+			}
+			
+			return super.willTrigger(type);
 		}
 
 		/**
@@ -113,58 +153,48 @@ package org.vostokframework.loadingmanagement
 			}
 		}
 		
-		override protected function loadingComplete():void
-		{
-			super.loadingComplete();
-			removeFileLoaderListeners();
-		}
-		
 		private function addFileLoaderListeners():void
 		{
-			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
-			_loader.addEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIOErrorHandler, false, 0, true);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
 		}
 		
-		private function loaderOpenHandler(event:Event):void
+		private function loaderInitHandler(event:LoaderEvent):void
 		{
-			loadingStarted();
+			loadingInit(event.data);
 		}
 		
-		private function loaderCompleteHandler(event:FileLoaderEvent):void
+		private function loaderOpenHandler(event:LoaderEvent):void
 		{
-			loadingComplete();
+			loadingStarted(event.data);
+		}
+		
+		private function loaderCompleteHandler(event:LoaderEvent):void
+		{
+			removeFileLoaderListeners();
+			loadingComplete(event.data);
 		}
 		
 		private function loaderIOErrorHandler(event:IOErrorEvent):void
 		{
-			ioError(event);
+			error(LoadError.IO_ERROR, event.text);
 		}
 		
 		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
 		{
-			securityError(event);
-		}
-		
-		private function ioError(event:IOErrorEvent):void
-		{
-			setStatus(LoaderStatus.FAILED_IO_ERROR);
-			_failDescription = event.text;
+			error(LoadError.SECURITY_ERROR, event.text);
 		}
 		
 		private function removeFileLoaderListeners():void
 		{
-			_loader.removeEventListener(Event.OPEN, loaderOpenHandler, false);
-			_loader.removeEventListener(FileLoaderEvent.COMPLETE, loaderCompleteHandler, false);
+			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
+			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
+			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIOErrorHandler, false);
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
-		}
-		
-		private function securityError(event:SecurityErrorEvent):void
-		{
-			setStatus(LoaderStatus.FAILED_SECURITY_ERROR);
-			_failDescription = event.text;
 		}
 		
 	}

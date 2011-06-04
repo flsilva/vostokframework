@@ -28,8 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.events
 {
-	import org.vostokframework.loadingmanagement.LoaderStatus;
-
 	import flash.events.Event;
 
 	/**
@@ -39,14 +37,20 @@ package org.vostokframework.loadingmanagement.events
 	 */
 	public class LoaderEvent extends Event
 	{
-		public static const STATUS_CHANGED:String = "VostokFramework.LoaderEvent.STATUS_CHANGED";
+		public static const CANCELED:String = "VostokFramework.LoaderEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.LoaderEvent.COMPLETE";
+		public static const CONNECTING:String = "VostokFramework.LoaderEvent.CONNECTING";
+		public static const FAILED:String = "VostokFramework.LoaderEvent.FAILED";
+		public static const INIT:String = "VostokFramework.LoaderEvent.INIT";
+		public static const OPEN:String = "VostokFramework.LoaderEvent.OPEN";
+		public static const STOPPED:String = "VostokFramework.LoaderEvent.STOPPED";
 		
 		/**
 		 * @private
  		 */
-		private var _status:LoaderStatus;
+		private var _data:*;
 		
-		public function get status():LoaderStatus { return _status; }
+		public function get data():* { return _data; }
 		
 		/**
 		 * description
@@ -54,15 +58,26 @@ package org.vostokframework.loadingmanagement.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function LoaderEvent(type:String, status:LoaderStatus)
+		public function LoaderEvent(type:String, data:* = null)
 		{
-			super(type);
-			_status = status;
+			super(type, true);
+			_data = data;
 		}
 		
 		override public function clone():Event
 		{
-			return new LoaderEvent(type, _status);
+			return new LoaderEvent(type, _data);
+		}
+		
+		public static function typeBelongs(type:String):Boolean
+		{
+			return type == CANCELED ||
+			       type == COMPLETE ||
+			       type == CONNECTING ||
+			       type == FAILED ||
+			       type == INIT ||
+			       type == OPEN ||
+			       type == STOPPED;
 		}
 		
 	}

@@ -26,49 +26,44 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.assetloaders
+package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.loadingmanagement.PlainLoader;
+	import org.as3coreaddendum.system.Enum;
 
-	import flash.events.Event;
-	import flash.utils.setTimeout;
+	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoaderStub extends PlainLoader
+	public class LoadError extends Enum
 	{
+		public static const ASYNC_ERROR:LoadError = new LoadError("ASYNC ERROR", 0);
+		public static const IO_ERROR:LoadError = new LoadError("IO ERROR", 1);
+		public static const LATENCY_TIMEOUT:LoadError = new LoadError("LATENCY TIMEOUT", 2);
+		public static const SECURITY_ERROR:LoadError = new LoadError("SECURITY ERROR", 3);
+		public static const UNKNOWN_ERROR:LoadError = new LoadError("UNKNOWN ERROR", 4);
+				
+		/**
+		 * @private
+		 */
+		private static var _created :Boolean = false;
 		
-		public function VostokLoaderStub()
 		{
-			
+			_created = true;
 		}
 		
-		public function asyncDispatchEvent(event:Event, delay:int = 50):int
+		/**
+		 * description
+		 * 
+		 * @param name
+		 * @param ordinal
+		 */
+		public function LoadError(name:String, ordinal:int)
 		{
-			return setTimeout(dispatchEvent, delay, event);
-		}
-		
-		override public function cancel(): void
-		{
-			
-		}
-		
-		override public function dispose():void
-		{
-			
-		}
-		
-		override public function load(): void
-		{
-			
-		}
-		
-		override public function stop(): void
-		{
-			
+			super(name, ordinal);
+			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
 
 	}

@@ -150,7 +150,7 @@ package org.vostokframework.loadingmanagement.assetloaders
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (loader.status.equals(LoaderStatus.TRYING_TO_CONNECT) ||
+				if (loader.status.equals(LoaderStatus.CONNECTING) ||
 					loader.status.equals(LoaderStatus.LOADING))
 				{
 					list.add(loader);
