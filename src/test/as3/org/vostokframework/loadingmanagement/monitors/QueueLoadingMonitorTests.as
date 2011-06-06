@@ -29,33 +29,42 @@
 
 package org.vostokframework.loadingmanagement.monitors
 {
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
+
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.assetmanagement.AssetType;
-	import org.vostokframework.loadingmanagement.RequestLoaderStatus;
-	import org.vostokframework.loadingmanagement.StubRequestLoader;
+	import org.vostokframework.loadingmanagement.LoadPriority;
+	import org.vostokframework.loadingmanagement.RefinedLoader;
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
-	import org.vostokframework.loadingmanagement.events.RequestLoaderEvent;
-	import org.vostokframework.loadingmanagement.events.RequestLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.events.QueueLoadingEvent;
 
 	/**
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=12)]
-	public class RequestLoadingMonitorTests
+	public class QueueLoadingMonitorTests
 	{
+		private static const QUEUE_ID:String = "queue-id";
 		
-		private static const REQUEST_ID:String = "request-id";
+		[Rule]
+		public var mocks:MockolateRule = new MockolateRule();
 
+		[Mock(inject="false")]
+		public var _queueLoader:RefinedLoader;
+		
 		private var _monitor:ILoadingMonitor;
-		private var _requestLoader:StubRequestLoader;
+		
 		private var _stubAssetLoadingMonitor1:StubAssetLoadingMonitor;
 		private var _stubAssetLoadingMonitor2:StubAssetLoadingMonitor;
 		private var _stubAssetLoadingMonitor3:StubAssetLoadingMonitor;
 		
-		public function RequestLoadingMonitorTests()
+		public function QueueLoadingMonitorTests()
 		{
 			
 		}
@@ -71,20 +80,22 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2 = getAssetLoadingMonitor("asset-2");
 			_stubAssetLoadingMonitor3 = getAssetLoadingMonitor("asset-3");
 			
-			var assetLoadingMonitors:IList = new ArrayList();
-			assetLoadingMonitors.add(_stubAssetLoadingMonitor1);
-			assetLoadingMonitors.add(_stubAssetLoadingMonitor2);
-			assetLoadingMonitors.add(_stubAssetLoadingMonitor3);
+			var monitors:IList = new ArrayList();
+			monitors.add(_stubAssetLoadingMonitor1);
+			monitors.add(_stubAssetLoadingMonitor2);
+			monitors.add(_stubAssetLoadingMonitor3);
 			
-			_requestLoader = new StubRequestLoader(REQUEST_ID);
-			_monitor = new RequestLoadingMonitor(_requestLoader, assetLoadingMonitors);
+			_queueLoader = nice(RefinedLoader, null, [QUEUE_ID, LoadPriority.MEDIUM, 3]);
+			stub(_queueLoader).getter("id").returns(QUEUE_ID);
+			stub(_queueLoader).asEventDispatcher();
+			_monitor = new QueueLoadingMonitor(_queueLoader, monitors);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
 			_monitor = null;
-			_requestLoader = null;
+			_queueLoader = null;
 			_stubAssetLoadingMonitor1 = null;
 			_stubAssetLoadingMonitor2 = null;
 			_stubAssetLoadingMonitor3 = null;
@@ -99,9 +110,9 @@ package org.vostokframework.loadingmanagement.monitors
 			return new StubAssetLoadingMonitor(id);
 		}
 		
-		private function createAssetLoadingMonitorEvent(type:String, stub:StubAssetLoadingMonitor):AssetLoadingMonitorEvent
+		private function createAssetLoadingMonitorEvent(type:String, fake:StubAssetLoadingMonitor):AssetLoadingMonitorEvent
 		{
-			return new AssetLoadingMonitorEvent(type, stub.assetId, AssetType.XML, stub.monitoring);
+			return new AssetLoadingMonitorEvent(type, fake.assetId, AssetType.XML, fake.monitoring);
 		}
 		
 		///////////////////////
@@ -133,35 +144,34 @@ package org.vostokframework.loadingmanagement.monitors
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
-			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			Async.proceedOnEvent(this, _monitor, QueueLoadingEvent.OPEN, 200, asyncTimeoutHandler);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
-		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfRequestIdOfEventMatches(): void
+		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfQueueIdOfEventMatches(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.OPEN,
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_monitor.addEventListener(QueueLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
-														{propertyName:"requestId", propertyValue:REQUEST_ID},
+														{propertyName:"queueId", propertyValue:QUEUE_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.OPEN,
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_monitor.addEventListener(QueueLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 200,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
@@ -182,19 +192,18 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
-		[Test(async)]
+		[Test(async, timeout=2000)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
-			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			Async.proceedOnEvent(this, _monitor, QueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs100(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+			_monitor.addEventListener(QueueLoadingEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
 														{propertyName:"percent", propertyValue:100},
 														asyncTimeoutHandler),
@@ -204,14 +213,14 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(395, 395);
 			_stubAssetLoadingMonitor3.monitoring.update(900, 900);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIsZero(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+			_monitor.addEventListener(QueueLoadingEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
 														{propertyName:"percent", propertyValue:0},
 														asyncTimeoutHandler),
@@ -221,14 +230,14 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(395, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(900, 0);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs72(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+			_monitor.addEventListener(QueueLoadingEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
 														{propertyName:"percent", propertyValue:72},
 														asyncTimeoutHandler),
@@ -241,14 +250,14 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(860, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(1475, 1475);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_fakeControlledMonitoringBytes_mustCatchStubEventAndStartTimerDispatchesOwnProgressEvent_checkIfMonitoringPercentIs75(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.PROGRESS,
+			_monitor.addEventListener(QueueLoadingEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 200,
 														{propertyName:"percent", propertyValue:31},
 														asyncTimeoutHandler),
@@ -261,8 +270,8 @@ package org.vostokframework.loadingmanagement.monitors
 			_stubAssetLoadingMonitor2.monitoring.update(0, 0);
 			_stubAssetLoadingMonitor3.monitoring.update(847, 231);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.LOADING);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
@@ -277,56 +286,55 @@ package org.vostokframework.loadingmanagement.monitors
 		[Test(async)]
 		public function addEventListener_stubsDispatchStatusChangedCompleteEvent_mustCatchStubEventsAndDispatchOwnCompleteEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.COMPLETE, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, QueueLoadingEvent.COMPLETE, 200, asyncTimeoutHandler);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.COMPLETE);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE), 50);
+			_queueLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubsDispatchStatusChangedCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.CANCELED, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, QueueLoadingEvent.CANCELED, 200, asyncTimeoutHandler);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.CANCELED);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("cancel").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
+			_queueLoader.cancel();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubsDispatchStatusChangedCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent_checkIfRequestIdOfEventMatches(): void
 		{
-			_monitor.addEventListener(RequestLoadingMonitorEvent.CANCELED,
+			_monitor.addEventListener(QueueLoadingEvent.CANCELED,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 200,
-														{propertyName:"requestId", propertyValue:REQUEST_ID},
+														{propertyName:"queueId", propertyValue:QUEUE_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.CANCELED);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("cancel").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
+			_queueLoader.cancel();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubsDispatchStatusChangedStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent(): void
 		{
-			Async.proceedOnEvent(this, _monitor, RequestLoadingMonitorEvent.STOPPED, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, QueueLoadingEvent.STOPPED, 200, asyncTimeoutHandler);
 			
-			var event:RequestLoaderEvent = new RequestLoaderEvent(RequestLoaderEvent.STATUS_CHANGED, RequestLoaderStatus.STOPPED);
-			_requestLoader.asyncDispatchEvent(event, 50);
+			stub(_queueLoader).method("stop").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
+			_queueLoader.stop();
 		}
 		
-		
-		public function monitorEventHandlerCheckEventProperty(event:RequestLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckEventProperty(event:QueueLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:RequestLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:QueueLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertTrue(event.monitoring.latency > 0);
 			passThroughData = null;
 		}
 		
-		public function monitorEventHandlerCheckMonitoringProperty(event:RequestLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckMonitoringProperty(event:QueueLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event.monitoring[passThroughData["propertyName"]]);
 		}

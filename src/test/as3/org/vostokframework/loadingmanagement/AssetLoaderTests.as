@@ -100,15 +100,15 @@ package org.vostokframework.loadingmanagement
 		// AbstractAssetLoader().load() //
 		//////////////////////////////////
 		
-		[Test(async, timeout=1000)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesOpenEvent_waitForEvent(): void
 		{
 			stub(_fakeFileLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
-			Async.proceedOnEvent(this, _loader, LoaderEvent.OPEN, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _loader, LoaderEvent.OPEN, 1000, asyncTimeoutHandler);
 			_loader.load();
 		}
 		
-		[Test(async, timeout=1000,order=99999)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesIoErrorEvent_mustBeAbleToCatchStubEventThroughLoaderListener(): void
 		{
 			stub(_fakeFileLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -116,21 +116,21 @@ package org.vostokframework.loadingmanagement
 			//THIS LINE HAVE TO CAME AFTER THE PRECEDING
 			//BECAUSE THE addEventListener BEHAVIOR OF THE STUB
 			//WILL ONLY BE ADDED AFTER THE CALL TO ".dispatches"
-			Async.proceedOnEvent(this, _loader, IOErrorEvent.IO_ERROR, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _loader, IOErrorEvent.IO_ERROR, 1000, asyncTimeoutHandler);
 			_loader.load();
 		}
 		
-		[Test(async)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesCompleteLoaderEvent_waitForEvent(): void
 		{
 			stub(_fakeFileLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE), 100);
 			
-			Async.proceedOnEvent(this, _loader, LoaderEvent.COMPLETE, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _loader, LoaderEvent.COMPLETE, 1000, asyncTimeoutHandler);
 			_loader.load();
 		}
 		
-		[Test(async, timeout=1000, order=99999)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesIoErrorTwiceAndOpenOnce_checkIfStatusIsLoading_ReturnsTrue(): void
 		{
 			var seq:Sequence = sequence();
@@ -142,9 +142,9 @@ package org.vostokframework.loadingmanagement
 			_loader.delayLoadAfterError = 50;
 			_loader.load();
 			
-			_timer.delay = 800;
+			_timer.delay = 1000;
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, validateLoaderPropertyEventHandler, 1000,
+									Async.asyncHandler(this, validateLoaderPropertyEventHandler, 2000,
 														{propertyName:"status", propertyValue:LoaderStatus.LOADING},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -152,7 +152,7 @@ package org.vostokframework.loadingmanagement
 			_timer.start();
 		}
 		
-		[Test(async, timeout=1000, order=99999)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesIoErrorTwiceOpenOnceAndCompleteOnce_checkIfStatusIsComplete_ReturnsTrue(): void
 		{
 			var seq:Sequence = sequence();
@@ -165,9 +165,9 @@ package org.vostokframework.loadingmanagement
 			_loader.delayLoadAfterError = 50;
 			_loader.load();
 			
-			_timer.delay = 800;
+			_timer.delay = 1000;
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, validateLoaderPropertyEventHandler, 1000,
+									Async.asyncHandler(this, validateLoaderPropertyEventHandler, 2000,
 														{propertyName:"status", propertyValue:LoaderStatus.COMPLETE},
 														asyncTimeoutHandler),
 									false, 0, true);
@@ -175,21 +175,21 @@ package org.vostokframework.loadingmanagement
 			_timer.start();
 		}
 		
-		[Test(async, timeout=1000)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesIoErrorThrice_waitForFailedLoaderEvent(): void
 		{
 			mock(_fakeFileLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50).thrice();
-			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 1000, asyncTimeoutHandler);
 			
 			_loader.delayLoadAfterError = 50;
 			_loader.load();
 		}
 		
-		[Test(async)]
+		[Test(async, timeout=2000)]
 		public function load_stubDispatchesSecurityErrorOnce_waitForFailedLoaderEvent(): void
 		{
 			mock(_fakeFileLoader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50).once();
-			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 1000, asyncTimeoutHandler);
 			
 			_loader.delayLoadAfterError = 50;
 			_loader.load();

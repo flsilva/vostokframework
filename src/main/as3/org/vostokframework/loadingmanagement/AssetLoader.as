@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
 	import flash.events.IOErrorEvent;

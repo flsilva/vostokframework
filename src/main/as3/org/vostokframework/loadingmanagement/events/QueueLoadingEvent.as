@@ -37,19 +37,19 @@ package org.vostokframework.loadingmanagement.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class RequestLoadingMonitorEvent extends Event
+	public class QueueLoadingEvent extends Event
 	{
-		public static const CANCELED:String = "VostokFramework.RequestLoadingMonitorEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.RequestLoadingMonitorEvent.COMPLETE";
-		public static const OPEN:String = "VostokFramework.RequestLoadingMonitorEvent.OPEN";
-		public static const PROGRESS:String = "VostokFramework.RequestLoadingMonitorEvent.PROGRESS";
-		public static const STOPPED:String = "VostokFramework.RequestLoadingMonitorEvent.STOPPED";
+		public static const CANCELED:String = "VostokFramework.QueueLoadingEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.QueueLoadingEvent.COMPLETE";
+		public static const OPEN:String = "VostokFramework.QueueLoadingEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.QueueLoadingEvent.PROGRESS";
+		public static const STOPPED:String = "VostokFramework.QueueLoadingEvent.STOPPED";
 		
 		/**
 		 * description
 		 */
 		private var _monitoring:LoadingMonitoring;
-		private var _requestId:String;
+		private var _queueId:String;
 		
 		/**
 		 * description
@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.events
 		/**
 		 * description
 		 */
-		public function get requestId(): String { return _requestId; }
+		public function get queueId(): String { return _queueId; }
 		
 		/**
 		 * description
@@ -69,17 +69,26 @@ package org.vostokframework.loadingmanagement.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function RequestLoadingMonitorEvent(type:String, requestId:String, monitoring:LoadingMonitoring = null)
+		public function QueueLoadingEvent(type:String, queueId:String, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			
-			_requestId = requestId;
+			_queueId = queueId;
 			_monitoring = monitoring;
 		}
 		
 		override public function clone():Event
 		{
-			return new RequestLoadingMonitorEvent(type, _requestId, _monitoring);
+			return new QueueLoadingEvent(type, _queueId, _monitoring);
+		}
+		
+		public static function typeBelongs(type:String):Boolean
+		{
+			return type == CANCELED ||
+			       type == COMPLETE ||
+			       type == OPEN ||
+			       type == PROGRESS ||
+			       type == STOPPED;
 		}
 		
 	}

@@ -34,7 +34,6 @@ package org.vostokframework.loadingmanagement.monitors
 	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
 	import org.vostokframework.loadingmanagement.events.LoaderEvent;
 
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
@@ -53,7 +52,7 @@ package org.vostokframework.loadingmanagement.monitors
 		private var _assetType:AssetType;
 		private var _loader:PlainLoader;
 		private var _monitoring:LoadingMonitoring;
-		private var _startedTimeTryingToConnect:int;
+		private var _startedTimeConnecting:int;
 		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
 		
@@ -92,9 +91,9 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function addLoaderListeners():void
 		{
-			_loader.addEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false, 0, true);
-			_loader.addEventListener(Event.INIT, loaderInitHandler, false, 0, true);
-			_loader.addEventListener(Event.OPEN, loaderOpenHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
@@ -106,9 +105,9 @@ package org.vostokframework.loadingmanagement.monitors
 		
 		private function removeLoaderListeners():void
 		{
-			_loader.removeEventListener(LoaderEvent.CONNECTING, loaderTryingToConnectHandler, false);
-			_loader.removeEventListener(Event.INIT, loaderInitHandler, false);
-			_loader.removeEventListener(Event.OPEN, loaderOpenHandler, false);
+			_loader.removeEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false);
+			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
+			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false);
@@ -118,26 +117,26 @@ package org.vostokframework.loadingmanagement.monitors
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
 		}
 		
-		private function createEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null):AssetLoadingMonitorEvent
+		private function createEvent(type:String, assetData:* = null):AssetLoadingMonitorEvent
 		{
-			return new AssetLoadingMonitorEvent(type, assetId, assetType, monitoring, assetData);
+			return new AssetLoadingMonitorEvent(type, _assetId, _assetType, _monitoring, assetData);
 		}
 		
-		private function loaderTryingToConnectHandler(event:LoaderEvent):void
+		private function loaderConnectingHandler(event:LoaderEvent):void
 		{
-			_startedTimeTryingToConnect = getTimer();
+			_startedTimeConnecting = getTimer();
 		}
 		
-		private function loaderInitHandler(event:Event):void
+		private function loaderInitHandler(event:LoaderEvent):void
 		{
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.INIT, _assetId, _assetType));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.INIT, event.data));
 		}
 		
-		private function loaderOpenHandler(event:Event):void
+		private function loaderOpenHandler(event:LoaderEvent):void
 		{
-			var latency:int = getTimer() - _startedTimeTryingToConnect;
+			var latency:int = getTimer() - _startedTimeConnecting;
 			createLoadingMonitoring(latency);
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.OPEN, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.OPEN, event.data));
 		}
 		
 		private function loaderProgressHandler(event:ProgressEvent):void
@@ -148,43 +147,43 @@ package org.vostokframework.loadingmanagement.monitors
 		private function loaderProgress(bytesTotal:int, bytesLoaded:int):void
 		{
 			_monitoring.update(bytesTotal, bytesLoaded);
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.PROGRESS, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.PROGRESS));
 			
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
 			loaderProgress(_monitoring.bytesTotal, _monitoring.bytesTotal);
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, _assetId, _assetType, _monitoring, event.data));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.COMPLETE, event.data));
 		}
 		
 		private function loaderCanceledHandler(event:LoaderEvent):void
 		{
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.CANCELED, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.CANCELED, _monitoring));
 		}
 		
 		private function loaderStoppedHandler(event:LoaderEvent):void
 		{
-			dispatchEvent(createEvent(AssetLoadingMonitorEvent.STOPPED, _assetId, _assetType, _monitoring));
+			dispatchEvent(createEvent(AssetLoadingMonitorEvent.STOPPED));
 		}
 		
 		private function loaderHttpStatusHandler(event:HTTPStatusEvent):void
 		{
-			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.HTTP_STATUS, _assetId, _assetType, _monitoring);
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.HTTP_STATUS);
 			$event.httpStatus = event.status;
 			dispatchEvent($event);
 		}
 		
 		private function loaderIoErrorHandler(event:IOErrorEvent):void
 		{
-			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.IO_ERROR, _assetId, _assetType, _monitoring);
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.IO_ERROR);
 			$event.ioErrorMessage = event.text;
 			dispatchEvent($event);
 		}
 		
 		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
 		{
-			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.SECURITY_ERROR, _assetId, _assetType, _monitoring);
+			var $event:AssetLoadingMonitorEvent = createEvent(AssetLoadingMonitorEvent.SECURITY_ERROR);
 			$event.securityErrorMessage = event.text;
 			dispatchEvent($event);
 		}

@@ -47,6 +47,8 @@ package
 	import org.vostokframework.loadingmanagement.PlainPriorityLoadQueueTestsGetNext;
 	import org.vostokframework.loadingmanagement.RefinedLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.monitors.QueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.policies.LoadingPolicyTests;
 
 	/**
@@ -88,8 +90,8 @@ package
 		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.monitors
-		//public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
-		//public var requestLoadingMonitorTests:RequestLoadingMonitorTests;
+		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
+		public var queueLoadingMonitorTests:QueueLoadingMonitorTests;
 		
 		//org.vostokframework.loadingmanagement.policies
 		public var loadingPolicyTests:LoadingPolicyTests;
