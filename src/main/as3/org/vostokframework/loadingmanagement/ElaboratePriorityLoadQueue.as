@@ -61,13 +61,19 @@ package org.vostokframework.loadingmanagement
 				return super.allowGetNext();
 			}
 			
-			if (nextLoaderPriority.equals(LoadPriority.LOWEST) &&
-				containsOnlyLowest(loadingLoaders)) return super.allowGetNext();
+			if (nextLoaderPriority.equals(LoadPriority.LOWEST))
+			{
+				if (containsOnlyLowest(loadingLoaders)) return super.allowGetNext();
+				return false; 
+			}
 			
 			//nextLoaderPriority is not LoadPriority.HIGHEST nor LoadPriority.LOWEST
-			//so if it contains any HIGHEST it's denied
-			//otherwise the permission is delegated to super.allowGetNext()
+			//if it contains any HIGHEST it's denied
+			//otherwise all LOWEST loaders are stopped and
+			//the permission is delegated to super.allowGetNext()
 			if (containsHighest(loadingLoaders)) return false;
+			
+			stopLowest(); 
 			
 			return super.allowGetNext();
 		}
@@ -120,7 +126,31 @@ package org.vostokframework.loadingmanagement
 			{
 				loader = it.next();
 				loaderPriority = LoadPriority.getByOrdinal(loader.priority);
-				if (!loaderPriority.equals(LoadPriority.HIGHEST)) loader.stop();
+				if (!loaderPriority.equals(LoadPriority.HIGHEST))
+				{
+					loader.stop();
+					queuedLoaders.add(loader);
+				}
+			}
+		}
+		
+		private function stopLowest():void
+		{
+			if (loadingLoaders.isEmpty()) return;
+			
+			var it:IIterator = loadingLoaders.iterator();
+			var loader:RefinedLoader;
+			var loaderPriority:LoadPriority;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loaderPriority = LoadPriority.getByOrdinal(loader.priority);
+				if (loaderPriority.equals(LoadPriority.LOWEST))
+				{
+					loader.stop();
+					queuedLoaders.add(loader);
+				}
 			}
 		}
 		

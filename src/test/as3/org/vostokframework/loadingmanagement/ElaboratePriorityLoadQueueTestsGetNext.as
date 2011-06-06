@@ -35,34 +35,17 @@ package org.vostokframework.loadingmanagement
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=13)]
-	public class PlainPriorityLoadQueueTests extends PriorityLoadQueueTests
+	public class ElaboratePriorityLoadQueueTestsGetNext extends PlainPriorityLoadQueueTestsGetNext
 	{
 		
-		public var policy:StubLoadingPolicy;
-		
-		public function PlainPriorityLoadQueueTests()
+		public function ElaboratePriorityLoadQueueTestsGetNext()
 		{
 			
 		}
 		
-		////////////////////
-		// HELPER METHODS //
-		////////////////////
-		
-		override public function getQueue():PriorityLoadQueue
+		override public function getQueue(policy:StubLoadingPolicy):PriorityLoadQueue
 		{
-			policy = new StubLoadingPolicy();
-			policy.localMaxConnections = 3;
-			policy.globalMaxConnections = 6;
-			policy.totalGlobalConnections = 0;
-			
-			var queue:PlainPriorityLoadQueue = new PlainPriorityLoadQueue(policy);
-			return queue;
-		}
-		
-		override public function getLoader(id:String, priority:LoadPriority):RefinedLoader
-		{
-			return new StubRefinedLoader(id, 3, priority);
+			return new ElaboratePriorityLoadQueue(policy);
 		}
 		
 	}

@@ -49,8 +49,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 * 
-		 * @param asset
-		 * @param fileLoader
+		 * @param id
+		 * @param priority
+		 * @param queue
 		 */
 		public function QueueLoader(id:String, priority:LoadPriority, queue:PriorityLoadQueue)
 		{
@@ -65,9 +66,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 * 
-		 * @param assetLoaderId
+		 * @param loaderId
 		 */
-		public function cancelAssetLoader(assetLoaderId:String): void
+		public function cancelLoader(loaderId:String): void
 		{
 			//TODO
 		}
@@ -85,9 +86,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 * 
-		 * @param assetLoaders
+		 * @param loaders
 		 */
-		public function mergeAssetLoaders(assetLoaders:ICollection): void
+		public function mergeLoaders(loaders:ICollection): void
 		{
 			//TODO
 		}
@@ -95,9 +96,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 * 
-		 * @param assetLoaderId
+		 * @param loaderId
 		 */
-		public function resumeAssetLoader(assetLoaderId:String): void
+		public function resumeLoader(loaderId:String): void
 		{
 			//TODO
 		}
@@ -107,17 +108,17 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param assetLoaderId
 		 */
-		public function stopAssetLoader(assetLoaderId:String): void
+		public function stopLoader(loaderId:String): void
 		{
-			if (StringUtil.isBlank(assetLoaderId)) throw new ArgumentError("Argument <assetLoaderId> must not be null nor an empty String.");
+			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
 			var it:IIterator = _queue.getLoaders().iterator();
-			var loader:AssetLoader;//TODO:pensar sobre essa questao de ter que usar o tipo AssetLoader apenas aqui por causa do id. pensar sobre PlainLoader(id:String = null)
+			var loader:RefinedLoader;
 			
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (loader.id == assetLoaderId)
+				if (loader.id == loaderId)
 				{
 					try
 					{
@@ -132,9 +133,9 @@ package org.vostokframework.loadingmanagement
 				}
 			}
 			
-			var message:String = "There is no AssetLoader object stored with id:\n";
-			message += "<" + assetLoaderId + ">";
-			throw new AssetLoaderNotFoundError(assetLoaderId, message);
+			var message:String = "There is no RefinedLoader object stored with id:\n";
+			message += "<" + loaderId + ">";
+			throw new AssetLoaderNotFoundError(loaderId, message);//TODO:nao pode ser AssetLoaderNotFoundError.
 		}
 
 		/**
@@ -142,7 +143,7 @@ package org.vostokframework.loadingmanagement
  		 */
 		override protected function doCancel(): void
 		{
-			cancelAssetLoaders();
+			cancelLoaders();
 		}
 		
 		/**
@@ -158,7 +159,7 @@ package org.vostokframework.loadingmanagement
  		 */
 		override protected function doStop(): void
 		{
-			stopAssetLoaders();
+			stopLoaders();
 		}
 		
 		private function addQueueListener():void
@@ -172,7 +173,7 @@ package org.vostokframework.loadingmanagement
 			loadNext();
 		}
 		
-		private function cancelAssetLoaders():void
+		private function cancelLoaders():void
 		{
 			var it:IIterator = _queue.getLoaders().iterator();
 			var loader:PlainLoader;
@@ -200,12 +201,12 @@ package org.vostokframework.loadingmanagement
 			if (_queue.isComplete)
 			{
 				removeQueueListener();
-				loadingComplete();
+				loadingComplete();//TODO:pensar se vai disparar FAILED se todos os loaders falharem
 				return;
 			}
 			
-			var assetLoader:PlainLoader = _queue.getNext();
-			if (assetLoader) assetLoader.load();
+			var loader:PlainLoader = _queue.getNext();
+			if (loader) loader.load();
 		}
 		
 		private function removeQueueListener():void
@@ -213,7 +214,7 @@ package org.vostokframework.loadingmanagement
 			_queue.removeEventListener(QueueEvent.QUEUE_CHANGED, queueChangedHandler, false);
 		}
 		
-		private function stopAssetLoaders():void
+		private function stopLoaders():void
 		{
 			var it:IIterator = _queue.getLoaders().iterator();
 			var loader:PlainLoader;

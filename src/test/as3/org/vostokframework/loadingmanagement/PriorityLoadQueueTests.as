@@ -56,6 +56,7 @@ package org.vostokframework.loadingmanagement
 		public function setUp(): void
 		{
 			_queue = getQueue();
+			configQueue(_queue);
 		}
 		
 		[After]
@@ -71,6 +72,19 @@ package org.vostokframework.loadingmanagement
 		public function getQueue():PriorityLoadQueue
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		private function configQueue(queue:PriorityLoadQueue):void
+		{
+			queue.addLoader(getLoader("loader-2", LoadPriority.MEDIUM));
+			queue.addLoader(getLoader("loader-4", LoadPriority.LOW));
+			queue.addLoader(getLoader("loader-1", LoadPriority.HIGH));
+			queue.addLoader(getLoader("loader-3", LoadPriority.MEDIUM));
+		}
+		
+		public function getLoader(id:String, priority:LoadPriority):RefinedLoader
+		{
+			return new StubRefinedLoader(id, 3, priority);
 		}
 		
 		///////////////////////

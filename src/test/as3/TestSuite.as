@@ -40,7 +40,11 @@ package
 	import org.vostokframework.assetmanagement.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.utils.LocaleUtilTests;
 	import org.vostokframework.loadingmanagement.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTests;
+	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTestsGetNext;
+	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 	import org.vostokframework.loadingmanagement.PlainPriorityLoadQueueTests;
+	import org.vostokframework.loadingmanagement.PlainPriorityLoadQueueTestsGetNext;
 	import org.vostokframework.loadingmanagement.RefinedLoaderTests;
 	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.policies.LoadingPolicyTests;
@@ -75,6 +79,10 @@ package
 		public var refinedLoaderTests:RefinedLoaderTests;
 		//public var queueLoaderTests:QueueLoaderTests;
 		public var plainPriorityLoadQueueTests:PlainPriorityLoadQueueTests;
+		public var plainPriorityLoadQueueTestsGetNext:PlainPriorityLoadQueueTestsGetNext;
+		public var elaboratePriorityLoadQueueTests:ElaboratePriorityLoadQueueTests;
+		public var elaboratePriorityLoadQueueTestsGetNext:ElaboratePriorityLoadQueueTestsGetNext;
+		public var elaboratePriorityLoadQueueTestsGetNextHighestLowest:ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 		
 		//org.vostokframework.loadingmanagement.assetloaders
 		public var vostokLoaderTests:VostokLoaderTests;

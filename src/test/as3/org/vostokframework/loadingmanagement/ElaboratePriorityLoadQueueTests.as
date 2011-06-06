@@ -35,12 +35,12 @@ package org.vostokframework.loadingmanagement
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=13)]
-	public class PlainPriorityLoadQueueTests extends PriorityLoadQueueTests
+	public class ElaboratePriorityLoadQueueTests extends PriorityLoadQueueTests
 	{
 		
 		public var policy:StubLoadingPolicy;
 		
-		public function PlainPriorityLoadQueueTests()
+		public function ElaboratePriorityLoadQueueTests()
 		{
 			
 		}
@@ -56,7 +56,7 @@ package org.vostokframework.loadingmanagement
 			policy.globalMaxConnections = 6;
 			policy.totalGlobalConnections = 0;
 			
-			var queue:PlainPriorityLoadQueue = new PlainPriorityLoadQueue(policy);
+			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			return queue;
 		}
 		
