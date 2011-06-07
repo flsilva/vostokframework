@@ -169,7 +169,7 @@ package org.vostokframework.loadingmanagement
 		
 		private function queueChangedHandler(event:QueueEvent):void
 		{
-			if (!status.equals(RequestLoaderStatus.LOADING) && event.activeConnections > 0) loadingStarted();
+			if (!status.equals(LoaderStatus.LOADING) && event.activeConnections > 0) loadingStarted();
 			loadNext();
 		}
 		
@@ -195,8 +195,8 @@ package org.vostokframework.loadingmanagement
 		
 		private function loadNext():void
 		{
-			if (!status.equals(RequestLoaderStatus.TRYING_TO_CONNECT) &&
-				!status.equals(RequestLoaderStatus.LOADING)) return;
+			if (!status.equals(LoaderStatus.CONNECTING) &&
+				!status.equals(LoaderStatus.LOADING)) return;
 			
 			if (_queue.isComplete)
 			{

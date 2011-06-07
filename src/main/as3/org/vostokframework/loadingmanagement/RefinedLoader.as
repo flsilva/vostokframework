@@ -185,7 +185,7 @@ package org.vostokframework.loadingmanagement
 			if (_status.equals(LoaderStatus.CONNECTING)) throw new IllegalOperationError("The current status is <LoaderStatus.CONNECTING>, therefore it is not allowed to start a new loading right now.");
 			if (_status.equals(LoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <LoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
 			if (_status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
-			if (_status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <AssetLoaderStatus.FAILED_EXHAUSTED_ATTEMPTS>, therefore it is no longer allowed loadings.");
+			if (_status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed loadings.");
 			if (_status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed loadings.");
 			
 			_load();
