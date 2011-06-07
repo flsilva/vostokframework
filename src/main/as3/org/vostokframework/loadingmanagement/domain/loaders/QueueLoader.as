@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -71,6 +70,16 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		/**
 		 * description
 		 * 
+		 * @param loaders
+		 */
+		public function addLoader(loader:RefinedLoader): void
+		{
+			//TODO
+		}
+		
+		/**
+		 * description
+		 * 
 		 * @param loaderId
 		 */
 		public function cancelLoader(loaderId:String): void
@@ -86,16 +95,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_queue = null;
 			
 			super.dispose();
-		}
-		
-		/**
-		 * description
-		 * 
-		 * @param loaders
-		 */
-		public function mergeLoaders(loaders:ICollection): void
-		{
-			//TODO
 		}
 
 		/**

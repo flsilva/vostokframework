@@ -65,7 +65,6 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function get loadingLoaders():IList { return _loadingLoaders; }
 		protected function get queuedLoaders():IQueue { return _queuedLoaders; }
 		
 		/**
@@ -188,9 +187,9 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function getAllLoading(): void
+		public function getAllLoading(): IList
 		{
-			//TODO
+			return new ReadOnlyArrayList(_loadingLoaders.toArray());
 		}
 
 		/**
