@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.assetmanagement.errors
+package org.vostokframework.assetmanagement.domain.errors
 {
 	import org.vostokframework.errors.VostokFrameworkError;
 	/**

@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.monitors
+package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3coreaddendum.system.IDisposable;
 	import flash.events.IEventDispatcher;

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.utils
+package org.vostokframework.assetmanagement.domain.utils
 {
 	import org.as3utils.StringUtil;
 

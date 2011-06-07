@@ -26,11 +26,11 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 
 	/**
 	 * description

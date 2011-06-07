@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
 	import flash.errors.IllegalOperationError;
 

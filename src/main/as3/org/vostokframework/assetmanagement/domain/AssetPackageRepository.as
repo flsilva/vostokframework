@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.assetmanagement.domain
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -36,7 +36,7 @@ package org.vostokframework.assetmanagement
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.errors.DuplicateAssetPackageError;
+	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
 
 	/**
 	 * description
@@ -60,7 +60,7 @@ package org.vostokframework.assetmanagement
 		 * 
 		 * @param asset    assetPackage
 		 * @throws 	ArgumentError 	if the <code>assetPackage</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.assetmanagement.errors.DuplicateAssetPackageError 	if already exists an <code>AssetPackage</code> object stored with the same <code>id</code> of the provided <code>assetPackage</code> argument.
+		 * @throws 	org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError 	if already exists an <code>AssetPackage</code> object stored with the same <code>id</code> of the provided <code>assetPackage</code> argument.
 		 * @return
 		 */
 		public function add(assetPackage:AssetPackage): void

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3coreaddendum.system.IIndexable;
 	import org.as3collections.IList;
@@ -37,7 +37,7 @@ package org.vostokframework.loadingmanagement
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.TimerEvent;

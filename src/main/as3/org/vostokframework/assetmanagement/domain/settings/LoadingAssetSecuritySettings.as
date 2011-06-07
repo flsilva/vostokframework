@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.settings
+package org.vostokframework.assetmanagement.domain.settings
 {
-	import org.vostokframework.assetmanagement.settings.ApplicationDomainSetting;
-	import org.vostokframework.assetmanagement.settings.SecurityDomainSetting;
+	import org.vostokframework.assetmanagement.domain.settings.ApplicationDomainSetting;
+	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
 
 	/**
 	 * description

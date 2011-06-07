@@ -26,14 +26,14 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.assetmanagement.domain
 {
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.loadingmanagement.LoadPriority;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * description

@@ -27,9 +27,9 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.policies
+package org.vostokframework.loadingmanagement.domain.policies
 {
-	import org.vostokframework.loadingmanagement.assetloaders.AssetLoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.assetloaders.AssetLoaderRepository;
 
 	/**
 	 * description

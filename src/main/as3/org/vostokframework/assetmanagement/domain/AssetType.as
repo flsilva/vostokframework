@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.assetmanagement.domain
 {
 	import org.as3coreaddendum.system.Enum;
 

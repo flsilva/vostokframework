@@ -26,9 +26,9 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
-	import org.vostokframework.loadingmanagement.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;

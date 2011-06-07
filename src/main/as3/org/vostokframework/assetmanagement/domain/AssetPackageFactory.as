@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.assetmanagement.domain
 {
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.utils.LocaleUtil;
+	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 
 	/**
 	 * description

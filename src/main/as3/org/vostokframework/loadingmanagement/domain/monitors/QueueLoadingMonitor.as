@@ -26,13 +26,13 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.monitors
+package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.RefinedLoader;
-	import org.vostokframework.loadingmanagement.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.events.QueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;

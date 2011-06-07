@@ -26,13 +26,13 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.errors.AssetLoaderNotFoundError;
-	import org.vostokframework.loadingmanagement.events.QueueEvent;
+	import org.vostokframework.loadingmanagement.domain.errors.AssetLoaderNotFoundError;
+	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
 	/**
 	 * description

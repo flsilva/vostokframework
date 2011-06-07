@@ -26,13 +26,13 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.monitors
+package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.AssetType;
-	import org.vostokframework.loadingmanagement.PlainLoader;
-	import org.vostokframework.loadingmanagement.events.AssetLoadingMonitorEvent;
-	import org.vostokframework.loadingmanagement.events.LoaderEvent;
+	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;

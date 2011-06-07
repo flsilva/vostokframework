@@ -26,18 +26,18 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.assetmanagement.domain
 {
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.errors.UnsupportedAssetTypeError;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetCacheSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetExtraSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetMediaSettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSecuritySettings;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.assetmanagement.utils.LocaleUtil;
-	import org.vostokframework.loadingmanagement.LoadPriority;
+	import org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetCacheSettings;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetExtraSettings;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetMediaSettings;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetPolicySettings;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSecuritySettings;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * description
@@ -86,7 +86,7 @@ package org.vostokframework.assetmanagement
 		 * @param type
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code> or <code>empty</code>.
 		 * @throws 	ArgumentError 	if the <code>assetPackage</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.assetmanagement.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
+		 * @throws 	org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
 		 * @return
 		 */
 		public function create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, id:String = null, type:AssetType = null): Asset

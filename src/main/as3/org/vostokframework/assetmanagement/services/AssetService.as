@@ -26,19 +26,19 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework
+package org.vostokframework.assetmanagement.services
 {
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.Asset;
-	import org.vostokframework.assetmanagement.AssetPackage;
-	import org.vostokframework.assetmanagement.AssetType;
-	import org.vostokframework.assetmanagement.AssetsContext;
-	import org.vostokframework.assetmanagement.errors.AssetNotFoundError;
-	import org.vostokframework.assetmanagement.errors.DuplicateAssetError;
-	import org.vostokframework.assetmanagement.settings.LoadingAssetSettings;
-	import org.vostokframework.assetmanagement.utils.LocaleUtil;
-	import org.vostokframework.loadingmanagement.LoadPriority;
+	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.assetmanagement.domain.AssetsContext;
+	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
+	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
+	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * description

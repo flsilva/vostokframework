@@ -29,28 +29,28 @@
 
 package 
 {
-	import org.vostokframework.AssetPackageServiceTests;
-	import org.vostokframework.AssetServiceTests;
-	import org.vostokframework.assetmanagement.AssetFactoryTests;
-	import org.vostokframework.assetmanagement.AssetPackageFactoryTests;
-	import org.vostokframework.assetmanagement.AssetPackageRepositoryTests;
-	import org.vostokframework.assetmanagement.AssetPackageTests;
-	import org.vostokframework.assetmanagement.AssetRepositoryTests;
-	import org.vostokframework.assetmanagement.AssetTests;
-	import org.vostokframework.assetmanagement.UrlAssetParserTests;
-	import org.vostokframework.assetmanagement.utils.LocaleUtilTests;
-	import org.vostokframework.loadingmanagement.AssetLoaderTests;
-	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTests;
-	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTestsGetNext;
-	import org.vostokframework.loadingmanagement.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
-	import org.vostokframework.loadingmanagement.PlainPriorityLoadQueueTests;
-	import org.vostokframework.loadingmanagement.PlainPriorityLoadQueueTestsGetNext;
-	import org.vostokframework.loadingmanagement.QueueLoaderTests;
-	import org.vostokframework.loadingmanagement.RefinedLoaderTests;
-	import org.vostokframework.loadingmanagement.assetloaders.VostokLoaderTests;
-	import org.vostokframework.loadingmanagement.monitors.AssetLoadingMonitorTests;
-	import org.vostokframework.loadingmanagement.monitors.QueueLoadingMonitorTests;
-	import org.vostokframework.loadingmanagement.policies.LoadingPolicyTests;
+	import org.vostokframework.assetmanagement.domain.AssetFactoryTests;
+	import org.vostokframework.assetmanagement.domain.AssetPackageFactoryTests;
+	import org.vostokframework.assetmanagement.domain.AssetPackageRepositoryTests;
+	import org.vostokframework.assetmanagement.domain.AssetPackageTests;
+	import org.vostokframework.assetmanagement.domain.AssetRepositoryTests;
+	import org.vostokframework.assetmanagement.domain.AssetTests;
+	import org.vostokframework.assetmanagement.domain.UrlAssetParserTests;
+	import org.vostokframework.assetmanagement.domain.utils.LocaleUtilTests;
+	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
+	import org.vostokframework.assetmanagement.services.AssetServiceTests;
+	import org.vostokframework.loadingmanagement.domain.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTests;
+	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNext;
+	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
+	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTests;
+	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTestsGetNext;
+	import org.vostokframework.loadingmanagement.domain.QueueLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.assetloaders.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
 
 	/**
 	 * @author Flávio Silva
@@ -64,7 +64,7 @@ package
 		public var assetServiceTests:AssetServiceTests;
 		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
-		//org.vostokframework.assetmanagement
+		//org.vostokframework.assetmanagement.domain
 		public var assetTests:AssetTests;
 		public var assetFactoryTests:AssetFactoryTests;
 		public var assetPackageTests:AssetPackageTests;
@@ -73,10 +73,10 @@ package
 		public var assetPackageRepositoryTests:AssetPackageRepositoryTests;
 		public var urlAssetParserTests:UrlAssetParserTests;
 		
-		//org.vostokframework.assetmanagement.utils
+		//org.vostokframework.assetmanagement.domain.utils
 		public var localeUtilTests:LocaleUtilTests;
 		
-		//org.vostokframework.loadingmanagement
+		//org.vostokframework.loadingmanagement.domain
 		public var refinedLoaderTests:RefinedLoaderTests;
 		public var assetLoaderTests:AssetLoaderTests;
 		public var queueLoaderTests:QueueLoaderTests;
@@ -86,14 +86,14 @@ package
 		public var elaboratePriorityLoadQueueTestsGetNext:ElaboratePriorityLoadQueueTestsGetNext;
 		public var elaboratePriorityLoadQueueTestsGetNextHighestLowest:ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 		
-		//org.vostokframework.loadingmanagement.assetloaders
+		//org.vostokframework.loadingmanagement.domain.assetloaders
 		public var vostokLoaderTests:VostokLoaderTests;
 		
-		//org.vostokframework.loadingmanagement.monitors
+		//org.vostokframework.loadingmanagement.domain.monitors
 		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
 		public var queueLoadingMonitorTests:QueueLoadingMonitorTests;
 		
-		//org.vostokframework.loadingmanagement.policies
+		//org.vostokframework.loadingmanagement.domain.policies
 		public var loadingPolicyTests:LoadingPolicyTests;
 		
 		public function TestSuite()

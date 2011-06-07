@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
