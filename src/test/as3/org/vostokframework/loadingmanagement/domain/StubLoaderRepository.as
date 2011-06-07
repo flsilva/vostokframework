@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.assetloaders
+package org.vostokframework.loadingmanagement.domain
 {
 
 	/**
@@ -34,11 +34,11 @@ package org.vostokframework.loadingmanagement.domain.assetloaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoaderRepository extends AssetLoaderRepository
+	public class StubLoaderRepository extends LoaderRepository
 	{
 		public var $totalLoading:int;
 		
-		public function StubAssetLoaderRepository()
+		public function StubLoaderRepository()
 		{
 			
 		}

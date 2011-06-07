@@ -28,7 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.policies
 {
-	import org.vostokframework.loadingmanagement.domain.assetloaders.AssetLoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 
 	/**
 	 * description
@@ -47,7 +47,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		
 		public function StubLoadingPolicy()
 		{
-			super(new AssetLoaderRepository());
+			super(new LoaderRepository());
 		}
 		
 		override public function allow(localActiveConnections:int):Boolean

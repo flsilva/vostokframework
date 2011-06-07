@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.assetloaders
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.assetloaders
+package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -37,25 +37,23 @@ package org.vostokframework.loadingmanagement.domain.assetloaders
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.domain.AssetLoader;
-	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
-	import org.vostokframework.loadingmanagement.domain.errors.DuplicateAssetLoaderError;
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderRepository
+	public class LoaderRepository
 	{
 		private var _loaderMap:IMap;//key = AssetLoader().id (String) | value = AssetLoader 
 
 		/**
 		 * description
 		 */
-		public function AssetLoaderRepository()
+		public function LoaderRepository()
 		{
-			_loaderMap = new TypedMap(new HashMap(), String, AssetLoader);
+			_loaderMap = new TypedMap(new HashMap(), String, RefinedLoader);
 		}
 		
 		/**
@@ -63,21 +61,21 @@ package org.vostokframework.loadingmanagement.domain.assetloaders
 		 * 
 		 * @param 	loader
 		 * @throws 	ArgumentError 	if the <code>loader</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateAssetLoaderError 	if already exists an <code>AssetLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
+		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateRefinedLoaderError 	if already exists an <code>RefinedLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
 		 * @return
 		 */
-		public function add(loader:AssetLoader): void
+		public function add(loader:RefinedLoader): void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
 			if (_loaderMap.containsKey(loader.id))
 			{
-				var message:String = "There is already an AssetLoader object stored with id:\n";
+				var message:String = "There is already an RefinedLoader object stored with id:\n";
 				message += "<" + loader.id + ">\n";
-				message += "Use the method <AssetLoaderRepository().exists()> to check if an AssetLoader object already exists.\n";
-				message += "For further information please read the documentation section about the AssetLoader object.";
+				message += "Use the method <RefinedLoaderRepository().exists()> to check if an RefinedLoader object already exists.\n";
+				message += "For further information please read the documentation section about the RefinedLoader object.";
 				
-				throw new DuplicateAssetLoaderError(loader.id, message);
+				throw new DuplicateLoaderError(loader.id, message);
 			}
 			
 			_loaderMap.put(loader.id, loader);
@@ -114,7 +112,7 @@ package org.vostokframework.loadingmanagement.domain.assetloaders
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(loaderId:String): AssetLoader
+		public function find(loaderId:String): RefinedLoader
 		{
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
@@ -144,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain.assetloaders
 			if (isEmpty()) return null;
 			
 			var it:IIterator = _loaderMap.getValues().iterator();
-			var loader:AssetLoader;
+			var loader:RefinedLoader;
 			var list:IList = new ArrayList();
 			
 			while (it.hasNext())

@@ -29,7 +29,7 @@
 
 package org.vostokframework.loadingmanagement.domain.policies
 {
-	import org.vostokframework.loadingmanagement.domain.assetloaders.AssetLoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 
 	/**
 	 * description
@@ -38,11 +38,11 @@ package org.vostokframework.loadingmanagement.domain.policies
 	 */
 	public class LoadingPolicy
 	{
-		private var _assetLoaderRepository:AssetLoaderRepository;
+		private var _loaderRepository:LoaderRepository;
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
 		
-		private function get totalGlobalConnections():int { return _assetLoaderRepository.totalLoading(); }
+		private function get totalGlobalConnections():int { return _loaderRepository.totalLoading(); }
 		
 		public function set globalMaxConnections(value:int):void
 		{
@@ -61,11 +61,11 @@ package org.vostokframework.loadingmanagement.domain.policies
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function LoadingPolicy(assetLoaderRepository:AssetLoaderRepository)
+		public function LoadingPolicy(loaderRepository:LoaderRepository)
 		{
-			if (!assetLoaderRepository) throw new ArgumentError("Argument <assetLoaderRepository> must not be null.");
+			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
 			
-			_assetLoaderRepository = assetLoaderRepository;
+			_loaderRepository = loaderRepository;
 		}
 		
 		public function allow(localActiveConnections:int):Boolean

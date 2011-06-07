@@ -30,7 +30,7 @@
 package org.vostokframework.loadingmanagement.domain.policies
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.assetloaders.StubAssetLoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
 
 	/**
 	 * @author Flávio Silva
@@ -57,7 +57,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Test]
 		public function allow_withinLocalAndGlobalMaxConnections_ReturnsTrue(): void
 		{
-			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$totalLoading = 0;
 			
 			var policy:LoadingPolicy = new LoadingPolicy(repository);
@@ -71,7 +71,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Test]
 		public function allow_withinLocalAndGlobalMaxConnections_maxLocalConnectionsBoundaryTesting_ReturnsTrue(): void
 		{
-			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$totalLoading = 0;
 			
 			var policy:LoadingPolicy = new LoadingPolicy(repository);
@@ -85,7 +85,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Test]
 		public function allow_exceedsLocalMaxConnections_ReturnsFalse(): void
 		{
-			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$totalLoading = 0;
 			
 			var policy:LoadingPolicy = new LoadingPolicy(repository);
@@ -99,7 +99,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Test]
 		public function allow_withinLocalAndGlobalMaxConnections_maxGlobalConnectionsBoundaryTesting_ReturnsTrue(): void
 		{
-			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$totalLoading = 5;
 			
 			var policy:LoadingPolicy = new LoadingPolicy(repository);
@@ -113,7 +113,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Test]
 		public function allow_exceedsGlobalMaxConnections_ReturnsFalse(): void
 		{
-			var repository:StubAssetLoaderRepository = new StubAssetLoaderRepository();
+			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$totalLoading = 6;
 			
 			var policy:LoadingPolicy = new LoadingPolicy(repository);

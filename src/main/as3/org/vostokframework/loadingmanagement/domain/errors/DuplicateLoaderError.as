@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class DuplicateAssetLoaderError extends VostokFrameworkError
+	public class DuplicateLoaderError extends VostokFrameworkError
 	{
 		private var _loaderId:String;
 		
@@ -46,10 +46,10 @@ package org.vostokframework.loadingmanagement.domain.errors
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function DuplicateAssetLoaderError(loaderId:String, message:String = null)
+		public function DuplicateLoaderError(loaderId:String, message:String = null)
 		{
 			super(message);
-			name = "DuplicateAssetLoaderError";
+			name = "DuplicateLoaderError";
 			_loaderId = loaderId;
 		}
 

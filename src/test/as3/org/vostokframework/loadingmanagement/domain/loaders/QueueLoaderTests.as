@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -37,6 +37,10 @@ package org.vostokframework.loadingmanagement.domain
 
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.flexunit.async.Async;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
 	import flash.events.TimerEvent;
@@ -163,7 +167,7 @@ package org.vostokframework.loadingmanagement.domain
 			verify(_fakeLoader1);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.AssetLoaderNotFoundError")]
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
 		public function stopLoader_notAddedLoader_ThrowsError(): void
 		{
 			queueLoader.stopLoader("not-added-id");

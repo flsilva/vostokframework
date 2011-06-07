@@ -35,22 +35,22 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderNotFoundError extends VostokFrameworkError
+	public class LoaderNotFoundError extends VostokFrameworkError
 	{
-		private var _assetLoaderId:String;
+		private var _loaderId:String;
 		
-		public function get assetLoaderId():String { return _assetLoaderId; }
+		public function get loaderId():String { return _loaderId; }
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AssetLoaderNotFoundError(assetLoaderId:String, message:String = null)
+		public function LoaderNotFoundError(loaderId:String, message:String = null)
 		{
 			super(message);
-			name = "AssetLoaderNotFoundError";
-			_assetLoaderId = assetLoaderId;
+			name = "LoaderNotFoundError";
+			_loaderId = loaderId;
 		}
 
 	}

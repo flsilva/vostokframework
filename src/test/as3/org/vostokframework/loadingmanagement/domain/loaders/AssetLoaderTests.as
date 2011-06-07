@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
@@ -37,6 +37,11 @@ package org.vostokframework.loadingmanagement.domain
 	import mockolate.stub;
 
 	import org.flexunit.async.Async;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
+	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.IOErrorEvent;

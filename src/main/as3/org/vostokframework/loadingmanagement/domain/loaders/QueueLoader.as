@@ -26,12 +26,17 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.domain.errors.AssetLoaderNotFoundError;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
+	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
 	/**
@@ -135,7 +140,7 @@ package org.vostokframework.loadingmanagement.domain
 			
 			var message:String = "There is no RefinedLoader object stored with id:\n";
 			message += "<" + loaderId + ">";
-			throw new AssetLoaderNotFoundError(loaderId, message);//TODO:nao pode ser AssetLoaderNotFoundError.
+			throw new LoaderNotFoundError(loaderId, message);//TODO:nao pode ser AssetLoaderNotFoundError.
 		}
 
 		/**

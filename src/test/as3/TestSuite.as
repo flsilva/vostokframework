@@ -39,15 +39,15 @@ package
 	import org.vostokframework.assetmanagement.domain.utils.LocaleUtilTests;
 	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
 	import org.vostokframework.assetmanagement.services.AssetServiceTests;
-	import org.vostokframework.loadingmanagement.domain.AssetLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTests;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNext;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTests;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTestsGetNext;
-	import org.vostokframework.loadingmanagement.domain.QueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.assetloaders.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
