@@ -40,7 +40,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 
@@ -110,9 +110,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return new StubAssetLoadingMonitor(id);
 		}
 		
-		private function createAssetLoadingMonitorEvent(type:String, fake:StubAssetLoadingMonitor):AssetLoadingMonitorEvent
+		private function createLoadingEvent(type:String, fake:StubAssetLoadingMonitor):AssetLoadingEvent
 		{
-			return new AssetLoadingMonitorEvent(type, fake.assetId, AssetType.XML, fake.monitoring);
+			return new AssetLoadingEvent(type, fake.assetId, AssetType.XML, fake.monitoring);
 		}
 		
 		///////////////////////
@@ -177,18 +177,18 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
 		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.OPEN, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, AssetLoadingEvent.OPEN, 200, asyncTimeoutHandler);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.OPEN, _stubAssetLoadingMonitor3);
+			var event:AssetLoadingEvent = createLoadingEvent(AssetLoadingEvent.OPEN, _stubAssetLoadingMonitor3);
 			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesInitEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
 		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.INIT, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, AssetLoadingEvent.INIT, 200, asyncTimeoutHandler);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.INIT, _stubAssetLoadingMonitor3);
+			var event:AssetLoadingEvent = createLoadingEvent(AssetLoadingEvent.INIT, _stubAssetLoadingMonitor3);
 			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		
@@ -277,9 +277,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		[Test(async)]
 		public function addEventListener_stubDispatchesProgressEvent_mustBeAbleToCatchStubEventThroughMonitorListener(): void
 		{
-			Async.proceedOnEvent(this, _monitor, AssetLoadingMonitorEvent.PROGRESS, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, _monitor, AssetLoadingEvent.PROGRESS, 200, asyncTimeoutHandler);
 			
-			var event:AssetLoadingMonitorEvent = createAssetLoadingMonitorEvent(AssetLoadingMonitorEvent.PROGRESS, _stubAssetLoadingMonitor3);
+			var event:AssetLoadingEvent = createLoadingEvent(AssetLoadingEvent.PROGRESS, _stubAssetLoadingMonitor3);
 			_stubAssetLoadingMonitor3.asyncDispatchEvent(event, 50);
 		}
 		

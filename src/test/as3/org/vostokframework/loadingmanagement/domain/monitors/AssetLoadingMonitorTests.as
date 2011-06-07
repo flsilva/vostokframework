@@ -39,7 +39,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingMonitorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.HTTPStatusEvent;
@@ -134,7 +134,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.OPEN, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.OPEN, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -142,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfAssetIdOfEventMatches(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
+			monitor.addEventListener(AssetLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
@@ -155,7 +155,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.OPEN,
+			monitor.addEventListener(AssetLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 1000,
 														null, asyncTimeoutHandler),
 									false, 0, true);
@@ -167,7 +167,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesInitEvent_mustCatchStubEventAndDispatchOwnInitEvent(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.INIT), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.INIT, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.INIT, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -177,7 +177,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new ProgressEvent(ProgressEvent.PROGRESS), 100);
 			
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.PROGRESS, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -187,7 +187,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200), 100);
 			
-			monitor.addEventListener(AssetLoadingMonitorEvent.PROGRESS,
+			monitor.addEventListener(AssetLoadingEvent.PROGRESS,
 									Async.asyncHandler(this, monitorEventHandlerCheckMonitoringProperty, 1000,
 														{propertyName:"percent", propertyValue:25},
 														asyncTimeoutHandler),
@@ -202,7 +202,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE, {}), 100);
 			
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.COMPLETE, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -212,7 +212,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE, {}), 100);
 			
-			monitor.addEventListener(AssetLoadingMonitorEvent.COMPLETE,
+			monitor.addEventListener(AssetLoadingEvent.COMPLETE,
 									Async.asyncHandler(this, monitorEventHandlerCheckAssetData, 200,
 														null, asyncTimeoutHandler),
 									false, 0, true);
@@ -224,7 +224,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesHttpStatusEvent_mustCatchStubEventAndDispatchOwnHttpStatusEvent(): void
 		{
 			stub(loader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.HTTP_STATUS, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.HTTP_STATUS, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -232,7 +232,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesHttpStatusEventWithControlledStatusValue_mustCatchStubEventAndDispatchOwnHttpStatusEvent_checkIfStatusValueMatches(): void
 		{
 			stub(loader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.HTTP_STATUS,
+			monitor.addEventListener(AssetLoadingEvent.HTTP_STATUS,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"httpStatus", propertyValue:404},
 														asyncTimeoutHandler),
@@ -245,7 +245,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesIoErrorEvent_mustCatchStubEventAndDispatchOwnIoErrorEvent(): void
 		{
 			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.IO_ERROR, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.IO_ERROR, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -253,7 +253,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesIoErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnIoErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.IO_ERROR,
+			monitor.addEventListener(AssetLoadingEvent.IO_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"ioErrorMessage", propertyValue:"IO Error Test Text"},
 														asyncTimeoutHandler),
@@ -266,7 +266,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesSecurityErrorEvent_mustCatchStubEventAndDispatchOwnSecurityErrorEvent(): void
 		{
 			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.SECURITY_ERROR, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.SECURITY_ERROR, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -274,7 +274,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesSecurityErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnSecurityErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.SECURITY_ERROR,
+			monitor.addEventListener(AssetLoadingEvent.SECURITY_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"securityErrorMessage", propertyValue:"Security Error Test Text"},
 														asyncTimeoutHandler),
@@ -288,7 +288,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.CANCELED, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.CANCELED, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -296,7 +296,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent_checkIfAssetIdMatches(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.CANCELED,
+			monitor.addEventListener(AssetLoadingEvent.CANCELED,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
@@ -309,7 +309,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingMonitorEvent.STOPPED, 200, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.STOPPED, 200, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -317,7 +317,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent_checkIfAssetIdMatches(): void
 		{
 			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
-			monitor.addEventListener(AssetLoadingMonitorEvent.STOPPED,
+			monitor.addEventListener(AssetLoadingEvent.STOPPED,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
@@ -326,23 +326,23 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			loader.load();
 		}
 		
-		public function monitorEventHandlerCheckEventProperty(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckEventProperty(event:AssetLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}
 		
-		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero(event:AssetLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertTrue(event.monitoring.latency > 0);
 			passThroughData = null;
 		}
 		
-		public function monitorEventHandlerCheckMonitoringProperty(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckMonitoringProperty(event:AssetLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event.monitoring[passThroughData["propertyName"]]);
 		}
 		
-		public function monitorEventHandlerCheckAssetData(event:AssetLoadingMonitorEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckAssetData(event:AssetLoadingEvent, passThroughData:Object):void
 		{
 			Assert.assertNotNull(event.assetData);
 			passThroughData = null;

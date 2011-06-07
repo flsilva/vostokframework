@@ -38,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingMonitorEvent extends Event
+	public class AssetLoadingEvent extends Event
 	{
 		public static const CANCELED:String = "VostokFramework.AssetLoadingMonitorEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";
@@ -110,7 +110,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function AssetLoadingMonitorEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
+		public function AssetLoadingEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
 		{
 			super(type);
 			
@@ -122,7 +122,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingMonitorEvent(type, _assetId, _assetType, _monitoring, _assetData);
+			return new AssetLoadingEvent(type, _assetId, _assetType, _monitoring, _assetData);
 		}
 		
 	}
