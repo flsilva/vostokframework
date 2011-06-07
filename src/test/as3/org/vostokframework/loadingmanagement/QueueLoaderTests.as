@@ -29,11 +29,9 @@
 
 package org.vostokframework.loadingmanagement
 {
-	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
-	import mockolate.sequence;
 	import mockolate.stub;
 	import mockolate.verify;
 
