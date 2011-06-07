@@ -33,6 +33,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.IMap;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
+	import org.as3collections.lists.UniqueArrayList;
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
@@ -139,6 +140,25 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		public function findAllLoading(): IList
 		{
+			var list1:IList = findByStatus(LoaderStatus.CONNECTING);
+			var list2:IList = findByStatus(LoaderStatus.LOADING);
+			
+			var unique:UniqueArrayList = new UniqueArrayList(new ArrayList());
+			unique.addAll(list1);
+			unique.addAll(list2);
+			
+			return new ReadOnlyArrayList(unique.toArray());
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		public function findByStatus(status:LoaderStatus): IList
+		{
+			if (!status) throw new ArgumentError("Argument <status> must not be null.");
+			
 			if (isEmpty()) return null;
 			
 			var it:IIterator = _loaderMap.getValues().iterator();
@@ -148,8 +168,7 @@ package org.vostokframework.loadingmanagement.domain
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (loader.status.equals(LoaderStatus.CONNECTING) ||
-					loader.status.equals(LoaderStatus.LOADING))
+				if (loader.status.equals(status))
 				{
 					list.add(loader);
 				}
