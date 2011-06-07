@@ -35,12 +35,12 @@ package org.vostokframework.assetmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetsContext
+	public class AssetManagementContext
 	{
 		/**
 		 * @private
 		 */
-		private static var _instance:AssetsContext = new AssetsContext();
+		private static var _instance:AssetManagementContext = new AssetManagementContext();
 		
 		/**
 		 * @private
@@ -82,9 +82,9 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function AssetsContext()
+		public function AssetManagementContext()
 		{
-			if (_created) throw new IllegalOperationError("<AssetsContext> is a singleton class and should be accessed only by its <getInstance> method.");
+			if (_created) throw new IllegalOperationError("<AssetManagementContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
 			_assetFactory = new AssetFactory();
 			_assetPackageFactory = new AssetPackageFactory();
@@ -97,7 +97,7 @@ package org.vostokframework.assetmanagement.domain
 		 * 
 		 * @return
  		 */
-		public static function getInstance(): AssetsContext
+		public static function getInstance(): AssetManagementContext
 		{
 			return _instance;
 		}

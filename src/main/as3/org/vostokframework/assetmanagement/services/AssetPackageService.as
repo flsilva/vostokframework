@@ -30,8 +30,8 @@ package org.vostokframework.assetmanagement.services
 {
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetsContext;
 	import org.vostokframework.assetmanagement.domain.errors.AssetPackageNotFoundError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
@@ -47,14 +47,14 @@ package org.vostokframework.assetmanagement.services
 		/**
 		 * @private
 		 */
-		private var _context: AssetsContext;
+		private var _context: AssetManagementContext;
 		
 		/**
 		 * description
 		 */
 		public function AssetPackageService()
 		{
-			_context = AssetsContext.getInstance();
+			_context = AssetManagementContext.getInstance();
 		}
 		
 		/**

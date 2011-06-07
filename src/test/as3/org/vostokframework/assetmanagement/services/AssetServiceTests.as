@@ -32,10 +32,10 @@ package org.vostokframework.assetmanagement.services
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.AssetsContext;
 	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -61,7 +61,7 @@ package org.vostokframework.assetmanagement.services
 		[Before]
 		public function setUp(): void
 		{
-			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
+			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
 			
 			_service = new AssetService();
 		}
@@ -124,7 +124,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function assetExists_addedAssetWithLocale_ReturnsTrue(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
 			var exists:Boolean = _service.assetExists(ASSET_ID, ASSET_LOCALE);
 			Assert.assertTrue(exists);
@@ -133,7 +133,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function assetExists_addedAssetWithoutLocale_ReturnsTrue(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			
 			var exists:Boolean = _service.assetExists(ASSET_ID);
 			Assert.assertTrue(exists);
@@ -165,7 +165,7 @@ package org.vostokframework.assetmanagement.services
 		public function changeAssetPriority_addedAsset_checkIfPriorityMatches_ReturnsTrue(): void
 		{
 			var asset:Asset = getAssetWithLocale();
-			AssetsContext.getInstance().assetRepository.add(asset);
+			AssetManagementContext.getInstance().assetRepository.add(asset);
 			
 			_service.changeAssetPriority(ASSET_ID, LoadPriority.HIGH, ASSET_LOCALE);
 			Assert.assertEquals(LoadPriority.HIGH, asset.priority);
@@ -187,7 +187,7 @@ package org.vostokframework.assetmanagement.services
 		{
 			var asset:Asset = _service.createAsset("http://domain.com/a.aac", getAssetPackage());
 			
-			var exists:Boolean = AssetsContext.getInstance().assetRepository.exists(asset.id);
+			var exists:Boolean = AssetManagementContext.getInstance().assetRepository.exists(asset.id);
 			Assert.assertTrue(exists);
 		}
 		
@@ -228,7 +228,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function getAllAssets_notEmptyAssetRepository_ReturnsIList(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
 			var list:IList = _service.getAllAssets();
 			Assert.assertNotNull(list);
@@ -253,7 +253,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function getAsset_addedAssetWithLocale_ReturnsAsset(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
 			var asset:Asset = _service.getAsset(ASSET_ID, ASSET_LOCALE);
 			Assert.assertNotNull(asset);
@@ -264,7 +264,7 @@ package org.vostokframework.assetmanagement.services
 		{
 			//testing asset without locale
 			
-			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			
 			var asset:Asset = _service.getAsset(ASSET_ID);
 			Assert.assertNotNull(asset);
@@ -279,17 +279,17 @@ package org.vostokframework.assetmanagement.services
 		{
 			_service.removeAllAssets();
 			
-			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
+			var empty:Boolean = AssetManagementContext.getInstance().assetRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function removeAllAssets_notEmptyAssetRepository_checkIfAssetRepositoryIsEmpty_ReturnsTrue(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithoutLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithoutLocale());
 			_service.removeAllAssets();
 			
-			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
+			var empty:Boolean = AssetManagementContext.getInstance().assetRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
@@ -313,7 +313,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function removeAsset_addedAsset_ReturnsTrue(): void
 		{
-			AssetsContext.getInstance().assetRepository.add(getAssetWithLocale());
+			AssetManagementContext.getInstance().assetRepository.add(getAssetWithLocale());
 			
 			var removed:Boolean = _service.removeAsset(ASSET_ID, ASSET_LOCALE);
 			Assert.assertTrue(removed);
