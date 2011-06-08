@@ -106,11 +106,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			stub(_fakeQueue).asEventDispatcher();
 			
 			_fakeLoader1 = nice(RefinedLoader, null, ["fake-loader-1", LoadPriority.MEDIUM, 3]);
-			stub(_fakeLoader1).getter("id").returns("fake-loader-1");
-			
 			_fakeLoader2 = nice(RefinedLoader, null, ["fake-loader-2", LoadPriority.LOW, 3]);
+			
+			stub(_fakeLoader1).getter("id").returns("fake-loader-1");
 			stub(_fakeLoader2).getter("id").returns("fake-loader-2");
 			
+			stub(_fakeQueue).method("find").args("fake-loader-1").returns(_fakeLoader1);
 			stub(_fakeQueue).method("getLoaders").returns(new ReadOnlyArrayList([_fakeLoader1,_fakeLoader2]));
 			
 			return new QueueLoader("queue-loader", LoadPriority.MEDIUM, _fakeQueue);
@@ -123,6 +124,61 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		private function verifyMockTimerHandler(event:TimerEvent, passThroughData:Object):void
 		{
 			verify(passThroughData["mock"]);
+		}
+		
+		/////////////////////////////////////
+		// QueueLoader().addLoader() TESTS //
+		/////////////////////////////////////
+		
+		[Test]
+		public function addLoader_queuedQueueLoader_validNewLoader_VerifyIfMockQueueWasCalled(): void
+		{
+			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			stub(fakeLoader).getter("id").returns("fake-loader-99");
+			mock(_fakeQueue).method("addLoader").args(fakeLoader);
+			
+			queueLoader.addLoader(fakeLoader);
+			verify(_fakeQueue);
+		}
+		
+		[Test]
+		public function addLoader_stoppedQueueLoader_validNewLoader_VerifyIfMockQueueWasCalled(): void
+		{
+			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			stub(fakeLoader).getter("id").returns("fake-loader-99");
+			mock(_fakeQueue).method("addLoader").args(fakeLoader);
+			
+			queueLoader.stop();
+			queueLoader.addLoader(fakeLoader);
+			verify(_fakeQueue);
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function addLoader_canceledQueueLoader_ThrowsError(): void
+		{
+			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			stub(fakeLoader).getter("id").returns("fake-loader-99");
+			
+			queueLoader.cancel();
+			queueLoader.addLoader(fakeLoader);
+		}
+		
+		////////////////////////////////////////
+		// QueueLoader().cancelLoader() TESTS //
+		////////////////////////////////////////
+		
+		[Test]
+		public function cancelLoader_addedLoader_VerifyIfMockWasCalled(): void
+		{
+			mock(_fakeLoader1).method("cancel");
+			queueLoader.cancelLoader("fake-loader-1");
+			verify(_fakeLoader1);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function cancelLoader_notAddedLoader_ThrowsError(): void
+		{
+			queueLoader.cancelLoader("not-added-id");
 		}
 		
 		//////////////////////////////
@@ -155,12 +211,42 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			verify(_fakeQueue);
 		}
 		
-		////////////////////////////////////
-		// QueueLoader().stopLoader TESTS //
-		////////////////////////////////////
+		////////////////////////////////////////
+		// QueueLoader().resumeLoader() TESTS //
+		////////////////////////////////////////
 		
 		[Test]
-		public function stopLoader_fakeQueueReturnsTwoMockLoaders_verifyIfWasCalledLoadOnSecondMock(): void
+		public function resumeLoader_queuedQueueLoader_VerifyIfMockQueueWasCalled(): void
+		{
+			mock(_fakeQueue).method("resumeLoader").args("fake-loader-1");
+			
+			queueLoader.resumeLoader("fake-loader-1");
+			verify(_fakeQueue);
+		}
+		
+		[Test]
+		public function resumeLoader_stoppedQueueLoader_VerifyIfMockQueueWasCalled(): void
+		{
+			mock(_fakeQueue).method("resumeLoader").args("fake-loader-1");
+			
+			queueLoader.stop();
+			queueLoader.resumeLoader("fake-loader-1");
+			verify(_fakeQueue);
+		}
+		
+		[Test(expects="flash.errors.IllegalOperationError")]
+		public function resumeLoader_canceledQueueLoader_ThrowsError(): void
+		{
+			queueLoader.cancel();
+			queueLoader.resumeLoader("fake-loader-1");
+		}
+		
+		//////////////////////////////////////
+		// QueueLoader().stopLoader() TESTS //
+		//////////////////////////////////////
+		
+		[Test]
+		public function stopLoader_addedLoader_VerifyIfMockWasCalled(): void
 		{
 			mock(_fakeLoader1).method("stop");
 			queueLoader.stopLoader("fake-loader-1");

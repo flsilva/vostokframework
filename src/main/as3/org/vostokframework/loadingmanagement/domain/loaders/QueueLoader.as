@@ -38,6 +38,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
+	import flash.errors.IllegalOperationError;
+
 	/**
 	 * description
 	 * 
@@ -74,7 +76,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function addLoader(loader:RefinedLoader): void
 		{
-			//TODO
+			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
+			
+			_queue.addLoader(loader);
 		}
 		
 		/**
@@ -84,7 +90,24 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function cancelLoader(loaderId:String): void
 		{
-			//TODO
+			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
+			
+			var loader:RefinedLoader = _queue.find(loaderId);
+			if (!loader)
+			{
+				var message:String = "There is no RefinedLoader object stored with id:\n";
+				message += "<" + loaderId + ">";
+				throw new LoaderNotFoundError(loaderId, message);
+			}
+			
+			try
+			{
+				loader.cancel();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
 		}
 		
 		override public function dispose():void
@@ -104,7 +127,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function resumeLoader(loaderId:String): void
 		{
-			//TODO
+			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
+			
+			_queue.resumeLoader(loaderId);
 		}
 		
 		/**
@@ -116,30 +143,22 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
-			var it:IIterator = _queue.getLoaders().iterator();
-			var loader:RefinedLoader;
-			
-			while (it.hasNext())
+			var loader:RefinedLoader = _queue.find(loaderId);
+			if (!loader)
 			{
-				loader = it.next();
-				if (loader.id == loaderId)
-				{
-					try
-					{
-						loader.stop();
-					}
-					catch (error:Error)
-					{
-						//do nothing
-					}
-					
-					return;
-				}
+				var message:String = "There is no RefinedLoader object stored with id:\n";
+				message += "<" + loaderId + ">";
+				throw new LoaderNotFoundError(loaderId, message);
 			}
 			
-			var message:String = "There is no RefinedLoader object stored with id:\n";
-			message += "<" + loaderId + ">";
-			throw new LoaderNotFoundError(loaderId, message);
+			try
+			{
+				loader.stop();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
 		}
 
 		/**

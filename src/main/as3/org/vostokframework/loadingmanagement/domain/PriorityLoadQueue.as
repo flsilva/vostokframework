@@ -142,6 +142,20 @@ package org.vostokframework.loadingmanagement.domain
 			_stoppedLoaders = null;
 		}
 		
+		public function find(loaderId:String):RefinedLoader
+		{
+			var it:IIterator = getLoaders().iterator();
+			var loader:RefinedLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (loader.id == loaderId) return loader;
+			}
+			
+			return null;
+		}
+		
 		/**
 		 * description
 		 */
@@ -257,23 +271,9 @@ package org.vostokframework.loadingmanagement.domain
 			dispatchEvent(new QueueEvent(QueueEvent.QUEUE_CHANGED, totalLoading));
 		}
 		
-		private function find(loaderId:String):RefinedLoader
-		{
-			var it:IIterator = _loaders.iterator();
-			var loader:RefinedLoader;
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				if (loader.id == loaderId) return loader;
-			}
-			
-			return null;
-		}
-		
 		private function findByStatus(status:LoaderStatus):IList
 		{
-			var it:IIterator = _loaders.iterator();
+			var it:IIterator = getLoaders().iterator();
 			var loader:RefinedLoader;
 			var list:IList = new ArrayList();
 			
