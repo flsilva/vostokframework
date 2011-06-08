@@ -111,8 +111,8 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function setMaxConcurrentConnections(value:int): void
 		{
+			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
 			_maxConcurrentConnections = value;
-			//TODO:validar null, zero e negativo
 		}
 
 		/**
@@ -122,8 +122,8 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function setMaxConcurrentQueues(value:int): void
 		{
+			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
 			_maxConcurrentQueues = value;
-			//TODO:validar null, zero e negativo
 		}
 
 		/**
