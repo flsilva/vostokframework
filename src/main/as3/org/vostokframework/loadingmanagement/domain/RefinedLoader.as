@@ -75,7 +75,11 @@ package org.vostokframework.loadingmanagement.domain
 		 * description
 		 */
 		public function get delayLoadAfterError(): int { return _delayLoadAfterError; }
-		public function set delayLoadAfterError(value:int): void { _delayLoadAfterError = value; }//TODO:VALIDATE
+		public function set delayLoadAfterError(value:int): void
+		{
+			if (value < 50) throw new ArgumentError("Value must be greater than 50. Received: <" + value + ">");
+			_delayLoadAfterError = value;
+		}
 		
 		/**
 		 * description
@@ -125,7 +129,7 @@ package org.vostokframework.loadingmanagement.domain
 			_id = id;
 			_priority = priority;
 			_maxAttempts = maxAttempts;
-			_delayLoadAfterError = 5000;
+			delayLoadAfterError = 5000;
 			_errorHistory = new ArrayList();
 			_statusHistory = new ArrayList();
 			
