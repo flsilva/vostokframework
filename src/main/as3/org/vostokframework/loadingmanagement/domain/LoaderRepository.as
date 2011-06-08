@@ -140,8 +140,8 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		public function findAllLoading(): IList
 		{
-			var list1:IList = findByStatus(LoaderStatus.CONNECTING);
-			var list2:IList = findByStatus(LoaderStatus.LOADING);
+			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
+			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
 			
 			var unique:UniqueArrayList = new UniqueArrayList(new ArrayList());
 			unique.addAll(list1);

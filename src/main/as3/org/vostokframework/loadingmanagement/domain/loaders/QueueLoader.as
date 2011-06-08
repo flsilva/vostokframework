@@ -139,7 +139,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			var message:String = "There is no RefinedLoader object stored with id:\n";
 			message += "<" + loaderId + ">";
-			throw new LoaderNotFoundError(loaderId, message);//TODO:nao pode ser AssetLoaderNotFoundError.
+			throw new LoaderNotFoundError(loaderId, message);
 		}
 
 		/**

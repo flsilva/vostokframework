@@ -43,6 +43,11 @@ package org.vostokframework.loadingmanagement.domain
 			super(id, priority, maxAttempts);
 		}
 		
+		public function $loadingComplete():void
+		{
+			super.loadingComplete();
+		}
+		
 		override protected function doCancel(): void
 		{
 			

@@ -33,10 +33,13 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
+	import org.as3collections.lists.UniqueArrayList;
 	import org.as3collections.queues.IndexablePriorityQueue;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
+	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
@@ -53,12 +56,8 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * @private
 		 */
-		private var _canceledLoaders:IList;
-		private var _completeLoaders:IList;
-		private var _failedLoaders:IList;
 		private var _index:int;
 		private var _loaders:IQueue;
-		private var _loadingLoaders:IList;
 		private var _queuedLoaders:IQueue;
 		private var _stoppedLoaders:IList;
 		
@@ -78,22 +77,22 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get totalCanceled(): int { return _canceledLoaders.size(); }
+		public function get totalCanceled(): int { return getCanceled().size(); }
 		
 		/**
 		 * description
 		 */
-		public function get totalComplete(): int { return _completeLoaders.size(); }
+		public function get totalComplete(): int { return getLoaded().size(); }
 		
 		/**
 		 * description
 		 */
-		public function get totalFailed(): int { return _failedLoaders.size(); }
+		public function get totalFailed(): int { return getFailed().size(); }
 		
 		/**
 		 * description
 		 */
-		public function get totalLoading(): int { return _loadingLoaders.size(); }
+		public function get totalLoading(): int { return getLoading().size(); }
 		
 		/**
 		 * description
@@ -116,15 +115,14 @@ package org.vostokframework.loadingmanagement.domain
 			
 			_queuedLoaders = new IndexablePriorityQueue();
 			_loaders = new IndexablePriorityQueue();
-			_canceledLoaders = new ArrayList();
-			_completeLoaders = new ArrayList();
-			_loadingLoaders = new ArrayList();
-			_failedLoaders = new ArrayList();
 			_stoppedLoaders = new ArrayList();
 		}
 		
 		public function addLoader(loader:RefinedLoader):void
 		{
+			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
+			if (_queuedLoaders.contains(loader)) throw new DuplicateLoaderError(loader.id, "There is already an RefinedLoader object stored with id:\n<" + loader.id + ">");
+			
 			loader.index = _index++;
 			_queuedLoaders.add(loader);
 			_loaders.add(loader);
@@ -136,19 +134,11 @@ package org.vostokframework.loadingmanagement.domain
 			removeLoadersListeners();
 			
 			_loaders.clear();
-			_canceledLoaders.clear();
-			_completeLoaders.clear();
-			_loadingLoaders.clear();
 			_queuedLoaders.clear();
-			_failedLoaders.clear();
 			_stoppedLoaders.clear();
 			
 			_loaders = null;
-			_canceledLoaders = null;
-			_completeLoaders = null;
-			_loadingLoaders = null;
 			_queuedLoaders = null;
-			_failedLoaders = null;
 			_stoppedLoaders = null;
 		}
 		
@@ -163,49 +153,56 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function getAllCanceled(): void
+		public function getCanceled(): IList
 		{
-			//TODO
+			return findByStatus(LoaderStatus.CANCELED);
 		}
 
 		/**
 		 * description
 		 */
-		public function getAllFailed(): void
+		public function getFailed(): IList
 		{
-			//TODO
+			return findByStatus(LoaderStatus.FAILED);
 		}
 
 		/**
 		 * description
 		 */
-		public function getAllLoaded(): void
+		public function getLoaded(): IList
 		{
-			//TODO
+			return findByStatus(LoaderStatus.COMPLETE);
 		}
 
 		/**
 		 * description
 		 */
-		public function getAllLoading(): IList
+		public function getLoading(): IList
 		{
-			return new ReadOnlyArrayList(_loadingLoaders.toArray());
+			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
+			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
+			
+			var unique:UniqueArrayList = new UniqueArrayList(new ArrayList());
+			unique.addAll(list1);
+			unique.addAll(list2);
+			
+			return new ReadOnlyArrayList(unique.toArray());
 		}
 
 		/**
 		 * description
 		 */
-		public function getAllQueued(): void
+		public function getQueued(): IList
 		{
-			//TODO
+			return new ReadOnlyArrayList(_queuedLoaders.toArray());
 		}
 
 		/**
 		 * description
 		 */
-		public function getAllStopped(): void
+		public function getStopped(): IList
 		{
-			//TODO
+			return findByStatus(LoaderStatus.STOPPED);
 		}
 
 		/**
@@ -220,6 +217,22 @@ package org.vostokframework.loadingmanagement.domain
 			return doGetNext();
 		}
 		
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function resumeLoader(loaderId:String): void
+		{
+			var loader:RefinedLoader = find(loaderId);
+			if (!loader) throw new LoaderNotFoundError(loaderId, "There's no RefinedLoader stored with id:\n<" + loaderId + ">");
+			
+			_stoppedLoaders.remove(loader);
+			if (!_queuedLoaders.contains(loader)) _queuedLoaders.add(loader);
+			
+			changed();
+		}
+
 		protected function allowGetNext():Boolean
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
@@ -244,38 +257,66 @@ package org.vostokframework.loadingmanagement.domain
 			dispatchEvent(new QueueEvent(QueueEvent.QUEUE_CHANGED, totalLoading));
 		}
 		
+		private function find(loaderId:String):RefinedLoader
+		{
+			var it:IIterator = _loaders.iterator();
+			var loader:RefinedLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (loader.id == loaderId) return loader;
+			}
+			
+			return null;
+		}
+		
+		private function findByStatus(status:LoaderStatus):IList
+		{
+			var it:IIterator = _loaders.iterator();
+			var loader:RefinedLoader;
+			var list:IList = new ArrayList();
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (loader.status.equals(status))
+				{
+					list.add(loader);
+				}
+			}
+			
+			return new ReadOnlyArrayList(list.toArray());
+		}
+		
 		private function loaderCanceledHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as RefinedLoader);
-			_canceledLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as RefinedLoader);
-			_completeLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderFailedHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as RefinedLoader);
-			_failedLoaders.add(event.target);
 			changed();
 		}
 		
 		private function loaderStoppedHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as RefinedLoader);
-			_stoppedLoaders.add(event.target);
+			_stoppedLoaders.add(event.target as RefinedLoader);
 			changed();
 		}
 		
 		private function loaderConnectingHandler(event:LoaderEvent):void
 		{
 			removeFromLists(event.target as RefinedLoader);
-			_loadingLoaders.add(event.target);
 			changed();
 		}
 		
@@ -297,11 +338,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function removeFromLists(loader:RefinedLoader):void
 		{
-			_canceledLoaders.remove(loader);
-			_completeLoaders.remove(loader);
-			_loadingLoaders.remove(loader);
 			_queuedLoaders.remove(loader);
-			_failedLoaders.remove(loader);
 			_stoppedLoaders.remove(loader);
 		}
 

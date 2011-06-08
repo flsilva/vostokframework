@@ -63,7 +63,7 @@ package org.vostokframework.loadingmanagement.domain
 			
 			if (nextLoaderPriority.equals(LoadPriority.LOWEST))
 			{
-				if (containsOnlyLowest(getAllLoading())) return super.allowGetNext();
+				if (containsOnlyLowest(getLoading())) return super.allowGetNext();
 				return false; 
 			}
 			
@@ -71,7 +71,7 @@ package org.vostokframework.loadingmanagement.domain
 			//if it contains any HIGHEST it's denied
 			//otherwise all LOWEST loaders are stopped and
 			//the permission is delegated to super.allowGetNext()
-			if (containsHighest(getAllLoading())) return false;
+			if (containsHighest(getLoading())) return false;
 			
 			stopLowest(); 
 			
@@ -116,7 +116,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function stopNotHighest():void
 		{
-			var loadings:IList = getAllLoading();
+			var loadings:IList = getLoading();
 			if (loadings.isEmpty()) return;
 			
 			var it:IIterator = loadings.iterator();
@@ -137,7 +137,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function stopLowest():void
 		{
-			var loadings:IList = getAllLoading();
+			var loadings:IList = getLoading();
 			if (loadings.isEmpty()) return;
 			
 			var it:IIterator = loadings.iterator();

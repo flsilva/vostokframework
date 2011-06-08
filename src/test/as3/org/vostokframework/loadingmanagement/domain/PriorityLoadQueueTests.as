@@ -32,7 +32,6 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	/**
 	 * @author Flávio Silva
@@ -95,7 +94,52 @@ package org.vostokframework.loadingmanagement.domain
 		// PriorityLoadQueue().addLoader() //
 		/////////////////////////////////////
 		
-		//TODO:test dupplication element
+		[Test]
+		public function addLoader_addedNewLoader_checkTotalQueued_ReturnsFive(): void
+		{
+			_queue.addLoader(getLoader("loader-5", LoadPriority.HIGH));
+			Assert.assertEquals(5, _queue.totalQueued);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function addLoader_nullArgument_ThrowsError(): void
+		{
+			_queue.addLoader(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		public function addLoader_duplicateLoader_ThrowsError(): void
+		{
+			_queue.addLoader(getLoader("loader-4", LoadPriority.HIGH));
+		}
+		
+		////////////////////////////////////////
+		// PriorityLoadQueue().resumeLoader() //
+		////////////////////////////////////////
+		
+		[Test]
+		public function resumeLoader_callGetNextAndCallStopOnLoader_thenResumeLoaderAndCallGetNextAgain_ReturnsSameLoader(): void
+		{
+			var loader:RefinedLoader = _queue.getNext();
+			var loaderId:String = loader.id;
+			loader.stop();
+			
+			_queue.resumeLoader(loaderId);
+			loader = _queue.getNext();
+			
+			Assert.assertEquals(loaderId, loader.id);
+		}
+		
+		[Test]
+		public function resumeLoader_callGetNextAndCallStopOnLoader_thenResumeLoaderAndCheckTotalStopped_ReturnsZero(): void
+		{
+			var loader:RefinedLoader = _queue.getNext();
+			var loaderId:String = loader.id;
+			loader.stop();
+			
+			_queue.resumeLoader(loaderId);
+			Assert.assertEquals(0, _queue.totalStopped);
+		}
 		
 		///////////////////////////////////////
 		// PriorityLoadQueue().totalCanceled //
@@ -131,7 +175,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			var loader:RefinedLoader = _queue.getNext();
 			loader.load();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, LoaderStatus.COMPLETE));
+			(loader as StubRefinedLoader).$loadingComplete();
 			
 			Assert.assertEquals(1, _queue.totalComplete);
 		}

@@ -30,7 +30,6 @@
 package org.vostokframework.loadingmanagement.domain
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.policies.StubLoadingPolicy;
 
 	/**
@@ -88,7 +87,7 @@ package org.vostokframework.loadingmanagement.domain
 			
 			var loader:RefinedLoader = queue.getNext();
 			loader.load();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			(loader as StubRefinedLoader).$loadingComplete();
 			
 			loader = queue.getNext();
 			Assert.assertEquals("loader-high", loader.id);
@@ -151,7 +150,7 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
 			var loaderHighest:RefinedLoader = queue.getNext();
 			loaderHighest.load();
-			loaderHighest.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			(loaderHighest as StubRefinedLoader).$loadingComplete();
 			
 			loaderHigh = queue.getNext();
 			Assert.assertEquals("loader-high", loaderHigh.id);
@@ -190,7 +189,7 @@ package org.vostokframework.loadingmanagement.domain
 			
 			var loader:RefinedLoader = queue.getNext();
 			loader.load();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			(loader as StubRefinedLoader).$loadingComplete();
 			
 			loader = queue.getNext();
 			Assert.assertEquals("loader-lowest", loader.id);
@@ -272,7 +271,7 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
 			var loaderLow:RefinedLoader = queue.getNext();
 			loaderLow.load();
-			loaderLow.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			(loaderLow as StubRefinedLoader).$loadingComplete();
 			
 			loaderLowest = queue.getNext();
 			Assert.assertEquals("loader-lowest", loaderLowest.id);
