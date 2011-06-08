@@ -130,6 +130,7 @@ package org.vostokframework.loadingmanagement.domain
 				if (!loaderPriority.equals(LoadPriority.HIGHEST))
 				{
 					loader.stop();
+					stoppedLoaders.remove(loader);
 					queuedLoaders.add(loader);
 				}
 			}
@@ -151,6 +152,7 @@ package org.vostokframework.loadingmanagement.domain
 				if (loaderPriority.equals(LoadPriority.LOWEST))
 				{
 					loader.stop();
+					stoppedLoaders.remove(loader);
 					queuedLoaders.add(loader);
 				}
 			}

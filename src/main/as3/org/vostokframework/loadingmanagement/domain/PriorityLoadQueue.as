@@ -66,6 +66,8 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		protected function get queuedLoaders():IQueue { return _queuedLoaders; }
 		
+		protected function get stoppedLoaders():IList { return _stoppedLoaders; }
+		
 		/**
 		 * description
 		 */
