@@ -44,7 +44,7 @@ package org.vostokframework.loadingmanagement.domain
 		public static const MEDIUM:LoadPriority = new LoadPriority("MEDIUM", 2);
 		public static const HIGH:LoadPriority = new LoadPriority("HIGH", 3);
 		public static const HIGHEST:LoadPriority = new LoadPriority("HIGHEST", 4);
-				
+		
 		/**
 		 * @private
 		 */

@@ -101,7 +101,20 @@ package org.vostokframework.loadingmanagement.domain
 		 * description
 		 */
 		public function get priority(): int { return _priority.ordinal; }
-		public function set priority(value:int): void { return; }//TODO:implementar
+		public function set priority(value:int): void
+		{
+			try
+			{
+				_priority = LoadPriority.getByOrdinal(value);
+			}
+			catch(error:Error)
+			{
+				var errorMessage:String = "Value must be between 0 and 4. Received: <" + value + ">.\n";
+				errorMessage += "For further information please consult the documentation section about:\n";
+				errorMessage += ReflectionUtil.getClassPath(LoadPriority);
+				throw new ArgumentError(errorMessage);
+			}
+		}
 		
 		/**
 		 * description

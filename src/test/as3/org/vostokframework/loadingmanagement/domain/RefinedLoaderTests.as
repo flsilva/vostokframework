@@ -84,10 +84,6 @@ package org.vostokframework.loadingmanagement.domain
 		
 		public function asyncTimeoutHandler(passThroughData:Object):void
 		{
-			trace("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-			trace("asyncTimeoutHandler() - _loader.statusHistory: " + _loader.statusHistory);
-			trace("asyncTimeoutHandler() - _loader.errorHistory: " + _loader.errorHistory);
-			
 			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
 		}
@@ -96,7 +92,28 @@ package org.vostokframework.loadingmanagement.domain
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
+		//////////////////////////////
+		// RefinedLoader().priority //
+		//////////////////////////////
 		
+		[Test]
+		public function priority_setValidPriority_checkIfPriorityMatches_ReturnsTrue(): void
+		{
+			_loader.priority = 1;
+			Assert.assertEquals(1, _loader.priority);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function priority_setInvalidLessPriority_ThrowsError(): void
+		{
+			_loader.priority = -1;
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function priority_setInvalidGreaterPriority_ThrowsError(): void
+		{
+			_loader.priority = 5;
+		}
 		
 		////////////////////////////
 		// RefinedLoader().status //
