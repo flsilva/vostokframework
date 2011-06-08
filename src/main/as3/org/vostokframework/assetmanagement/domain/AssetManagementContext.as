@@ -109,8 +109,8 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function setAssetFactory(factory:AssetFactory): void
 		{
+			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
 			_assetFactory = factory;
-			//TODO:validar null
 		}
 
 		/**
@@ -120,8 +120,8 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function setAssetPackageFactory(factory:AssetPackageFactory): void
 		{
+			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
 			_assetPackageFactory = factory;
-			//TODO:validar null
 		}
 
 		/**
@@ -131,8 +131,8 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function setAssetPackageRepository(repository:AssetPackageRepository): void
 		{
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
 			_assetPackageRepository = repository;
-			//TODO:validar null
 		}
 
 		/**
@@ -142,8 +142,8 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function setAssetRepository(repository:AssetRepository): void
 		{
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
 			_assetRepository = repository;
-			//TODO:validar null
 		}
 
 	}
