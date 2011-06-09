@@ -52,7 +52,6 @@ package org.vostokframework.loadingmanagement.domain
 		private var _loaderRepository:LoaderRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
-		//private var _requestLoaderFactory:AbstractRequestLoaderFactory;
 		
 		/**
 		 * @private
@@ -78,11 +77,6 @@ package org.vostokframework.loadingmanagement.domain
 		 * description
 		 */
 		public function get maxConcurrentQueues(): int { return _maxConcurrentQueues; }
-		
-		/**
-		 * description
-		 */
-		//public function get requestLoaderFactory(): AbstractRequestLoaderFactory { return _requestLoaderFactory; }
 		
 		/**
 		 * description
@@ -166,16 +160,6 @@ package org.vostokframework.loadingmanagement.domain
 			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
 			_maxConcurrentQueues = value;
 		}
-
-		/**
-		 * description
-		 * 
-		 * @param factory
-		 */
-		/*public function setRequestLoaderFactory(factory:AbstractRequestLoaderFactory): void
-		{
-			
-		}*/
 
 	}
 
