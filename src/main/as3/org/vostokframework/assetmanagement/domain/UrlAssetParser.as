@@ -62,9 +62,11 @@ package org.vostokframework.assetmanagement.domain
 			_typeRegexpMap = new HashMap();
 			
 			var aacExt:Array = getAACExtensions();
+			var imgExt:Array = getImageExtensions();
 			var xmlExt:Array = getXMLExtensions();
 			
 			_typeRegexpMap.put(AssetType.AAC, getRegexp(aacExt));
+			_typeRegexpMap.put(AssetType.IMAGE, getRegexp(imgExt));
 			_typeRegexpMap.put(AssetType.XML, getRegexp(xmlExt));
 		}
 		
@@ -109,6 +111,15 @@ package org.vostokframework.assetmanagement.domain
 		{
 			var ext:Array = [];
 			ext.push("xml");
+			
+			return ext;
+		}
+		
+		private function getImageExtensions(): Array
+		{
+			var ext:Array = [];
+			ext.push("jpg");
+			ext.push("png");
 			
 			return ext;
 		}

@@ -29,6 +29,7 @@
 package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.as3collections.IIterator;
+	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
@@ -72,7 +73,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		/**
 		 * description
 		 * 
-		 * @param loaders
+		 * @param loader
 		 */
 		public function addLoader(loader:RefinedLoader): void
 		{
@@ -83,6 +84,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_queue.addLoader(loader);
 		}
 		
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 */
+		public function addLoaders(loaders:IList): void
+		{
+			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
+			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
+			
+			_queue.addLoaders(loaders);
+		}
+
 		/**
 		 * description
 		 * 

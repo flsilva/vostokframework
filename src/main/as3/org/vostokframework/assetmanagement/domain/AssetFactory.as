@@ -102,7 +102,7 @@ package org.vostokframework.assetmanagement.domain
 			
 			if (!type)
 			{
-				var message:String = "It was not possible to get the correct asset type over the provided <url> argument OR the provided <url> argument contains an extension that is not supported.\n";
+				var message:String = "It was not possible to get the correct asset type over the provided <src> argument OR the provided <src> argument contains an extension that is not supported.\n";
 				message += "Provided src: <" + src + ">\n";
 				message += "Provided id: <" + id + ">\n";
 				message += "Final composed id: <" + composedId + ">\n";

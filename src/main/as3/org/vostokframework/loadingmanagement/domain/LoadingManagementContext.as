@@ -28,6 +28,10 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
+	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+
 	import flash.errors.IllegalOperationError;
 
 	/**
@@ -40,9 +44,12 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * @private
 		 */
+		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
-		//private var _assetLoaderFactory:AbstractAssetLoaderFactory;
+		private var _assetLoaderFactory:AssetLoaderFactory;
+		private var _globalQueueLoader:QueueLoader;
+		private var _loaderRepository:LoaderRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
 		//private var _requestLoaderFactory:AbstractRequestLoaderFactory;
@@ -56,7 +63,11 @@ package org.vostokframework.loadingmanagement.domain
 			_created = true;
 		}
 		
-		//public function get assetLoaderFactory(): AbstractAssetLoaderFactory { return _assetLoaderFactory; }
+		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
+		
+		public function get globalQueueLoader(): QueueLoader { return _globalQueueLoader; }
+		
+		public function get loaderRepository(): LoaderRepository { return _loaderRepository; }
 
 		/**
 		 * description
@@ -82,6 +93,13 @@ package org.vostokframework.loadingmanagement.domain
 			
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
+			
+			_loaderRepository = new LoaderRepository();
+			_assetLoaderFactory = new AssetLoaderFactory();
+			
+			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
+			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
+			_globalQueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
 		}
 		
 		/**
@@ -99,10 +117,33 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param factory
 		 */
-		/*public function setAssetLoaderFactory(factory:AbstractAssetLoaderFactory): void
+		public function setAssetLoaderFactory(factory:AssetLoaderFactory): void
 		{
-			
-		}*/
+			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
+			_assetLoaderFactory = factory;
+		}
+
+		/**
+		 * description
+		 * 
+		 * @param queueLoader
+		 */
+		public function setGlobalQueueLoader(queueLoader:QueueLoader): void
+		{
+			if (!queueLoader) throw new ArgumentError("Argument <queueLoader> must not be null.");
+			_globalQueueLoader = queueLoader;//TODO:validate if already exists an queueLoader and if yes stop() and dispose() it
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderRepository
+		 */
+		public function setLoaderRepository(loaderRepository:LoaderRepository): void
+		{
+			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
+			_loaderRepository = loaderRepository;//TODO:validate if already exists an loaderRepository and dispose() it
+		}
 
 		/**
 		 * description

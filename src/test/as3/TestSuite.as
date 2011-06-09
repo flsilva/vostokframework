@@ -51,6 +51,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
+	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTests;
 
 	/**
 	 * @author Flávio Silva
@@ -60,10 +61,6 @@ package
 	public class TestSuite
 	{
 		
-		//org.vostokframework
-		public var assetServiceTests:AssetServiceTests;
-		public var assetPackageServiceTests:AssetPackageServiceTests;
-		
 		//org.vostokframework.assetmanagement.domain
 		public var assetTests:AssetTests;
 		public var assetFactoryTests:AssetFactoryTests;
@@ -72,6 +69,10 @@ package
 		public var assetRepositoryTests:AssetRepositoryTests;
 		public var assetPackageRepositoryTests:AssetPackageRepositoryTests;
 		public var urlAssetParserTests:UrlAssetParserTests;
+		
+		//org.vostokframework.assetmanagement.services
+		public var assetServiceTests:AssetServiceTests;
+		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
 		//org.vostokframework.assetmanagement.domain.utils
 		public var localeUtilTests:LocaleUtilTests;
@@ -95,6 +96,9 @@ package
 		
 		//org.vostokframework.loadingmanagement.domain.policies
 		public var loadingPolicyTests:LoadingPolicyTests;
+		
+		//org.vostokframework.loadingmanagement.services
+		public var queueLoadingServiceTests:QueueLoadingServiceTests;
 		
 		public function TestSuite()
 		{

@@ -131,6 +131,25 @@ package org.vostokframework.loadingmanagement.domain
 			addLoaderListeners(loader);
 		}
 		
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 */
+		public function addLoaders(loaders:IList): void
+		{
+			if (!loaders || loaders.isEmpty()) throw new ArgumentError("Argument <loaders> must not be null nor empty.");
+			
+			var it:IIterator = loaders.iterator();
+			var loader:RefinedLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				addLoader(loader);
+			}
+		}
+		
 		public function dispose():void
 		{
 			removeLoadersListeners();
