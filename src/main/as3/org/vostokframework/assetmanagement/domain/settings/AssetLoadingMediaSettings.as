@@ -28,42 +28,59 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
+	import org.as3collections.IList;
+
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetExtraSettings
+	public class AssetLoadingMediaSettings
 	{
-		private var _baseURL:String;
-		private var _userDataContainer:*;
-		private var _userTotalBytes:int;
+		/**
+		 * description
+		 */
+		private var _audioLinkage:IList;
+		private var _autoCreateVideo:Boolean;
+		private var _autoResizeVideo:Boolean;
+		private var _autoStopStream:Boolean;
+		private var _bufferPercent:int;
+		private var _bufferTime:Number;
+
+		public function get audioLinkage(): IList { return _audioLinkage; }
 
 		/**
 		 * description
-		 * 
-		 * @param userTotalBytes
-		 * @param userDataContainer
 		 */
-		public function LoadingAssetExtraSettings(baseURL:String = null, userTotalBytes:int = 0, userDataContainer:* = null)
+		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
+
+		/**
+		 * description
+		 */
+		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
+
+		/**
+		 * description
+		 */
+		public function get autoStopStream(): Boolean { return _autoStopStream; }
+
+		/**
+		 * description
+		 */
+		public function get bufferPercent(): int { return _bufferPercent; }
+
+		/**
+		 * description
+		 */
+		public function get bufferTime(): Number { return _bufferTime; }
+
+		/**
+		 * description
+		 */
+		public function AssetLoadingMediaSettings()
 		{
 			
 		}
-		
-		/**
-		 * description
-		 */
-		public function get baseURL(): * { return _baseURL; }
-		
-		/**
-		 * description
-		 */
-		public function get userDataContainer(): * { return _userDataContainer; }
-
-		/**
-		 * description
-		 */
-		public function get userTotalBytes(): int { return _userTotalBytes; }
 
 	}
 

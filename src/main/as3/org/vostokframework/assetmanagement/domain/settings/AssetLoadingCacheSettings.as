@@ -28,63 +28,35 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
-
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetSettings
+	public class AssetLoadingCacheSettings
 	{
 		/**
 		 * description
 		 */
-		private var _cache:LoadingAssetCacheSettings;
-		private var _extra:LoadingAssetExtraSettings;
-		private var _media:LoadingAssetMediaSettings;
-		private var _policy:LoadingAssetPolicySettings;
-		private var _security:LoadingAssetSecuritySettings;
+		private var _allowInternalCache:Boolean;
+		private var _killExternalCache:Boolean;
 
-		public function get cache(): LoadingAssetCacheSettings { return _cache; }
+		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
 
 		/**
 		 * description
 		 */
-		public function get extra(): LoadingAssetExtraSettings { return _extra; }
+		public function get killExternalCache(): Boolean { return _killExternalCache; }
 
-		/**
-		 * description
-		 */
-		public function get media(): LoadingAssetMediaSettings { return _media; }
-
-		/**
-		 * description
-		 */
-		public function get policy(): LoadingAssetPolicySettings { return _policy; }
-
-		/**
-		 * description
-		 */
-		public function get security(): LoadingAssetSecuritySettings { return _security; }
-		
 		/**
 		 * description
 		 * 
-		 * @param policy
-		 * @param cache
-		 * @param security
-		 * @param media
-		 * @param extra
+		 * @param killExternalCache
+		 * @param allowInternalCache
 		 */
-		public function LoadingAssetSettings(policy:LoadingAssetPolicySettings, cache:LoadingAssetCacheSettings = null, security:LoadingAssetSecuritySettings = null, media:LoadingAssetMediaSettings = null, extra:LoadingAssetExtraSettings = null)
+		public function AssetLoadingCacheSettings(killExternalCache:Boolean = false, allowInternalCache:Boolean = true)
 		{
-			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
 			
-			_policy = policy;
-			_cache = cache;
-			_security = security;
-			_media = media;
-			_extra = extra;
 		}
 
 	}

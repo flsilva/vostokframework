@@ -30,12 +30,12 @@ package org.vostokframework.assetmanagement.domain
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetCacheSettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetExtraSettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetMediaSettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSecuritySettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingCacheSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingExtraSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingMediaSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -54,7 +54,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		private var _defaultSettings:LoadingAssetSettings;
+		private var _defaultSettings:AssetLoadingSettings;
 
 		/**
 		 * description
@@ -64,9 +64,9 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function get defaultSettings(): LoadingAssetSettings { return _defaultSettings; }
+		public function get defaultSettings(): AssetLoadingSettings { return _defaultSettings; }
 
-		public function AssetFactory(defaultSettings:LoadingAssetSettings = null, defaultPriority:LoadPriority = null)
+		public function AssetFactory(defaultSettings:AssetLoadingSettings = null, defaultPriority:LoadPriority = null)
 		{
 			if (!defaultSettings) defaultSettings = createDefaultSettings();
 			setDefaultSettings(defaultSettings);
@@ -89,7 +89,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
 		 * @return
 		 */
-		public function create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, id:String = null, type:AssetType = null): Asset
+		public function create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:AssetLoadingSettings = null, id:String = null, type:AssetType = null): Asset
 		{
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
 			if (!assetPackage) throw new ArgumentError("Argument <assetPackage> must not be null.");
@@ -132,7 +132,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @param settings
 		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
 		 */
-		public function setDefaultSettings(settings:LoadingAssetSettings): void
+		public function setDefaultSettings(settings:AssetLoadingSettings): void
 		{
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			_defaultSettings = settings;
@@ -141,7 +141,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:String, src:String, type:AssetType, priority:LoadPriority, settings:LoadingAssetSettings): Asset
+		protected function instanciate(id:String, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
 		{
 			return new Asset(id, src, type, priority, settings);
 		}
@@ -176,15 +176,15 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		private function createDefaultSettings(): LoadingAssetSettings
+		private function createDefaultSettings(): AssetLoadingSettings
 		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
-			var cache:LoadingAssetCacheSettings = new LoadingAssetCacheSettings();
-			var security:LoadingAssetSecuritySettings = new LoadingAssetSecuritySettings();
-			var media:LoadingAssetMediaSettings = new LoadingAssetMediaSettings();
-			var extra:LoadingAssetExtraSettings = new LoadingAssetExtraSettings();
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var cache:AssetLoadingCacheSettings = new AssetLoadingCacheSettings();
+			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
+			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
+			var extra:AssetLoadingExtraSettings = new AssetLoadingExtraSettings();
 			
-			return new LoadingAssetSettings(policy, cache, security, media, extra);
+			return new AssetLoadingSettings(policy, cache, security, media, extra);
 		}
 
 	}

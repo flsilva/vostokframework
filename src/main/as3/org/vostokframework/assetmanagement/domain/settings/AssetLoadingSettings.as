@@ -28,43 +28,63 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
+
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetPolicySettings
+	public class AssetLoadingSettings
 	{
 		/**
 		 * description
 		 */
-		private var _latencyTimeout:Number;
-		private var _maxAttempts:int;
+		private var _cache:AssetLoadingCacheSettings;
+		private var _extra:AssetLoadingExtraSettings;
+		private var _media:AssetLoadingMediaSettings;
+		private var _policy:AssetLoadingPolicySettings;
+		private var _security:AssetLoadingSecuritySettings;
+
+		public function get cache(): AssetLoadingCacheSettings { return _cache; }
 
 		/**
 		 * description
 		 */
-		public function get latencyTimeout(): Number { return _latencyTimeout; }
+		public function get extra(): AssetLoadingExtraSettings { return _extra; }
+
+		/**
+		 * description
+		 */
+		public function get media(): AssetLoadingMediaSettings { return _media; }
+
+		/**
+		 * description
+		 */
+		public function get policy(): AssetLoadingPolicySettings { return _policy; }
+
+		/**
+		 * description
+		 */
+		public function get security(): AssetLoadingSecuritySettings { return _security; }
 		
 		/**
 		 * description
-		 */
-		public function get maxAttempts(): int { return _maxAttempts; }
-
-		/**
-		 * description
 		 * 
-		 * @param baseURL
-		 * @param ignoreErrors
-		 * @param maxAttempts
-		 * @param latencyTimeout
+		 * @param policy
+		 * @param cache
+		 * @param security
+		 * @param media
+		 * @param extra
 		 */
-		public function LoadingAssetPolicySettings(maxAttempts:int = 3, latencyTimeout:int = 10)
+		public function AssetLoadingSettings(policy:AssetLoadingPolicySettings, cache:AssetLoadingCacheSettings = null, security:AssetLoadingSecuritySettings = null, media:AssetLoadingMediaSettings = null, extra:AssetLoadingExtraSettings = null)
 		{
-			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must not be less than 1. Received: " + maxAttempts);
+			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
 			
-			_maxAttempts = maxAttempts;
-			_latencyTimeout = latencyTimeout;
+			_policy = policy;
+			_cache = cache;
+			_security = security;
+			_media = media;
+			_extra = extra;
 		}
 
 	}

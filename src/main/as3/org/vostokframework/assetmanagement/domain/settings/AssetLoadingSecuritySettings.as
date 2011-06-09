@@ -28,59 +28,53 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
-	import org.as3collections.IList;
+	import org.vostokframework.assetmanagement.domain.settings.ApplicationDomainSetting;
+	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetMediaSettings
+	public class AssetLoadingSecuritySettings
 	{
 		/**
 		 * description
 		 */
-		private var _audioLinkage:IList;
-		private var _autoCreateVideo:Boolean;
-		private var _autoResizeVideo:Boolean;
-		private var _autoStopStream:Boolean;
-		private var _bufferPercent:int;
-		private var _bufferTime:Number;
+		private var _applicationDomain:ApplicationDomainSetting;
+		private var _checkPolicyFile:Boolean;
+		private var _ignoreLocalSecurityDomain:Boolean;
+		private var _securityDomain:SecurityDomainSetting;
 
-		public function get audioLinkage(): IList { return _audioLinkage; }
+		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
 
 		/**
 		 * description
 		 */
-		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
+		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
 
 		/**
 		 * description
 		 */
-		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
+		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
 
 		/**
 		 * description
+		 * 
+		 * @param checkPolicyFile
+		 * @param applicationDomain
+		 * @param securityDomain
+		 * @param ignoreLocalSecurityDomain
 		 */
-		public function get autoStopStream(): Boolean { return _autoStopStream; }
-
-		/**
-		 * description
-		 */
-		public function get bufferPercent(): int { return _bufferPercent; }
-
-		/**
-		 * description
-		 */
-		public function get bufferTime(): Number { return _bufferTime; }
-
-		/**
-		 * description
-		 */
-		public function LoadingAssetMediaSettings()
+		public function AssetLoadingSecuritySettings(checkPolicyFile:Boolean = false, applicationDomain:ApplicationDomainSetting = null, securityDomain:SecurityDomainSetting = null, ignoreLocalSecurityDomain:Boolean = true)
 		{
 			
 		}
+
+		/**
+		 * description
+		 */
+		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
 
 	}
 

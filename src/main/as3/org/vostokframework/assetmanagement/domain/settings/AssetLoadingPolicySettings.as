@@ -28,53 +28,44 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
-	import org.vostokframework.assetmanagement.domain.settings.ApplicationDomainSetting;
-	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
-
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetSecuritySettings
+	public class AssetLoadingPolicySettings
 	{
 		/**
 		 * description
 		 */
-		private var _applicationDomain:ApplicationDomainSetting;
-		private var _checkPolicyFile:Boolean;
-		private var _ignoreLocalSecurityDomain:Boolean;
-		private var _securityDomain:SecurityDomainSetting;
-
-		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
+		private var _latencyTimeout:Number;
+		private var _maxAttempts:int;
 
 		/**
 		 * description
 		 */
-		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
-
+		public function get latencyTimeout(): Number { return _latencyTimeout; }
+		
 		/**
 		 * description
 		 */
-		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
+		public function get maxAttempts(): int { return _maxAttempts; }
 
 		/**
 		 * description
 		 * 
-		 * @param checkPolicyFile
-		 * @param applicationDomain
-		 * @param securityDomain
-		 * @param ignoreLocalSecurityDomain
+		 * @param baseURL
+		 * @param ignoreErrors
+		 * @param maxAttempts
+		 * @param latencyTimeout
 		 */
-		public function LoadingAssetSecuritySettings(checkPolicyFile:Boolean = false, applicationDomain:ApplicationDomainSetting = null, securityDomain:SecurityDomainSetting = null, ignoreLocalSecurityDomain:Boolean = true)
+		public function AssetLoadingPolicySettings(maxAttempts:int = 3, latencyTimeout:int = 10)
 		{
+			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must not be less than 1. Received: " + maxAttempts);
 			
+			_maxAttempts = maxAttempts;
+			_latencyTimeout = latencyTimeout;
 		}
-
-		/**
-		 * description
-		 */
-		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
 
 	}
 

@@ -32,7 +32,7 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -47,7 +47,7 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		private var _id:String;
 		private var _priority:LoadPriority;
-		private var _settings:LoadingAssetSettings;
+		private var _settings:AssetLoadingSettings;
 		private var _src:String;
 		private var _type:AssetType;
 
@@ -64,7 +64,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function get settings(): LoadingAssetSettings { return _settings; }
+		public function get settings(): AssetLoadingSettings { return _settings; }
 
 		/**
 		 * description
@@ -89,7 +89,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>type</code> argument is <code>null</code>.
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code>.
 		 */
-		public function Asset(id:String, src:String, type:AssetType, priority:LoadPriority, settings:LoadingAssetSettings = null)
+		public function Asset(id:String, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings = null)
 		{
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");

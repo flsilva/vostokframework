@@ -30,8 +30,8 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -44,7 +44,7 @@ package org.vostokframework.assetmanagement.domain
 		private static const ASSET_SRC:String = "asset-path/asset.xml";
 		private static const ASSET_TYPE:AssetType = AssetType.XML;
 		private static const ASSET_PRIORITY:LoadPriority = LoadPriority.HIGH;
-		private static const ASSET_SETTINGS:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+		private static const ASSET_SETTINGS:AssetLoadingSettings = new AssetLoadingSettings(new AssetLoadingPolicySettings());
 		
 		private var _asset:Asset;
 		
@@ -107,8 +107,8 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function constructor_validInstantiationWithSettings_ReturnsValidObject(): void
 		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var settings:AssetLoadingSettings = new AssetLoadingSettings(policy);
 			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH, settings);
 			
 			Assert.assertNotNull(asset);

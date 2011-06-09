@@ -30,8 +30,8 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetPolicySettings;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -85,8 +85,8 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
 		{
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(policy);
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var settings:AssetLoadingSettings = new AssetLoadingSettings(policy);
 			var factory:AssetFactory = new AssetFactory(settings);
 			
 			Assert.assertEquals(settings, factory.defaultSettings);
@@ -134,11 +134,11 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function setDefaultSettings_validArgument_checkIfObjectsMatch_ReturnsTrue(): void
 		{
-			var settings:LoadingAssetSettings = new LoadingAssetSettings(new LoadingAssetPolicySettings());
+			var settings:AssetLoadingSettings = new AssetLoadingSettings(new AssetLoadingPolicySettings());
 			var factory:AssetFactory = new AssetFactory(settings);
 			
-			var policy:LoadingAssetPolicySettings = new LoadingAssetPolicySettings();
-			var settings2:LoadingAssetSettings = new LoadingAssetSettings(policy);
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var settings2:AssetLoadingSettings = new AssetLoadingSettings(policy);
 			factory.setDefaultSettings(settings2);
 			
 			Assert.assertEquals(settings2, factory.defaultSettings);

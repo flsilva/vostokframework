@@ -36,7 +36,7 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
-	import org.vostokframework.assetmanagement.domain.settings.LoadingAssetSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -107,7 +107,7 @@ package org.vostokframework.assetmanagement.services
 		 * @throws 	org.vostokframework.assetmanagement.errors.DuplicateAssetError 	if already exists an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>assetPackage.locale</code>.
 		 * @return
 		 */
-		public function createAsset(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, assetId:String = null, type:AssetType = null): Asset
+		public function createAsset(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:AssetLoadingSettings = null, assetId:String = null, type:AssetType = null): Asset
 		{
 			var asset:Asset = _context.assetFactory.create(src, assetPackage, priority, settings, assetId, type);
 			

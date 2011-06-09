@@ -33,31 +33,37 @@ package org.vostokframework.assetmanagement.domain.settings
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingAssetCacheSettings
+	public class AssetLoadingExtraSettings
 	{
-		/**
-		 * description
-		 */
-		private var _allowInternalCache:Boolean;
-		private var _killExternalCache:Boolean;
-
-		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
-
-		/**
-		 * description
-		 */
-		public function get killExternalCache(): Boolean { return _killExternalCache; }
+		private var _baseURL:String;
+		private var _userDataContainer:*;
+		private var _userTotalBytes:int;
 
 		/**
 		 * description
 		 * 
-		 * @param killExternalCache
-		 * @param allowInternalCache
+		 * @param userTotalBytes
+		 * @param userDataContainer
 		 */
-		public function LoadingAssetCacheSettings(killExternalCache:Boolean = false, allowInternalCache:Boolean = true)
+		public function AssetLoadingExtraSettings(baseURL:String = null, userTotalBytes:int = 0, userDataContainer:* = null)
 		{
 			
 		}
+		
+		/**
+		 * description
+		 */
+		public function get baseURL(): * { return _baseURL; }
+		
+		/**
+		 * description
+		 */
+		public function get userDataContainer(): * { return _userDataContainer; }
+
+		/**
+		 * description
+		 */
+		public function get userTotalBytes(): int { return _userTotalBytes; }
 
 	}
 
