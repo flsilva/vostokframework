@@ -140,6 +140,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			var queueLoader:QueueLoader = new QueueLoader(queueId, priority, queue);
 			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
+			LoadingManagementContext.getInstance().globalQueueLoader.load();
 			
 			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
 			

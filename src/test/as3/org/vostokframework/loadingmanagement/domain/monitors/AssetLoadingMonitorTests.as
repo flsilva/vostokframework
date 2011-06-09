@@ -39,9 +39,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
+	import flash.events.Event;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
@@ -245,7 +247,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesIoErrorEvent_mustCatchStubEventAndDispatchOwnIoErrorEvent(): void
 		{
 			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.IO_ERROR, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingErrorEvent.IO_ERROR, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -253,9 +255,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesIoErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnIoErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"), 50);
-			monitor.addEventListener(AssetLoadingEvent.IO_ERROR,
+			monitor.addEventListener(AssetLoadingErrorEvent.IO_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
-														{propertyName:"ioErrorMessage", propertyValue:"IO Error Test Text"},
+														{propertyName:"text", propertyValue:"IO Error Test Text"},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
@@ -266,7 +268,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesSecurityErrorEvent_mustCatchStubEventAndDispatchOwnSecurityErrorEvent(): void
 		{
 			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
-			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.SECURITY_ERROR, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, monitor, AssetLoadingErrorEvent.SECURITY_ERROR, 1000, asyncTimeoutHandler);
 			loader.load();
 		}
 		
@@ -274,9 +276,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function addEventListener_stubDispatchesSecurityErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnSecurityErrorEvent_checkIfErrorMessageMatches(): void
 		{
 			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"), 50);
-			monitor.addEventListener(AssetLoadingEvent.SECURITY_ERROR,
+			monitor.addEventListener(AssetLoadingErrorEvent.SECURITY_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
-														{propertyName:"securityErrorMessage", propertyValue:"Security Error Test Text"},
+														{propertyName:"text", propertyValue:"Security Error Test Text"},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
@@ -326,7 +328,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			loader.load();
 		}
 		
-		public function monitorEventHandlerCheckEventProperty(event:AssetLoadingEvent, passThroughData:Object):void
+		public function monitorEventHandlerCheckEventProperty(event:Event, passThroughData:Object):void
 		{
 			Assert.assertEquals(passThroughData["propertyValue"], event[passThroughData["propertyName"]]);
 		}

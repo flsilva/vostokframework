@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
@@ -122,6 +123,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return new AssetLoadingEvent(type, _assetId, _assetType, _monitoring, assetData);
 		}
 		
+		private function createErrorEvent(type:String, message:String = null):AssetLoadingErrorEvent
+		{
+			return new AssetLoadingErrorEvent(type, _assetId, _assetType, _monitoring, message);
+		}
+		
 		private function loaderConnectingHandler(event:LoaderEvent):void
 		{
 			_startedTimeConnecting = getTimer();
@@ -176,16 +182,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function loaderIoErrorHandler(event:IOErrorEvent):void
 		{
-			var $event:AssetLoadingEvent = createEvent(AssetLoadingEvent.IO_ERROR);
-			$event.ioErrorMessage = event.text;
-			dispatchEvent($event);
+			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.IO_ERROR, event.text));
 		}
 		
 		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
 		{
-			var $event:AssetLoadingEvent = createEvent(AssetLoadingEvent.SECURITY_ERROR);
-			$event.securityErrorMessage = event.text;
-			dispatchEvent($event);
+			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.SECURITY_ERROR, event.text));
 		}
 		
 	}
