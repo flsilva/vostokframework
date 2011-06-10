@@ -39,6 +39,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
+	import org.vostokframework.loadingmanagement.domain.AssetDataRepository;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -48,6 +49,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+
+	import flash.display.MovieClip;
 
 	/**
 	 * @author Flávio Silva
@@ -79,6 +82,7 @@ package org.vostokframework.loadingmanagement.services
 		public function setUp(): void
 		{
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
+			LoadingManagementContext.getInstance().setAssetDataRepository(new AssetDataRepository());
 			
 			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
@@ -153,21 +157,21 @@ package org.vostokframework.loadingmanagement.services
 			_service.load(QUEUE_ID, list);
 		}
 		
-		//TODO:implement it after refactor asset ID/LOCALE
-		/*
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateAssetDataError")]
 		public function load_assetAlreadyLoadedAndCached_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
 			
+			LoadingManagementContext.getInstance().assetDataRepository.add(asset.identification.toString(), new MovieClip());
+			
 			var list:IList = new ArrayList();
-			list.add(asset);
 			list.add(asset);
 			
 			_service.load(QUEUE_ID, list);
 		}
-		*/
+		
 	}
 
 }

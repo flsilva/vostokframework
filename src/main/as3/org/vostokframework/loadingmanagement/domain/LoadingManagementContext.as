@@ -47,6 +47,7 @@ package org.vostokframework.loadingmanagement.domain
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
+		private var _assetDataRepository:AssetDataRepository;
 		private var _assetLoaderFactory:AssetLoaderFactory;
 		private var _globalQueueLoader:QueueLoader;
 		private var _loaderRepository:LoaderRepository;
@@ -61,6 +62,8 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_created = true;
 		}
+		
+		public function get assetDataRepository(): AssetDataRepository { return _assetDataRepository; }
 		
 		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
 		
@@ -88,8 +91,9 @@ package org.vostokframework.loadingmanagement.domain
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
 			
-			_loaderRepository = new LoaderRepository();
 			_assetLoaderFactory = new AssetLoaderFactory();
+			_assetDataRepository = new AssetDataRepository();
+			_loaderRepository = new LoaderRepository();
 			
 			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
 			policy.globalMaxConnections = _maxConcurrentConnections;
@@ -108,7 +112,18 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			return _instance;
 		}
-
+		
+		/**
+		 * description
+		 * 
+		 * @param factory
+		 */
+		public function setAssetDataRepository(repository:AssetDataRepository): void
+		{
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			_assetDataRepository = repository;
+		}
+		
 		/**
 		 * description
 		 * 

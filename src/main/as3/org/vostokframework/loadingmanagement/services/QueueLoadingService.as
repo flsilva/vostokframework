@@ -28,12 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateAssetDataError;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.loadingmanagement.domain.AssetDataRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
@@ -56,6 +57,8 @@ package org.vostokframework.loadingmanagement.services
 	public class QueueLoadingService
 	{
 		private static var _context:LoadingManagementContext;
+		
+		private function get assetDataRepository():AssetDataRepository { return LoadingManagementContext.getInstance().assetDataRepository; }
 		
 		private function get assetLoaderFactory():AssetLoaderFactory { return LoadingManagementContext.getInstance().assetLoaderFactory; }
 		
@@ -143,6 +146,18 @@ package org.vostokframework.loadingmanagement.services
 			while (it.hasNext())
 			{
 				asset = it.next();
+				
+				if (assetDataRepository.exists(asset.identification.toString()))
+				{
+					errorMessage = "The asset with identification:\n";
+					errorMessage += "<" + asset.identification + ">\n";
+					errorMessage += "Is already loaded and cached internally.\n";
+					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
+					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
+					
+					throw new DuplicateAssetDataError(asset.identification.toString(), errorMessage);
+				}
+				
 				assetLoader = assetLoaderFactory.create(asset);
 				assetLoaders.add(assetLoader);
 				
