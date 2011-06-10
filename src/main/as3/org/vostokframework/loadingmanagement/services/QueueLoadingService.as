@@ -132,6 +132,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
+			var errorMessage:String;
 			var asset:Asset;
 			var assetLoader:AssetLoader;
 			var assetLoadingMonitor:AssetLoadingMonitor;
@@ -144,6 +145,20 @@ package org.vostokframework.loadingmanagement.services
 				asset = it.next();
 				assetLoader = assetLoaderFactory.create(asset);
 				assetLoaders.add(assetLoader);
+				
+				try
+				{
+					loaderRepository.add(assetLoader);
+				}
+				catch(error:DuplicateLoaderError)
+				{
+					errorMessage = "There is already an AssetLoader object stored with id:\n";
+					errorMessage += "<" + assetLoader.id + ">\n";
+					errorMessage += "Use the method <AssetLoadingService().isAssetQueued() AND AssetLoadingService().isAssetLoading()> to check if an AssetLoader object already exists.\n";
+					errorMessage += "For further information please read the documentation section about the AssetLoader object.";
+					//TODO: dizer em qual queue o AssetLoader está
+					throw new DuplicateLoaderError(queueId, errorMessage);
+				}
 				
 				assetLoadingMonitor = new AssetLoadingMonitor(asset.id, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
@@ -164,8 +179,8 @@ package org.vostokframework.loadingmanagement.services
 			}
 			catch(error:DuplicateLoaderError)
 			{
-				var errorMessage:String = "There is already a QueueLoader object stored with id:\n";
-				errorMessage += "<" + queueId + ">\n";
+				errorMessage = "There is already a QueueLoader object stored with id:\n";
+				errorMessage += "<" + queueLoader.id + ">\n";
 				errorMessage += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object already exists.\n";
 				errorMessage += "For further information please read the documentation section about the QueueLoader object.";
 				

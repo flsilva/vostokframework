@@ -37,10 +37,15 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
+	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -73,6 +78,14 @@ package org.vostokframework.loadingmanagement.services
 		public function setUp(): void
 		{
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
+			
+			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
+			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			policy.localMaxConnections = LoadingManagementContext.getInstance().maxConcurrentQueues;
+			
+			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
+			var globalQueueLoader:QueueLoader = new QueueLoader("GlobalQueueLoader", LoadPriority.MEDIUM, queue);
+			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			_service = new QueueLoadingService();
 		}
@@ -115,15 +128,42 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
-			//_fakeAsset = nice(Asset, null, [ASSET_ID, "asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			var monitor:ILoadingMonitor = _service.load(QUEUE_ID, list);
-			monitor = _service.load(QUEUE_ID, list);
+			_service.load(QUEUE_ID, list);
+			_service.load(QUEUE_ID, list);
 		}
 		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		public function load_duplicateAsset_ThrowsError(): void
+		{
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			list.add(asset);
+			
+			_service.load(QUEUE_ID, list);
+		}
+		
+		//TODO:implement it after refactor asset ID/LOCALE
+		/*
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		public function load_assetAlreadyLoadedAndCached_ThrowsError(): void
+		{
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			list.add(asset);
+			
+			_service.load(QUEUE_ID, list);
+		}
+		*/
 	}
 
 }
