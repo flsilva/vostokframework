@@ -178,13 +178,30 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		private function createDefaultSettings(): AssetLoadingSettings
 		{
-			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
 			var cache:AssetLoadingCacheSettings = new AssetLoadingCacheSettings();
-			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
-			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
 			var extra:AssetLoadingExtraSettings = new AssetLoadingExtraSettings();
+			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
 			
-			return new AssetLoadingSettings(policy, cache, security, media, extra);
+			cache.allowInternalCache = true;
+			cache.killExternalCache = false;
+			
+			media.autoCreateVideo = false;
+			media.autoResizeVideo = false;
+			media.autoStopStream = false;
+			
+			policy.latencyTimeout = 10000;
+			policy.maxAttempts = 2;
+			
+			var settings:AssetLoadingSettings = new AssetLoadingSettings();
+			settings.cache = cache;
+			settings.extra = extra;
+			settings.media = media;
+			settings.policy = policy;
+			settings.security = security;
+			
+			return settings;
 		}
 
 	}

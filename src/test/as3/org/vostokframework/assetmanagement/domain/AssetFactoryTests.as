@@ -86,7 +86,11 @@ package org.vostokframework.assetmanagement.domain
 		public function defaultSettings_instanciateWithSettings_checkIfObjectsMatch_ReturnsTrue(): void
 		{
 			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
-			var settings:AssetLoadingSettings = new AssetLoadingSettings(policy);
+			policy.latencyTimeout = 999;
+			
+			var settings:AssetLoadingSettings = new AssetLoadingSettings();
+			settings.policy = policy;
+			
 			var factory:AssetFactory = new AssetFactory(settings);
 			
 			Assert.assertEquals(settings, factory.defaultSettings);
@@ -134,11 +138,13 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function setDefaultSettings_validArgument_checkIfObjectsMatch_ReturnsTrue(): void
 		{
-			var settings:AssetLoadingSettings = new AssetLoadingSettings(new AssetLoadingPolicySettings());
+			var settings:AssetLoadingSettings = new AssetLoadingSettings();
 			var factory:AssetFactory = new AssetFactory(settings);
 			
 			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
-			var settings2:AssetLoadingSettings = new AssetLoadingSettings(policy);
+			policy.latencyTimeout = 999;
+			var settings2:AssetLoadingSettings = new AssetLoadingSettings();
+			settings2.policy = policy;
 			factory.setDefaultSettings(settings2);
 			
 			Assert.assertEquals(settings2, factory.defaultSettings);

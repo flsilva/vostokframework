@@ -92,6 +92,9 @@ package org.vostokframework.loadingmanagement.domain
 			_assetLoaderFactory = new AssetLoaderFactory();
 			
 			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
+			policy.globalMaxConnections = _maxConcurrentConnections;
+			policy.localMaxConnections = _maxConcurrentQueues;
+			
 			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			_globalQueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
 		}

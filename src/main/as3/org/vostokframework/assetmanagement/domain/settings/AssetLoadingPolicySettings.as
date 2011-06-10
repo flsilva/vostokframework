@@ -46,10 +46,14 @@ package org.vostokframework.assetmanagement.domain.settings
 		 */
 		public function get latencyTimeout(): Number { return _latencyTimeout; }
 		
+		public function set latencyTimeout(value:Number): void { _latencyTimeout = value; }
+		
 		/**
 		 * description
 		 */
 		public function get maxAttempts(): int { return _maxAttempts; }
+		
+		public function set maxAttempts(value:int): void { _maxAttempts = value; }
 
 		/**
 		 * description
@@ -59,12 +63,9 @@ package org.vostokframework.assetmanagement.domain.settings
 		 * @param maxAttempts
 		 * @param latencyTimeout
 		 */
-		public function AssetLoadingPolicySettings(maxAttempts:int = 3, latencyTimeout:int = 10)
+		public function AssetLoadingPolicySettings()
 		{
-			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must not be less than 1. Received: " + maxAttempts);
 			
-			_maxAttempts = maxAttempts;
-			_latencyTimeout = latencyTimeout;
 		}
 
 	}

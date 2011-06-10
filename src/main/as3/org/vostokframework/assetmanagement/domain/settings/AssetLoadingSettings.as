@@ -44,28 +44,61 @@ package org.vostokframework.assetmanagement.domain.settings
 		private var _media:AssetLoadingMediaSettings;
 		private var _policy:AssetLoadingPolicySettings;
 		private var _security:AssetLoadingSecuritySettings;
-
+		
+		/**
+		 * description
+		 */
 		public function get cache(): AssetLoadingCacheSettings { return _cache; }
+		
+		public function set cache(value:AssetLoadingCacheSettings): void
+		{
+			if (!value) throw new ArgumentError("Value must not be null.");
+			_cache = value;
+		}
 
 		/**
 		 * description
 		 */
 		public function get extra(): AssetLoadingExtraSettings { return _extra; }
+		
+		public function set extra(value:AssetLoadingExtraSettings): void
+		{
+			if (!value) throw new ArgumentError("Value must not be null.");
+			_extra = value;
+		}
 
 		/**
 		 * description
 		 */
 		public function get media(): AssetLoadingMediaSettings { return _media; }
+		
+		public function set media(value:AssetLoadingMediaSettings): void
+		{
+			if (!value) throw new ArgumentError("Value must not be null.");
+			_media = value;
+		}
 
 		/**
 		 * description
 		 */
 		public function get policy(): AssetLoadingPolicySettings { return _policy; }
+		
+		public function set policy(value:AssetLoadingPolicySettings): void
+		{
+			if (!value) throw new ArgumentError("Value must not be null.");
+			_policy = value;
+		}
 
 		/**
 		 * description
 		 */
 		public function get security(): AssetLoadingSecuritySettings { return _security; }
+		
+		public function set security(value:AssetLoadingSecuritySettings): void
+		{
+			if (!value) throw new ArgumentError("Value must not be null.");
+			_security = value;
+		}
 		
 		/**
 		 * description
@@ -76,15 +109,9 @@ package org.vostokframework.assetmanagement.domain.settings
 		 * @param media
 		 * @param extra
 		 */
-		public function AssetLoadingSettings(policy:AssetLoadingPolicySettings, cache:AssetLoadingCacheSettings = null, security:AssetLoadingSecuritySettings = null, media:AssetLoadingMediaSettings = null, extra:AssetLoadingExtraSettings = null)
+		public function AssetLoadingSettings()
 		{
-			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
 			
-			_policy = policy;
-			_cache = cache;
-			_security = security;
-			_media = media;
-			_extra = extra;
 		}
 
 	}

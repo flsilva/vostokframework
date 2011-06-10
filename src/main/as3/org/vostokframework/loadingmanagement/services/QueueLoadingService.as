@@ -33,11 +33,15 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.lists.ArrayList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -52,7 +56,21 @@ package org.vostokframework.loadingmanagement.services
 	public class QueueLoadingService
 	{
 		private static var _context:LoadingManagementContext;
-
+		
+		private function get assetLoaderFactory():AssetLoaderFactory { return LoadingManagementContext.getInstance().assetLoaderFactory; }
+		
+		private function get globalQueueLoader():QueueLoader { return LoadingManagementContext.getInstance().globalQueueLoader; }
+		
+		private function get loaderRepository():LoaderRepository { return LoadingManagementContext.getInstance().loaderRepository; }
+		
+		/**
+		 * description
+		 */
+		public function QueueLoadingService(): void
+		{
+			
+		}
+		
 		/**
 		 * description
 		 * 
@@ -114,10 +132,6 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
-			policy.localMaxConnections = concurrentConnections;
-			
 			var asset:Asset;
 			var assetLoader:AssetLoader;
 			var assetLoadingMonitor:AssetLoadingMonitor;
@@ -128,19 +142,38 @@ package org.vostokframework.loadingmanagement.services
 			while (it.hasNext())
 			{
 				asset = it.next();
-				assetLoader = LoadingManagementContext.getInstance().assetLoaderFactory.create(asset);
+				assetLoader = assetLoaderFactory.create(asset);
 				assetLoaders.add(assetLoader);
 				
 				assetLoadingMonitor = new AssetLoadingMonitor(asset.id, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
 			}
 			
+			var policy:LoadingPolicy = new LoadingPolicy(loaderRepository);
+			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			policy.localMaxConnections = concurrentConnections;
+			
 			var queue:PriorityLoadQueue = new PlainPriorityLoadQueue(policy);
 			queue.addLoaders(assetLoaders);
 			
 			var queueLoader:QueueLoader = new QueueLoader(queueId, priority, queue);
-			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
-			LoadingManagementContext.getInstance().globalQueueLoader.load();
+			
+			try
+			{
+				loaderRepository.add(queueLoader);
+			}
+			catch(error:DuplicateLoaderError)
+			{
+				var errorMessage:String = "There is already a QueueLoader object stored with id:\n";
+				errorMessage += "<" + queueId + ">\n";
+				errorMessage += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object already exists.\n";
+				errorMessage += "For further information please read the documentation section about the QueueLoader object.";
+				
+				throw new DuplicateLoaderError(queueId, errorMessage);
+			}
+			
+			globalQueueLoader.addLoader(queueLoader);
+			globalQueueLoader.load();
 			
 			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
 			
@@ -156,14 +189,6 @@ package org.vostokframework.loadingmanagement.services
 		public function queueExists(queueId:String): Boolean
 		{
 			return false;
-		}
-
-		/**
-		 * description
-		 */
-		public function QueueLoadingService(): void
-		{
-			
 		}
 
 		/**

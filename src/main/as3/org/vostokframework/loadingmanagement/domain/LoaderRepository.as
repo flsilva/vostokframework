@@ -159,8 +159,6 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			if (!status) throw new ArgumentError("Argument <status> must not be null.");
 			
-			if (isEmpty()) return null;
-			
 			var it:IIterator = _loaderMap.getValues().iterator();
 			var loader:RefinedLoader;
 			var list:IList = new ArrayList();

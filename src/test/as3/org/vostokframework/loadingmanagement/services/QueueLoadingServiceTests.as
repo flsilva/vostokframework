@@ -37,6 +37,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 
@@ -70,6 +72,8 @@ package org.vostokframework.loadingmanagement.services
 		[Before]
 		public function setUp(): void
 		{
+			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
+			
 			_service = new QueueLoadingService();
 		}
 		
@@ -88,8 +92,6 @@ package org.vostokframework.loadingmanagement.services
 			return null;
 		}
 		
-		
-		
 		//////////////////////////////////
 		// QueueLoadingService().load() //
 		//////////////////////////////////
@@ -97,24 +99,29 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_ReturnsILoadingMonitor(): void
 		{
-			//load(queueId:String, assets:IList, priority:LoadPriority = null, concurrentConnections:int = 1): ILoadingMonitor
-			
-			
-			
-			//create(id:String, locale:String = null): AssetPackage
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
-			
-			//create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:LoadingAssetSettings = null, id:String = null, type:AssetType = null): Asset
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
-			
 			//_fakeAsset = nice(Asset, null, [ASSET_ID, "asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
 			var monitor:ILoadingMonitor = _service.load(QUEUE_ID, list);
-			
 			Assert.assertNotNull(monitor);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		public function load_tryTwiceWithSameQueueId_ThrowsError(): void
+		{
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			//_fakeAsset = nice(Asset, null, [ASSET_ID, "asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			var monitor:ILoadingMonitor = _service.load(QUEUE_ID, list);
+			monitor = _service.load(QUEUE_ID, list);
 		}
 		
 	}

@@ -42,11 +42,15 @@ package org.vostokframework.assetmanagement.domain.settings
 		private var _killExternalCache:Boolean;
 
 		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
-
+		
+		public function set allowInternalCache(value:Boolean): void { _allowInternalCache = value; }
+		
 		/**
 		 * description
 		 */
 		public function get killExternalCache(): Boolean { return _killExternalCache; }
+		
+		public function set killExternalCache(value:Boolean): void { _killExternalCache = value; }
 
 		/**
 		 * description
@@ -54,7 +58,7 @@ package org.vostokframework.assetmanagement.domain.settings
 		 * @param killExternalCache
 		 * @param allowInternalCache
 		 */
-		public function AssetLoadingCacheSettings(killExternalCache:Boolean = false, allowInternalCache:Boolean = true)
+		public function AssetLoadingCacheSettings()
 		{
 			
 		}

@@ -48,31 +48,43 @@ package org.vostokframework.assetmanagement.domain.settings
 		private var _bufferTime:Number;
 
 		public function get audioLinkage(): IList { return _audioLinkage; }
+		
+		public function set audioLinkage(value:IList): void { _audioLinkage = value; }
 
 		/**
 		 * description
 		 */
 		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
+		
+		public function set autoCreateVideo(value:Boolean): void { _autoCreateVideo = value; }
 
 		/**
 		 * description
 		 */
 		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
+		
+		public function set autoResizeVideo(value:Boolean): void { _autoResizeVideo = value; }
 
 		/**
 		 * description
 		 */
 		public function get autoStopStream(): Boolean { return _autoStopStream; }
+		
+		public function set autoStopStream(value:Boolean): void { _autoStopStream = value; }
 
 		/**
 		 * description
 		 */
 		public function get bufferPercent(): int { return _bufferPercent; }
+		
+		public function set bufferPercent(value:int): void { _bufferPercent = value; }
 
 		/**
 		 * description
 		 */
 		public function get bufferTime(): Number { return _bufferTime; }
+		
+		public function set bufferTime(value:Number): void { _bufferTime = value; }
 
 		/**
 		 * description

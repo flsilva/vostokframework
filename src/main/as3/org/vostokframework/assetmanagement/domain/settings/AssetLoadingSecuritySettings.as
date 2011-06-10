@@ -47,16 +47,29 @@ package org.vostokframework.assetmanagement.domain.settings
 		private var _securityDomain:SecurityDomainSetting;
 
 		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
+		
+		public function set applicationDomain(value:ApplicationDomainSetting): void { _applicationDomain = value; }
 
 		/**
 		 * description
 		 */
 		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
+		
+		public function set checkPolicyFile(value:Boolean): void { _checkPolicyFile = value; }
 
 		/**
 		 * description
 		 */
 		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
+		
+		public function set ignoreLocalSecurityDomain(value:Boolean): void { _ignoreLocalSecurityDomain = value; }
+		
+		/**
+		 * description
+		 */
+		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
+		
+		public function set securityDomain(value:SecurityDomainSetting): void { _securityDomain = value; }
 
 		/**
 		 * description
@@ -66,15 +79,10 @@ package org.vostokframework.assetmanagement.domain.settings
 		 * @param securityDomain
 		 * @param ignoreLocalSecurityDomain
 		 */
-		public function AssetLoadingSecuritySettings(checkPolicyFile:Boolean = false, applicationDomain:ApplicationDomainSetting = null, securityDomain:SecurityDomainSetting = null, ignoreLocalSecurityDomain:Boolean = true)
+		public function AssetLoadingSecuritySettings()
 		{
 			
 		}
-
-		/**
-		 * description
-		 */
-		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
 
 	}
 

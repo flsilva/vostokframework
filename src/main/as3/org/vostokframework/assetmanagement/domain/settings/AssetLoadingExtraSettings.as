@@ -45,7 +45,7 @@ package org.vostokframework.assetmanagement.domain.settings
 		 * @param userTotalBytes
 		 * @param userDataContainer
 		 */
-		public function AssetLoadingExtraSettings(baseURL:String = null, userTotalBytes:int = 0, userDataContainer:* = null)
+		public function AssetLoadingExtraSettings()
 		{
 			
 		}
@@ -53,17 +53,23 @@ package org.vostokframework.assetmanagement.domain.settings
 		/**
 		 * description
 		 */
-		public function get baseURL(): * { return _baseURL; }
+		public function get baseURL(): String { return _baseURL; }
+		
+		public function set baseURL(value:String): void { _baseURL = value; }
 		
 		/**
 		 * description
 		 */
 		public function get userDataContainer(): * { return _userDataContainer; }
+		
+		public function set userDataContainer(value:*): void { _userDataContainer = value; }
 
 		/**
 		 * description
 		 */
 		public function get userTotalBytes(): int { return _userTotalBytes; }
+		
+		public function set userTotalBytes(value:int): void { _userTotalBytes = value; }
 
 	}
 
