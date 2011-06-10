@@ -36,7 +36,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -97,7 +96,7 @@ package org.vostokframework.assetmanagement.domain
 			if (!priority) priority = _defaultPriority;
 			if (!settings) settings = _defaultSettings;
 			
-			var composedId:String = composeId(src, assetPackage, id);
+			var identification:AssetIdentification = createIdentification(src, assetPackage, id);
 			if (!type) type = getType(src);
 			
 			if (!type)
@@ -105,13 +104,13 @@ package org.vostokframework.assetmanagement.domain
 				var message:String = "It was not possible to get the correct asset type over the provided <src> argument OR the provided <src> argument contains an extension that is not supported.\n";
 				message += "Provided src: <" + src + ">\n";
 				message += "Provided id: <" + id + ">\n";
-				message += "Final composed id: <" + composedId + ">\n";
+				message += "Final identification: <" + identification + ">\n";
 				message += "For further information please read the documentation section about the supported Asset types.";
 				
-				throw new UnsupportedAssetTypeError(composedId, message);
+				throw new UnsupportedAssetTypeError(identification, message);
 			}
 			
-			return instanciate(composedId, src, type, priority, settings);
+			return instanciate(identification, src, type, priority, settings);
 		}
 
 		/**
@@ -141,7 +140,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:String, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
+		protected function instanciate(id:AssetIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
 		{
 			return new Asset(id, src, type, priority, settings);
 		}
@@ -149,12 +148,12 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function composeId(src:String, assetPackage:AssetPackage, id:String = null): String
+		protected function createIdentification(src:String, assetPackage:AssetPackage, id:String = null): AssetIdentification
 		{
 			if (StringUtil.isBlank(id)) id = src;
-			id = LocaleUtil.composeId(id, assetPackage.locale);
+			var identification:AssetIdentification = new AssetIdentification(id, assetPackage.identification.locale);
 			
-			return id;
+			return identification;
 		}
 		
 		/**

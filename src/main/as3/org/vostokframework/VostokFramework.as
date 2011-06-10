@@ -26,10 +26,8 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.domain.utils
+package org.vostokframework
 {
-	import org.as3utils.StringUtil;
-
 	import flash.errors.IllegalOperationError;
 
 	/**
@@ -37,28 +35,14 @@ package org.vostokframework.assetmanagement.domain.utils
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LocaleUtil
+	public class VostokFramework
 	{
-		public static const CROSS_LOCALE:String = "CROSS-LOCALE";
+		public static const CROSS_LOCALE_ID:String = "CROSS-LOCALE";
+		public static const VERSION:String = "0.1-SNAPSHOT";
 		
-		public function LocaleUtil()
+		public function VostokFramework()
 		{
-			throw new IllegalOperationError("<LocaleUtil> is a static class and must not be instantiated.");
-		}
-		
-		public static function composeId(id:String, locale:String = null):String
-		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
-			if (StringUtil.isBlank(locale)) locale = CROSS_LOCALE;
-			
-			return id + "-" + locale;
-		}
-		
-		public static function validateLocale(locale:String = null):String
-		{
-			if (StringUtil.isBlank(locale)) locale = CROSS_LOCALE;
-			
-			return locale;
+			throw new IllegalOperationError("<VostokFramework> is a static class and must not be instantiated.");
 		}
 		
 	}

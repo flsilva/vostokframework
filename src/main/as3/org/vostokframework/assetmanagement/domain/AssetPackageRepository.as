@@ -35,7 +35,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
 
 	/**
@@ -45,14 +44,14 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class AssetPackageRepository
 	{
-		private var _assetPackageMap:IMap;//key = AssetPackage().id (String) | value = AssetPackage 
+		private var _assetPackageMap:IMap;//key = AssetPackageIdentification | value = AssetPackage 
 
 		/**
 		 * description
 		 */
 		public function AssetPackageRepository(): void
 		{
-			_assetPackageMap = new TypedMap(new HashMap(), String, AssetPackage);
+			_assetPackageMap = new TypedMap(new HashMap(), AssetPackageIdentification, AssetPackage);
 		}
 		
 		/**
@@ -67,17 +66,17 @@ package org.vostokframework.assetmanagement.domain
 		{
 			if (!assetPackage) throw new ArgumentError("Argument <assetPackage> must not be null.");
 			
-			if (_assetPackageMap.containsKey(assetPackage.id))
+			if (_assetPackageMap.containsKey(assetPackage.identification))
 			{
-				var message:String = "There is already an AssetPackage object stored with id ";
-				message += "<" + assetPackage.id + ">\n";
+				var message:String = "There is already an AssetPackage object stored with identification: ";
+				message += "<" + assetPackage.identification + ">\n";
 				message += "Use the method <AssetPackageRepository().exists()> to check if an AssetPackage object already exists.\n";
 				message += "For further information please read the documentation section about the AssetPackage object.";
 				
-				throw new DuplicateAssetPackageError(assetPackage.id, message);
+				throw new DuplicateAssetPackageError(assetPackage.identification, message);
 			}
 			
-			_assetPackageMap.put(assetPackage.id, assetPackage);
+			_assetPackageMap.put(assetPackage.identification, assetPackage);
 		}
 		
 		/**
@@ -97,11 +96,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function exists(assetPackageId:String): Boolean
+		public function exists(identification:AssetPackageIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetPackageMap.containsKey(assetPackageId);
+			return _assetPackageMap.containsKey(identification);
 		}
 
 		/**
@@ -112,11 +111,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(assetPackageId:String): AssetPackage
+		public function find(identification:AssetPackageIdentification): AssetPackage
 		{
-			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetPackageMap.getValue(assetPackageId);
+			return _assetPackageMap.getValue(identification);
 		}
 
 		/**
@@ -139,9 +138,9 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function findAssetPackageByAssetId(assetId:String): AssetPackage
+		public function findAssetPackageByAssetId(identification:AssetIdentification): AssetPackage
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			if (isEmpty()) return null;
 			
@@ -159,7 +158,7 @@ package org.vostokframework.assetmanagement.domain
 				while (itAssets.hasNext())
 				{
 					asset = itAssets.next();
-					if (asset.id == assetId) return assetPackage;
+					if (asset.identification.equals(identification)) return assetPackage;
 				}
 			}
 			
@@ -184,11 +183,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(assetPackageId:String): Boolean
+		public function remove(identification:AssetPackageIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetPackageMap.remove(assetPackageId) != null;
+			return _assetPackageMap.remove(identification) != null;
 		}
 		
 		/**

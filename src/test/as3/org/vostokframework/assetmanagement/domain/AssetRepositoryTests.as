@@ -68,7 +68,8 @@ package org.vostokframework.assetmanagement.domain
 		
 		private function getAsset():Asset
 		{
-			return new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
+			var identification:AssetIdentification = new AssetIdentification("asset-id", "en-US");
+			return new Asset(identification, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
 		///////////////////////
@@ -92,7 +93,7 @@ package org.vostokframework.assetmanagement.domain
 			var asset:Asset = getAsset();
 			_repository.add(asset);
 			
-			var exists:Boolean = _repository.exists(asset.id);
+			var exists:Boolean = _repository.exists(asset.identification);
 			Assert.assertTrue(exists);
 		}
 		
@@ -152,14 +153,15 @@ package org.vostokframework.assetmanagement.domain
 			var asset:Asset = getAsset();
 			_repository.add(asset);
 			
-			var exists:Boolean = _repository.exists(asset.id);
+			var exists:Boolean = _repository.exists(asset.identification);
 			Assert.assertTrue(exists);
 		}
 		
 		[Test]
 		public function exists_notAddedAsset_ReturnsFalse(): void
 		{
-			var exists:Boolean = _repository.exists("any-not-added-id");
+			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var exists:Boolean = _repository.exists(identification);
 			Assert.assertFalse(exists);
 		}
 		
@@ -173,16 +175,17 @@ package org.vostokframework.assetmanagement.domain
 			var asset:Asset = getAsset();
 			_repository.add(asset);
 			
-			var id:String = asset.id;
-			asset = _repository.find(asset.id);
+			var identification:AssetIdentification = asset.identification;
+			asset = _repository.find(asset.identification);
 			
-			Assert.assertEquals(id, asset.id);
+			Assert.assertTrue(asset.identification.equals(identification));
 		}
 		
 		[Test]
 		public function find_notAddedAsset_ReturnsNull(): void
 		{
-			var asset:Asset = _repository.find("any-not-added-id");
+			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var asset:Asset = _repository.find(identification);
 			Assert.assertNull(asset);
 		}
 		
@@ -243,7 +246,8 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function remove_emptyAssetRepository_ReturnsFalse(): void
 		{
-			var removed:Boolean = _repository.remove("any-id-not-added");
+			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var removed:Boolean = _repository.remove(identification);
 			Assert.assertFalse(removed);
 		}
 		
@@ -252,7 +256,8 @@ package org.vostokframework.assetmanagement.domain
 		{
 			_repository.add(getAsset());
 			
-			var removed:Boolean = _repository.remove("any-id-not-added");
+			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var removed:Boolean = _repository.remove(identification);
 			Assert.assertFalse(removed);
 		}
 		
@@ -262,7 +267,7 @@ package org.vostokframework.assetmanagement.domain
 			var asset:Asset = getAsset();
 			_repository.add(asset);
 			
-			var removed:Boolean = _repository.remove(asset.id);
+			var removed:Boolean = _repository.remove(asset.identification);
 			Assert.assertTrue(removed);
 		}
 		

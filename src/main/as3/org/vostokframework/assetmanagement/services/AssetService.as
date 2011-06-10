@@ -30,14 +30,15 @@ package org.vostokframework.assetmanagement.services
 {
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokFramework;
 	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -72,8 +73,10 @@ package org.vostokframework.assetmanagement.services
 		{
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			
-			var composedId:String = LocaleUtil.composeId(assetId, locale);
-			return _context.assetRepository.exists(composedId);
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			return _context.assetRepository.exists(identification);
 		}
 
 		/**
@@ -117,10 +120,10 @@ package org.vostokframework.assetmanagement.services
 			}
 			catch(error:DuplicateAssetError)
 			{
-				var $assetPackage:AssetPackage = _context.assetPackageRepository.findAssetPackageByAssetId(error.assetId);
+				var $assetPackage:AssetPackage = _context.assetPackageRepository.findAssetPackageByAssetId(error.identification);
 				
-				var message:String = "There is already an Asset object stored with id:\n";
-				message += "<" + error.assetId + ">\n";
+				var message:String = "There is already an Asset object stored with identification:\n";
+				message += "<" + error.identification + ">\n";
 				message += "It belongs to the AssetPackage:\n";
 				message += "<" + $assetPackage + ">\n";
 				message += "Use the method <AssetService().assetExists()> to check if an Asset object already exists.\n";
@@ -131,11 +134,11 @@ package org.vostokframework.assetmanagement.services
 				message += "<" + src + ">\n";
 				message += "Provided <AssetPackage>:\n";
 				message += "<" + assetPackage + ">\n";
-				message += "Final composed Asset id:\n";
-				message += "<" + error.assetId + ">\n";
+				message += "Final Asset identification:\n";
+				message += "<" + error.identification + ">\n";
 				message += "For further information please read the documentation section about the Asset object.";
 				
-				throw new DuplicateAssetError(error.assetId, message);
+				throw new DuplicateAssetError(error.identification, message);
 			}
 			
 			//TODO:try-catch here as above
@@ -166,25 +169,25 @@ package org.vostokframework.assetmanagement.services
 		public function getAsset(assetId:String, locale:String = null): Asset
 		{
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
-			locale = LocaleUtil.validateLocale(locale);
+			
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
 			
 			if (!assetExists(assetId, locale))
 			{
-				var message:String = "There is no Asset object stored with id:\n";
-				message += "<" + LocaleUtil.composeId(assetId, locale) + ">.\n";
+				var message:String = "There is no Asset object stored with identification:\n";
+				message += "<" + identification + ">.\n";
 				message += "Use the method <AssetService().assetExists()> to check if an Asset object exists.\n";
 				message += "In addition, make sure you have provided the correct <assetId> and <locale> arguments:\n";
 				message += "Provided <assetId>: " + assetId + "\n";
 				message += "Provided <locale>: " + locale + "\n";
-				message += "Final composed Asset id: " + LocaleUtil.composeId(assetId, locale) + "\n";
+				message += "Final Asset identification: " + identification + "\n";
 				message += "For further information please read the documentation section about the Asset object.";
 				
-				throw new AssetNotFoundError(LocaleUtil.composeId(assetId, locale), message);
+				throw new AssetNotFoundError(identification, message);
 			}
 			
-			var composedId:String = LocaleUtil.composeId(assetId, locale);
-			
-			return _context.assetRepository.find(composedId);
+			return _context.assetRepository.find(identification);
 		}
 
 		/**
@@ -209,10 +212,10 @@ package org.vostokframework.assetmanagement.services
 		{
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			
-			locale = LocaleUtil.validateLocale(locale);
-			var composedId:String = LocaleUtil.composeId(assetId, locale);
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			return _context.assetRepository.remove(composedId);
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			return _context.assetRepository.remove(identification);
 		}
 
 	}

@@ -28,15 +28,14 @@
  */
 package org.vostokframework.assetmanagement.domain
 {
-	import org.as3coreaddendum.system.IDisposable;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.utils.ArrayListUtil;
+	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
 
 	/**
 	 * description
@@ -46,19 +45,13 @@ package org.vostokframework.assetmanagement.domain
 	public class AssetPackage implements IEquatable, IDisposable
 	{
 		private var _assets:IList;
-		private var _id:String;
-		private var _locale:String;
+		private var _identification:AssetPackageIdentification;
 		
 		/**
 		 * description
 		 */
-		public function get id(): String { return _id; }
+		public function get identification(): AssetPackageIdentification { return _identification; }
 
-		/**
-		 * description
-		 */
-		public function get locale(): String { return _locale; }
-		
 		/**
 		 * description
 		 * 
@@ -67,13 +60,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>id</code> argument is <code>null</code> or <code>empty</code>.
 		 * @throws 	ArgumentError 	if the <code>locale</code> argument is <code>null</code> or <code>empty</code>.
 		 */
-		public function AssetPackage(id:String, locale:String)
+		public function AssetPackage(identification:AssetPackageIdentification)
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
-			if (StringUtil.isBlank(locale)) throw new ArgumentError("Argument <locale> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			_id = id;
-			_locale = locale;
+			_identification = identification;
 			_assets = ArrayListUtil.getUniqueTypedArrayList(new ArrayList(), Asset);
 		}
 		
@@ -87,6 +78,15 @@ package org.vostokframework.assetmanagement.domain
 		public function addAsset(asset:Asset): Boolean
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
+			if (identification.locale != asset.identification.locale)
+			{
+				var errorMessage:String = "The <locale> property of Asset and AssetPackage objects must match.\n";
+				errorMessage += "AssetPackage: <" + AssetPackage + ">\n";
+				errorMessage += "Asset: <" + Asset + ">\n";
+				errorMessage += "For further information please read the documentation section about the AssetPackage object.";
+				throw new ArgumentError(errorMessage);
+			}
+			
 			//TODO: pensar sobre encapsular todos os erros (ClassCastError) etc.
 			return _assets.add(asset);
 		}
@@ -129,13 +129,13 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function containsAsset(assetId:String): Boolean
+		public function containsAsset(identification:AssetIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			if (isEmpty()) return false;
 			
-			var asset:Asset = getAsset(assetId);
+			var asset:Asset = getAsset(identification);
 			return _assets.contains(asset);
 		}
 		
@@ -151,7 +151,7 @@ package org.vostokframework.assetmanagement.domain
 			if (!(other is AssetPackage)) return false;
 			
 			var otherAssetPackage:AssetPackage = other as AssetPackage;
-			return id == otherAssetPackage.id && locale == otherAssetPackage.locale;
+			return identification.equals(otherAssetPackage.identification);
 		}
 
 		/**
@@ -161,9 +161,9 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function getAsset(assetId:String): Asset
+		public function getAsset(identification:AssetIdentification): Asset
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			if (isEmpty()) return null;
 			
@@ -173,7 +173,7 @@ package org.vostokframework.assetmanagement.domain
 			while (it.hasNext())
 			{
 				asset = it.next();
-				if (asset.id == assetId) return asset;
+				if (asset.identification.equals(identification)) return asset;
 			}
 			
 			return null;
@@ -207,13 +207,13 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function removeAsset(assetId:String): Boolean
+		public function removeAsset(identification:AssetIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			if (isEmpty()) return false;
 			
-			var asset:Asset = getAsset(assetId);
+			var asset:Asset = getAsset(identification);
 			return _assets.remove(asset);
 		}
 
@@ -249,7 +249,7 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + " id <" + id + "> locale <" + locale + ">]";
+			return "[" + ReflectionUtil.getClassName(this) + " identification <" + identification + ">]";
 		}
 
 	}

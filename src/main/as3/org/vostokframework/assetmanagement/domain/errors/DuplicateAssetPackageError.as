@@ -29,7 +29,9 @@
 
 package org.vostokframework.assetmanagement.domain.errors
 {
+	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
+
 	/**
 	 * description
 	 * 
@@ -37,20 +39,20 @@ package org.vostokframework.assetmanagement.domain.errors
 	 */
 	public class DuplicateAssetPackageError extends VostokFrameworkError
 	{
-		private var _assetPackageId:String;
+		private var _identification:AssetPackageIdentification;
 		
-		public function get assetPackageId():String { return _assetPackageId; }
+		public function get identification():AssetPackageIdentification { return _identification; }
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function DuplicateAssetPackageError(assetPackageId:String, message:String = null)
+		public function DuplicateAssetPackageError(identification:AssetPackageIdentification, message:String = null)
 		{
 			super(message);
 			name = "DuplicateAssetPackageError";
-			_assetPackageId = assetPackageId;
+			_identification = identification;
 		}
 
 	}

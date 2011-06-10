@@ -28,8 +28,6 @@
  */
 package org.vostokframework.assetmanagement.domain
 {
-	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 
 	/**
 	 * description
@@ -52,38 +50,19 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>id</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function create(id:String, locale:String = null): AssetPackage
+		public function create(identification:AssetPackageIdentification): AssetPackage
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
-			locale = validateLocale(locale);
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			id = composeId(id, locale);
-			
-			return instanciate(id, locale);
+			return instanciate(identification);
 		}
 		
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:String, locale:String): AssetPackage
+		protected function instanciate(identification:AssetPackageIdentification): AssetPackage
 		{
-			return new AssetPackage(id, locale);
-		}
-		
-		/**
-		 * @private
-		 */
-		protected function composeId(id:String, locale:String = null): String
-		{
-			return LocaleUtil.composeId(id, locale);
-		}
-		
-		/**
-		 * @private
-		 */
-		protected function validateLocale(locale:String = null): String
-		{
-			return LocaleUtil.validateLocale(locale);
+			return new AssetPackage(identification);
 		}
 
 	}

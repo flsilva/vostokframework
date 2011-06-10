@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,33 +26,51 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.assetmanagement.domain.errors
+package org.vostokframework.assetmanagement.domain
 {
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
-	import org.vostokframework.errors.VostokFrameworkError;
+	import org.as3coreaddendum.system.IEquatable;
+	import org.as3utils.StringUtil;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class UnsupportedAssetTypeError extends VostokFrameworkError
+	public class AssetIdentification implements IEquatable
 	{
-		private var _identification:AssetIdentification;
+		private var _id:String;
+		private var _locale:String;
 		
-		public function get identification():AssetIdentification { return _identification; }
+		public function get id():String { return _id; }
+		
+		public function get locale():String { return _locale; }
+		
+		public function AssetIdentification(id:String, locale:String)
+		{
+			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (StringUtil.isBlank(locale)) throw new ArgumentError("Argument <locale> must not be null nor an empty String.");
+			
+			_id = id;
+			_locale = locale;
+		}
+		
+		public function equals(other : *) : Boolean
+		{
+			if (this == other) return true;
+			if (!(other is AssetIdentification)) return false;
+			
+			var otherAssetId:AssetIdentification = other as AssetIdentification;
+			return id == otherAssetId.id && locale == otherAssetId.locale;
+		}
 		
 		/**
-		 * Constructor, creates a new AssetRepositoryError instance.
+		 * description
 		 * 
-		 * @param message 	A string associated with the error object.
+		 * @return
 		 */
-		public function UnsupportedAssetTypeError(identification:AssetIdentification, message:String = null)
+		public function toString(): String
 		{
-			super(message);
-			name = "UnsupportedAssetTypeError";
-			_identification = identification;
+			return id + "-" + locale;
 		}
 
 	}

@@ -160,7 +160,7 @@ package org.vostokframework.loadingmanagement.services
 					throw new DuplicateLoaderError(queueId, errorMessage);
 				}
 				
-				assetLoadingMonitor = new AssetLoadingMonitor(asset.id, asset.type, assetLoader);
+				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification.id, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
 			}
 			

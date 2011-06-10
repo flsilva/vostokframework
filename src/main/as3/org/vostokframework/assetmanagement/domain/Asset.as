@@ -45,7 +45,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		private var _id:String;
+		private var _identification:AssetIdentification;
 		private var _priority:LoadPriority;
 		private var _settings:AssetLoadingSettings;
 		private var _src:String;
@@ -54,7 +54,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function get id(): String { return _id; }
+		public function get identification(): AssetIdentification { return _identification; }
 
 		/**
 		 * description
@@ -89,14 +89,14 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>type</code> argument is <code>null</code>.
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code>.
 		 */
-		public function Asset(id:String, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings = null)
+		public function Asset(identification:AssetIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings = null)
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
 			if (!type) throw new ArgumentError("Argument <type> must not be null.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			
-			_id = id;
+			_identification = identification;
 			_src = src;
 			_type = type;
 			_priority = priority;
@@ -116,7 +116,7 @@ package org.vostokframework.assetmanagement.domain
 			if (!(other is Asset)) return false;
 			
 			var otherAsset:Asset = other as Asset;
-			return id == otherAsset.id;
+			return identification.equals(otherAsset.identification);
 		}
 
 		/**
@@ -139,7 +139,7 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + " id <" + id + ">]";
+			return "[" + ReflectionUtil.getClassName(this) + " identification <" + identification + ">]";
 		}
 
 	}

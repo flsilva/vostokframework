@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,47 +26,53 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.assetmanagement.domain.utils
+package org.vostokframework.assetmanagement.domain
 {
-	import org.flexunit.Assert;
+	import org.as3coreaddendum.system.IEquatable;
+	import org.as3utils.StringUtil;
 
 	/**
+	 * description
+	 * 
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=1)]
-	public class LocaleUtilTests
+	public class AssetPackageIdentification implements IEquatable
 	{
+		private var _id:String;
+		private var _locale:String;
 		
-		public function LocaleUtilTests()
+		public function get id():String { return _id; }
+		
+		public function get locale():String { return _locale; }
+		
+		public function AssetPackageIdentification(id:String, locale:String)
 		{
+			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (StringUtil.isBlank(locale)) throw new ArgumentError("Argument <locale> must not be null nor an empty String.");
 			
+			_id = id;
+			_locale = locale;
 		}
 		
-		///////////////////////////////////////
-		// LocaleUtilTests().composeId TESTS //
-		///////////////////////////////////////
-		
-		[Test(expects="ArgumentError")]
-		public function composeId_invalidId_ThrowsError(): void
+		public function equals(other : *) : Boolean
 		{
-			LocaleUtil.composeId(null, "en-US");
+			if (this == other) return true;
+			if (!(other is AssetPackageIdentification)) return false;
+			
+			var otherAssetPackageId:AssetPackageIdentification = other as AssetPackageIdentification;
+			return id == otherAssetPackageId.id && locale == otherAssetPackageId.locale;
 		}
 		
-		[Test]
-		public function composeId_validArgumentsWithoutLocale_checkIfIdMatches_ReturnsTrue(): void
+		/**
+		 * description
+		 * 
+		 * @return
+		 */
+		public function toString(): String
 		{
-			var id:String = LocaleUtil.composeId("1.xyz");
-			Assert.assertEquals("1.xyz-" + LocaleUtil.CROSS_LOCALE, id);
+			return id + "-" + locale;
 		}
-		
-		[Test]
-		public function composeId_validArgumentsWithLocale_checkIfIdMatches_ReturnsTrue(): void
-		{
-			var id:String = LocaleUtil.composeId("1.xyz", "en-US");
-			Assert.assertEquals("1.xyz-en-US", id);
-		}
-		
+
 	}
 
 }

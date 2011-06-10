@@ -34,8 +34,8 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageFactory;
+	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 
 	/**
 	 * @author Flávio Silva
@@ -44,6 +44,7 @@ package org.vostokframework.assetmanagement.services
 	{
 		private static const ASSET_PACKAGE_ID:String = "asset-package-id";
 		private static const ASSET_PACKAGE_LOCALE:String = "en-US";
+		private static const IDENTIFICATION:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 		
 		private var _service:AssetPackageService;
 		
@@ -77,7 +78,7 @@ package org.vostokframework.assetmanagement.services
 		private function getAssetPackage():AssetPackage
 		{
 			var factory:AssetPackageFactory = new AssetPackageFactory();
-			return factory.create(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			return factory.create(IDENTIFICATION);
 		}
 		
 		///////////////////////
@@ -122,36 +123,19 @@ package org.vostokframework.assetmanagement.services
 		//////////////////////////////////////////////////////
 		
 		[Test]
-		public function createAssetPackage_sendingIdAndLocale_ReturnsValidObject(): void
+		public function createAssetPackage_validArguments_ReturnsValidObject(): void
 		{
 			var assetPackage:AssetPackage = _service.createAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			Assert.assertNotNull(assetPackage);
 		}
 		
 		[Test]
-		public function createAssetPackage_sendingIdAndLocale_checkIfAssetPackageRepositoryContainsTheObject_ReturnsTrue(): void
+		public function createAssetPackage_checkIfAssetPackageRepositoryContainsTheObject_ReturnsTrue(): void
 		{
 			_service.createAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
-			var composedId:String = LocaleUtil.composeId(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
-			Assert.assertTrue(AssetManagementContext.getInstance().assetPackageRepository.exists(composedId));
-		}
-		
-		[Test]
-		public function createAssetPackage_sendingIdWithoutLocale_ReturnsValidObject(): void
-		{
-			var assetPackage:AssetPackage = _service.createAssetPackage(ASSET_PACKAGE_ID);
-			Assert.assertNotNull(assetPackage);
-		}
-		
-		[Test]
-		public function createAssetPackage_sendingIdWithoutLocale_checkIfAssetPackageRepositoryContainsTheObject_ReturnsTrue(): void
-		{
-			_service.createAssetPackage(ASSET_PACKAGE_ID);
-			
-			var composedId:String = LocaleUtil.composeId(ASSET_PACKAGE_ID);
-			var exists:Boolean = AssetManagementContext.getInstance().assetPackageRepository.exists(composedId);
-			Assert.assertTrue(exists);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			Assert.assertTrue(AssetManagementContext.getInstance().assetPackageRepository.exists(identification));
 		}
 		
 		///////////////////////////////////////////////////////
@@ -255,8 +239,9 @@ package org.vostokframework.assetmanagement.services
 			
 			_service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
-			var composedId:String = LocaleUtil.composeId(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
-			Assert.assertFalse(AssetManagementContext.getInstance().assetPackageRepository.exists(composedId));
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			var exists:Boolean = AssetManagementContext.getInstance().assetPackageRepository.exists(identification);
+			Assert.assertFalse(exists);
 		}
 		
 	}

@@ -30,12 +30,12 @@ package org.vostokframework.assetmanagement.services
 {
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokFramework;
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.AssetPackageNotFoundError;
-	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 
 	/**
 	 * description
@@ -69,8 +69,10 @@ package org.vostokframework.assetmanagement.services
 		{
 			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
 			
-			var composedId:String = LocaleUtil.composeId(assetPackageId, locale);
-			return _context.assetPackageRepository.exists(composedId);
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			return _context.assetPackageRepository.exists(identification);
 		}
 
 		/**
@@ -86,7 +88,10 @@ package org.vostokframework.assetmanagement.services
 		{
 			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
 			
-			var assetPackage:AssetPackage = _context.assetPackageFactory.create(assetPackageId, locale);
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			var assetPackage:AssetPackage = _context.assetPackageFactory.create(identification);
 			
 			try
 			{
@@ -94,15 +99,16 @@ package org.vostokframework.assetmanagement.services
 			}
 			catch(error:DuplicateAssetPackageError)
 			{
-				var message:String = error.message;
-				message += "\n";
-				message += "Make sure you have provided the correct <assetPackageId> and <locale> arguments:\n";
+				var message:String = "There is already an AssetPackage object stored with identification: ";
+				message += "<" + assetPackage.identification + ">\n";
+				message += "Use the method <AssetPackageService().assetPackageExists()> to check if an AssetPackage object already exists.\n";
+				message += "In addition, make sure you have provided the correct <assetPackageId> and <locale> arguments:\n";
 				message += "Provided <assetPackageId>: " + assetPackageId + "\n";
 				message += "Provided <locale>: " + locale + "\n";
-				message += "Final composed AssetPackage id: " + error.assetPackageId + "\n";
+				message += "Final AssetPackage identification: " + error.identification + "\n";
 				message += "For further information please read the documentation section about the AssetPackage object.";
 				
-				throw new DuplicateAssetError(error.assetPackageId, message);
+				throw new DuplicateAssetPackageError(error.identification, message);
 			}
 			
 			return assetPackage;
@@ -129,25 +135,25 @@ package org.vostokframework.assetmanagement.services
 		public function getAssetPackage(assetPackageId:String, locale:String = null): AssetPackage
 		{
 			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
-			locale = LocaleUtil.validateLocale(locale);
+			
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
 			
 			if (!assetPackageExists(assetPackageId, locale))
 			{
-				var message:String = "There is no AssetPackage object stored with id:\n";
-				message += "<" + LocaleUtil.composeId(assetPackageId, locale) + ">.\n";
+				var message:String = "There is no AssetPackage object stored with identification:\n";
+				message += "<" + identification + ">.\n";
 				message += "Use the method <AssetPackageService().assetPackageExists()> to check if an AssetPackage exists.\n";
 				message += "In addition, make sure you have provided the correct <assetPackageId> and <locale> arguments:\n";
 				message += "Provided <assetPackageId>: " + assetPackageId + "\n";
 				message += "Provided <locale>: " + locale + "\n";
-				message += "Final composed AssetPackage id: " + LocaleUtil.composeId(assetPackageId, locale) + "\n";
+				message += "Final AssetPackage identification: " + identification + "\n";
 				message += "For further information please read the documentation section about the AssetPackage object.";
 				
-				throw new AssetPackageNotFoundError(LocaleUtil.composeId(assetPackageId, locale), message);
+				throw new AssetPackageNotFoundError(identification, message);
 			}
 			
-			var composedId:String = LocaleUtil.composeId(assetPackageId, locale);
-			
-			return _context.assetPackageRepository.find(composedId);
+			return _context.assetPackageRepository.find(identification);
 		}
 
 		/**
@@ -170,10 +176,10 @@ package org.vostokframework.assetmanagement.services
 		{
 			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
 			
-			locale = LocaleUtil.validateLocale(locale);
-			var composedId:String = LocaleUtil.composeId(assetPackageId, locale);
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			return _context.assetPackageRepository.remove(composedId);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			return _context.assetPackageRepository.remove(identification);
 		}
 
 	}

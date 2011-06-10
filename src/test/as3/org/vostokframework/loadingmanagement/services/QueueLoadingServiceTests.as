@@ -34,9 +34,11 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokFramework;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
+	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -55,7 +57,6 @@ package org.vostokframework.loadingmanagement.services
 	{
 		private static const QUEUE_ID:String = "queue-1";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
-		private static const ASSET_ID:String = "asset-1";
 		
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -112,7 +113,8 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_ReturnsILoadingMonitor(): void
 		{
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
 			//_fakeAsset = nice(Asset, null, [ASSET_ID, "asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 			
@@ -126,7 +128,8 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
 		public function load_tryTwiceWithSameQueueId_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
 			
 			var list:IList = new ArrayList();
@@ -139,7 +142,8 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
 		public function load_duplicateAsset_ThrowsError(): void
 		{
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(ASSET_PACKAGE_ID);
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
 			
 			var list:IList = new ArrayList();

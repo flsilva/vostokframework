@@ -34,7 +34,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 
 	/**
@@ -44,14 +43,14 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class AssetRepository
 	{
-		private var _assetMap:IMap;//key = Asset().id (String) | value = Asset 
+		private var _assetMap:IMap;//key = AssetIdentification | value = Asset 
 
 		/**
 		 * description
 		 */
 		public function AssetRepository()
 		{
-			_assetMap = new TypedMap(new HashMap(), String, Asset);
+			_assetMap = new TypedMap(new HashMap(), AssetIdentification, Asset);
 		}
 		
 		/**
@@ -66,17 +65,17 @@ package org.vostokframework.assetmanagement.domain
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
 			
-			if (_assetMap.containsKey(asset.id))
+			if (_assetMap.containsKey(asset.identification))
 			{
-				var message:String = "There is already an Asset object stored with id:\n";
-				message += "<" + asset.id + ">\n";
+				var message:String = "There is already an Asset object stored with identification:\n";
+				message += "<" + asset.identification + ">\n";
 				message += "Use the method <AssetRepository().exists()> to check if an Asset object already exists.\n";
 				message += "For further information please read the documentation section about the Asset object.";
 				
-				throw new DuplicateAssetError(asset.id, message);
+				throw new DuplicateAssetError(asset.identification, message);
 			}
 			
-			_assetMap.put(asset.id, asset);
+			_assetMap.put(asset.identification, asset);
 		}
 		
 		/**
@@ -96,11 +95,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function exists(assetId:String): Boolean
+		public function exists(identification:AssetIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.containsKey(assetId);
+			return _assetMap.containsKey(identification);
 		}
 
 		/**
@@ -111,11 +110,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(assetId:String): Asset
+		public function find(identification:AssetIdentification): Asset
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.getValue(assetId);
+			return _assetMap.getValue(identification);
 		}
 
 		/**
@@ -149,11 +148,11 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(assetId:String): Boolean
+		public function remove(identification:AssetIdentification): Boolean
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.remove(assetId) != null;
+			return _assetMap.remove(identification) != null;
 		}
 		
 		/**

@@ -30,7 +30,6 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -40,7 +39,7 @@ package org.vostokframework.assetmanagement.domain
 	[TestCase(order=1)]
 	public class AssetTests
 	{
-		private static const ASSET_ID:String = "asset-id";
+		private static const IDENTIFICATION:AssetIdentification = new AssetIdentification("asset-id", "en-US");
 		private static const ASSET_SRC:String = "asset-path/asset.xml";
 		private static const ASSET_TYPE:AssetType = AssetType.XML;
 		private static const ASSET_PRIORITY:LoadPriority = LoadPriority.HIGH;
@@ -60,7 +59,7 @@ package org.vostokframework.assetmanagement.domain
 		[Before]
 		public function setUp(): void
 		{
-			_asset = new Asset(ASSET_ID, ASSET_SRC, ASSET_TYPE, ASSET_PRIORITY, ASSET_SETTINGS);
+			_asset = new Asset(IDENTIFICATION, ASSET_SRC, ASSET_TYPE, ASSET_PRIORITY, ASSET_SETTINGS);
 		}
 		
 		[After]
@@ -74,7 +73,7 @@ package org.vostokframework.assetmanagement.domain
 		///////////////////////
 		
 		[Test(expects="ArgumentError")]
-		public function constructor_invalidId_ThrowsError(): void
+		public function constructor_invalidIdentification_ThrowsError(): void
 		{
 			new Asset(null, null, null, null);
 		}
@@ -82,34 +81,33 @@ package org.vostokframework.assetmanagement.domain
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidSrc_ThrowsError(): void
 		{
-			new Asset("asset-id", null, null, null);
+			new Asset(IDENTIFICATION, null, null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidType_ThrowsError(): void
 		{
-			new Asset("asset-id", "asset-path/asset.xml", null, null);
+			new Asset(IDENTIFICATION, "asset-path/asset.xml", null, null);
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidPriority_ThrowsError(): void
 		{
-			new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, null);
+			new Asset(IDENTIFICATION, "asset-path/asset.xml", AssetType.XML, null);
 		}
 		
 		[Test]
 		public function constructor_validInstantiationWithoutSettings_ReturnsValidObject(): void
 		{
-			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
+			var asset:Asset = new Asset(IDENTIFICATION, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 			Assert.assertNotNull(asset);
 		}
 		
 		[Test]
 		public function constructor_validInstantiationWithSettings_ReturnsValidObject(): void
 		{
-			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
 			var settings:AssetLoadingSettings = new AssetLoadingSettings();
-			var asset:Asset = new Asset("asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH, settings);
+			var asset:Asset = new Asset(IDENTIFICATION, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH, settings);
 			
 			Assert.assertNotNull(asset);
 		}
@@ -121,25 +119,26 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function equals_compareTwoEqualAssets_ReturnsTrue(): void
 		{
-			var otherAsset:Asset = new Asset(_asset.id, _asset.src, _asset.type, _asset.priority);
+			var otherAsset:Asset = new Asset(_asset.identification, _asset.src, _asset.type, _asset.priority);
 			Assert.assertTrue(_asset.equals(otherAsset));
 		}
 		
 		[Test]
 		public function equals_compareTwoDifferentAssets_ReturnsFalse(): void
 		{
-			var otherAsset:Asset = new Asset("other-asset-id", "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
+			var identification:AssetIdentification = new AssetIdentification("other-asset-id", "en-US");
+			var otherAsset:Asset = new Asset(identification, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 			Assert.assertFalse(_asset.equals(otherAsset));
 		}
 		
-		//////////////////////
-		// Asset().id TESTS //
-		//////////////////////
+		//////////////////////////////////
+		// Asset().identification TESTS //
+		//////////////////////////////////
 		
 		[Test]
-		public function id_checkIfIdMatches_ReturnsTrue(): void
+		public function identification_checkIfIdMatches_ReturnsTrue(): void
 		{
-			Assert.assertEquals(ASSET_ID, _asset.id);
+			Assert.assertTrue(_asset.identification.equals(IDENTIFICATION));
 		}
 		
 		////////////////////////////

@@ -30,7 +30,6 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.assetmanagement.domain.utils.LocaleUtil;
 
 	/**
 	 * @author Flávio Silva
@@ -83,40 +82,11 @@ package org.vostokframework.assetmanagement.domain
 		}
 		
 		[Test]
-		public function create_validArgumentsWithoutLocale_ReturnsValidObject(): void
+		public function create_validArguments_ReturnsValidObject(): void
 		{
-			var assetPackage:AssetPackage = _factory.create("package-id");
+			var identification:AssetPackageIdentification = new AssetPackageIdentification("package-id", "en-US");
+			var assetPackage:AssetPackage = _factory.create(identification);
 			Assert.assertNotNull(assetPackage);
-		}
-		
-		[Test]
-		public function create_validArgumentsWithoutLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
-		{
-			var assetPackage:AssetPackage = _factory.create("package-id");
-			
-			var composedId:String = "package-id-" + LocaleUtil.CROSS_LOCALE;
-			Assert.assertEquals(composedId, assetPackage.id);
-		}
-		
-		[Test]
-		public function create_validArgumentsWithLocale_checkIfAssetPackageIdMatches_ReturnsTrue(): void
-		{
-			var assetPackage:AssetPackage = _factory.create("package-id", "en-US");
-			Assert.assertEquals("package-id-en-US", assetPackage.id);
-		}
-		
-		[Test]
-		public function create_validArgumentsWithoutLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
-		{
-			var assetPackage:AssetPackage = _factory.create("package-id");
-			Assert.assertEquals(LocaleUtil.CROSS_LOCALE, assetPackage.locale);
-		}
-		
-		[Test]
-		public function create_validArgumentsWithLocale_checkIfAssetPackageLocaleMatches_ReturnsTrue(): void
-		{
-			var assetPackage:AssetPackage = _factory.create("package-id", "en-US");
-			Assert.assertEquals("en-US", assetPackage.locale);
 		}
 		
 	}

@@ -57,7 +57,8 @@ package org.vostokframework.assetmanagement.domain
 		
 		private function getAssetPackage():AssetPackage
 		{
-			return new AssetPackage("package-id", "en-US");
+			var identification:AssetPackageIdentification = new AssetPackageIdentification("package-id", "en-US");
+			return new AssetPackage(identification);
 		}
 		
 		///////////////////////
@@ -181,7 +182,9 @@ package org.vostokframework.assetmanagement.domain
 		{
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage());
-			Assert.assertEquals("a.aac-en-US", asset.id);
+			
+			var identification:AssetIdentification = new AssetIdentification("a.aac", "en-US");
+			Assert.assertTrue(asset.identification.equals(identification));
 		}
 		
 		[Test]
@@ -189,7 +192,9 @@ package org.vostokframework.assetmanagement.domain
 		{
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage(), null, null, "asset-id");
-			Assert.assertEquals("asset-id-en-US", asset.id);
+			
+			var identification:AssetIdentification = new AssetIdentification("asset-id", "en-US");
+			Assert.assertTrue(asset.identification.equals(identification));
 		}
 		
 	}
