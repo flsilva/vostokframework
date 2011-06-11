@@ -70,7 +70,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function get globalQueueLoader(): QueueLoader { return _globalQueueLoader; }
 		
 		public function get loaderRepository(): LoaderRepository { return _loaderRepository; }
-
+		
 		/**
 		 * description
 		 */
