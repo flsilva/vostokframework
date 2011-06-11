@@ -185,7 +185,7 @@ package org.vostokframework.loadingmanagement.services
 				
 				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
-				//TODO:add monitors to reporitory
+				loadingMonitorRepository.add(assetLoadingMonitor);
 			}
 			
 			var policy:LoadingPolicy = new LoadingPolicy(loaderRepository);

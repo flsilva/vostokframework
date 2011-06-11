@@ -47,6 +47,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
@@ -64,11 +65,11 @@ package org.vostokframework.loadingmanagement.services
 		private static const QUEUE_ID:String = "queue-1";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		
-		[Rule]
-		public var mocks:MockolateRule = new MockolateRule();
+		//[Rule]
+		//public var mocks:MockolateRule = new MockolateRule();
 		
-		[Mock(inject="false")]
-		public var _fakeAsset:Asset;
+		//[Mock(inject="false")]
+		//public var _fakeAsset:Asset;
 		
 		public var _service:QueueLoadingService;
 		
@@ -84,6 +85,7 @@ package org.vostokframework.loadingmanagement.services
 		[Before]
 		public function setUp(): void
 		{
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(new StubAssetLoaderFactory());
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
@@ -123,8 +125,8 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
-			//_fakeAsset = nice(Asset, null, [ASSET_ID, "asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
+			//_fakeAsset = nice(Asset, null, [ASSET_ID, "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
@@ -138,7 +140,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
@@ -149,12 +151,28 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
+		[Test]
+		public function load_validArguments_checkIfAssetLoadingMonitorExistsOnRepository_ReturnsTrue(): void
+		{
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			_service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(asset.identification.toString());
+			Assert.assertTrue(exists);
+		}
+		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
 		public function load_tryTwiceWithSameQueueId_ThrowsError(): void
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
@@ -168,7 +186,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
@@ -182,7 +200,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			
 			var report:LoadedAssetReport = new LoadedAssetReport(asset.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset.src);
 			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);

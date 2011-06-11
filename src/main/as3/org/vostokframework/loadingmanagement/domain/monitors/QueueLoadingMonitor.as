@@ -232,7 +232,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			{
 				monitor = it.next();
 				
-				if (monitor.monitoring.bytesTotal > 0)
+				if (monitor.monitoring && monitor.monitoring.bytesTotal > 0)
 				{
 					 totalLoadersHasBytesTotal++;
 					 bytesTotal += monitor.monitoring.bytesTotal;
