@@ -56,22 +56,22 @@ package org.vostokframework.loadingmanagement.services
 	 */
 	public class QueueLoadingService
 	{
-		private static var _context:LoadingManagementContext;
+		private var _context:LoadingManagementContext;
 		
-		private function get assetDataRepository():AssetDataRepository { return LoadingManagementContext.getInstance().assetDataRepository; }
+		private function get assetDataRepository():AssetDataRepository { return _context.assetDataRepository; }
 		
-		private function get assetLoaderFactory():AssetLoaderFactory { return LoadingManagementContext.getInstance().assetLoaderFactory; }
+		private function get assetLoaderFactory():AssetLoaderFactory { return _context.assetLoaderFactory; }
 		
-		private function get globalQueueLoader():QueueLoader { return LoadingManagementContext.getInstance().globalQueueLoader; }
+		private function get globalQueueLoader():QueueLoader { return _context.globalQueueLoader; }
 		
-		private function get loaderRepository():LoaderRepository { return LoadingManagementContext.getInstance().loaderRepository; }
+		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
 		
 		/**
 		 * description
 		 */
 		public function QueueLoadingService(): void
 		{
-			
+			_context = LoadingManagementContext.getInstance();
 		}
 		
 		/**
