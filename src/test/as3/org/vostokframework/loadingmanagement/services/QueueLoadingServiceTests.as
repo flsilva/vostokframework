@@ -223,6 +223,15 @@ package org.vostokframework.loadingmanagement.services
 			_service.load(QUEUE_ID, list);
 		}
 		
+		[Test(expects="org.as3coreaddendum.errors.ClassCastError")]
+		public function load_assetsArgumentWithIncorrectType_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add("INVALID TYPE");
+			
+			_service.load(QUEUE_ID, list);
+		}
+		
 	}
 
 }

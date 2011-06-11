@@ -140,8 +140,7 @@ package org.vostokframework.loadingmanagement.services
 			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
 			if (!assets || assets.isEmpty()) throw new ArgumentError("Argument <assets> must not be null nor empty.");
 			
-			//TODO:validar type dos elementos
-			//assets = new TypedArrayList(assets, Asset);
+			assets = new TypedArrayList(assets, Asset);
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
