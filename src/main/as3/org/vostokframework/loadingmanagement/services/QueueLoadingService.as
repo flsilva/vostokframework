@@ -28,16 +28,14 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
-	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
@@ -48,7 +46,9 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
+	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
 
 	/**
 	 * description

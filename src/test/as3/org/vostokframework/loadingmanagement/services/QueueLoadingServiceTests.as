@@ -29,7 +29,6 @@
 
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
 	import mockolate.runner.MockolateRule;
 
 	import org.as3collections.IList;
@@ -40,10 +39,11 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
+	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;

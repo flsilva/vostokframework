@@ -26,8 +26,12 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement
 {
+	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
