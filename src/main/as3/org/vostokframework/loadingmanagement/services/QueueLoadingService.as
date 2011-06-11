@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -139,95 +140,28 @@ package org.vostokframework.loadingmanagement.services
 		{
 			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
 			if (!assets || assets.isEmpty()) throw new ArgumentError("Argument <assets> must not be null nor empty.");
+			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero. Received: <" + concurrentConnections + ">");
 			
+			//dispatches org.as3coreaddendum.ClassCastError
+			//if there's any type other than Asset
 			assets = new TypedArrayList(assets, Asset);
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			var policy:LoadingPolicy = new LoadingPolicy(loaderRepository);
-			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
-			policy.localMaxConnections = concurrentConnections;
+			//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//if <loaderRepository> already contains QueueLoader object with <queueId>
+			var queueLoader:QueueLoader = createQueueLoaderAndPutInRepository(queueId, priority, concurrentConnections);
 			
-			var queue:PriorityLoadQueue = new PlainPriorityLoadQueue(policy);
-			var queueLoader:QueueLoader = new QueueLoader(queueId, priority, queue);
+			//dispatches org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
+			//if some Asset object is already loaded and cached internally
+			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
-			try
-			{
-				loaderRepository.add(queueLoader);
-			}
-			catch(error:DuplicateLoaderError)
-			{
-				errorMessage = "There is already a QueueLoader object stored with id:\n";
-				errorMessage += "<" + queueLoader.id + ">\n";
-				errorMessage += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object already exists.\n";
-				errorMessage += "For further information please read the documentation section about the QueueLoader object.";
-				
-				throw new DuplicateLoaderError(queueId, errorMessage);
-			}
+			//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//if <loaderRepository> already contains AssetLoader object with its id
+			//AND dispatches ArgumentError if <assets> argument contains any duplicate Asset object
+			var assetLoaders:IList = createAssetLoadersAndPutInRepository(assets);
 			
-			var errorMessage:String;
-			var asset:Asset;
-			var assetLoader:AssetLoader;
-			var assetLoadingMonitor:AssetLoadingMonitor;
-			var assetLoaders:IList = new ArrayList();
-			var assetLoadingMonitors:IList = new ArrayList();
-			var it:IIterator = assets.iterator();
-			
-			while (it.hasNext())
-			{
-				asset = it.next();
-				
-				if (loadedAssetRepository.exists(asset.identification))
-				{
-					var report:LoadedAssetReport = loadedAssetRepository.find(asset.identification);
-					
-					errorMessage = "The Asset object with identification:\n";
-					errorMessage += "<" + asset.identification + ">\n";
-					errorMessage += "Is already loaded and cached internally.\n";
-					errorMessage += "It was loaded by a QueueLoader object with id:\n";
-					errorMessage += "<" + report.queueId + ">\n";
-					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
-					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
-					
-					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);
-				}
-				
-				assetLoader = assetLoaderFactory.create(asset);
-				
-				if (assetLoaders.contains(assetLoader))
-				{
-					errorMessage = "Argument <assets> must not contain duplicate elements.\n";
-					errorMessage += "Found duplicate Asset object:\n";
-					errorMessage += "<" + asset.identification + ">\n";
-					
-					throw new ArgumentError(errorMessage);
-				}
-				
-				assetLoaders.add(assetLoader);
-				
-				try
-				{
-					loaderRepository.add(assetLoader);
-				}
-				catch(error:DuplicateLoaderError)
-				{
-					var $assetLoader:RefinedLoader = loaderRepository.find(assetLoader.id);
-					var $queueLoader:QueueLoader = getQueueLoaderThatContainsLoader(assetLoader.id);
-					
-					errorMessage = "There is already an AssetLoader object stored with id:\n";
-					errorMessage += "<" + assetLoader.id + ">\n";
-					errorMessage += "Its current status is: <" + $assetLoader.status + ">\n";
-					errorMessage += "And it belongs to QueueLoader object with id: <" + $queueLoader.id + ">\n";
-					errorMessage += "Use the method <AssetLoadingService().isAssetQueued() AND AssetLoadingService().isAssetLoading()> to check if an AssetLoader object already exists.\n";
-					errorMessage += "For further information please read the documentation section about the AssetLoader object.";
-					
-					throw new DuplicateLoaderError(queueId, errorMessage);
-				}
-				
-				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
-				assetLoadingMonitors.add(assetLoadingMonitor);
-				loadingMonitorRepository.add(assetLoadingMonitor);
-			}
+			var assetLoadingMonitors:IList = createAssetLoadingMonitorsAndPutInRepository(assets);
 			
 			queueLoader.addLoaders(assetLoaders);
 			
@@ -270,7 +204,111 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function stopRequest(requestId:String): Boolean
 		{
-			return false
+			return false;
+		}
+		
+		private function checkIfSomeAssetIsAlreadyLoadedAndCached(assets:IList):void
+		{
+			var asset:Asset;
+			var it:IIterator = assets.iterator();
+			
+			while (it.hasNext())
+			{
+				asset = it.next();
+				
+				if (loadedAssetRepository.exists(asset.identification))
+				{
+					var report:LoadedAssetReport = loadedAssetRepository.find(asset.identification);
+					
+					var errorMessage:String = "The Asset object with identification:\n";
+					errorMessage += "<" + asset.identification + ">\n";
+					errorMessage += "Is already loaded and cached internally.\n";
+					errorMessage += "It was loaded by a QueueLoader object with id:\n";
+					errorMessage += "<" + report.queueId + ">\n";
+					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
+					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
+					
+					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);
+				}
+			}
+		}
+		
+		private function createAssetLoadersAndPutInRepository(assets:IList):IList
+		{
+			var asset:Asset;
+			var assetLoader:AssetLoader;
+			var assetLoaders:IList = new ArrayList();
+			var it:IIterator = assets.iterator();
+			
+			while (it.hasNext())
+			{
+				asset = it.next();
+				assetLoader = assetLoaderFactory.create(asset);
+				
+				if (assetLoaders.contains(assetLoader))
+				{
+					var errorMessage:String = "Argument <assets> must not contain duplicate elements.\n";
+					errorMessage += "Found duplicate Asset object:\n";
+					errorMessage += "<" + asset.identification + ">\n";
+					
+					throw new ArgumentError(errorMessage);
+				}
+				
+				//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+				//if <loaderRepository> already contains AssetLoader object with its id
+				putAssetLoaderInRepository(assetLoader);
+				
+				assetLoaders.add(assetLoader);
+			}
+			
+			return assetLoaders;
+		}
+		
+		private function createAssetLoadingMonitorsAndPutInRepository(assets:IList):IList
+		{
+			var asset:Asset;
+			var assetLoader:RefinedLoader;
+			var assetLoadingMonitor:AssetLoadingMonitor;
+			var assetLoadingMonitors:IList = new ArrayList();
+			var it:IIterator = assets.iterator();
+			
+			while (it.hasNext())
+			{
+				asset = it.next();
+				assetLoader = loaderRepository.find(asset.identification.toString());
+				
+				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
+				assetLoadingMonitors.add(assetLoadingMonitor);
+				loadingMonitorRepository.add(assetLoadingMonitor);
+			}
+			
+			return assetLoadingMonitors;
+		}
+		
+		private function createQueueLoaderAndPutInRepository(queueId:String, priority:LoadPriority, concurrentConnections:int):QueueLoader
+		{
+			var policy:LoadingPolicy = new LoadingPolicy(loaderRepository);
+			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			policy.localMaxConnections = concurrentConnections;
+			
+			var queue:PriorityLoadQueue = new PlainPriorityLoadQueue(policy);
+			var queueLoader:QueueLoader = new QueueLoader(queueId, priority, queue);
+			
+			try
+			{
+				loaderRepository.add(queueLoader);
+			}
+			catch(error:DuplicateLoaderError)
+			{
+				var errorMessage:String = "There is already a QueueLoader object stored with id:\n";
+				errorMessage += "<" + queueLoader.id + ">\n";
+				errorMessage += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object already exists.\n";
+				errorMessage += "For further information please read the documentation section about the QueueLoader object.";
+				
+				throw new DuplicateLoaderError(queueId, errorMessage);
+			}
+			
+			return queueLoader;
 		}
 		
 		private function getQueueLoaderThatContainsLoader(loaderId:String):QueueLoader
@@ -287,6 +325,28 @@ package org.vostokframework.loadingmanagement.services
 			}
 			
 			return null;
+		}
+		
+		private function putAssetLoaderInRepository(assetLoader:AssetLoader):void
+		{
+			try
+			{
+				loaderRepository.add(assetLoader);
+			}
+			catch(error:DuplicateLoaderError)
+			{
+				var $assetLoader:RefinedLoader = loaderRepository.find(assetLoader.id);
+				var $queueLoader:QueueLoader = getQueueLoaderThatContainsLoader(assetLoader.id);
+				
+				var errorMessage:String = "There is already an AssetLoader object stored with id:\n";
+				errorMessage += "<" + assetLoader.id + ">\n";
+				errorMessage += "Its current status is: <" + $assetLoader.status + ">\n";
+				errorMessage += "And it belongs to QueueLoader object with id: <" + $queueLoader.id + ">\n";
+				errorMessage += "Use the method <AssetLoadingService().isAssetQueued() AND AssetLoadingService().isAssetLoading()> to check if an AssetLoader object already exists.\n";
+				errorMessage += "For further information please read the documentation section about the AssetLoader object.";
+				
+				throw new DuplicateLoaderError(assetLoader.id, errorMessage);
+			}
 		}
 
 	}

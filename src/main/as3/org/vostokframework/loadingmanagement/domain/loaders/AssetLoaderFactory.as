@@ -58,7 +58,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public function create(asset:Asset):AssetLoader
 		{
 			var fileLoader:PlainLoader = getFileLoader(asset.type, asset.src);
-			var assetLoader:AssetLoader = new AssetLoader(asset.identification.id, asset.priority, fileLoader, asset.settings.policy.maxAttempts);
+			var assetLoader:AssetLoader = new AssetLoader(asset.identification.toString(), asset.priority, fileLoader, asset.settings.policy.maxAttempts);
 			return assetLoader;
 		}
 		
