@@ -26,8 +26,13 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.domain
+package org.vostokframework.assetmanagement
 {
+	import org.vostokframework.assetmanagement.domain.AssetFactory;
+	import org.vostokframework.assetmanagement.domain.AssetPackageFactory;
+	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
+	import org.vostokframework.assetmanagement.domain.AssetRepository;
+
 	import flash.errors.IllegalOperationError;
 
 	/**

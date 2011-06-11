@@ -31,9 +31,9 @@ package org.vostokframework.assetmanagement.services
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
+	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
