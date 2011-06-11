@@ -125,6 +125,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
+		public function containsLoader(loaderId:String): Boolean
+		{
+			return _queue.contains(loaderId);
+		}
+
 		override public function dispose():void
 		{
 			removeQueueListener();

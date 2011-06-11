@@ -29,8 +29,6 @@
 
 package org.vostokframework.loadingmanagement.services
 {
-	import mockolate.runner.MockolateRule;
-
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
@@ -168,7 +166,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
-		public function load_tryTwiceWithSameQueueId_ThrowsError(): void
+		public function load_cannTwiceWithSameQueueId_ThrowsError(): void
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
@@ -181,8 +179,8 @@ package org.vostokframework.loadingmanagement.services
 			_service.load(QUEUE_ID, list);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
-		public function load_duplicateAsset_ThrowsError(): void
+		[Test(expects="ArgumentError")]
+		public function load_duplicateAssetOnSameQueue_ThrowsError(): void
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
@@ -193,6 +191,20 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset);
 			
 			_service.load(QUEUE_ID, list);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		public function load_duplicateAssetOnDifferentQueues_ThrowsError(): void
+		{
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			_service.load(QUEUE_ID, list);
+			_service.load("another-queue-id", list);
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError")]

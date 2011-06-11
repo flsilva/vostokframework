@@ -150,6 +150,11 @@ package org.vostokframework.loadingmanagement.domain
 			}
 		}
 		
+		public function contains(loaderId:String):Boolean
+		{
+			return find(loaderId) != null;
+		}
+		
 		public function dispose():void
 		{
 			removeLoadersListeners();
