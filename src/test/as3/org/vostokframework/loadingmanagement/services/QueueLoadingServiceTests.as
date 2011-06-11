@@ -29,6 +29,7 @@
 
 package org.vostokframework.loadingmanagement.services
 {
+	import org.vostokframework.assetmanagement.domain.AssetType;
 	import mockolate.runner.MockolateRule;
 
 	import org.as3collections.IList;
@@ -39,7 +40,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
-	import org.vostokframework.loadingmanagement.domain.AssetDataRepository;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -49,6 +49,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	import flash.display.MovieClip;
 
@@ -82,7 +84,7 @@ package org.vostokframework.loadingmanagement.services
 		public function setUp(): void
 		{
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
-			LoadingManagementContext.getInstance().setAssetDataRepository(new AssetDataRepository());
+			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			
 			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
@@ -157,14 +159,15 @@ package org.vostokframework.loadingmanagement.services
 			_service.load(QUEUE_ID, list);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateAssetDataError")]
+		[Test(expects="org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError")]
 		public function load_assetAlreadyLoadedAndCached_ThrowsError(): void
 		{
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
 			
-			LoadingManagementContext.getInstance().assetDataRepository.add(asset.identification.toString(), new MovieClip());
+			var report:LoadedAssetReport = new LoadedAssetReport(asset.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset.src);
+			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);

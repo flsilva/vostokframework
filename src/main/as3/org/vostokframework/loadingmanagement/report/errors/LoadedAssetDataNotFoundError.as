@@ -27,8 +27,9 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.errors
+package org.vostokframework.loadingmanagement.report.errors
 {
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
 
 	/**
@@ -36,22 +37,22 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class DuplicateAssetDataError extends VostokFrameworkError
+	public class LoadedAssetDataNotFoundError extends VostokFrameworkError
 	{
-		private var _assetId:String;
+		private var _identification:AssetIdentification;
 		
-		public function get assetId():String { return _assetId; }
+		public function get identification():AssetIdentification { return _identification; }
 		
 		/**
 		 * Constructor, creates a new DuplicateAssetLoaderError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function DuplicateAssetDataError(assetId:String, message:String = null)
+		public function LoadedAssetDataNotFoundError(identification:AssetIdentification, message:String = null)
 		{
 			super(message);
-			name = "DuplicateAssetDataError";
-			_assetId = assetId;
+			name = "LoadedAssetDataNotFoundError";
+			_identification = identification;
 		}
 
 	}

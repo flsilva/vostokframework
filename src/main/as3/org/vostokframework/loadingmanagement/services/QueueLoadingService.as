@@ -28,13 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.loadingmanagement.domain.errors.DuplicateAssetDataError;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
+	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.loadingmanagement.domain.AssetDataRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.LoadingManagementContext;
@@ -48,6 +48,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	/**
 	 * description
@@ -58,11 +59,11 @@ package org.vostokframework.loadingmanagement.services
 	{
 		private var _context:LoadingManagementContext;
 		
-		private function get assetDataRepository():AssetDataRepository { return _context.assetDataRepository; }
-		
 		private function get assetLoaderFactory():AssetLoaderFactory { return _context.assetLoaderFactory; }
 		
 		private function get globalQueueLoader():QueueLoader { return _context.globalQueueLoader; }
+		
+		private function get loadedAssetRepository():LoadedAssetRepository { return _context.loadedAssetRepository; }
 		
 		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
 		
@@ -147,15 +148,19 @@ package org.vostokframework.loadingmanagement.services
 			{
 				asset = it.next();
 				
-				if (assetDataRepository.exists(asset.identification.toString()))
+				if (loadedAssetRepository.exists(asset.identification))
 				{
-					errorMessage = "The asset with identification:\n";
+					var report:LoadedAssetReport = loadedAssetRepository.find(asset.identification);
+					
+					errorMessage = "The Asset object with identification:\n";
 					errorMessage += "<" + asset.identification + ">\n";
 					errorMessage += "Is already loaded and cached internally.\n";
+					errorMessage += "It was loaded by a queue with id:\n";
+					errorMessage += "<" + report.queueId + ">\n";
 					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
 					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
 					
-					throw new DuplicateAssetDataError(asset.identification.toString(), errorMessage);
+					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);
 				}
 				
 				assetLoader = assetLoaderFactory.create(asset);

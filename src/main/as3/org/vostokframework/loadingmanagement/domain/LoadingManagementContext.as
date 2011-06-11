@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	import flash.errors.IllegalOperationError;
 
@@ -47,9 +48,9 @@ package org.vostokframework.loadingmanagement.domain
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
-		private var _assetDataRepository:AssetDataRepository;
 		private var _assetLoaderFactory:AssetLoaderFactory;
 		private var _globalQueueLoader:QueueLoader;
+		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderRepository:LoaderRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
@@ -63,11 +64,11 @@ package org.vostokframework.loadingmanagement.domain
 			_created = true;
 		}
 		
-		public function get assetDataRepository(): AssetDataRepository { return _assetDataRepository; }
-		
 		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
 		
 		public function get globalQueueLoader(): QueueLoader { return _globalQueueLoader; }
+		
+		public function get loadedAssetRepository(): LoadedAssetRepository { return _loadedAssetRepository; }
 		
 		public function get loaderRepository(): LoaderRepository { return _loaderRepository; }
 		
@@ -92,7 +93,7 @@ package org.vostokframework.loadingmanagement.domain
 			_maxConcurrentQueues = 3;
 			
 			_assetLoaderFactory = new AssetLoaderFactory();
-			_assetDataRepository = new AssetDataRepository();
+			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
 			
 			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
@@ -118,17 +119,6 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param factory
 		 */
-		public function setAssetDataRepository(repository:AssetDataRepository): void
-		{
-			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
-			_assetDataRepository = repository;
-		}
-		
-		/**
-		 * description
-		 * 
-		 * @param factory
-		 */
 		public function setAssetLoaderFactory(factory:AssetLoaderFactory): void
 		{
 			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
@@ -144,6 +134,17 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			if (!queueLoader) throw new ArgumentError("Argument <queueLoader> must not be null.");
 			_globalQueueLoader = queueLoader;//TODO:validate if already exists an queueLoader and if yes stop() and dispose() it
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param repository
+		 */
+		public function setLoadedAssetRepository(repository:LoadedAssetRepository): void
+		{
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			_loadedAssetRepository = repository;//TODO:validate if already exists an queueLoader and if yes stop() and dispose() it
 		}
 		
 		/**
