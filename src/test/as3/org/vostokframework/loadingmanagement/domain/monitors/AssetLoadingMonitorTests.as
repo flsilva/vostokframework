@@ -29,6 +29,8 @@
 
 package org.vostokframework.loadingmanagement.domain.monitors
 {
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
+	import org.vostokframework.VostokFramework;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
@@ -56,6 +58,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	public class AssetLoadingMonitorTests
 	{
 		private static const ASSET_ID:String = "asset-id";
+		private static const ASSET_LOCALE:String = VostokFramework.CROSS_LOCALE_ID;
 		private static const ASSET_TYPE:AssetType = AssetType.IMAGE;
 		
 		[Rule]
@@ -96,7 +99,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		public function getMonitor(loader:PlainLoader): AssetLoadingMonitor
 		{
-			return new AssetLoadingMonitor(ASSET_ID, ASSET_TYPE, loader);
+			var identification:AssetIdentification = new AssetIdentification(ASSET_ID, ASSET_LOCALE);
+			return new AssetLoadingMonitor(identification, ASSET_TYPE, loader);
 		}
 		
 		public function getNiceLoader():RefinedLoader

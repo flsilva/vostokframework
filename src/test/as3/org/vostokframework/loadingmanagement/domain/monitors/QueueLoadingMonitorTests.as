@@ -29,14 +29,17 @@
 
 package org.vostokframework.loadingmanagement.domain.monitors
 {
+	import org.vostokframework.VostokFramework;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
 
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
+	import org.as3utils.StringUtil;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
@@ -105,14 +108,17 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		// HELPER METHODS //
 		////////////////////
 		
-		private function getAssetLoadingMonitor(id:String):StubAssetLoadingMonitor
+		private function getAssetLoadingMonitor(id:String, locale:String = null):StubAssetLoadingMonitor
 		{
-			return new StubAssetLoadingMonitor(id);
+			if (StringUtil.isEmpty(locale)) locale = VostokFramework.CROSS_LOCALE_ID;
+			
+			var identification:AssetIdentification = new AssetIdentification(id, locale);
+			return new StubAssetLoadingMonitor(identification);
 		}
 		
 		private function createLoadingEvent(type:String, fake:StubAssetLoadingMonitor):AssetLoadingEvent
 		{
-			return new AssetLoadingEvent(type, fake.assetId, AssetType.XML, fake.monitoring);
+			return new AssetLoadingEvent(type, fake.assetId, fake.assetLocale, AssetType.XML, fake.monitoring);
 		}
 		
 		///////////////////////

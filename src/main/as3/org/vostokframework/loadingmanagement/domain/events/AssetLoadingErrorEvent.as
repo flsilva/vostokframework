@@ -48,6 +48,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * description
 		 */
 		private var _assetId:String;
+		private var _assetLocale:String;
 		private var _assetType:AssetType;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
@@ -56,6 +57,11 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * description
 		 */
 		public function get assetId(): String { return _assetId; }
+		
+		/**
+		 * description
+		 */
+		public function get assetLocale(): String { return _assetLocale; }
 		
 		/**
 		 * description
@@ -82,18 +88,19 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param monitoring
 		 * @param message
 		 */
-		public function AssetLoadingErrorEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, message:String = null)
+		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, message:String = null)
 		{
 			super(type, false, false, message);
 			
 			_assetId = assetId;
+			_assetLocale = assetLocale;
 			_assetType = assetType;
 			_monitoring = monitoring;
 		}
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingEvent(type, _assetId, _assetType, _monitoring, text);
+			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, _monitoring, text);
 		}
 		
 	}

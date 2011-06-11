@@ -56,6 +56,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		private var _startedTimeConnecting:int;
 		private var _timer:Timer;
 		
+		public function get id():String { return _loader.id; }
+		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
 		
 		/**

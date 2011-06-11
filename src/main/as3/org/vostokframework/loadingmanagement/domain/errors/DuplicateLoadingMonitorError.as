@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2011 (c) Flávio Silva, flsilva.com
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,46 +26,31 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.monitors
+
+package org.vostokframework.loadingmanagement.domain.errors
 {
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
-
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.utils.setTimeout;
-
+	import org.vostokframework.errors.VostokFrameworkError;
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoadingMonitor extends EventDispatcher implements ILoadingMonitor
+	public class DuplicateLoadingMonitorError extends VostokFrameworkError
 	{
-		private var _assetIdentification:AssetIdentification;
-		private var _monitoring:LoadingMonitoring;
+		private var _monitorId:String;
 		
-		public function get assetId():String { return _assetIdentification.id; }
+		public function get monitorId():String { return _monitorId; }
 		
-		public function get assetLocale():String { return _assetIdentification.locale; }
-		
-		public function get id():String { return _assetIdentification.toString(); }
-		
-		public function get monitoring():LoadingMonitoring { return _monitoring; }
-		
-		public function StubAssetLoadingMonitor(identification:AssetIdentification)
+		/**
+		 * Constructor, creates a new DuplicateAssetLoaderError instance.
+		 * 
+		 * @param message 	A string associated with the error object.
+		 */
+		public function DuplicateLoadingMonitorError(monitorId:String, message:String = null)
 		{
-			_assetIdentification = identification;
-			_monitoring = new LoadingMonitoring(1);
-		}
-		
-		public function asyncDispatchEvent(event:Event, delay:int = 50):int
-		{
-			return setTimeout(dispatchEvent, delay, event);
-		}
-		
-		public function dispose():void
-		{
-			
+			super(message);
+			name = "DuplicateLoadingMonitorError";
+			_monitorId = monitorId;
 		}
 
 	}

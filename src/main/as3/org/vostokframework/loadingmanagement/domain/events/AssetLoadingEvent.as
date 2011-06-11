@@ -40,19 +40,20 @@ package org.vostokframework.loadingmanagement.domain.events
 	 */
 	public class AssetLoadingEvent extends Event
 	{
-		public static const CANCELED:String = "VostokFramework.AssetLoadingMonitorEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.AssetLoadingMonitorEvent.COMPLETE";
-		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingMonitorEvent.HTTP_STATUS";
-		public static const INIT:String = "VostokFramework.AssetLoadingMonitorEvent.INIT";
-		public static const OPEN:String = "VostokFramework.AssetLoadingMonitorEvent.OPEN";
-		public static const PROGRESS:String = "VostokFramework.AssetLoadingMonitorEvent.PROGRESS";
-		public static const STOPPED:String = "VostokFramework.AssetLoadingMonitorEvent.STOPPED";
+		public static const CANCELED:String = "VostokFramework.AssetLoadingEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.AssetLoadingEvent.COMPLETE";
+		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingEvent.HTTP_STATUS";
+		public static const INIT:String = "VostokFramework.AssetLoadingEvent.INIT";
+		public static const OPEN:String = "VostokFramework.AssetLoadingEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.AssetLoadingEvent.PROGRESS";
+		public static const STOPPED:String = "VostokFramework.AssetLoadingEvent.STOPPED";
 		
 		/**
 		 * description
 		 */
 		private var _assetData:*;
 		private var _assetId:String;
+		private var _assetLocale:String;
 		private var _assetType:AssetType;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
@@ -66,6 +67,11 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * description
 		 */
 		public function get assetId(): String { return _assetId; }
+		
+		/**
+		 * description
+		 */
+		public function get assetLocale(): String { return _assetLocale; }
 		
 		/**
 		 * description
@@ -92,11 +98,12 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function AssetLoadingEvent(type:String, assetId:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
+		public function AssetLoadingEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
 		{
 			super(type);
 			
 			_assetId = assetId;
+			_assetLocale = assetLocale;
 			_assetType = assetType;
 			_monitoring = monitoring;
 			_assetData = assetData;
@@ -104,7 +111,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingEvent(type, _assetId, _assetType, _monitoring, _assetData);
+			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, _monitoring, _assetData);
 		}
 		
 	}

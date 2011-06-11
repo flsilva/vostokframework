@@ -34,6 +34,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
@@ -56,6 +57,7 @@ package org.vostokframework.loadingmanagement
 		private var _globalQueueLoader:QueueLoader;
 		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderRepository:LoaderRepository;
+		private var _loadingMonitorRepository:LoadingMonitorRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
 		
@@ -75,6 +77,8 @@ package org.vostokframework.loadingmanagement
 		public function get loadedAssetRepository(): LoadedAssetRepository { return _loadedAssetRepository; }
 		
 		public function get loaderRepository(): LoaderRepository { return _loaderRepository; }
+		
+		public function get loadingMonitorRepository(): LoadingMonitorRepository { return _loadingMonitorRepository; }
 		
 		/**
 		 * description
@@ -99,6 +103,7 @@ package org.vostokframework.loadingmanagement
 			_assetLoaderFactory = new AssetLoaderFactory();
 			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
+			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
 			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
 			policy.globalMaxConnections = _maxConcurrentConnections;
@@ -160,6 +165,17 @@ package org.vostokframework.loadingmanagement
 		{
 			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
 			_loaderRepository = loaderRepository;//TODO:validate if already exists an loaderRepository and dispose() it
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderRepository
+		 */
+		public function setLoadingMonitorRepository(loadingMonitorRepository:LoadingMonitorRepository): void
+		{
+			if (!loadingMonitorRepository) throw new ArgumentError("Argument <loadingMonitorRepository> must not be null.");
+			_loadingMonitorRepository = loadingMonitorRepository;//TODO:validate if already exists an loaderRepository and dispose() it
 		}
 
 		/**

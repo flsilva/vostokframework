@@ -48,6 +48,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
@@ -85,6 +86,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
+			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			
 			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
@@ -129,6 +131,22 @@ package org.vostokframework.loadingmanagement.services
 			
 			var monitor:ILoadingMonitor = _service.load(QUEUE_ID, list);
 			Assert.assertNotNull(monitor);
+		}
+		
+		[Test]
+		public function load_validArguments_checkIfQueueLoadingMonitorExistsOnRepository_ReturnsTrue(): void
+		{
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
+			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("asset/image-01.jpg", assetPackage);
+			
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			_service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(QUEUE_ID);
+			Assert.assertTrue(exists);
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]

@@ -44,6 +44,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
@@ -66,6 +67,8 @@ package org.vostokframework.loadingmanagement.services
 		private function get loadedAssetRepository():LoadedAssetRepository { return _context.loadedAssetRepository; }
 		
 		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
+		
+		private function get loadingMonitorRepository():LoadingMonitorRepository { return _context.loadingMonitorRepository; }
 		
 		/**
 		 * description
@@ -180,7 +183,7 @@ package org.vostokframework.loadingmanagement.services
 					throw new DuplicateLoaderError(queueId, errorMessage);
 				}
 				
-				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification.toString(), asset.type, assetLoader);
+				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
 				//TODO:add monitors to reporitory
 			}
@@ -209,7 +212,7 @@ package org.vostokframework.loadingmanagement.services
 			}
 			
 			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
-			//TODO:add monitor to reporitory
+			loadingMonitorRepository.add(monitor);
 			
 			globalQueueLoader.addLoader(queueLoader);
 			globalQueueLoader.load();

@@ -28,7 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import org.as3utils.StringUtil;
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
@@ -49,11 +49,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 */
 	public class AssetLoadingMonitor extends EventDispatcher implements ILoadingMonitor
 	{
-		private var _assetId:String;
+		private var _assetIdentification:AssetIdentification;
 		private var _assetType:AssetType;
 		private var _loader:PlainLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _startedTimeConnecting:int;
+		
+		public function get id():String { return _assetIdentification.toString(); }
 		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
 		
@@ -63,13 +65,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param assetType
 		 * @param loader
 		 */
-		public function AssetLoadingMonitor(assetId:String, assetType:AssetType, loader:PlainLoader)
+		public function AssetLoadingMonitor(identification:AssetIdentification, assetType:AssetType, loader:PlainLoader)
 		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!assetType) throw new ArgumentError("Argument <assetType> must not be null.");
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
-			_assetId = assetId;
+			_assetIdentification = identification;
 			_assetType = assetType;
 			_loader = loader;
 			
@@ -120,12 +122,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function createEvent(type:String, assetData:* = null):AssetLoadingEvent
 		{
-			return new AssetLoadingEvent(type, _assetId, _assetType, _monitoring, assetData);
+			return new AssetLoadingEvent(type, _assetIdentification.id, _assetIdentification.locale, _assetType, _monitoring, assetData);
 		}
 		
 		private function createErrorEvent(type:String, message:String = null):AssetLoadingErrorEvent
 		{
-			return new AssetLoadingErrorEvent(type, _assetId, _assetType, _monitoring, message);
+			return new AssetLoadingErrorEvent(type, _assetIdentification.id, _assetIdentification.locale, _assetType, _monitoring, message);
 		}
 		
 		private function loaderConnectingHandler(event:LoaderEvent):void
