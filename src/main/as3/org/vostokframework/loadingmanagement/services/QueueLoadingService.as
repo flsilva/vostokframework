@@ -155,7 +155,7 @@ package org.vostokframework.loadingmanagement.services
 					errorMessage = "The Asset object with identification:\n";
 					errorMessage += "<" + asset.identification + ">\n";
 					errorMessage += "Is already loaded and cached internally.\n";
-					errorMessage += "It was loaded by a queue with id:\n";
+					errorMessage += "It was loaded by a QueueLoader object with id:\n";
 					errorMessage += "<" + report.queueId + ">\n";
 					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
 					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
@@ -182,6 +182,7 @@ package org.vostokframework.loadingmanagement.services
 				
 				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification.id, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
+				//TODO:add monitors to reporitory
 			}
 			
 			var policy:LoadingPolicy = new LoadingPolicy(loaderRepository);
@@ -207,10 +208,11 @@ package org.vostokframework.loadingmanagement.services
 				throw new DuplicateLoaderError(queueId, errorMessage);
 			}
 			
+			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
+			//TODO:add monitor to reporitory
+			
 			globalQueueLoader.addLoader(queueLoader);
 			globalQueueLoader.load();
-			
-			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
 			
 			return monitor;
 		}
