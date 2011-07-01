@@ -32,7 +32,7 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
-	import org.as3collections.utils.ArrayListUtil;
+	import org.as3collections.utils.ListUtil;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
@@ -65,7 +65,7 @@ package org.vostokframework.assetmanagement.domain
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			_identification = identification;
-			_assets = ArrayListUtil.getUniqueTypedArrayList(new ArrayList(), Asset);
+			_assets = ListUtil.getUniqueTypedList(new ArrayList(), Asset);
 		}
 		
 		/**

@@ -28,12 +28,10 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
-	import org.as3collections.lists.TypedArrayList;
-	import org.as3collections.lists.UniqueArrayList;
+	import org.as3collections.lists.TypedList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
@@ -144,7 +142,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			//dispatches org.as3coreaddendum.ClassCastError
 			//if there's any type other than Asset
-			assets = new TypedArrayList(assets, Asset);
+			assets = new TypedList(assets, Asset);
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			

@@ -33,7 +33,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.IMap;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
-	import org.as3collections.lists.UniqueArrayList;
+	import org.as3collections.lists.UniqueList;
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
@@ -143,7 +143,7 @@ package org.vostokframework.loadingmanagement.domain
 			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
 			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
 			
-			var unique:UniqueArrayList = new UniqueArrayList(new ArrayList());
+			var unique:UniqueList = new UniqueList(new ArrayList());
 			unique.addAll(list1);
 			unique.addAll(list2);
 			
