@@ -69,7 +69,8 @@ package org.vostokframework.loadingmanagement.services
 		//[Mock(inject="false")]
 		//public var _fakeAsset:Asset;
 		
-		public var _service:QueueLoadingService;
+		public var service:QueueLoadingService;
+		public var asset:Asset;
 		
 		public function QueueLoadingServiceTests()
 		{
@@ -96,13 +97,18 @@ package org.vostokframework.loadingmanagement.services
 			var globalQueueLoader:QueueLoader = new QueueLoader("GlobalQueueLoader", LoadPriority.MEDIUM, queue);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
-			_service = new QueueLoadingService();
+			service = new QueueLoadingService();
+			
+			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
+			asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
+			//_fakeAsset = nice(Asset, null, [ASSET_ID, "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
-			_service = null;
+			service = null;
 		}
 		
 		////////////////////
@@ -121,106 +127,77 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_ReturnsILoadingMonitor(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			//_fakeAsset = nice(Asset, null, [ASSET_ID, "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			var monitor:ILoadingMonitor = _service.load(QUEUE_ID, list);
+			var monitor:ILoadingMonitor = service.load(QUEUE_ID, list);
 			Assert.assertNotNull(monitor);
 		}
 		
 		[Test]
-		public function load_validArguments_checkIfQueueLoadingMonitorExistsOnRepository_ReturnsTrue(): void
+		public function load_validArguments_checkIfQueueLoadingMonitorExistsInRepository_ReturnsTrue(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(QUEUE_ID);
 			Assert.assertTrue(exists);
 		}
 		
 		[Test]
-		public function load_validArguments_checkIfAssetLoadingMonitorExistsOnRepository_ReturnsTrue(): void
+		public function load_validArguments_checkIfAssetLoadingMonitorExistsInRepository_ReturnsTrue(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(asset.identification.toString());
 			Assert.assertTrue(exists);
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
-		public function load_cannTwiceWithSameQueueId_ThrowsError(): void
+		public function load_duplicateQueueId_ThrowsError(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
 		}
 		
 		[Test(expects="ArgumentError")]
-		public function load_duplicateAssetOnSameQueue_ThrowsError(): void
+		public function load_duplicateAssetInSameQueue_ThrowsError(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
-		public function load_duplicateAssetOnDifferentQueues_ThrowsError(): void
+		public function load_duplicateAssetInDifferentQueues_ThrowsError(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
-			_service.load("another-queue-id", list);
+			service.load(QUEUE_ID, list);
+			service.load("another-queue-id", list);
 		}
 		
 		[Test(expects="org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError")]
 		public function load_assetAlreadyLoadedAndCached_ThrowsError(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			var asset:Asset = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			
 			var report:LoadedAssetReport = new LoadedAssetReport(asset.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset.src);
 			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);
 			
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
 		}
 		
 		[Test(expects="org.as3coreaddendum.errors.ClassCastError")]
@@ -229,7 +206,68 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add("INVALID TYPE");
 			
-			_service.load(QUEUE_ID, list);
+			service.load(QUEUE_ID, list);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function load_invalidNullQueueIdArgument_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(null, list);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function load_invalidNullAssetsArgument_ThrowsError(): void
+		{
+			service.load(QUEUE_ID, null);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function load_invalidEmptyAssetsArgument_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			
+			service.load(null, list);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function load_invalidConcurrentConnectionsArgument_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list, LoadPriority.MEDIUM, 0);
+		}
+		
+		/////////////////////////////////////////
+		// QueueLoadingService().queueExists() //
+		/////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function queueExists_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.queueExists(null);
+		}
+		
+		[Test]
+		public function queueExists_notExistingQueue_ReturnsFalse(): void
+		{
+			var exists:Boolean = service.queueExists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function queueExists_existingQueue_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = service.queueExists(QUEUE_ID);
+			Assert.assertTrue(exists);
 		}
 		
 	}

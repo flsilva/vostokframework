@@ -87,7 +87,7 @@ package org.vostokframework.loadingmanagement.services
 		 * @param assets
 		 * @return
 		 */
-		public function addAssetsOnQueue(queueId:String, assets:IList): ILoadingMonitor
+		public function addAssetsInQueue(queueId:String, assets:IList): ILoadingMonitor
 		{
 			return null;
 		}
@@ -140,25 +140,26 @@ package org.vostokframework.loadingmanagement.services
 			if (!assets || assets.isEmpty()) throw new ArgumentError("Argument <assets> must not be null nor empty.");
 			if (concurrentConnections < 1) throw new ArgumentError("Argument <concurrentConnections> must be greater than zero. Received: <" + concurrentConnections + ">");
 			
-			//dispatches org.as3coreaddendum.ClassCastError
-			//if there's any type other than Asset
+			//throws org.as3coreaddendum.ClassCastError
+			//if there's any type other than Asset in <assets>
 			assets = new TypedList(assets, Asset);
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
-			//if <loaderRepository> already contains QueueLoader object with <queueId>
+			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//if <loaderRepository> already contains a QueueLoader object with <queueId>
 			var queueLoader:QueueLoader = createQueueLoaderAndPutInRepository(queueId, priority, concurrentConnections);
 			
-			//dispatches org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
+			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
-			//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
-			//if <loaderRepository> already contains AssetLoader object with its id
-			//AND dispatches ArgumentError if <assets> argument contains any duplicate Asset object
+			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//if <loaderRepository> contains an AssetLoader object with any Asset id inside <assets>
+			//AND throws ArgumentError if <assets> argument contains any duplicate Asset object
 			var assetLoaders:IList = createAssetLoadersAndPutInRepository(assets);
 			
+			//may throw DuplicateLoadingMonitorError
 			var assetLoadingMonitors:IList = createAssetLoadingMonitorsAndPutInRepository(assets);
 			
 			queueLoader.addLoaders(assetLoaders);
@@ -180,7 +181,9 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function queueExists(queueId:String): Boolean
 		{
-			return false;
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
+			return loaderRepository.exists(queueId);
 		}
 
 		/**
@@ -277,6 +280,8 @@ package org.vostokframework.loadingmanagement.services
 				
 				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
 				assetLoadingMonitors.add(assetLoadingMonitor);
+				
+				//may throw DuplicateLoadingMonitorError
 				loadingMonitorRepository.add(assetLoadingMonitor);
 			}
 			
@@ -313,16 +318,21 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var it:IIterator = loaderRepository.findAll().iterator();
 			var refinedLoader:RefinedLoader;
+			var queueLoader:QueueLoader;
 			
 			while (it.hasNext())
 			{
 				refinedLoader = it.next();
 				if (!(refinedLoader is QueueLoader)) continue;
 				
-				if ((refinedLoader as QueueLoader).containsLoader(loaderId)) return refinedLoader as QueueLoader;
+				if ((refinedLoader as QueueLoader).containsLoader(loaderId))
+				{
+					queueLoader = refinedLoader as QueueLoader;
+					break;
+				}
 			}
 			
-			return null;
+			return queueLoader;
 		}
 		
 		private function putAssetLoaderInRepository(assetLoader:AssetLoader):void
