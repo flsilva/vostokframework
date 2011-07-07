@@ -38,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=11)]
+	[TestCase]
 	public class VostokLoaderTests
 	{
 		

@@ -36,7 +36,7 @@ package org.vostokframework.loadingmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=13)]
+	[TestCase]
 	public class PriorityLoadQueueTests
 	{
 		

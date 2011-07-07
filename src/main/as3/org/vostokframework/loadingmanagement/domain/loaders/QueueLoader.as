@@ -52,7 +52,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * @private
 		 */
 		private var _queue:PriorityLoadQueue;
-
+		
+		/**
+		 * @private
+		 */
+		override protected function get delayFirstLoad(): int { return 0; }
+		
 		/**
 		 * description
 		 * 

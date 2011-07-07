@@ -37,7 +37,7 @@ package org.vostokframework.assetmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=3)]
+	[TestCase]
 	public class AssetFactoryTests
 	{
 		

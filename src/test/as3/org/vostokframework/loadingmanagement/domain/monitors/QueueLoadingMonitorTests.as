@@ -50,7 +50,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=12)]
+	[TestCase]
 	public class QueueLoadingMonitorTests
 	{
 		private static const QUEUE_ID:String = "queue-id";

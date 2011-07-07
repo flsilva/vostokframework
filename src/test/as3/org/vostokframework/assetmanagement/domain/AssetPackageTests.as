@@ -37,7 +37,7 @@ package org.vostokframework.assetmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=2)]
+	[TestCase]
 	public class AssetPackageTests
 	{
 		private static const IDENTIFICATION:AssetPackageIdentification = new AssetPackageIdentification("asset-package-id", "en-US");

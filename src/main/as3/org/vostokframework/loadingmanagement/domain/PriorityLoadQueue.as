@@ -113,7 +113,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function PriorityLoadQueue()
 		{
-			if (ReflectionUtil.classPathEquals(this, PriorityLoadQueue))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (ReflectionUtil.classPathEquals(this, PriorityLoadQueue))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			
 			_queuedLoaders = new IndexablePriorityQueue();
 			_loaders = new IndexablePriorityQueue();

@@ -73,7 +73,7 @@ package org.vostokframework.loadingmanagement.domain
 			{
 				var message:String = "There is already an RefinedLoader object stored with id:\n";
 				message += "<" + loader.id + ">\n";
-				message += "Use the method <RefinedLoaderRepository().exists()> to check if an RefinedLoader object already exists.\n";
+				message += "Use the method <RefinedLoaderRepository().exists()> to check if a RefinedLoader object already exists.\n";
 				message += "For further information please read the documentation section about the RefinedLoader object.";
 				
 				throw new DuplicateLoaderError(loader.id, message);

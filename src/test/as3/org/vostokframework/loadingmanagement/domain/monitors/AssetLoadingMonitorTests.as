@@ -54,7 +54,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999999)]
+	[TestCase]
 	public class AssetLoadingMonitorTests
 	{
 		private static const ASSET_ID:String = "asset-id";

@@ -49,7 +49,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=9999999)]
+	[TestCase]
 	public class QueueLoaderTests extends RefinedLoaderTests
 	{
 		[Rule]

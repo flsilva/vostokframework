@@ -34,7 +34,7 @@ package org.vostokframework.assetmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=1)]
+	[TestCase]
 	public class UrlAssetParserTests
 	{
 		

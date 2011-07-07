@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=12)]
+	[TestCase]
 	public class LoadingPolicyTests
 	{
 		

@@ -38,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999)]
+	[TestCase]
 	public class RefinedLoaderTests
 	{
 		public var _loader:RefinedLoader;

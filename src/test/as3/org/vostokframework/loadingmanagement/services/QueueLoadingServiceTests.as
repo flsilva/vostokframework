@@ -57,7 +57,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999)]
+	[TestCase(order=99999)]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -118,6 +118,36 @@ package org.vostokframework.loadingmanagement.services
 		public function getLoader():RefinedLoader
 		{
 			return null;
+		}
+		
+		////////////////////////////////////////////
+		// QueueLoadingService().isQueueLoading() //
+		////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function isQueueLoading_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.isQueueLoading(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function isQueueLoading_notExistingQueue_ThrowsError(): void
+		{
+			service.isQueueLoading(QUEUE_ID);
+		}
+		
+		[Test(order=999999)]
+		public function isQueueLoading_loadingQueue_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			trace("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+			trace("globalQueueLoader.status: " + LoadingManagementContext.getInstance().globalQueueLoader.status);
+			
+			var isLoading:Boolean = service.isQueueLoading(QUEUE_ID);
+			Assert.assertTrue(isLoading);
 		}
 		
 		//////////////////////////////////

@@ -53,12 +53,11 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * @private
 		 */
-		private static const DELAY_FIRST_LOAD:int = 50;//milliseconds
-		
 		private var _currentAttempt:int;
 		private var _delayLoadAfterError:int;
 		private var _errorHistory:IList;
 		private var _failDescription:String;
+		private var _id:String;
 		private var _index:int;
 		private var _maxAttempts:int;
 		private var _priority:LoadPriority;
@@ -67,9 +66,9 @@ package org.vostokframework.loadingmanagement.domain
 		private var _timerLoadDelay:Timer;
 		
 		/**
-		 * description
+		 * @private
 		 */
-		private var _id:String;
+		protected function get delayFirstLoad(): int { return 50; }
 		
 		/**
 		 * description
@@ -134,7 +133,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function RefinedLoader(id:String, priority:LoadPriority, maxAttempts:int)
 		{
-			if (ReflectionUtil.classPathEquals(this, RefinedLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (ReflectionUtil.classPathEquals(this, RefinedLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
@@ -146,7 +145,7 @@ package org.vostokframework.loadingmanagement.domain
 			_errorHistory = new ArrayList();
 			_statusHistory = new ArrayList();
 			
-			_timerLoadDelay = new Timer(DELAY_FIRST_LOAD);
+			_timerLoadDelay = new Timer(delayFirstLoad);
 			_timerLoadDelay.addEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false, 0, true);
 			
 			setStatus(LoaderStatus.QUEUED);

@@ -36,7 +36,7 @@ package org.vostokframework.assetmanagement.domain
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=6)]
+	[TestCase]
 	public class AssetPackageRepositoryTests
 	{
 		private var _repository:AssetPackageRepository;

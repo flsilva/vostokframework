@@ -30,16 +30,13 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.as3collections.IList;
-	import org.as3collections.IMap;
-	import org.as3collections.maps.HashMap;
-	import org.as3collections.maps.TypedMap;
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=5)]
+	[TestCase]
 	public class AssetRepositoryTests
 	{
 		private var _repository:AssetRepository;

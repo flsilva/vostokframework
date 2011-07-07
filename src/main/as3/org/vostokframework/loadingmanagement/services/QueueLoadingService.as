@@ -37,10 +37,12 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
+	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
@@ -117,12 +119,25 @@ package org.vostokframework.loadingmanagement.services
 		/**
 		 * description
 		 * 
-		 * @param requestId
+		 * @param queueId
 		 * @return
 		 */
-		public function isQueueLoading(requestId:String): Boolean
+		public function isQueueLoading(queueId:String): Boolean
 		{
-			return false;
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
+			var loader:RefinedLoader = loaderRepository.find(queueId);
+			if (!loader)
+			{
+				var message:String = "There is no QueueLoader object stored with id:\n";
+				message += "<" + queueId + ">\n";
+				message += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object exists.\n";
+				
+				throw new LoaderNotFoundError(queueId, message);
+			}
+			trace("##########################################################################################");
+			trace("loader.status: " + loader.status + " | loader.status.equals(LoaderStatus.CONNECTING): " + loader.status.equals(LoaderStatus.CONNECTING) + " | loader.status.equals(LoaderStatus.LOADING): " + loader.status.equals(LoaderStatus.LOADING));
+			return loader.status.equals(LoaderStatus.CONNECTING) || loader.status.equals(LoaderStatus.LOADING);
 		}
 
 		/**

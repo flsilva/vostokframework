@@ -49,7 +49,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function PlainLoader()
 		{
-			if (ReflectionUtil.classPathEquals(this, PlainLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be instantiated directly.");
+			if (ReflectionUtil.classPathEquals(this, PlainLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
 		/**

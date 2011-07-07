@@ -40,6 +40,7 @@ package org.vostokframework.assetmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
+	[TestCase]
 	public class AssetPackageServiceTests
 	{
 		private static const ASSET_PACKAGE_ID:String = "asset-package-id";

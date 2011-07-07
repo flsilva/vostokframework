@@ -44,6 +44,7 @@ package org.vostokframework.assetmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
+	[TestCase]
 	public class AssetServiceTests
 	{
 		private static const ASSET_ID:String = "asset-id";

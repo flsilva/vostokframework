@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999)]
+	[TestCase]
 	public class AssetLoaderTests extends RefinedLoaderTests
 	{
 		[Rule]
