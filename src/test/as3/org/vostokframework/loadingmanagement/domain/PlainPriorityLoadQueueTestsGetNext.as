@@ -78,9 +78,9 @@ package org.vostokframework.loadingmanagement.domain
 			return new PlainPriorityLoadQueue(policy);
 		}
 		
-		public function getLoader(id:String, priority:LoadPriority):RefinedLoader
+		public function getLoader(id:String, priority:LoadPriority):StatefulLoader
 		{
-			return new StubRefinedLoader(id, 3, priority);
+			return new StubStatefulLoader(id, 3, priority);
 		}
 		
 		private function configQueue(queue:PriorityLoadQueue):void
@@ -100,14 +100,14 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function getNext_simpleCall_ReturnsValidObject(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			Assert.assertNotNull(loader);
 		}
 		
 		[Test]
 		public function getNext_simpleCall_checkPriorityOrder_ReturnsValidObject(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			Assert.assertEquals("loader-1", loader.id);
 		}
 		
@@ -115,7 +115,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function getNext_doubleCall_checkPriorityOrder_ReturnsValidObject(): void
 		{
 			_queue.getNext();
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			Assert.assertEquals("loader-2", loader.id);
 		}
 		
@@ -126,7 +126,7 @@ package org.vostokframework.loadingmanagement.domain
 			policy.globalMaxConnections = 4;
 			policy.totalGlobalConnections = 0;
 			
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			loader.load();
 			
 			loader = _queue.getNext();
@@ -146,14 +146,14 @@ package org.vostokframework.loadingmanagement.domain
 			policy.globalMaxConnections = 4;
 			policy.totalGlobalConnections = 4;
 			
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			Assert.assertNull(loader);
 		}
 		
 		[Test]
-		public function getNext_cancelAndCheckNext_RefinedLoader(): void
+		public function getNext_cancelAndCheckNext_StatefulLoader(): void
 		{
-			var loader:RefinedLoader = _queue.getLoaders().getAt(0);
+			var loader:StatefulLoader = _queue.getLoaders().getAt(0);
 			loader.cancel();
 			
 			loader = _queue.getNext();
@@ -161,9 +161,9 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function getNext_stopAndCheckNext_RefinedLoader(): void
+		public function getNext_stopAndCheckNext_StatefulLoader(): void
 		{
-			var loader:RefinedLoader = _queue.getLoaders().getAt(0);
+			var loader:StatefulLoader = _queue.getLoaders().getAt(0);
 			loader.stop();
 			
 			loader = _queue.getNext();

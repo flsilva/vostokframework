@@ -31,7 +31,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.LoadError;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.IOErrorEvent;
@@ -42,7 +42,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoader extends RefinedLoader
+	public class AssetLoader extends StatefulLoader
 	{
 		/**
 		 * @private

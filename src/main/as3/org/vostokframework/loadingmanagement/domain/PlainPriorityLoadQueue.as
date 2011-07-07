@@ -58,7 +58,7 @@ package org.vostokframework.loadingmanagement.domain
 			return _policy.allow(totalLoading);
 		}
 		
-		override protected function doGetNext():RefinedLoader
+		override protected function doGetNext():StatefulLoader
 		{
 			return queuedLoaders.poll();
 		}

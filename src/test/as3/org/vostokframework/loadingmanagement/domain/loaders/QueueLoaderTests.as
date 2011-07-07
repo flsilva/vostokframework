@@ -39,8 +39,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
 	import flash.events.TimerEvent;
@@ -50,7 +50,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class QueueLoaderTests extends RefinedLoaderTests
+	public class QueueLoaderTests extends StatefulLoaderTests
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -59,8 +59,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public var _fakeQueue:PriorityLoadQueue;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader1:RefinedLoader;
-		public var _fakeLoader2:RefinedLoader;
+		public var _fakeLoader1:StatefulLoader;
+		public var _fakeLoader2:StatefulLoader;
 		
 		private var _timer:Timer;
 		
@@ -100,13 +100,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		// HELPER METHODS //
 		////////////////////
 		
-		override public function getLoader():RefinedLoader
+		override public function getLoader():StatefulLoader
 		{
 			_fakeQueue = nice(PriorityLoadQueue);
 			stub(_fakeQueue).asEventDispatcher();
 			
-			_fakeLoader1 = nice(RefinedLoader, null, ["fake-loader-1", LoadPriority.MEDIUM, 3]);
-			_fakeLoader2 = nice(RefinedLoader, null, ["fake-loader-2", LoadPriority.LOW, 3]);
+			_fakeLoader1 = nice(StatefulLoader, null, ["fake-loader-1", LoadPriority.MEDIUM, 3]);
+			_fakeLoader2 = nice(StatefulLoader, null, ["fake-loader-2", LoadPriority.LOW, 3]);
 			
 			stub(_fakeLoader1).getter("id").returns("fake-loader-1");
 			stub(_fakeLoader2).getter("id").returns("fake-loader-2");
@@ -133,7 +133,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test]
 		public function addLoader_queuedQueueLoader_validNewLoader_VerifyIfMockQueueWasCalled(): void
 		{
-			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			var fakeLoader:StatefulLoader = nice(StatefulLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
 			stub(fakeLoader).getter("id").returns("fake-loader-99");
 			mock(_fakeQueue).method("addLoader").args(fakeLoader);
 			
@@ -144,7 +144,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test]
 		public function addLoader_stoppedQueueLoader_validNewLoader_VerifyIfMockQueueWasCalled(): void
 		{
-			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			var fakeLoader:StatefulLoader = nice(StatefulLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
 			stub(fakeLoader).getter("id").returns("fake-loader-99");
 			mock(_fakeQueue).method("addLoader").args(fakeLoader);
 			
@@ -156,7 +156,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test(expects="flash.errors.IllegalOperationError")]
 		public function addLoader_canceledQueueLoader_ThrowsError(): void
 		{
-			var fakeLoader:RefinedLoader = nice(RefinedLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
+			var fakeLoader:StatefulLoader = nice(StatefulLoader, null, ["fake-loader-99", LoadPriority.MEDIUM, 3]);
 			stub(fakeLoader).getter("id").returns("fake-loader-99");
 			
 			queueLoader.cancel();

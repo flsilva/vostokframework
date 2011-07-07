@@ -28,33 +28,30 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
-	import org.as3coreaddendum.system.IIndexable;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IEquatable;
+	import org.as3coreaddendum.system.IIndexable;
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.errors.IllegalOperationError;
-	import flash.events.TimerEvent;
-	import flash.utils.Timer;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class RefinedLoader extends PlainLoader implements IEquatable, IPriority, IIndexable
+	public class StatefulLoader extends PlainLoader implements IEquatable, IPriority, IIndexable
 	{
 		/**
 		 * @private
 		 */
 		private var _currentAttempt:int;
-		private var _delayLoadAfterError:int;
 		private var _errorHistory:IList;
 		private var _failDescription:String;
 		private var _id:String;
@@ -63,22 +60,6 @@ package org.vostokframework.loadingmanagement.domain
 		private var _priority:LoadPriority;
 		private var _status:LoaderStatus;
 		private var _statusHistory:IList;
-		private var _timerLoadDelay:Timer;
-		
-		/**
-		 * @private
-		 */
-		protected function get delayFirstLoad(): int { return 50; }
-		
-		/**
-		 * description
-		 */
-		public function get delayLoadAfterError(): int { return _delayLoadAfterError; }
-		public function set delayLoadAfterError(value:int): void
-		{
-			if (value < 50) throw new ArgumentError("Value must be greater than 50. Received: <" + value + ">");
-			_delayLoadAfterError = value;
-		}
 		
 		/**
 		 * description
@@ -131,9 +112,9 @@ package org.vostokframework.loadingmanagement.domain
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function RefinedLoader(id:String, priority:LoadPriority, maxAttempts:int)
+		public function StatefulLoader(id:String, priority:LoadPriority, maxAttempts:int)
 		{
-			if (ReflectionUtil.classPathEquals(this, RefinedLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, StatefulLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
@@ -141,12 +122,8 @@ package org.vostokframework.loadingmanagement.domain
 			_id = id;
 			_priority = priority;
 			_maxAttempts = maxAttempts;
-			delayLoadAfterError = 5000;
 			_errorHistory = new ArrayList();
 			_statusHistory = new ArrayList();
-			
-			_timerLoadDelay = new Timer(delayFirstLoad);
-			_timerLoadDelay.addEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false, 0, true);
 			
 			setStatus(LoaderStatus.QUEUED);
 		}
@@ -162,7 +139,6 @@ package org.vostokframework.loadingmanagement.domain
 				_status.equals(LoaderStatus.COMPLETE) ||
 				_status.equals(LoaderStatus.FAILED)) return;
 			
-			_timerLoadDelay.stop();
 			setStatus(LoaderStatus.CANCELED);
 			dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
 			doCancel();
@@ -172,12 +148,10 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_errorHistory.clear();
 			_statusHistory.clear();
-			_timerLoadDelay.removeEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false);
 			
 			_errorHistory = null;
 			_statusHistory = null;
 			_status = null;
-			_timerLoadDelay = null;
 			
 			super.dispose();
 		}
@@ -185,9 +159,9 @@ package org.vostokframework.loadingmanagement.domain
 		public function equals(other : *): Boolean
 		{
 			if (this == other) return true;
-			if (!(other is RefinedLoader)) return false;
+			if (!(other is StatefulLoader)) return false;
 			
-			var otherLoader:RefinedLoader = other as RefinedLoader;
+			var otherLoader:StatefulLoader = other as StatefulLoader;
 			return _id == otherLoader.id;
 		}
 		
@@ -227,7 +201,6 @@ package org.vostokframework.loadingmanagement.domain
 				_currentAttempt--;
 			}
 			
-			_timerLoadDelay.stop();
 			setStatus(LoaderStatus.STOPPED);
 			dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
 			doStop();
@@ -242,7 +215,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_failDescription = errorDescription;
 			_errorHistory.add(error);
-			_timerLoadDelay.delay = _delayLoadAfterError;
+			
 			setStatus(LoaderStatus.CONNECTION_ERROR);
 			
 			if (error.equals(LoadError.SECURITY_ERROR))
@@ -304,12 +277,6 @@ package org.vostokframework.loadingmanagement.domain
 			
 			setStatus(LoaderStatus.CONNECTING);
 			dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
-			_timerLoadDelay.start();
-		}
-
-		private function timerLoadDelayHandler(event:TimerEvent):void
-		{
-			_timerLoadDelay.stop();
 			doLoad();
 		}
 		
@@ -321,6 +288,9 @@ package org.vostokframework.loadingmanagement.domain
 			return _currentAttempt > _maxAttempts;
 		}
 		
+		/**
+		 * @private
+		 */
 		private function setStatus(status:LoaderStatus):void
 		{
 			_status = status;

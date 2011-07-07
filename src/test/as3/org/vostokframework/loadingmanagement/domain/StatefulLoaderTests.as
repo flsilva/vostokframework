@@ -39,11 +39,11 @@ package org.vostokframework.loadingmanagement.domain
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class RefinedLoaderTests
+	public class StatefulLoaderTests
 	{
-		public var _loader:RefinedLoader;
+		public var _loader:StatefulLoader;
 		
-		public function RefinedLoaderTests()
+		public function StatefulLoaderTests()
 		{
 			
 		}
@@ -68,9 +68,9 @@ package org.vostokframework.loadingmanagement.domain
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():RefinedLoader
+		public function getLoader():StatefulLoader
 		{
-			return new StubRefinedLoader("id", 3);
+			return new StubStatefulLoader("id", 3);
 		}
 		
 		///////////////////////////////
@@ -92,9 +92,9 @@ package org.vostokframework.loadingmanagement.domain
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
-		//////////////////////////////
-		// RefinedLoader().priority //
-		//////////////////////////////
+		///////////////////////////////
+		// StatefulLoader().priority //
+		///////////////////////////////
 		
 		[Test]
 		public function priority_setValidPriority_checkIfPriorityMatches_ReturnsTrue(): void
@@ -115,9 +115,9 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.priority = 5;
 		}
 		
-		////////////////////////////
-		// RefinedLoader().status //
-		////////////////////////////
+		/////////////////////////////
+		// StatefulLoader().status //
+		/////////////////////////////
 		
 		[Test]
 		public function status_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
@@ -132,9 +132,9 @@ package org.vostokframework.loadingmanagement.domain
 			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
 		}
 		
-		///////////////////////////////////
-		// RefinedLoader().statusHistory //
-		///////////////////////////////////
+		////////////////////////////////////
+		// StatefulLoader().statusHistory //
+		////////////////////////////////////
 		
 		[Test]
 		public function statusHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
@@ -149,9 +149,9 @@ package org.vostokframework.loadingmanagement.domain
 			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.statusHistory.getAt(1));
 		}
 		
-		//////////////////////////////
-		// RefinedLoader().cancel() //
-		//////////////////////////////
+		///////////////////////////////
+		// StatefulLoader().cancel() //
+		///////////////////////////////
 		
 		[Test]
 		public function cancel_simpleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
@@ -175,9 +175,9 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.cancel();
 		}
 		
-		////////////////////////////
-		// RefinedLoader().load() //
-		////////////////////////////
+		/////////////////////////////
+		// StatefulLoader().load() //
+		/////////////////////////////
 		
 		[Test]
 		public function load_simpleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
@@ -200,9 +200,9 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.load();
 		}
 		
-		////////////////////////////
-		// RefinedLoader().stop() //
-		////////////////////////////
+		/////////////////////////////
+		// StatefulLoader().stop() //
+		/////////////////////////////
 		
 		[Test]
 		public function stop_simpleCall_checkIfStatusIsStopped_ReturnsTrue(): void
@@ -226,9 +226,9 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.stop();
 		}
 		
-		//////////////////////////////////////////////////////////
-		// RefinedLoader().stop()-load()-cancel() - MIXED TESTS //
-		//////////////////////////////////////////////////////////
+		///////////////////////////////////////////////////////////
+		// StatefulLoader().stop()-load()-cancel() - MIXED TESTS //
+		///////////////////////////////////////////////////////////
 		
 		[Test]
 		public function loadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void

@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		override protected function allowGetNext():Boolean
 		{
-			var nextLoader:RefinedLoader = queuedLoaders.peek();
+			var nextLoader:StatefulLoader = queuedLoaders.peek();
 			var nextLoaderPriority:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);
 			
 			if (nextLoaderPriority.equals(LoadPriority.HIGHEST))
@@ -83,7 +83,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (loadingLoaders.isEmpty()) return false;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -101,7 +101,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (loadingLoaders.isEmpty()) return true;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -120,7 +120,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (loadings.isEmpty()) return;
 			
 			var it:IIterator = loadings.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -142,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (loadings.isEmpty()) return;
 			
 			var it:IIterator = loadings.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())

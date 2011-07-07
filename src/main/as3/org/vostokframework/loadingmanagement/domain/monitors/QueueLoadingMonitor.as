@@ -30,7 +30,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 
@@ -50,7 +50,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private var _isFirstProgressDispatch:Boolean;
 		private var _lastPercent:int;
-		private var _loader:RefinedLoader;
+		private var _loader:StatefulLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _monitors:IList;
 		private var _startedTimeConnecting:int;
@@ -66,7 +66,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param requestId
 		 * @param loaders
 		 */
-		public function QueueLoadingMonitor(loader:RefinedLoader, monitors:IList): void
+		public function QueueLoadingMonitor(loader:StatefulLoader, monitors:IList): void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!monitors || monitors.isEmpty()) throw new ArgumentError("Argument <monitors> must not be null nor empty.");

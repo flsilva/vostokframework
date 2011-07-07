@@ -40,7 +40,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
@@ -65,7 +65,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var loader:RefinedLoader;
+		public var loader:StatefulLoader;
 		
 		public var monitor:AssetLoadingMonitor;
 		
@@ -103,9 +103,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return new AssetLoadingMonitor(identification, ASSET_TYPE, loader);
 		}
 		
-		public function getNiceLoader():RefinedLoader
+		public function getNiceLoader():StatefulLoader
 		{
-			var loader:RefinedLoader = nice(RefinedLoader, null, ["loader-id", LoadPriority.MEDIUM, 3]);
+			var loader:StatefulLoader = nice(StatefulLoader, null, ["loader-id", LoadPriority.MEDIUM, 3]);
 			stub(loader).asEventDispatcher();
 			return loader;
 		}

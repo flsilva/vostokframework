@@ -60,9 +60,9 @@ package org.vostokframework.loadingmanagement.domain
 			return queue;
 		}
 		
-		override public function getLoader(id:String, priority:LoadPriority):RefinedLoader
+		override public function getLoader(id:String, priority:LoadPriority):StatefulLoader
 		{
-			return new StubRefinedLoader(id, 3, priority);
+			return new StubStatefulLoader(id, 3, priority);
 		}
 		
 	}

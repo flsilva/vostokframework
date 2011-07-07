@@ -43,7 +43,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -115,7 +115,7 @@ package org.vostokframework.loadingmanagement.services
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():RefinedLoader
+		public function getLoader():StatefulLoader
 		{
 			return null;
 		}

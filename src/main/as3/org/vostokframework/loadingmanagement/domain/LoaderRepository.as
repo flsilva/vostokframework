@@ -54,7 +54,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function LoaderRepository()
 		{
-			_loaderMap = new TypedMap(new HashMap(), String, RefinedLoader);
+			_loaderMap = new TypedMap(new HashMap(), String, StatefulLoader);
 		}
 		
 		/**
@@ -62,19 +62,19 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param 	loader
 		 * @throws 	ArgumentError 	if the <code>loader</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateRefinedLoaderError 	if already exists an <code>RefinedLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
+		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateStatefulLoaderError 	if already exists an <code>StatefulLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
 		 * @return
 		 */
-		public function add(loader:RefinedLoader): void
+		public function add(loader:StatefulLoader): void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
 			if (_loaderMap.containsKey(loader.id))
 			{
-				var message:String = "There is already an RefinedLoader object stored with id:\n";
+				var message:String = "There is already an StatefulLoader object stored with id:\n";
 				message += "<" + loader.id + ">\n";
-				message += "Use the method <RefinedLoaderRepository().exists()> to check if a RefinedLoader object already exists.\n";
-				message += "For further information please read the documentation section about the RefinedLoader object.";
+				message += "Use the method <StatefulLoaderRepository().exists()> to check if a StatefulLoader object already exists.\n";
+				message += "For further information please read the documentation section about the StatefulLoader object.";
 				
 				throw new DuplicateLoaderError(loader.id, message);
 			}
@@ -113,7 +113,7 @@ package org.vostokframework.loadingmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(loaderId:String): RefinedLoader
+		public function find(loaderId:String): StatefulLoader
 		{
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
@@ -160,7 +160,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (!status) throw new ArgumentError("Argument <status> must not be null.");
 			
 			var it:IIterator = _loaderMap.getValues().iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var list:IList = new ArrayList();
 			
 			while (it.hasNext())

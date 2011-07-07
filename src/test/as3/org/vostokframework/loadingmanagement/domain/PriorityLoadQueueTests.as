@@ -81,9 +81,9 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-3", LoadPriority.MEDIUM));
 		}
 		
-		public function getLoader(id:String, priority:LoadPriority):RefinedLoader
+		public function getLoader(id:String, priority:LoadPriority):StatefulLoader
 		{
-			return new StubRefinedLoader(id, 3, priority);
+			return new StubStatefulLoader(id, 3, priority);
 		}
 		
 		///////////////////////
@@ -120,7 +120,7 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function resumeLoader_callGetNextAndCallStopOnLoader_thenResumeLoaderAndCallGetNextAgain_ReturnsSameLoader(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			var loaderId:String = loader.id;
 			loader.stop();
 			
@@ -133,7 +133,7 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function resumeLoader_callGetNextAndCallStopOnLoader_thenResumeLoaderAndCheckTotalStopped_ReturnsZero(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			var loaderId:String = loader.id;
 			loader.stop();
 			
@@ -154,7 +154,7 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function totalCanceled_callGetNextOnceAndCallCancelOnLoader_checkTotalCancelled_ReturnsOne(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			loader.cancel();
 			
 			Assert.assertEquals(1, _queue.totalCanceled);
@@ -173,9 +173,9 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function totalComplete_callGetNextOnceAndCallLoadOnLoaderAndMakeItDispatchesCompleteLoaderEvent_checkTotalComplete_ReturnsOne(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			loader.load();
-			(loader as StubRefinedLoader).$loadingComplete();
+			(loader as StubStatefulLoader).$loadingComplete();
 			
 			Assert.assertEquals(1, _queue.totalComplete);
 		}
@@ -193,7 +193,7 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function totalLoading_callGetNextTwiceAndCallLoadOnLoaders_checkTotalLoading_ReturnsTwo(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			loader.load();
 			
 			loader = _queue.getNext();
@@ -232,7 +232,7 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function totalStopped_callGetNextOnceAndCallStopOnLoaderAndCheckTotalStopped_ReturnsOne(): void
 		{
-			var loader:RefinedLoader = _queue.getNext();
+			var loader:StatefulLoader = _queue.getNext();
 			loader.stop();
 			
 			Assert.assertEquals(1, _queue.totalStopped);

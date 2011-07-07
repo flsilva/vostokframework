@@ -28,7 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.AsyncLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.display.DisplayObject;
@@ -43,7 +43,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoader extends PlainLoader
+	public class VostokLoader extends AsyncLoader
 	{
 		/**
 		 * @private
@@ -80,27 +80,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		/**
-		 * description
-		 */
-		override public function cancel(): void
-		{
-			removeFileLoaderListeners();
-			
-			try
-			{
-				_loader.close();
-			}
-			catch (error:Error)
-			{
-				throw error;
-			}
-			finally
-			{
-				_loader.unload();
-			}
-		}
-		
 		override public function dispose():void
 		{
 			try
@@ -131,15 +110,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			return super.hasEventListener(type);
 		}
 		
-		/**
-		 * description
-		 */
-		override public function load(): void
-		{
-			addFileLoaderListeners();
-			_loader.load(_request, _context);
-		}
-		
 		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
 			if (!LoaderEvent.typeBelongs(type))
@@ -151,7 +121,50 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			super.removeEventListener(type, listener, useCapture);
 		}
 		
-		override public function stop():void
+		override public function willTrigger(type:String):Boolean
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.contentLoaderInfo.willTrigger(type);
+			}
+			
+			return super.willTrigger(type);
+		}
+		
+		/**
+		 * @private
+		 */
+		override protected function doCancel(): void
+		{
+			removeFileLoaderListeners();
+			
+			try
+			{
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				throw error;
+			}
+			finally
+			{
+				_loader.unload();
+			}
+		}
+		
+		/**
+		 * @private
+		 */
+		override protected function doLoad(): void
+		{
+			addFileLoaderListeners();
+			_loader.load(_request, _context);
+		}
+		
+		/**
+		 * @private
+		 */
+		override protected function doStop():void
 		{
 			try
 			{
@@ -167,21 +180,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
-		override public function willTrigger(type:String):Boolean
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				return _loader.contentLoaderInfo.willTrigger(type);
-			}
-			
-			return super.willTrigger(type);
-		}
-		
 		private function addFileLoaderListeners():void
 		{
 			_loader.contentLoaderInfo.addEventListener(Event.INIT, initHandler, false, 0, true);
 			_loader.contentLoaderInfo.addEventListener(Event.OPEN, openHandler, false, 0, true);
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
+			//TODO: inserir listeners de erros e no erro chamar super.error();
 		}
 		
 		private function removeFileLoaderListeners():void

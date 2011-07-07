@@ -34,10 +34,10 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubRefinedLoader extends RefinedLoader
+	public class StubStatefulLoader extends StatefulLoader
 	{
 		
-		public function StubRefinedLoader(id:String, maxAttempts:int, priority:LoadPriority = null)
+		public function StubStatefulLoader(id:String, maxAttempts:int, priority:LoadPriority = null)
 		{
 			if (!priority) priority = LoadPriority.MEDIUM;
 			super(id, priority, maxAttempts);

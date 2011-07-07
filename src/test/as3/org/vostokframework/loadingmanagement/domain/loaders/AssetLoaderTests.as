@@ -37,11 +37,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import mockolate.stub;
 
 	import org.flexunit.async.Async;
+	import org.vostokframework.loadingmanagement.domain.AsyncLoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.IOErrorEvent;
@@ -53,13 +53,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class AssetLoaderTests extends RefinedLoaderTests
+	public class AssetLoaderTests extends StatefulLoaderTests
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
 		[Mock(inject="false")]
-		public var _fakeFileLoader:PlainLoader;
+		public var _fakeFileLoader:AsyncLoader;
 		
 		private var _timer:Timer;
 		
@@ -95,9 +95,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		// HELPER METHODS //
 		////////////////////
 		
-		override public function getLoader():RefinedLoader
+		override public function getLoader():StatefulLoader
 		{
-			_fakeFileLoader = nice(PlainLoader);
+			_fakeFileLoader = nice(AsyncLoader, null, [50]);
 			return new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fakeFileLoader, 3);
 		}
 		
@@ -119,7 +119,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			stub(_fakeFileLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 			
 			//THIS LINE HAVE TO CAME AFTER THE PRECEDING
-			//BECAUSE THE addEventListener BEHAVIOR OF THE STUB
+			//BECAUSE THE addEventListener() BEHAVIOR OF THE STUB
 			//WILL ONLY BE ADDED AFTER THE CALL TO ".dispatches"
 			Async.proceedOnEvent(this, _loader, IOErrorEvent.IO_ERROR, 1000, asyncTimeoutHandler);
 			_loader.load();
@@ -144,7 +144,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			mock(_fakeFileLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50).once().ordered(seq);
 			mock(_fakeFileLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50).once().ordered(seq);
 			
-			_loader.delayLoadAfterError = 50;
+			_fakeFileLoader.delayLoadAfterError = 50;
 			_loader.load();
 			
 			_timer.delay = 1000;
@@ -167,7 +167,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			mock(_fakeFileLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE), 100).once().ordered(seq);
 			
-			_loader.delayLoadAfterError = 50;
+			_fakeFileLoader.delayLoadAfterError = 50;
 			_loader.load();
 			
 			_timer.delay = 1000;
@@ -186,7 +186,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			mock(_fakeFileLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50).thrice();
 			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 1000, asyncTimeoutHandler);
 			
-			_loader.delayLoadAfterError = 50;
+			_fakeFileLoader.delayLoadAfterError = 50;
 			_loader.load();
 		}
 		
@@ -196,7 +196,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			mock(_fakeFileLoader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50).once();
 			Async.proceedOnEvent(this, _loader, LoaderEvent.FAILED, 1000, asyncTimeoutHandler);
 			
-			_loader.delayLoadAfterError = 50;
+			_fakeFileLoader.delayLoadAfterError = 50;
 			_loader.load();
 		}
 		

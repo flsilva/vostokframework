@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PlainLoader;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
@@ -46,17 +46,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class QueueLoader extends RefinedLoader
+	public class QueueLoader extends StatefulLoader
 	{
 		/**
 		 * @private
 		 */
 		private var _queue:PriorityLoadQueue;
-		
-		/**
-		 * @private
-		 */
-		override protected function get delayFirstLoad(): int { return 0; }
 		
 		/**
 		 * description
@@ -80,7 +75,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * 
 		 * @param loader
 		 */
-		public function addLoader(loader:RefinedLoader): void
+		public function addLoader(loader:StatefulLoader): void
 		{
 			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
@@ -112,10 +107,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
-			var loader:RefinedLoader = _queue.find(loaderId);
+			var loader:StatefulLoader = _queue.find(loaderId);
 			if (!loader)
 			{
-				var message:String = "There is no RefinedLoader object stored with id:\n";
+				var message:String = "There is no StatefulLoader object stored with id:\n";
 				message += "<" + loaderId + ">";
 				throw new LoaderNotFoundError(loaderId, message);
 			}
@@ -168,10 +163,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
-			var loader:RefinedLoader = _queue.find(loaderId);
+			var loader:StatefulLoader = _queue.find(loaderId);
 			if (!loader)
 			{
-				var message:String = "There is no RefinedLoader object stored with id:\n";
+				var message:String = "There is no StatefulLoader object stored with id:\n";
 				message += "<" + loaderId + ">";
 				throw new LoaderNotFoundError(loaderId, message);
 			}

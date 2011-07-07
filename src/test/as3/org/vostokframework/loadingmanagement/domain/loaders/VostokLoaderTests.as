@@ -47,16 +47,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 		}
 		
-		///////////////////////////////
-		// ASYNC TESTS CONFIGURATION //
-		///////////////////////////////
-		
-		public function asyncTimeoutHandler(passThroughData:Object):void
-		{
-			Assert.fail("Asynchronous Test Failed: Timeout");
-			passThroughData = null;
-		}
-		
 		///////////////////////
 		// CONSTRUCTOR TESTS //
 		///////////////////////

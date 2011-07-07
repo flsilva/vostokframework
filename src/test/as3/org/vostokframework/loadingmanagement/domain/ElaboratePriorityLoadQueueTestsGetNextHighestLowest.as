@@ -48,9 +48,9 @@ package org.vostokframework.loadingmanagement.domain
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader(id:String, priority:LoadPriority):RefinedLoader
+		public function getLoader(id:String, priority:LoadPriority):StatefulLoader
 		{
-			return new StubRefinedLoader(id, 3, priority);
+			return new StubStatefulLoader(id, 3, priority);
 		}
 		
 		////////////////////////////////////////
@@ -69,7 +69,7 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-high", LoadPriority.HIGH));
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			Assert.assertEquals("loader-highest", loader.id);
 		}
 		
@@ -85,9 +85,9 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-high", LoadPriority.HIGH));
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
-			(loader as StubRefinedLoader).$loadingComplete();
+			(loader as StubStatefulLoader).$loadingComplete();
 			
 			loader = queue.getNext();
 			Assert.assertEquals("loader-high", loader.id);
@@ -104,7 +104,7 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-high", LoadPriority.HIGH));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
 			
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
@@ -124,7 +124,7 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-high", LoadPriority.HIGH));
 			
-			var loaderHigh:RefinedLoader = queue.getNext();
+			var loaderHigh:StatefulLoader = queue.getNext();
 			loaderHigh.load();
 			
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
@@ -144,13 +144,13 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-high", LoadPriority.HIGH));
 			
-			var loaderHigh:RefinedLoader = queue.getNext();
+			var loaderHigh:StatefulLoader = queue.getNext();
 			loaderHigh.load();
 			
 			queue.addLoader(getLoader("loader-highest", LoadPriority.HIGHEST));
-			var loaderHighest:RefinedLoader = queue.getNext();
+			var loaderHighest:StatefulLoader = queue.getNext();
 			loaderHighest.load();
-			(loaderHighest as StubRefinedLoader).$loadingComplete();
+			(loaderHighest as StubStatefulLoader).$loadingComplete();
 			
 			loaderHigh = queue.getNext();
 			Assert.assertEquals("loader-high", loaderHigh.id);
@@ -168,7 +168,7 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
 			queue.addLoader(getLoader("loader-lowest", LoadPriority.LOWEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
 			
 			loader = queue.getNext();
@@ -187,9 +187,9 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
 			queue.addLoader(getLoader("loader-lowest", LoadPriority.LOWEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
-			(loader as StubRefinedLoader).$loadingComplete();
+			(loader as StubStatefulLoader).$loadingComplete();
 			
 			loader = queue.getNext();
 			Assert.assertEquals("loader-lowest", loader.id);
@@ -207,7 +207,7 @@ package org.vostokframework.loadingmanagement.domain
 			queue.addLoader(getLoader("loader-lowest-1", LoadPriority.LOWEST));
 			queue.addLoader(getLoader("loader-lowest-2", LoadPriority.LOWEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
 			
 			loader = queue.getNext();
@@ -225,7 +225,7 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-lowest", LoadPriority.LOWEST));
 			
-			var loader:RefinedLoader = queue.getNext();
+			var loader:StatefulLoader = queue.getNext();
 			loader.load();
 			
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
@@ -245,7 +245,7 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-lowest", LoadPriority.LOWEST));
 			
-			var loaderLowest:RefinedLoader = queue.getNext();
+			var loaderLowest:StatefulLoader = queue.getNext();
 			loaderLowest.load();
 			
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
@@ -265,13 +265,13 @@ package org.vostokframework.loadingmanagement.domain
 			var queue:ElaboratePriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			queue.addLoader(getLoader("loader-lowest", LoadPriority.LOWEST));
 			
-			var loaderLowest:RefinedLoader = queue.getNext();
+			var loaderLowest:StatefulLoader = queue.getNext();
 			loaderLowest.load();
 			
 			queue.addLoader(getLoader("loader-low", LoadPriority.LOW));
-			var loaderLow:RefinedLoader = queue.getNext();
+			var loaderLow:StatefulLoader = queue.getNext();
 			loaderLow.load();
-			(loaderLow as StubRefinedLoader).$loadingComplete();
+			(loaderLow as StubStatefulLoader).$loadingComplete();
 			
 			loaderLowest = queue.getNext();
 			Assert.assertEquals("loader-lowest", loaderLowest.id);

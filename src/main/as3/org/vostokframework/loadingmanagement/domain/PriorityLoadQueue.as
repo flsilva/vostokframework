@@ -120,10 +120,10 @@ package org.vostokframework.loadingmanagement.domain
 			_stoppedLoaders = new ArrayList();
 		}
 		
-		public function addLoader(loader:RefinedLoader):void
+		public function addLoader(loader:StatefulLoader):void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
-			if (_queuedLoaders.contains(loader)) throw new DuplicateLoaderError(loader.id, "There is already an RefinedLoader object stored with id:\n<" + loader.id + ">");
+			if (_queuedLoaders.contains(loader)) throw new DuplicateLoaderError(loader.id, "There is already an StatefulLoader object stored with id:\n<" + loader.id + ">");
 			
 			loader.index = _index++;
 			_queuedLoaders.add(loader);
@@ -141,7 +141,7 @@ package org.vostokframework.loadingmanagement.domain
 			if (!loaders || loaders.isEmpty()) throw new ArgumentError("Argument <loaders> must not be null nor empty.");
 			
 			var it:IIterator = loaders.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			
 			while (it.hasNext())
 			{
@@ -168,10 +168,10 @@ package org.vostokframework.loadingmanagement.domain
 			_stoppedLoaders = null;
 		}
 		
-		public function find(loaderId:String):RefinedLoader
+		public function find(loaderId:String):StatefulLoader
 		{
 			var it:IIterator = getLoaders().iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			
 			while (it.hasNext())
 			{
@@ -250,7 +250,7 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @return
  		 */
-		public function getNext(): RefinedLoader
+		public function getNext(): StatefulLoader
 		{
 			if (_queuedLoaders.isEmpty()) return null;
 			if (!allowGetNext()) return null;
@@ -264,8 +264,8 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function resumeLoader(loaderId:String): void
 		{
-			var loader:RefinedLoader = find(loaderId);
-			if (!loader) throw new LoaderNotFoundError(loaderId, "There's no RefinedLoader stored with id:\n<" + loaderId + ">");
+			var loader:StatefulLoader = find(loaderId);
+			if (!loader) throw new LoaderNotFoundError(loaderId, "There's no StatefulLoader stored with id:\n<" + loaderId + ">");
 			
 			_stoppedLoaders.remove(loader);
 			if (!_queuedLoaders.contains(loader)) _queuedLoaders.add(loader);
@@ -278,12 +278,12 @@ package org.vostokframework.loadingmanagement.domain
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		protected function doGetNext():RefinedLoader
+		protected function doGetNext():StatefulLoader
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		private function addLoaderListeners(loader:RefinedLoader):void
+		private function addLoaderListeners(loader:StatefulLoader):void
 		{
 			loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
 			loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
@@ -300,7 +300,7 @@ package org.vostokframework.loadingmanagement.domain
 		private function findByStatus(status:LoaderStatus):IList
 		{
 			var it:IIterator = getLoaders().iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			var list:IList = new ArrayList();
 			
 			while (it.hasNext())
@@ -317,39 +317,39 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function loaderCanceledHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as RefinedLoader);
+			removeFromLists(event.target as StatefulLoader);
 			changed();
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as RefinedLoader);
+			removeFromLists(event.target as StatefulLoader);
 			changed();
 		}
 		
 		private function loaderFailedHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as RefinedLoader);
+			removeFromLists(event.target as StatefulLoader);
 			changed();
 		}
 		
 		private function loaderStoppedHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as RefinedLoader);
-			_stoppedLoaders.add(event.target as RefinedLoader);
+			removeFromLists(event.target as StatefulLoader);
+			_stoppedLoaders.add(event.target as StatefulLoader);
 			changed();
 		}
 		
 		private function loaderConnectingHandler(event:LoaderEvent):void
 		{
-			removeFromLists(event.target as RefinedLoader);
+			removeFromLists(event.target as StatefulLoader);
 			changed();
 		}
 		
 		private function removeLoadersListeners():void
 		{
 			var it:IIterator = _loaders.iterator();
-			var loader:RefinedLoader;
+			var loader:StatefulLoader;
 			
 			while (it.hasNext())
 			{
@@ -362,7 +362,7 @@ package org.vostokframework.loadingmanagement.domain
 			}
 		}
 		
-		private function removeFromLists(loader:RefinedLoader):void
+		private function removeFromLists(loader:StatefulLoader):void
 		{
 			_queuedLoaders.remove(loader);
 			_stoppedLoaders.remove(loader);

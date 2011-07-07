@@ -40,7 +40,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
@@ -126,7 +126,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
 			
-			var loader:RefinedLoader = loaderRepository.find(queueId);
+			var loader:StatefulLoader = loaderRepository.find(queueId);
 			if (!loader)
 			{
 				var message:String = "There is no QueueLoader object stored with id:\n";
@@ -283,7 +283,7 @@ package org.vostokframework.loadingmanagement.services
 		private function createAssetLoadingMonitorsAndPutInRepository(assets:IList):IList
 		{
 			var asset:Asset;
-			var assetLoader:RefinedLoader;
+			var assetLoader:StatefulLoader;
 			var assetLoadingMonitor:AssetLoadingMonitor;
 			var assetLoadingMonitors:IList = new ArrayList();
 			var it:IIterator = assets.iterator();
@@ -332,17 +332,17 @@ package org.vostokframework.loadingmanagement.services
 		private function getQueueLoaderThatContainsLoader(loaderId:String):QueueLoader
 		{
 			var it:IIterator = loaderRepository.findAll().iterator();
-			var refinedLoader:RefinedLoader;
+			var statefulLoader:StatefulLoader;
 			var queueLoader:QueueLoader;
 			
 			while (it.hasNext())
 			{
-				refinedLoader = it.next();
-				if (!(refinedLoader is QueueLoader)) continue;
+				statefulLoader = it.next();
+				if (!(statefulLoader is QueueLoader)) continue;
 				
-				if ((refinedLoader as QueueLoader).containsLoader(loaderId))
+				if ((statefulLoader as QueueLoader).containsLoader(loaderId))
 				{
-					queueLoader = refinedLoader as QueueLoader;
+					queueLoader = statefulLoader as QueueLoader;
 					break;
 				}
 			}
@@ -358,7 +358,7 @@ package org.vostokframework.loadingmanagement.services
 			}
 			catch(error:DuplicateLoaderError)
 			{
-				var $assetLoader:RefinedLoader = loaderRepository.find(assetLoader.id);
+				var $assetLoader:StatefulLoader = loaderRepository.find(assetLoader.id);
 				var $queueLoader:QueueLoader = getQueueLoaderThatContainsLoader(assetLoader.id);
 				
 				var errorMessage:String = "There is already an AssetLoader object stored with id:\n";

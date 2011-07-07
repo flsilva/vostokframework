@@ -42,7 +42,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.RefinedLoader;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var _queueLoader:RefinedLoader;
+		public var _queueLoader:StatefulLoader;
 		
 		private var _monitor:ILoadingMonitor;
 		
@@ -88,7 +88,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			monitors.add(_stubAssetLoadingMonitor2);
 			monitors.add(_stubAssetLoadingMonitor3);
 			
-			_queueLoader = nice(RefinedLoader, null, [QUEUE_ID, LoadPriority.MEDIUM, 3]);
+			_queueLoader = nice(StatefulLoader, null, [QUEUE_ID, LoadPriority.MEDIUM, 3]);
 			stub(_queueLoader).getter("id").returns(QUEUE_ID);
 			stub(_queueLoader).asEventDispatcher();
 			_monitor = new QueueLoadingMonitor(_queueLoader, monitors);
