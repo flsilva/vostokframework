@@ -83,6 +83,7 @@ package org.vostokframework.loadingmanagement.domain
 		override public function cancel(): void
 		{
 			_timerLoadDelay.stop();
+			_timerLoadDelay.reset();
 			doCancel();
 		}
 		
@@ -90,6 +91,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_timerLoadDelay.removeEventListener(TimerEvent.TIMER, timerLoadDelayHandler, false);
 			_timerLoadDelay.stop();
+			_timerLoadDelay.reset();
 
 			_timerLoadDelay = null;
 			
@@ -114,6 +116,7 @@ package org.vostokframework.loadingmanagement.domain
 		override public function stop(): void
 		{
 			_timerLoadDelay.stop();
+			_timerLoadDelay.reset();
 			doStop();
 		}
 		
