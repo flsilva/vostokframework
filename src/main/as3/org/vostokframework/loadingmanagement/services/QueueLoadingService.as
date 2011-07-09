@@ -230,9 +230,14 @@ package org.vostokframework.loadingmanagement.services
 		 * @param requestId
 		 * @return
 		 */
-		public function stopRequest(requestId:String): Boolean
+		public function stopQueueLoading(queueId:String): Boolean
 		{
-			return false;
+			if (!isQueueLoading(queueId)) return false;
+			
+			var loader:StatefulLoader = loaderRepository.find(queueId);
+			loader.stop();
+			
+			return true;
 		}
 		
 		private function checkIfSomeAssetIsAlreadyLoadedAndCached(assets:IList):void

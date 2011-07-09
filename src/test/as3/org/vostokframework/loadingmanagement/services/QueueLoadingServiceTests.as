@@ -29,6 +29,7 @@
 
 package org.vostokframework.loadingmanagement.services
 {
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
@@ -202,6 +203,31 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
+		public function load_validArguments_CheckIfQueueLoaderStatusIsSConnecting_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var queueLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(QUEUE_ID);
+			
+			Assert.assertEquals(LoaderStatus.CONNECTING, queueLoader.status);
+		}
+		
+		[Test]
+		public function load_validArguments_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
+			Assert.assertTrue(exists);
+		}
+		
+		[Test]
 		public function load_validArguments_checkIfQueueLoadingMonitorExistsInRepository_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
@@ -335,6 +361,58 @@ package org.vostokframework.loadingmanagement.services
 			
 			var exists:Boolean = service.queueExists(QUEUE_ID);
 			Assert.assertTrue(exists);
+		}
+		
+		//////////////////////////////////////////////
+		// QueueLoadingService().stopQueueLoading() //
+		//////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function stopQueueLoading_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.stopQueueLoading(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function stopQueueLoading_notExistingQueue_ThrowsError(): void
+		{
+			service.stopQueueLoading(QUEUE_ID);
+		}
+		
+		[Test]
+		public function stopQueueLoading_loadingQueue_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var stopped:Boolean = service.stopQueueLoading(QUEUE_ID);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stopQueueLoading_notLoadingQueue_ReturnsFalse(): void
+		{
+			var queueLoader:QueueLoader = new StubQueueLoader(QUEUE_ID);
+			LoadingManagementContext.getInstance().loaderRepository.add(queueLoader);
+			//TODO: pensar em substituir hard coded stubs por mockolate stubs
+			var stopped:Boolean = service.stopQueueLoading(QUEUE_ID);
+			Assert.assertFalse(stopped);
+		}
+		
+		[Test]
+		public function stopQueueLoading_loadingQueue_CheckIfQueueLoaderStatusIsStopped_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			
+			var queueLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(QUEUE_ID);
+			
+			Assert.assertEquals(LoaderStatus.STOPPED, queueLoader.status);
 		}
 		
 	}
