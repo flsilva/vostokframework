@@ -121,6 +121,34 @@ package org.vostokframework.loadingmanagement.services
 			return null;
 		}
 		
+		////////////////////////////////////////////////////
+		// QueueLoadingService().getQueueLoadingMonitor() //
+		////////////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function getQueueLoadingMonitor_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.getQueueLoadingMonitor(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		public function getQueueLoadingMonitor_notExistingMonitor_ThrowsError(): void
+		{
+			service.getQueueLoadingMonitor(QUEUE_ID);
+		}
+		
+		[Test]
+		public function getQueueLoadingMonitor_existingMonitor_ReturnsValidObject(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var monitor:ILoadingMonitor = service.getQueueLoadingMonitor(QUEUE_ID);
+			Assert.assertNotNull(monitor);
+		}
+		
 		////////////////////////////////////////////
 		// QueueLoadingService().isQueueLoading() //
 		////////////////////////////////////////////

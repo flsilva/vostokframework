@@ -43,6 +43,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
+	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
@@ -113,7 +114,19 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function getQueueLoadingMonitor(queueId:String): ILoadingMonitor
 		{
-			return null;
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
+			var monitor:ILoadingMonitor = loadingMonitorRepository.find(queueId);
+			if (!monitor)
+			{
+				var message:String = "There is no ILoadingMonitor object stored with id:\n";
+				message += "<" + queueId + ">\n";
+				message += "Use the method <QueueLoadingService().queueExists()> to check if an ILoadingMonitor object exists for a QueueLoader object with the specified <queueId> argument.\n";
+				
+				throw new LoadingMonitorNotFoundError(queueId, message);
+			}
+			
+			return monitor;
 		}
 
 		/**
