@@ -219,9 +219,13 @@ package org.vostokframework.loadingmanagement.services
 		 * @param requestId
 		 * @return
 		 */
-		public function resumeRequest(requestId:String): Boolean
+		public function resumeQueueLoading(queueId:String): Boolean
 		{
-			return false
+			if (isQueueLoading(queueId)) return false;
+			
+			globalQueueLoader.resumeLoader(queueId);
+			
+			return true;
 		}
 
 		/**

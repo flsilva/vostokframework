@@ -363,6 +363,62 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
+		////////////////////////////////////////////////
+		// QueueLoadingService().resumeQueueLoading() //
+		////////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function resumeQueueLoading_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.resumeQueueLoading(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function resumeQueueLoading_notExistingQueue_ThrowsError(): void
+		{
+			service.resumeQueueLoading(QUEUE_ID);
+		}
+		
+		[Test]
+		public function resumeQueueLoading_stoppedQueue_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			
+			var resumed:Boolean = service.resumeQueueLoading(QUEUE_ID);
+			Assert.assertTrue(resumed);
+		}
+		
+		[Test]
+		public function resumeQueueLoading_loadingQueue_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			
+			var resumed:Boolean = service.resumeQueueLoading(QUEUE_ID);
+			Assert.assertFalse(resumed);
+		}
+		
+		[Test]
+		public function resumeQueueLoading_stoppedQueue_CheckIfQueueLoaderStatusIsConnecting_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			service.resumeQueueLoading(QUEUE_ID);
+			
+			var queueLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(QUEUE_ID);
+			
+			Assert.assertEquals(LoaderStatus.CONNECTING, queueLoader.status);
+		}
+		
 		//////////////////////////////////////////////
 		// QueueLoadingService().stopQueueLoading() //
 		//////////////////////////////////////////////
