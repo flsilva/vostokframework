@@ -33,8 +33,6 @@ package org.vostokframework.loadingmanagement.domain
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
-	import flash.events.Event;
-
 	/**
 	 * @author Flávio Silva
 	 */
@@ -76,11 +74,6 @@ package org.vostokframework.loadingmanagement.domain
 		///////////////////////////////
 		// ASYNC TESTS CONFIGURATION //
 		///////////////////////////////
-		
-		public function validateLoaderPropertyEventHandler(event:Event, passThroughData:Object):void
-		{
-			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
-		}
 		
 		public function asyncTimeoutHandler(passThroughData:Object):void
 		{

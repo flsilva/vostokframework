@@ -37,6 +37,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
+	import flash.utils.getTimer;
 
 	/**
 	 * description
@@ -51,6 +52,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		private var _context:LoaderContext;
 		private var _loader:Loader;
 		private var _request:URLRequest;
+		private var _timeConnectionStarted:int;
 		
 		/**
 		 * description
@@ -157,6 +159,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		override protected function doLoad(): void
 		{
+			_timeConnectionStarted = getTimer();
+			
 			addFileLoaderListeners();
 			_loader.load(_request, _context);
 		}
@@ -212,8 +216,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			try
 			{
+				var latency:int = getTimer() - _timeConnectionStarted;
 				var data:DisplayObject = _loader.content;
-				dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data));
+				
+				dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
 			}
 			catch (error:SecurityError)
 			{

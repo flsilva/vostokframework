@@ -40,7 +40,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
-	import flash.utils.getTimer;
 
 	/**
 	 * @author Flavio
@@ -53,7 +52,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		private var _assetType:AssetType;
 		private var _loader:PlainLoader;
 		private var _monitoring:LoadingMonitoring;
-		private var _startedTimeConnecting:int;
 		
 		public function get id():String { return _assetIdentification.toString(); }
 		
@@ -94,7 +92,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function addLoaderListeners():void
 		{
-			_loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
@@ -108,7 +105,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function removeLoaderListeners():void
 		{
-			_loader.removeEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false);
 			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
 			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
@@ -130,11 +126,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return new AssetLoadingErrorEvent(type, _assetIdentification.id, _assetIdentification.locale, _assetType, _monitoring, message);
 		}
 		
-		private function loaderConnectingHandler(event:LoaderEvent):void
-		{
-			_startedTimeConnecting = getTimer();
-		}
-		
 		private function loaderInitHandler(event:LoaderEvent):void
 		{
 			dispatchEvent(createEvent(AssetLoadingEvent.INIT, event.data));
@@ -142,8 +133,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function loaderOpenHandler(event:LoaderEvent):void
 		{
-			var latency:int = getTimer() - _startedTimeConnecting;
-			createLoadingMonitoring(latency);
+			createLoadingMonitoring(event.latency);
 			dispatchEvent(createEvent(AssetLoadingEvent.OPEN, event.data));
 		}
 		

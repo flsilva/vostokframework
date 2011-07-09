@@ -172,7 +172,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function loaderOpenHandler(event:LoaderEvent):void
 		{
-			loadingStarted(event.data);
+			loadingStarted(event.data, event.latency);
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void

@@ -49,8 +49,11 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @private
  		 */
 		private var _data:*;
+		private var _latency:int;
 		
 		public function get data():* { return _data; }
+		
+		public function get latency():int { return _latency; }
 		
 		/**
 		 * description
@@ -58,15 +61,16 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function LoaderEvent(type:String, data:* = null)
+		public function LoaderEvent(type:String, data:* = null, latency:int = 0)
 		{
 			super(type, true);
 			_data = data;
+			_latency = latency;
 		}
 		
 		override public function clone():Event
 		{
-			return new LoaderEvent(type, _data);
+			return new LoaderEvent(type, _data, _latency);
 		}
 		
 		public static function typeBelongs(type:String):Boolean

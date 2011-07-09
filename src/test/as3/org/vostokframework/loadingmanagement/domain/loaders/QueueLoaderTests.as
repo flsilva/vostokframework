@@ -36,14 +36,17 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import mockolate.verify;
 
 	import org.as3collections.lists.ReadOnlyArrayList;
-	import org.flexunit.async.Async;
+	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
+	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
+	import org.vostokframework.loadingmanagement.domain.StubPlainLoader;
+	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 
-	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 
 	/**
@@ -117,15 +120,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			return new QueueLoader("queue-loader", LoadPriority.MEDIUM, _fakeQueue);
 		}
 		
-		///////////////////////////////
-		// ASYNC TESTS CONFIGURATION //
-		///////////////////////////////
-		
-		private function verifyMockTimerHandler(event:TimerEvent, passThroughData:Object):void
-		{
-			verify(passThroughData["mock"]);
-		}
-		
 		/////////////////////////////////////
 		// QueueLoader().addLoader() TESTS //
 		/////////////////////////////////////
@@ -185,30 +179,38 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		// QueueLoader().load TESTS //
 		//////////////////////////////
 		
-		[Test(async, timeout=2000)]
+		[Test]
 		public function load_fakeQueueReturnsOneMockLoader_verifyIfLoadWasCalledOnMock(): void
 		{
 			stub(_fakeQueue).method("getNext").returns(_fakeLoader1);
 			mock(_fakeLoader1).method("load");
 			
 			_loader.load();
-			
-			_timer.delay = 300;
-			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
-									Async.asyncHandler(this, verifyMockTimerHandler, 2000,
-														{mock:_fakeLoader1},
-														asyncTimeoutHandler),
-									false, 0, true);
-			
-			_timer.start();
+			verify(_fakeLoader1);
 		}
 		
 		[Test]
-		public function load_fakeQueueReturnsTwoMockLoaders_verifyIfWasCalledLoadOnSecondMock(): void
+		public function load_queueReturnsTwoLoaders_verifyIfWasCalledLoadOnSecondLoader(): void
 		{
-			mock(_fakeQueue).method("getNext");
-			_fakeQueue.dispatchEvent(new QueueEvent(QueueEvent.QUEUE_CHANGED, 1));
-			verify(_fakeQueue);
+			// THIS TEST DOES NOT USE FAKES
+			// BUT StubPlainLoader() AS DEPENDENCY FOR AssetLoader()
+			// WHICH MEANS IT'S AN INTEGRATION TEST
+			
+			var policy:LoadingPolicy = new LoadingPolicy(new LoaderRepository());
+			policy.globalMaxConnections = 3;
+			policy.localMaxConnections = 3;
+			
+			var assetLoader1:AssetLoader = new AssetLoader("asset-loader-1", LoadPriority.MEDIUM, new StubPlainLoader(), 3);
+			var assetLoader2:AssetLoader = new AssetLoader("asset-loader-2", LoadPriority.LOW, new StubPlainLoader(), 3);
+			
+			var queue:PlainPriorityLoadQueue = new PlainPriorityLoadQueue(policy);
+			queue.addLoader(assetLoader1);
+			queue.addLoader(assetLoader2);
+			
+			var queueLoader:QueueLoader = new QueueLoader("queue-loader", LoadPriority.MEDIUM, queue);
+			queueLoader.load();
+			
+			Assert.assertEquals(LoaderStatus.CONNECTING, assetLoader2.status);
 		}
 		
 		////////////////////////////////////////

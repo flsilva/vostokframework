@@ -142,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
 			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
-			
+			//TODO: otimizar
 			var unique:UniqueList = new UniqueList(new ArrayList());
 			unique.addAll(list1);
 			unique.addAll(list2);

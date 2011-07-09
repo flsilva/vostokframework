@@ -73,7 +73,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function get isComplete(): Boolean
 		{
-			return totalLoading == 0 && totalQueued == 0 && totalStopped == 0;
+			return totalLoading == 0 && totalQueued == 0 && totalStopped == 0;//TODO:validar se existe algum loader na queue, pois como esta uma queue totalmente vazia retorna true
 		}
 		
 		/**
@@ -221,7 +221,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
 			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
-			
+			//TODO: otimizar
 			var unique:UniqueList = new UniqueList(new ArrayList());
 			unique.addAll(list1);
 			unique.addAll(list2);

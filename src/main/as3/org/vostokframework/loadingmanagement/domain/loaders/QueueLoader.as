@@ -37,6 +37,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueEvent;
 
 	import flash.errors.IllegalOperationError;
@@ -68,6 +69,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_queue = queue;
 			
 			addQueueListener();
+			addLoadersListener(queue.getLoaders());
 		}
 		
 		/**
@@ -82,6 +84,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
 			
 			_queue.addLoader(loader);
+			addLoaderListener(loader);
 		}
 		
 		/**
@@ -96,6 +99,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
 			
 			_queue.addLoaders(loaders);
+			addLoadersListener(loaders);
 		}
 
 		/**
@@ -133,6 +137,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		override public function dispose():void
 		{
 			removeQueueListener();
+			removeLoadersListener(_queue.getLoaders());
 			_queue.dispose();
 			
 			_queue = null;
@@ -205,15 +210,26 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			stopLoaders();
 		}
 		
+		private function addLoadersListener(loaders:IList):void
+		{
+			var it:IIterator = loaders.iterator();
+			var loader:PlainLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				addLoaderListener(loader);
+			}
+		}
+		
+		private function addLoaderListener(loader:PlainLoader):void
+		{
+			loader.addEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false, 0, true);
+		}
+		
 		private function addQueueListener():void
 		{
 			_queue.addEventListener(QueueEvent.QUEUE_CHANGED, queueChangedHandler, false, 0, true);
-		}
-		
-		private function queueChangedHandler(event:QueueEvent):void
-		{
-			if (!status.equals(LoaderStatus.LOADING) && event.activeConnections > 0) loadingStarted();
-			loadNext();
 		}
 		
 		private function cancelLoaders():void
@@ -250,6 +266,34 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			var loader:PlainLoader = _queue.getNext();
 			if (loader) loader.load();
+		}
+		
+		private function loaderOpenedHandler(event:LoaderEvent):void
+		{
+			if (!status.equals(LoaderStatus.LOADING)) loadingStarted(null, event.latency);
+		}
+		
+		private function queueChangedHandler(event:QueueEvent):void
+		{
+			//if (!status.equals(LoaderStatus.LOADING) && event.activeConnections > 0) loadingStarted();
+			loadNext();
+		}
+		
+		private function removeLoadersListener(loaders:IList):void
+		{
+			var it:IIterator = loaders.iterator();
+			var loader:PlainLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				removeLoaderListener(loader);
+			}
+		}
+		
+		private function removeLoaderListener(loader:PlainLoader):void
+		{
+			loader.removeEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false);
 		}
 		
 		private function removeQueueListener():void

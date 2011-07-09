@@ -36,6 +36,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import mockolate.sequence;
 	import mockolate.stub;
 
+	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.AsyncLoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -44,6 +45,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
+	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
@@ -99,6 +101,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			_fakeFileLoader = nice(AsyncLoader, null, [50]);
 			return new AssetLoader("asset-loader", LoadPriority.MEDIUM, _fakeFileLoader, 3);
+		}
+		
+		///////////////////////////////
+		// ASYNC TESTS CONFIGURATION //
+		///////////////////////////////
+		
+		public function validateLoaderPropertyEventHandler(event:Event, passThroughData:Object):void
+		{
+			Assert.assertEquals(passThroughData["propertyValue"], _loader[passThroughData["propertyName"]]);
 		}
 		
 		//////////////////////////////////

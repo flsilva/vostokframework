@@ -171,7 +171,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
-			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			stub(_queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN, null, 10), 50);
 			_monitor.addEventListener(QueueLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 200,
 														null, asyncTimeoutHandler),

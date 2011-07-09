@@ -232,10 +232,10 @@ package org.vostokframework.loadingmanagement.domain
 			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
 		}
 		
-		protected function loadingStarted(data:* = null):void
+		protected function loadingStarted(data:* = null, latency:int = 0):void
 		{
 			setStatus(LoaderStatus.LOADING);
-			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data));
+			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
 		}
 		
 		protected function loadingComplete(data:* = null):void

@@ -160,12 +160,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN, null, 10), 50);
 			monitor.addEventListener(AssetLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 1000,
 														null, asyncTimeoutHandler),
 									false, 0, true);
-			
+
 			loader.load();
 		}
 		

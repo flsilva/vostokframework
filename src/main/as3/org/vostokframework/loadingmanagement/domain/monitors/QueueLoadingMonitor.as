@@ -37,7 +37,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import flash.events.EventDispatcher;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
-	import flash.utils.getTimer;
 
 	/**
 	 * description
@@ -53,7 +52,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		private var _loader:StatefulLoader;
 		private var _monitoring:LoadingMonitoring;
 		private var _monitors:IList;
-		private var _startedTimeConnecting:int;
 		private var _timer:Timer;
 		
 		public function get id():String { return _loader.id; }
@@ -140,7 +138,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function addLoaderListeners():void
 		{
-			_loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
@@ -175,15 +172,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			addTimerListener();
 		}
 		
-		private function loaderConnectingHandler(event:LoaderEvent):void
-		{
-			_startedTimeConnecting = getTimer();
-		}
-		
 		private function loaderOpenHandler(event:LoaderEvent):void
 		{
-			var latency:int = getTimer() - _startedTimeConnecting;
-			createLoadingMonitoring(latency);
+			createLoadingMonitoring(event.latency);
 			dispatchEvent(createEvent(QueueLoadingEvent.OPEN));
 			_timer.start();
 		}
@@ -258,7 +249,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function removeLoaderListeners():void
 		{
-			_loader.removeEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false);
 			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false);
