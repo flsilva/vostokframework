@@ -275,7 +275,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function queueChangedHandler(event:QueueEvent):void
 		{
-			//if (!status.equals(LoaderStatus.LOADING) && event.activeConnections > 0) loadingStarted();
 			loadNext();
 		}
 		
