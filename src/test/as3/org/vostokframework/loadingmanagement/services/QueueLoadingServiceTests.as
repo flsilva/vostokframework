@@ -46,6 +46,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubQueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
@@ -57,7 +58,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=99999)]
+	[TestCase]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -136,18 +137,26 @@ package org.vostokframework.loadingmanagement.services
 			service.isQueueLoading(QUEUE_ID);
 		}
 		
-		[Test(order=999999)]
+		[Test]
 		public function isQueueLoading_loadingQueue_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset);
 			
 			service.load(QUEUE_ID, list);
-			trace("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-			trace("globalQueueLoader.status: " + LoadingManagementContext.getInstance().globalQueueLoader.status);
 			
 			var isLoading:Boolean = service.isQueueLoading(QUEUE_ID);
 			Assert.assertTrue(isLoading);
+		}
+		
+		[Test]
+		public function isQueueLoading_notLoadingQueue_ReturnsFalse(): void
+		{
+			var queueLoader:QueueLoader = new StubQueueLoader(QUEUE_ID);
+			LoadingManagementContext.getInstance().loaderRepository.add(queueLoader);
+			//TODO: pensar em substituir hard coded stubs por mockolate stubs
+			var isLoading:Boolean = service.isQueueLoading(QUEUE_ID);
+			Assert.assertFalse(isLoading);
 		}
 		
 		//////////////////////////////////

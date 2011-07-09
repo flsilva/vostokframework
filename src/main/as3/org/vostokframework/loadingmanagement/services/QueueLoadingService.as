@@ -135,8 +135,7 @@ package org.vostokframework.loadingmanagement.services
 				
 				throw new LoaderNotFoundError(queueId, message);
 			}
-			trace("##########################################################################################");
-			trace("loader.status: " + loader.status + " | loader.status.equals(LoaderStatus.CONNECTING): " + loader.status.equals(LoaderStatus.CONNECTING) + " | loader.status.equals(LoaderStatus.LOADING): " + loader.status.equals(LoaderStatus.LOADING));
+			
 			return loader.status.equals(LoaderStatus.CONNECTING) || loader.status.equals(LoaderStatus.LOADING);
 		}
 
