@@ -65,6 +65,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
+			validateDisposal();
+			
 			if (!LoaderEvent.typeBelongs(type))
 			{
 				_loader.addEventListener(type, listener, useCapture, priority, useWeakReference);
@@ -74,18 +76,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		override public function dispose():void
-		{
-			removeFileLoaderListeners();
-			_loader.dispose();
-			
-			_loader = null;
-			
-			super.dispose();
-		}
-		
 		override public function hasEventListener(type:String):Boolean
 		{
+			validateDisposal();
+			
 			if (!LoaderEvent.typeBelongs(type))
 			{
 				return _loader.hasEventListener(type);
@@ -96,6 +90,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
+			validateDisposal();
+			
 			if (!LoaderEvent.typeBelongs(type))
 			{
 				_loader.removeEventListener(type, listener, useCapture);
@@ -107,6 +103,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override public function willTrigger(type:String):Boolean
 		{
+			validateDisposal();
+			
 			if (!LoaderEvent.typeBelongs(type))
 			{
 				return _loader.willTrigger(type);
@@ -130,6 +128,16 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			{
 				//do nothing
 			}
+		}
+		
+		/**
+		 * @private
+ 		 */
+		override protected function doDispose():void
+		{
+			removeFileLoaderListeners();
+			_loader.dispose();
+			_loader = null;
 		}
 		
 		/**

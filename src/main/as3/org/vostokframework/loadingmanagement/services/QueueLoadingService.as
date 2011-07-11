@@ -99,11 +99,36 @@ package org.vostokframework.loadingmanagement.services
 		 * description
 		 * 
 		 * @param queueId
-		 * @return
 		 */
-		public function cancelQueueLoading(queueId:String): Boolean
+		public function cancelQueueLoading(queueId:String): void
 		{
-			return false;
+			if (!queueExists(queueId))
+			{
+				var message:String = "There is no QueueLoader object stored with id:\n";
+				message += "<" + queueId + ">\n";
+				message += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object exists.\n";
+				
+				throw new LoaderNotFoundError(queueId, message);
+			}
+			
+			var queueLoader:QueueLoader = loaderRepository.find(queueId) as QueueLoader;
+			
+			removeMonitorsOfLoaders(queueLoader.getLoaders());
+			loadingMonitorRepository.remove(queueLoader.id);
+			loaderRepository.removeAll(queueLoader.getLoaders());
+			loaderRepository.remove(queueId);
+			
+			// if queueId is the only loader in globalQueueLoader
+			// then after call to globalQueueLoader.cancelLoader(queueId)
+			// globalQueueLoader state will be COMPLETE
+			// and LoadingManagementContext object will dispose and replace it
+			// with a new QueueLoader object.
+			// therefore the subsequent call to globalQueueLoader.removeLoader()
+			// will be performed on the new object producing no effect.
+			globalQueueLoader.cancelLoader(queueId);//TODO:repassar API: esta estranho, hora recebe id:String hora recebe objeto
+			globalQueueLoader.removeLoader(queueLoader);
+			
+			queueLoader.dispose();
 		}
 
 		/**
@@ -238,8 +263,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			if (!isQueueLoading(queueId)) return false;
 			
-			var loader:StatefulLoader = loaderRepository.find(queueId);
-			loader.stop();
+			globalQueueLoader.stopLoader(queueId);
 			
 			return true;
 		}
@@ -390,6 +414,18 @@ package org.vostokframework.loadingmanagement.services
 				errorMessage += "For further information please read the documentation section about the AssetLoader object.";
 				
 				throw new DuplicateLoaderError(assetLoader.id, errorMessage);
+			}
+		}
+		
+		private function removeMonitorsOfLoaders(loaders:IList):void
+		{
+			var it:IIterator = loaders.iterator();
+			var loader:StatefulLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loadingMonitorRepository.remove(loader.id);
 			}
 		}
 

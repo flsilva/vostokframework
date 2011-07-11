@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase]
+	[TestCase(order=999999)]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -120,6 +120,95 @@ package org.vostokframework.loadingmanagement.services
 		public function getLoader():StatefulLoader
 		{
 			return null;
+		}
+		
+		//////////////////////////////////////////////
+		// QueueLoadingService().cancelQueueLoading() //
+		//////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function cancelQueueLoading_invalidQueueIdArgument_ThrowsError(): void
+		{
+			service.cancelQueueLoading(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function cancelQueueLoading_notExistingQueue_ThrowsError(): void
+		{
+			service.cancelQueueLoading(QUEUE_ID);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_loadingQueue_Void(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_loadingQueue_checkIfQueueExists_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+			
+			var exists:Boolean = service.queueExists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_loadingQueue_afterCancelTryToLoadAgain_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+			service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
+			Assert.assertTrue(exists);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_stoppedQueue_Void(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			service.cancelQueueLoading(QUEUE_ID);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_stoppedQueue_checkIfQueueExists_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			service.cancelQueueLoading(QUEUE_ID);
+			
+			var exists:Boolean = service.queueExists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function cancelQueueLoading_canceledQueue_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+			service.cancelQueueLoading(QUEUE_ID);
 		}
 		
 		////////////////////////////////////////////////////

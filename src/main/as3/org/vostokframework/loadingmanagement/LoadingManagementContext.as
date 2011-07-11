@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -105,12 +106,7 @@ package org.vostokframework.loadingmanagement
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
-			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
-			policy.globalMaxConnections = _maxConcurrentConnections;
-			policy.localMaxConnections = _maxConcurrentQueues;
-			
-			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
-			_globalQueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
+			createGlobalQueueLoader();
 		}
 		
 		/**
@@ -142,7 +138,25 @@ package org.vostokframework.loadingmanagement
 		public function setGlobalQueueLoader(queueLoader:QueueLoader): void
 		{
 			if (!queueLoader) throw new ArgumentError("Argument <queueLoader> must not be null.");
-			_globalQueueLoader = queueLoader;//TODO:validate if already exists an queueLoader and if yes stop() and dispose() it
+			
+			if (_globalQueueLoader)
+			{
+				try
+				{
+					_globalQueueLoader.cancel();
+				}
+				catch(error:Error)
+				{
+					// do nothing
+				}
+				finally
+				{
+					_globalQueueLoader.dispose();
+				}
+			}
+			
+			_globalQueueLoader = queueLoader;
+			_globalQueueLoader.addEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 0, true);
 		}
 		
 		/**
@@ -198,6 +212,30 @@ package org.vostokframework.loadingmanagement
 		{
 			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
 			_maxConcurrentQueues = value;
+		}
+		
+		/**
+		 * @private
+		 */
+		private function createGlobalQueueLoader(): void
+		{
+			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
+			policy.globalMaxConnections = _maxConcurrentConnections;
+			policy.localMaxConnections = _maxConcurrentQueues;
+			
+			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
+			var queueLoader:QueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
+			
+			setGlobalQueueLoader(queueLoader);
+		}
+		
+		/**
+		 * @private
+		 */
+		private function globalQueueLoaderCompleteHandler(event:LoaderEvent):void
+		{
+			_globalQueueLoader.removeEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
+			createGlobalQueueLoader();
 		}
 
 	}

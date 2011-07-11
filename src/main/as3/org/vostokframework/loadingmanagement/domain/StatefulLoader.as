@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
+	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
@@ -52,6 +53,7 @@ package org.vostokframework.loadingmanagement.domain
 		 * @private
 		 */
 		private var _currentAttempt:int;
+		private var _disposed:Boolean;
 		private var _errorHistory:IList;
 		private var _failDescription:String;
 		private var _id:String;
@@ -135,6 +137,8 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		override public function cancel(): void
 		{
+			validateDisposal();
+			
 			if (_status.equals(LoaderStatus.CANCELED) ||
 				_status.equals(LoaderStatus.COMPLETE) ||
 				_status.equals(LoaderStatus.FAILED)) return;
@@ -146,18 +150,23 @@ package org.vostokframework.loadingmanagement.domain
 		
 		override public function dispose():void
 		{
+			if (_disposed) return;
+			
 			_errorHistory.clear();
 			_statusHistory.clear();
 			
+			_disposed = true;
 			_errorHistory = null;
 			_statusHistory = null;
 			_status = null;
 			
-			super.dispose();
+			doDispose();
 		}
 		
 		public function equals(other : *): Boolean
 		{
+			validateDisposal();
+			
 			if (this == other) return true;
 			if (!(other is StatefulLoader)) return false;
 			
@@ -172,6 +181,8 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		override public function load(): void
 		{
+			validateDisposal();
+			
 			if (_status.equals(LoaderStatus.CONNECTING)) throw new IllegalOperationError("The current status is <LoaderStatus.CONNECTING>, therefore it is not allowed to start a new loading right now.");
 			if (_status.equals(LoaderStatus.LOADING)) throw new IllegalOperationError("The current status is <LoaderStatus.LOADING>, therefore it is not allowed to start a new loading right now.");
 			if (_status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed loadings.");
@@ -188,6 +199,8 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		override public function stop(): void
 		{
+			validateDisposal();
+			
 			if (_status.equals(LoaderStatus.STOPPED) ||
 				_status.equals(LoaderStatus.CANCELED) ||
 				_status.equals(LoaderStatus.COMPLETE) ||
@@ -213,6 +226,8 @@ package org.vostokframework.loadingmanagement.domain
 		
 		protected function error(error:LoadError, errorDescription:String):void
 		{
+			validateDisposal();
+			
 			_failDescription = errorDescription;
 			_errorHistory.add(error);
 			
@@ -249,6 +264,11 @@ package org.vostokframework.loadingmanagement.domain
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
+		protected function doDispose():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
 		protected function doLoad():void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
@@ -259,6 +279,14 @@ package org.vostokframework.loadingmanagement.domain
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
+		/**
+		 * @private
+		 */
+		protected function validateDisposal():void
+		{
+			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
+		}
+		
 		private function failed():void
 		{
 			setStatus(LoaderStatus.FAILED);
@@ -267,6 +295,8 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function _load():void
 		{
+			validateDisposal();
+			
 			_currentAttempt++;
 			
 			if (isExhaustedAttempts())

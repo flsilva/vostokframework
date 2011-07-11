@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
+	import org.as3collections.lists.TypedList;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
@@ -197,6 +198,32 @@ package org.vostokframework.loadingmanagement.domain
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
 			return _loaderMap.remove(loaderId) != null;
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param 	loaders    
+		 * @throws 	ArgumentError 	if the <code>loaders</code> argument is <code>null</code>.
+		 * @return
+		 */
+		public function removeAll(loaders:IList): Boolean
+		{
+			if (!loaders) throw new ArgumentError("Argument <loaders> must not be null.");
+			if (loaders.isEmpty()) return false;
+			
+			var prevSize:int = size();
+			var $loaders:IList = new TypedList(loaders, StatefulLoader);
+			var it:IIterator = $loaders.iterator();
+			var loader:StatefulLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				remove(loader.id);
+			}
+			
+			return size() != prevSize;
 		}
 		
 		/**

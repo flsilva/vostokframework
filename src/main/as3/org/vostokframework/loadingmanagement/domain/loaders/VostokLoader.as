@@ -82,26 +82,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		override public function dispose():void
-		{
-			try
-			{
-				_loader.close();
-			}
-			catch (error:Error)
-			{
-				//do nothing
-			}
-			finally
-			{
-				_loader.unload();
-			}
-			
-			_loader = null;
-			_request = null;
-			_context = null;
-		}
-		
 		override public function hasEventListener(type:String):Boolean
 		{
 			if (!LoaderEvent.typeBelongs(type))
@@ -152,6 +132,29 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			{
 				_loader.unload();
 			}
+		}
+		
+		/**
+		 * @private
+		 */
+		override protected function doDispose():void
+		{
+			try
+			{
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
+			finally
+			{
+				_loader.unload();
+			}
+			
+			_loader = null;
+			_request = null;
+			_context = null;
 		}
 		
 		/**

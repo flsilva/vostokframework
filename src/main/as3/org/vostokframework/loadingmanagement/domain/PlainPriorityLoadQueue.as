@@ -53,6 +53,12 @@ package org.vostokframework.loadingmanagement.domain
 			_policy = policy;
 		}
 		
+		override public function dispose():void
+		{
+			_policy = null;
+			super.dispose();
+		}
+		
 		override protected function allowGetNext():Boolean
 		{
 			return _policy.allow(totalLoading);

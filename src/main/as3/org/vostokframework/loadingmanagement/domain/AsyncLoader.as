@@ -95,7 +95,7 @@ package org.vostokframework.loadingmanagement.domain
 
 			_timerLoadDelay = null;
 			
-			super.dispose();
+			doDispose();
 		}
 		
 		/**
@@ -121,6 +121,11 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		protected function doCancel():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doDispose():void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}

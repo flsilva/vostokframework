@@ -79,6 +79,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function addLoader(loader:StatefulLoader): void
 		{
+			validateDisposal();
+			
 			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
@@ -94,6 +96,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function addLoaders(loaders:IList): void
 		{
+			validateDisposal();
+			
 			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
@@ -109,6 +113,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function cancelLoader(loaderId:String): void
 		{
+			validateDisposal();
+			
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
 			var loader:StatefulLoader = _queue.find(loaderId);
@@ -131,18 +137,31 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function containsLoader(loaderId:String): Boolean
 		{
+			validateDisposal();
 			return _queue.contains(loaderId);
 		}
-
-		override public function dispose():void
+		
+		public function getLoaders():IList
 		{
-			removeQueueListener();
-			removeLoadersListener(_queue.getLoaders());
-			_queue.dispose();
+			validateDisposal();
+			return _queue.getLoaders();
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 */
+		public function removeLoader(loader:StatefulLoader): void
+		{
+			validateDisposal();
 			
-			_queue = null;
+			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to remove loaders.");
+			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to remove loaders.");
+			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to remove loaders.");
 			
-			super.dispose();
+			_queue.removeLoader(loader);
+			removeLoaderListener(loader);
 		}
 
 		/**
@@ -152,6 +171,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function resumeLoader(loaderId:String): void
 		{
+			validateDisposal();
+			
 			if (status.equals(LoaderStatus.CANCELED)) throw new IllegalOperationError("The current status is <LoaderStatus.CANCELED>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.COMPLETE)) throw new IllegalOperationError("The current status is <LoaderStatus.COMPLETE>, therefore it is no longer allowed to add new loaders.");
 			if (status.equals(LoaderStatus.FAILED)) throw new IllegalOperationError("The current status is <LoaderStatus.FAILED>, therefore it is no longer allowed to add new loaders.");
@@ -166,6 +187,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function stopLoader(loaderId:String): void
 		{
+			validateDisposal();
+			
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
 			var loader:StatefulLoader = _queue.find(loaderId);
@@ -192,6 +215,30 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		override protected function doCancel(): void
 		{
 			cancelLoaders();
+		}
+		
+		/**
+		 * @private
+ 		 */
+		override protected function doDispose():void
+		{
+			removeQueueListener();
+			removeLoadersListener(_queue.getLoaders());
+			
+			var loaders:IList = _queue.getLoaders();
+			
+			_queue.dispose();
+			
+			var it:IIterator = loaders.iterator();
+			var loader:PlainLoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				loader.dispose();
+			}
+			
+			_queue = null;
 		}
 		
 		/**
@@ -254,6 +301,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function loadNext():void
 		{
+			validateDisposal();
+			
 			if (!status.equals(LoaderStatus.CONNECTING) &&
 				!status.equals(LoaderStatus.LOADING)) return;
 			
