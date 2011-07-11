@@ -520,6 +520,19 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
+		////////////////////////////////////////
+		// QueueLoadingService().loadSingle() //
+		////////////////////////////////////////
+		
+		[Test]
+		public function loadSingle_validArguments_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
+		{
+			service.loadSingle(QUEUE_ID, asset1);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
+			Assert.assertTrue(exists);
+		}
+		
 		/////////////////////////////////////////
 		// QueueLoadingService().queueExists() //
 		/////////////////////////////////////////

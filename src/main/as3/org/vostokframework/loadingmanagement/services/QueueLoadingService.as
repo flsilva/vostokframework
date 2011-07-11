@@ -63,6 +63,9 @@ package org.vostokframework.loadingmanagement.services
 	 */
 	public class QueueLoadingService
 	{
+		/**
+		 * @private
+		 */
 		private var _context:LoadingManagementContext;
 		
 		private function get assetLoaderFactory():AssetLoaderFactory { return _context.assetLoaderFactory; }
@@ -258,7 +261,21 @@ package org.vostokframework.loadingmanagement.services
 			
 			return monitor;
 		}
-
+		
+		/**
+		 * description
+		 * 
+		 * @param queueId
+		 * @param asset
+		 * @param priority
+		 * @param concurrentConnections
+		 * @return
+		 */
+		public function loadSingle(queueId:String, asset:Asset, priority:LoadPriority = null, concurrentConnections:int = 1): ILoadingMonitor
+		{
+			return load(queueId, new ArrayList([asset]), priority, concurrentConnections);
+		}
+		
 		/**
 		 * description
 		 * 
