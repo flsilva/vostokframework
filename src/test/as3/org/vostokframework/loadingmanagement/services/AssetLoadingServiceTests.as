@@ -37,6 +37,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
+	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -45,9 +46,13 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
+
+	import flash.display.MovieClip;
 
 	/**
 	 * @author Flávio Silva
@@ -55,8 +60,6 @@ package org.vostokframework.loadingmanagement.services
 	[TestCase]
 	public class AssetLoadingServiceTests
 	{
-		private static const ASSET1_SRC:String = "QueueLoadingServiceTests/asset/image-01.jpg";
-		private static const ASSET2_SRC:String = "QueueLoadingServiceTests/asset/image-02.jpg";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		private static const QUEUE_ID:String = "queue-1";
 		
@@ -95,8 +98,8 @@ package org.vostokframework.loadingmanagement.services
 			
 			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
-			asset1 = AssetManagementContext.getInstance().assetFactory.create(ASSET1_SRC, assetPackage);
-			asset2 = AssetManagementContext.getInstance().assetFactory.create(ASSET2_SRC, assetPackage);
+			asset1 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
+			asset2 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-02.jpg", assetPackage);
 		}
 		
 		[After]
@@ -114,6 +117,133 @@ package org.vostokframework.loadingmanagement.services
 			return null;
 		}
 		
+		//////////////////////////////////////////
+		// AssetLoadingService().getAssetData() //
+		//////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function getAssetData_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.getAssetData(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		public function getAssetData_notExistingAsset_ThrowsError(): void
+		{
+			assetLoadingService.getAssetData(asset1.identification.id);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		public function getAssetData_notLoadedAsset_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list, null, 1);
+			assetLoadingService.getAssetData(asset2.identification.id);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		public function getAssetData_loadingAsset_ThrowsError(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.getAssetData(asset1.identification.id);
+		}
+		
+		[Test]
+		public function getAssetData_loadedAsset_ReturnsValidObject(): void
+		{
+			var report:LoadedAssetReport = new LoadedAssetReport(asset1.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset1.src);
+			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);
+			
+			var data:* = assetLoadingService.getAssetData(asset1.identification.id);
+			Assert.assertNotNull(data);
+		}
+		
+		////////////////////////////////////////////////////
+		// AssetLoadingService().getAssetLoadingMonitor() //
+		////////////////////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function getAssetLoadingMonitor_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.getAssetLoadingMonitor(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		public function getAssetLoadingMonitor_notExistingMonitor_ThrowsError(): void
+		{
+			assetLoadingService.getAssetLoadingMonitor(asset1.identification.id);
+		}
+		
+		[Test]
+		public function getAssetLoadingMonitor_existingMonitor_ReturnsValidObject(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			var monitor:ILoadingMonitor = assetLoadingService.getAssetLoadingMonitor(asset1.identification.id);
+			Assert.assertNotNull(monitor);
+		}
+		
+		//////////////////////////////////////
+		// AssetLoadingService().isLoaded() //
+		//////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function isLoaded_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.isLoaded(null);
+		}
+		
+		[Test]
+		public function isLoaded_notExistingAsset_ReturnsFalse(): void
+		{
+			var isLoaded:Boolean = assetLoadingService.isLoaded(asset1.identification.id);
+			Assert.assertFalse(isLoaded);
+		}
+		
+		[Test]
+		public function isLoaded_queuedAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list, null, 1);
+			
+			var isLoaded:Boolean = assetLoadingService.isLoaded(asset2.identification.id);
+			Assert.assertFalse(isLoaded);
+		}
+		
+		[Test]
+		public function isLoaded_loadingAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			var isLoaded:Boolean = assetLoadingService.isLoaded(asset1.identification.id);
+			Assert.assertFalse(isLoaded);
+		}
+		
+		[Test]
+		public function isLoaded_loadedAsset_ReturnsTrue(): void
+		{
+			var report:LoadedAssetReport = new LoadedAssetReport(asset1.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset1.src);
+			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);
+			
+			var isLoaded:Boolean = assetLoadingService.isLoaded(asset1.identification.id);
+			Assert.assertTrue(isLoaded);
+		}
+		
 		///////////////////////////////////////
 		// AssetLoadingService().isLoading() //
 		///////////////////////////////////////
@@ -127,7 +257,7 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function isLoading_notExistingAsset_ReturnsFalse(): void
 		{
-			var isLoading:Boolean = assetLoadingService.isLoading(ASSET1_SRC);
+			var isLoading:Boolean = assetLoadingService.isLoading(asset1.identification.id);
 			Assert.assertFalse(isLoading);
 		}
 		
@@ -139,7 +269,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			queueLoadingService.load(QUEUE_ID, list);
 			
-			var isLoading:Boolean = assetLoadingService.isLoading(ASSET1_SRC);
+			var isLoading:Boolean = assetLoadingService.isLoading(asset1.identification.id);
 			Assert.assertTrue(isLoading);
 		}
 		
@@ -152,8 +282,50 @@ package org.vostokframework.loadingmanagement.services
 			
 			queueLoadingService.load(QUEUE_ID, list, null, 1);
 			
-			var isLoading:Boolean = assetLoadingService.isLoading(ASSET2_SRC);
+			var isLoading:Boolean = assetLoadingService.isLoading(asset2.identification.id);
 			Assert.assertFalse(isLoading);
+		}
+		
+		//////////////////////////////////////
+		// AssetLoadingService().isQueued() //
+		//////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function isQueued_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.isQueued(null);
+		}
+		
+		[Test]
+		public function isQueued_notExistingAsset_ReturnsFalse(): void
+		{
+			var isQueued:Boolean = assetLoadingService.isQueued(asset1.identification.id);
+			Assert.assertFalse(isQueued);
+		}
+		
+		[Test]
+		public function isQueued_queuedAsset_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list, null, 1);
+			
+			var isQueued:Boolean = assetLoadingService.isQueued(asset2.identification.id);
+			Assert.assertTrue(isQueued);
+		}
+		
+		[Test]
+		public function isQueued_loadingAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			var isQueued:Boolean = assetLoadingService.isQueued(asset1.identification.id);
+			Assert.assertFalse(isQueued);
 		}
 		
 	}
