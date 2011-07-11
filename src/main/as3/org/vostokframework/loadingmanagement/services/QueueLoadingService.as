@@ -90,11 +90,43 @@ package org.vostokframework.loadingmanagement.services
 		 * @param assets
 		 * @return
 		 */
-		public function addAssetsInQueue(queueId:String, assets:IList): ILoadingMonitor
+		public function addAssetsInQueue(queueId:String, assets:IList): void
 		{
-			return null;
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			if (!assets || assets.isEmpty()) throw new ArgumentError("Argument <assets> must not be null nor empty.");
+			
+			if (!queueExists(queueId))
+			{
+				var message:String = "There is no QueueLoader object stored with id:\n";
+				message += "<" + queueId + ">\n";
+				message += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object exists.\n";
+				
+				throw new LoaderNotFoundError(queueId, message);
+			}
+			
+			//throws org.as3coreaddendum.ClassCastError
+			//if there's any type other than Asset in <assets>
+			assets = new TypedList(assets, Asset);
+			
+			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
+			//if some Asset object is already loaded and cached internally
+			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
+			
+			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//if <loaderRepository> contains an AssetLoader object with any Asset id inside <assets>
+			//AND throws ArgumentError if <assets> argument contains any duplicate Asset object
+			var assetLoaders:IList = createAssetLoadersAndPutInRepository(assets);
+			
+			//may throw DuplicateLoadingMonitorError
+			var assetLoadingMonitors:IList = createAssetLoadingMonitorsAndPutInRepository(assets);
+			
+			var queueLoader:QueueLoader = loaderRepository.find(queueId) as QueueLoader;
+			queueLoader.addLoaders(assetLoaders);
+			
+			var monitor:QueueLoadingMonitor = loadingMonitorRepository.find(queueLoader.id) as QueueLoadingMonitor;//TODO:concrete implementation referenced, change to abstraction
+			monitor.addMonitors(assetLoadingMonitors);
 		}
-
+		
 		/**
 		 * description
 		 * 
@@ -102,6 +134,8 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function cancelQueueLoading(queueId:String): void
 		{
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
 			if (!queueExists(queueId))
 			{
 				var message:String = "There is no QueueLoader object stored with id:\n";
@@ -211,10 +245,10 @@ package org.vostokframework.loadingmanagement.services
 			//AND throws ArgumentError if <assets> argument contains any duplicate Asset object
 			var assetLoaders:IList = createAssetLoadersAndPutInRepository(assets);
 			
+			queueLoader.addLoaders(assetLoaders);
+			
 			//may throw DuplicateLoadingMonitorError
 			var assetLoadingMonitors:IList = createAssetLoadingMonitorsAndPutInRepository(assets);
-			
-			queueLoader.addLoaders(assetLoaders);
 			
 			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
 			loadingMonitorRepository.add(monitor);
@@ -246,6 +280,8 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function resumeQueueLoading(queueId:String): Boolean
 		{
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
 			if (isQueueLoading(queueId)) return false;
 			
 			globalQueueLoader.resumeLoader(queueId);
@@ -261,6 +297,8 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function stopQueueLoading(queueId:String): Boolean
 		{
+			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
+			
 			if (!isQueueLoading(queueId)) return false;
 			
 			globalQueueLoader.stopLoader(queueId);

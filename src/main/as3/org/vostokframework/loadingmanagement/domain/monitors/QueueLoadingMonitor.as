@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoadingMonitorError;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
@@ -88,6 +89,36 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
+		public function addMonitor(monitor:ILoadingMonitor):void
+		{
+			if (!monitor) throw new ArgumentError("The <monitor> argument must not be null.");
+			
+			if (_monitors.contains(monitor))
+			{
+				var message:String = "There is already an ILoadingMonitor stored with id:\n";
+				message += monitor.id;
+				
+				throw new DuplicateLoadingMonitorError(message);
+			}
+			
+			_monitors.add(monitor);
+		}
+		
+		public function addMonitors(monitors:IList):void
+		{
+			if (!monitors) throw new ArgumentError("The <monitors> argument must not be null.");
+			if (monitors.isEmpty()) return;
+			
+			var it:IIterator = monitors.iterator();
+			var monitor:ILoadingMonitor;
+			
+			while (it.hasNext())
+			{
+				monitor = it.next();
+				addMonitor(monitor);
+			}
+		}
+		
 		public function dispose():void
 		{
 			_monitors.clear();
@@ -98,6 +129,15 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_monitors = null;
 			_monitoring = null;
 			_timer = null;
+		}
+		
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			if (!(other is ILoadingMonitor)) return false;
+			
+			var otherMonitor:ILoadingMonitor = other as ILoadingMonitor;
+			return id == otherMonitor.id;
 		}
 		
 		override public function hasEventListener(type:String):Boolean

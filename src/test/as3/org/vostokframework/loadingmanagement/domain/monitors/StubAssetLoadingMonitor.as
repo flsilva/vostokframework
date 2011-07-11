@@ -67,6 +67,15 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			
 		}
+		
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			if (!(other is ILoadingMonitor)) return false;
+			
+			var otherMonitor:ILoadingMonitor = other as ILoadingMonitor;
+			return id == otherMonitor.id;
+		}
 
 	}
 
