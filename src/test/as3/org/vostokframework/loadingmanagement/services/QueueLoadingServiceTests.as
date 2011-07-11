@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999999)]
+	[TestCase]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";

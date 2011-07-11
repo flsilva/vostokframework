@@ -28,9 +28,14 @@
  */
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 
 	/**
@@ -44,7 +49,17 @@ package org.vostokframework.loadingmanagement.services
 		 * @private
 		 */
 		private var _context:LoadingManagementContext;
-
+		
+		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
+		
+		/**
+		 * description
+		 */
+		public function AssetLoadingService(): void
+		{
+			_context = LoadingManagementContext.getInstance();
+		}
+		
 		/**
 		 * description
 		 * 
@@ -101,7 +116,14 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function isLoading(assetId:String, locale:String = null): Boolean
 		{
-			return false;
+			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID; 
+			
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var loader:StatefulLoader = loaderRepository.find(identification.toString());
+			if (!loader) return false;
+			
+			return loader.status.equals(LoaderStatus.CONNECTING) || loader.status.equals(LoaderStatus.LOADING);
 		}
 
 		/**
