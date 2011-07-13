@@ -42,9 +42,12 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
@@ -326,6 +329,71 @@ package org.vostokframework.loadingmanagement.services
 			
 			var isQueued:Boolean = assetLoadingService.isQueued(asset1.identification.id);
 			Assert.assertFalse(isQueued);
+		}
+		
+		//////////////////////////////////
+		// AssetLoadingService().stop() //
+		//////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function stop_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.stop(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function stop_notExistingAssetLoader_ThrowsError(): void
+		{
+			assetLoadingService.stop(asset1.identification.id);
+		}
+		
+		[Test]
+		public function stop_loadingAsset_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			var stopped:Boolean = assetLoadingService.stop(asset1.identification.id);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_notLoadingAsset_ReturnsTrue(): void
+		{
+			var assetLoader:AssetLoader = new StubAssetLoader(asset1.identification.toString());
+			LoadingManagementContext.getInstance().loaderRepository.add(assetLoader);
+			//TODO: pensar em substituir hard coded stubs por mockolate stubs
+			var stopped:Boolean = assetLoadingService.stop(asset1.identification.id);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_stoppedAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			
+			var stopped:Boolean = assetLoadingService.stop(asset1.identification.id);
+			Assert.assertFalse(stopped);
+		}
+		
+		[Test]
+		public function stop_loadingAsset_CheckIfAssetLoaderStatusIsStopped_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			
+			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			
+			Assert.assertEquals(LoaderStatus.STOPPED, assetLoader.status);
 		}
 		
 	}

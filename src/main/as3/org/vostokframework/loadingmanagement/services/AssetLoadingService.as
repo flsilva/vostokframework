@@ -35,6 +35,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
@@ -122,7 +123,7 @@ package org.vostokframework.loadingmanagement.services
 			{
 				var message:String = "There is no ILoadingMonitor object stored with id:\n";
 				message += "<" + identification.toString() + ">\n";
-				message += "Use the methods <AssetLoadingService().isLoading() and AssetLoadingService().isQueued()> to check if an ILoadingMonitor object exists for an AssetLoader object with the specified <assetId> and <locale> argument.\n";
+				message += "Use the methods <AssetLoadingService().isLoading()>, AssetLoadingService().isLoaded()> and <AssetLoadingService().isQueued()> to check if an ILoadingMonitor object exists for an AssetLoader object with the specified <assetId> and <locale> argument.\n";
 				
 				throw new LoadingMonitorNotFoundError(identification.toString(), message);
 			}
@@ -205,7 +206,25 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function stop(assetId:String, locale:String = null): Boolean
 		{
-			return false;
+			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID; 
+			
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var loader:StatefulLoader = loaderRepository.find(identification.toString());
+			if (!loader)
+			{
+				var message:String = "There is no AssetLoader object stored with id:\n";
+				message += "<" + identification.toString() + ">\n";
+				message += "Use the method <AssetLoadingService().isLoading()>, <AssetLoadingService().isLoaded()> and <AssetLoadingService().isQueued()> to check if an AssetLoader object exists.\n";
+				
+				throw new LoaderNotFoundError(identification.toString(), message);
+			}
+			
+			if (loader.status.equals(LoaderStatus.STOPPED)) return false;
+			
+			loader.stop();
+			
+			return true;
 		}
 
 		/**

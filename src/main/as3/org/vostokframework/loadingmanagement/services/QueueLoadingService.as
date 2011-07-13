@@ -316,7 +316,17 @@ package org.vostokframework.loadingmanagement.services
 		{
 			if (StringUtil.isBlank(queueId)) throw new ArgumentError("Argument <queueId> must not be null nor an empty String.");
 			
-			if (!isQueueLoading(queueId)) return false;
+			var loader:StatefulLoader = loaderRepository.find(queueId);
+			if (!loader)
+			{
+				var message:String = "There is no QueueLoader object stored with id:\n";
+				message += "<" + queueId + ">\n";
+				message += "Use the method <QueueLoadingService().queueExists()> to check if a QueueLoader object exists.\n";
+				
+				throw new LoaderNotFoundError(queueId, message);
+			}
+			
+			if (loader.status.equals(LoaderStatus.STOPPED)) return false;
 			
 			globalQueueLoader.stopLoader(queueId);
 			
@@ -341,7 +351,7 @@ package org.vostokframework.loadingmanagement.services
 					errorMessage += "Is already loaded and cached internally.\n";
 					errorMessage += "It was loaded by a QueueLoader object with id:\n";
 					errorMessage += "<" + report.queueId + ">\n";
-					errorMessage += "Use the method <AssetLoadingService().isAssetLoaded()> to find it out.\n";
+					errorMessage += "Use the method <AssetLoadingService().isLoaded()> to find it out.\n";
 					errorMessage += "Also, the cached asset data can be retrieved using <AssetLoadingService().getAssetData()>.";
 					
 					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);
@@ -465,7 +475,7 @@ package org.vostokframework.loadingmanagement.services
 				errorMessage += "<" + assetLoader.id + ">\n";
 				errorMessage += "Its current status is: <" + $assetLoader.status + ">\n";
 				errorMessage += "And it belongs to QueueLoader object with id: <" + $queueLoader.id + ">\n";
-				errorMessage += "Use the method <AssetLoadingService().isAssetQueued() AND AssetLoadingService().isAssetLoading()> to check if an AssetLoader object already exists.\n";
+				errorMessage += "Use the method <AssetLoadingService().isQueued()>, <AssetLoadingService().isLoading()> and <AssetLoadingService().isLoaded()> to check if an AssetLoader object already exists.\n";
 				errorMessage += "For further information please read the documentation section about the AssetLoader object.";
 				
 				throw new DuplicateLoaderError(assetLoader.id, errorMessage);

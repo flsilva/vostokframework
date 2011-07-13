@@ -29,7 +29,6 @@
 
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
@@ -43,6 +42,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
@@ -243,6 +243,19 @@ package org.vostokframework.loadingmanagement.services
 			service.cancelQueueLoading(QUEUE_ID);
 			
 			var exists:Boolean = service.queueExists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function cancelQueueLoading_loadingQueue_checkIfAssetLoaderExistsInRepository_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(asset1.identification.toString());
 			Assert.assertFalse(exists);
 		}
 		
@@ -473,6 +486,19 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
+		public function load_validArguments_CheckIfAssetLoaderStatusIsConnecting_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			
+			Assert.assertEquals(LoaderStatus.CONNECTING, assetLoader.status);
+		}
+		
+		[Test]
 		public function load_validArguments_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
@@ -647,11 +673,25 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function stopQueueLoading_notLoadingQueue_ReturnsFalse(): void
+		public function stopQueueLoading_notLoadingQueue_ReturnsTrue(): void
 		{
 			var queueLoader:QueueLoader = new StubQueueLoader(QUEUE_ID);
 			LoadingManagementContext.getInstance().loaderRepository.add(queueLoader);
+			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
 			//TODO: pensar em substituir hard coded stubs por mockolate stubs
+			var stopped:Boolean = service.stopQueueLoading(QUEUE_ID);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stopQueueLoading_stoppedQueue_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.stopQueueLoading(QUEUE_ID);
+			
 			var stopped:Boolean = service.stopQueueLoading(QUEUE_ID);
 			Assert.assertFalse(stopped);
 		}
