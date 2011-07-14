@@ -118,6 +118,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doCancel(): void
 		{
+			validateDisposal();
 			removeFileLoaderListeners();
 			
 			try
@@ -145,6 +146,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doLoad(): void
 		{
+			validateDisposal();
 			addFileLoaderListeners();
 			_loader.load();
 		}
@@ -154,6 +156,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doStop(): void
 		{
+			validateDisposal();
+			
 			try
 			{
 				_loader.stop();
@@ -166,6 +170,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function addFileLoaderListeners():void
 		{
+			validateDisposal();
+			
 			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
@@ -175,32 +181,39 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function loaderInitHandler(event:LoaderEvent):void
 		{
+			validateDisposal();
 			loadingInit(event.data);
 		}
 		
 		private function loaderOpenHandler(event:LoaderEvent):void
 		{
+			validateDisposal();
 			loadingStarted(event.data, event.latency);
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
 		{
+			validateDisposal();
 			removeFileLoaderListeners();
 			loadingComplete(event.data);
 		}
 		
 		private function loaderIOErrorHandler(event:IOErrorEvent):void
 		{
+			validateDisposal();
 			error(LoadError.IO_ERROR, event.text);
 		}
 		
 		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
 		{
+			validateDisposal();
 			error(LoadError.SECURITY_ERROR, event.text);
 		}
 		
 		private function removeFileLoaderListeners():void
 		{
+			validateDisposal();
+			
 			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
 			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);

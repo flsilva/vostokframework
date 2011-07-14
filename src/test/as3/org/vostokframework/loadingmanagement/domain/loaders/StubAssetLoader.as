@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
+	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.StubPlainLoader;
 
@@ -38,6 +39,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 */
 	public class StubAssetLoader extends AssetLoader
 	{
+		private var $status:LoaderStatus;
+		
+		override public function get status():LoaderStatus
+		{
+			if ($status) return $status;
+			return super.status;
+		}
+		
+		public function set status(value:LoaderStatus):void { $status = value; }
 		
 		public function StubAssetLoader(id:String, priority:LoadPriority = null)
 		{

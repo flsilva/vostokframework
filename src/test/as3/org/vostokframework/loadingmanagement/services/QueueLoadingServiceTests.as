@@ -45,7 +45,9 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubQueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -69,7 +71,7 @@ package org.vostokframework.loadingmanagement.services
 		//public var mocks:MockolateRule = new MockolateRule();
 		
 		//[Mock(inject="false")]
-		//public var _fakeAsset:Asset;
+		//public var _fakeAsset1:Asset;
 		
 		public var service:QueueLoadingService;
 		public var asset1:Asset;
@@ -106,7 +108,8 @@ package org.vostokframework.loadingmanagement.services
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			asset1 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			asset2 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-02.jpg", assetPackage);
-			//_fakeAsset = nice(Asset, null, [ASSET_ID, "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
+			
+			//_fakeAsset1 = nice(Asset, null, [new AssetIdentification("QueueLoadingServiceTests/asset/image-01.jpg", VostokFramework.CROSS_LOCALE_ID), "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 		}
 		
 		[After]
@@ -257,20 +260,6 @@ package org.vostokframework.loadingmanagement.services
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(asset1.identification.toString());
 			Assert.assertFalse(exists);
-		}
-		
-		[Test]
-		public function cancelQueueLoading_loadingQueue_callLoadOnceThenCallCancelAndThenCallLoadAgain_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			service.load(QUEUE_ID, list);
-			service.cancelQueueLoading(QUEUE_ID);
-			service.load(QUEUE_ID, list);
-			
-			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
-			Assert.assertTrue(exists);
 		}
 		
 		[Test]
@@ -544,6 +533,105 @@ package org.vostokframework.loadingmanagement.services
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(asset1.identification.toString());
 			Assert.assertTrue(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_callLoadOnceThenCallCancelAndThenCallLoadAgain_checkIfQueueLoaderExistsInRepository_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.cancelQueueLoading(QUEUE_ID);
+			service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
+			Assert.assertTrue(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletes_checkIfQueueLoaderExistsInRepository_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletes_checkIfAssetLoaderExistsInRepository_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(asset1.identification.toString());
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletes_checkIfAssetLoadingMonitorExistsInRepository_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(asset1.identification.toString());
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletes_checkIfQueueLoadingMonitorExistsInRepository_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callLoadAgain_ReturnsILoadingMonitor(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var monitor:ILoadingMonitor = service.load(QUEUE_ID, list);
+			Assert.assertNotNull(monitor);
 		}
 		
 		////////////////////////////////////////

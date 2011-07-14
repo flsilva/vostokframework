@@ -60,7 +60,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase]
+	[TestCase(order=999999)]
 	public class AssetLoadingServiceTests
 	{
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
@@ -118,6 +118,100 @@ package org.vostokframework.loadingmanagement.services
 		public function getLoader():StatefulLoader
 		{
 			return null;
+		}
+		
+		////////////////////////////////////
+		// AssetLoadingService().cancel() //
+		////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function cancel_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.cancel(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function cancel_notExistingAssetLoader_ThrowsError(): void
+		{
+			assetLoadingService.cancel(QUEUE_ID);
+		}
+		
+		[Test(order=999999)]
+		public function cancel_loadingAsset_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			try
+			{
+				var canceled:Boolean = assetLoadingService.cancel(asset1.identification.id);
+			}
+			catch(error:Error)
+			{
+				trace("##################################################################");
+				trace(error.getStackTrace());
+				throw error;
+			}
+			
+			Assert.assertTrue(canceled);
+		}
+		
+		[Test]
+		public function cancel_loadingAsset_checkIfAssetLoaderStatusIsCancelled_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.cancel(asset1.identification.id);
+			
+			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			Assert.assertEquals(LoaderStatus.CANCELED, assetLoader.status);
+		}
+		
+		[Test]
+		public function cancel_stoppedAsset_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			
+			var canceled:Boolean = assetLoadingService.cancel(asset1.identification.id);
+			Assert.assertTrue(canceled);
+		}
+		
+		[Test]
+		public function cancel_stoppedAsset_checkIfAssetLoaderStatusIsCanceled_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			assetLoadingService.cancel(asset1.identification.id);
+			
+			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			Assert.assertEquals(LoaderStatus.CANCELED, assetLoader.status);
+		}
+		
+		[Test]
+		public function cancel_canceledAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.cancel(asset1.identification.id);
+			
+			var canceled:Boolean = assetLoadingService.cancel(asset1.identification.id);
+			Assert.assertFalse(canceled);
 		}
 		
 		//////////////////////////////////////////
@@ -329,6 +423,62 @@ package org.vostokframework.loadingmanagement.services
 			
 			var isQueued:Boolean = assetLoadingService.isQueued(asset1.identification.id);
 			Assert.assertFalse(isQueued);
+		}
+		
+		////////////////////////////////////
+		// AssetLoadingService().resume() //
+		////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function resume_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.resume(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		public function resume_notExistingAsset_ThrowsError(): void
+		{
+			assetLoadingService.resume(QUEUE_ID);
+		}
+		
+		[Test]
+		public function resume_stoppedAsset_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			
+			var resumed:Boolean = assetLoadingService.resume(asset1.identification.id);
+			Assert.assertTrue(resumed);
+		}
+		
+		[Test]
+		public function resume_loadingAsset_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			
+			var resumed:Boolean = assetLoadingService.resume(asset1.identification.id);
+			Assert.assertFalse(resumed);
+		}
+		
+		[Test]
+		public function resume_stoppedAsset_CheckIfAssetLoaderStatusIsConnecting_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			queueLoadingService.load(QUEUE_ID, list);
+			assetLoadingService.stop(asset1.identification.id);
+			assetLoadingService.resume(asset1.identification.id);
+			
+			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			
+			Assert.assertEquals(LoaderStatus.CONNECTING, assetLoader.status);
 		}
 		
 		//////////////////////////////////

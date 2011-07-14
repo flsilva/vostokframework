@@ -28,18 +28,19 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
-	import org.as3collections.lists.TypedList;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
+	import org.as3collections.lists.TypedList;
 	import org.as3collections.lists.UniqueList;
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 
 	/**
 	 * description
@@ -176,6 +177,25 @@ package org.vostokframework.loadingmanagement.domain
 			return new ReadOnlyArrayList(list.toArray());
 		}
 		
+		public function findQueueLoaderByAssetLoader(loaderId:String):QueueLoader
+		{
+			var loader:StatefulLoader;
+			var queueLoader:QueueLoader;
+			var it:IIterator = _loaderMap.getValues().iterator();
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				if (loader is QueueLoader)
+				{
+					queueLoader = loader as QueueLoader;
+					if (queueLoader.containsLoader(loaderId)) return queueLoader;
+				}
+			}
+			
+			return null;
+		}
+		
 		/**
 		 * description
 		 * 
@@ -245,7 +265,10 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			return "[" + ReflectionUtil.getClassName(this) + "] <" + _loaderMap.getValues() + ">";
 		}
-		
+		//TODO: issue here. if this reporitory contains
+		//1 queue loader with 2 loaders that are loading,
+		//the returned value will be 3, but should be 2
+		//because queue loader will be considered too
 		public function totalLoading():int
 		{
 			var loadings:IList = findAllLoading();

@@ -28,9 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
-	import org.vostokframework.loadingmanagement.domain.StubPlainLoader;
+	import org.vostokframework.assetmanagement.domain.Asset;
 
 	/**
 	 * description
@@ -45,11 +43,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 		}
 		
-		override protected function getFileLoader(type:AssetType, url:String):PlainLoader
+		override public function create(asset:Asset):AssetLoader
 		{
-			type = null;
-			url = null;
-			return new StubPlainLoader();
+			var assetLoader:AssetLoader = new StubAssetLoader(asset.identification.toString(), asset.priority);
+			return assetLoader;
 		}
 
 	}

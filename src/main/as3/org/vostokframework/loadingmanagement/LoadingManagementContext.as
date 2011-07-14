@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.as3collections.IIterator;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -235,6 +237,32 @@ package org.vostokframework.loadingmanagement
 		private function globalQueueLoaderCompleteHandler(event:LoaderEvent):void
 		{
 			_globalQueueLoader.removeEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
+			
+			var itGlobalQueueLoader:IIterator = _globalQueueLoader.getLoaders().iterator();
+			var itQueueLoader:IIterator;
+			var queueLoader:QueueLoader;
+			var loader:StatefulLoader;
+			
+			while (itGlobalQueueLoader.hasNext())
+			{
+				queueLoader = itGlobalQueueLoader.next();
+				itQueueLoader = queueLoader.getLoaders().iterator();
+				
+				while (itQueueLoader.hasNext())
+				{
+					loader = itQueueLoader.next();
+					loaderRepository.remove(loader.id);
+					loadingMonitorRepository.remove(loader.id);
+				}
+				
+				loaderRepository.remove(queueLoader.id);
+				loadingMonitorRepository.remove(queueLoader.id);
+				queueLoader.dispose();
+			}
+			
+			_globalQueueLoader.dispose();
+			_globalQueueLoader = null;
+			
 			createGlobalQueueLoader();
 		}
 

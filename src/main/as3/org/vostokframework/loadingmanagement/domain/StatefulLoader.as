@@ -143,9 +143,10 @@ package org.vostokframework.loadingmanagement.domain
 				_status.equals(LoaderStatus.COMPLETE) ||
 				_status.equals(LoaderStatus.FAILED)) return;
 			
+			doCancel();
+			
 			setStatus(LoaderStatus.CANCELED);
 			dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
-			doCancel();
 		}
 		
 		override public function dispose():void
@@ -155,12 +156,12 @@ package org.vostokframework.loadingmanagement.domain
 			_errorHistory.clear();
 			_statusHistory.clear();
 			
-			_disposed = true;
 			_errorHistory = null;
 			_statusHistory = null;
 			_status = null;
 			
 			doDispose();
+			_disposed = true;
 		}
 		
 		public function equals(other : *): Boolean
@@ -244,17 +245,20 @@ package org.vostokframework.loadingmanagement.domain
 		
 		protected function loadingInit(data:* = null):void
 		{
+			validateDisposal();
 			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
 		}
 		
 		protected function loadingStarted(data:* = null, latency:int = 0):void
 		{
+			validateDisposal();
 			setStatus(LoaderStatus.LOADING);
 			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
 		}
 		
 		protected function loadingComplete(data:* = null):void
 		{
+			validateDisposal();
 			setStatus(LoaderStatus.COMPLETE);
 			dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
 		}
@@ -289,6 +293,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		private function failed():void
 		{
+			validateDisposal();
 			setStatus(LoaderStatus.FAILED);
 			dispatchEvent(new LoaderEvent(LoaderEvent.FAILED));
 		}
@@ -323,6 +328,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		private function setStatus(status:LoaderStatus):void
 		{
+			validateDisposal();
 			_status = status;
 			_statusHistory.add(_status);
 		}

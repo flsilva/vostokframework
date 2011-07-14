@@ -214,6 +214,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doCancel(): void
 		{
+			validateDisposal();
 			cancelLoaders();
 		}
 		
@@ -246,6 +247,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doLoad(): void
 		{
+			validateDisposal();
 			loadNext();
 		}
 
@@ -254,11 +256,14 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		override protected function doStop(): void
 		{
+			validateDisposal();
 			stopLoaders();
 		}
 		
 		private function addLoadersListener(loaders:IList):void
 		{
+			validateDisposal();
+			
 			var it:IIterator = loaders.iterator();
 			var loader:PlainLoader;
 			
@@ -271,16 +276,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function addLoaderListener(loader:PlainLoader):void
 		{
+			validateDisposal();
 			loader.addEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false, 0, true);
 		}
 		
 		private function addQueueListener():void
 		{
+			validateDisposal();
 			_queue.addEventListener(QueueEvent.QUEUE_CHANGED, queueChangedHandler, false, 0, true);
 		}
 		
 		private function cancelLoaders():void
 		{
+			validateDisposal();
+			
 			var it:IIterator = _queue.getLoaders().iterator();
 			var loader:PlainLoader;
 			
@@ -319,16 +328,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function loaderOpenedHandler(event:LoaderEvent):void
 		{
+			validateDisposal();
 			if (!status.equals(LoaderStatus.LOADING)) loadingStarted(null, event.latency);
 		}
 		
 		private function queueChangedHandler(event:QueueEvent):void
 		{
+			validateDisposal();
 			loadNext();
 		}
 		
 		private function removeLoadersListener(loaders:IList):void
 		{
+			validateDisposal();
+			
 			var it:IIterator = loaders.iterator();
 			var loader:PlainLoader;
 			
@@ -341,16 +354,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function removeLoaderListener(loader:PlainLoader):void
 		{
+			validateDisposal();
 			loader.removeEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false);
 		}
 		
 		private function removeQueueListener():void
 		{
+			validateDisposal();
 			_queue.removeEventListener(QueueEvent.QUEUE_CHANGED, queueChangedHandler, false);
 		}
 		
 		private function stopLoaders():void
 		{
+			validateDisposal();
+			
 			var it:IIterator = _queue.getLoaders().iterator();
 			var loader:PlainLoader;
 			
