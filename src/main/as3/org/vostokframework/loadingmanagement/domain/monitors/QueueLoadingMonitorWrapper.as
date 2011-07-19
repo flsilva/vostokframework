@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import flash.utils.setTimeout;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -42,7 +41,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class GlobalQueueLoadingMonitorWrapper extends EventDispatcher  implements IQueueLoadingMonitor
+	public class QueueLoadingMonitorWrapper extends EventDispatcher  implements IQueueLoadingMonitor
 	{
 		
 		private var _listeners:IList;
@@ -58,7 +57,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param requestId
 		 * @param loaders
 		 */
-		public function GlobalQueueLoadingMonitorWrapper(monitor:IQueueLoadingMonitor = null): void
+		public function QueueLoadingMonitorWrapper(monitor:IQueueLoadingMonitor = null): void
 		{
 			_listeners = ListUtil.getUniqueTypedList(new ArrayList(), EventListener);
 			if (monitor) changeMonitor(monitor);

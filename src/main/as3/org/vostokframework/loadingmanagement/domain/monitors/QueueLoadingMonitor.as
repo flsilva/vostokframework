@@ -96,7 +96,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 				var eventListener:EventListener = new EventListener(type, listener, useCapture, priority, useWeakReference);
 				_monitorsListeners.add(eventListener);
 				
-				//addMonitorsListener(type, listener, useCapture, priority, useWeakReference);
 				addMonitorsListeners();
 				return;
 			}
@@ -190,24 +189,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			super.removeEventListener(type, listener, useCapture);
 		}
-		/*
-		public function removeMonitor(monitor:ILoadingMonitor):void
-		{
-			validateDisposal();
-			
-			if (!monitor) throw new ArgumentError("The <monitor> argument must not be null.");
-			
-			if (!_monitors.contains(monitor))
-			{
-				var message:String = "There is no ILoadingMonitor stored with id:\n";
-				message += monitor.id;
-				
-				throw new LoadingMonitorNotFoundError(monitor.id, message);
-			}
-			
-			_monitors.remove(monitor);
-		}
-		*/
+		
 		override public function willTrigger(type:String):Boolean
 		{
 			validateDisposal();
@@ -269,10 +251,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
 		}
 		
-		//private function addMonitorsListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		private function addMonitorsListeners():void
 		{
-			trace("QueueLoadingMonitor#addMonitorsListeners() - id: " + id);
+			//trace("QueueLoadingMonitor#addMonitorsListeners() - id: " + id);
 			
 			var itMonitors:IIterator = _monitors.iterator();
 			var itListeners:IIterator;
@@ -283,27 +264,14 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			{
 				monitor = itMonitors.next();
 				itListeners = _monitorsListeners.iterator();
-				trace("QueueLoadingMonitor#addMonitorsListeners() - monitor.id: " + monitor.id);
+				//trace("QueueLoadingMonitor#addMonitorsListeners() - monitor.id: " + monitor.id);
 				while (itListeners.hasNext())
 				{
 					eventListener = itListeners.next();
-					trace("QueueLoadingMonitor#addMonitorsListeners() - eventListener.type: " + eventListener.type);
+					//trace("QueueLoadingMonitor#addMonitorsListeners() - eventListener.type: " + eventListener.type);
 					monitor.addEventListener(eventListener.type, eventListener.listener, eventListener.useCapture, eventListener.priority, eventListener.useWeakReference);
 				}
 			}
-			
-			/*
-			if (_monitorsListeners.add(eventListener))
-			{
-				var it:IIterator = _monitors.iterator();
-				var monitor:ILoadingMonitor;
-				
-				while (it.hasNext())
-				{
-					monitor = it.next();
-					monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
-				}
-			}*/
 		}
 		
 		private function addTimerListener():void
@@ -360,11 +328,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			}
 			
 			return false;
-			
-			/*if (_monitors.isEmpty()) return false;
-			
-			var monitor:ILoadingMonitor = _monitors.getAt(0);
-			return monitor.hasEventListener(type);*/
 		}
 		
 		private function monitorsWillTrigger(type:String):Boolean

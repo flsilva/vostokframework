@@ -41,9 +41,9 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.GlobalQueueLoadingMonitorWrapper;
 	import org.vostokframework.loadingmanagement.domain.monitors.IQueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
+	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorWrapper;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
@@ -66,7 +66,7 @@ package org.vostokframework.loadingmanagement
 		private var _assetLoaderFactory:AssetLoaderFactory;
 		private var _globalQueueLoader:QueueLoader;
 		private var _globalQueueLoadingMonitor:IQueueLoadingMonitor;
-		private var _globalQueueLoadingMonitorWrapper:GlobalQueueLoadingMonitorWrapper;
+		private var _globalQueueLoadingMonitorWrapper:QueueLoadingMonitorWrapper;
 		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
@@ -121,7 +121,7 @@ package org.vostokframework.loadingmanagement
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
-			_globalQueueLoadingMonitorWrapper = new GlobalQueueLoadingMonitorWrapper();
+			_globalQueueLoadingMonitorWrapper = new QueueLoadingMonitorWrapper();
 			
 			createGlobalQueueLoader();
 			
