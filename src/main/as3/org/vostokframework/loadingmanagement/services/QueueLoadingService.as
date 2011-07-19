@@ -49,6 +49,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.IQueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
@@ -126,7 +127,7 @@ package org.vostokframework.loadingmanagement.services
 			var queueLoader:QueueLoader = loaderRepository.find(queueId) as QueueLoader;
 			queueLoader.addLoaders(assetLoaders);
 			
-			var monitor:QueueLoadingMonitor = loadingMonitorRepository.find(queueLoader.id) as QueueLoadingMonitor;//TODO:concrete implementation referenced, change to abstraction
+			var monitor:IQueueLoadingMonitor = loadingMonitorRepository.find(queueLoader.id) as IQueueLoadingMonitor;//TODO:type coercion issue
 			monitor.addMonitors(assetLoadingMonitors);
 		}
 		
@@ -253,8 +254,9 @@ package org.vostokframework.loadingmanagement.services
 			//may throw DuplicateLoadingMonitorError
 			var assetLoadingMonitors:IList = createAssetLoadingMonitorsAndPutInRepository(assets);
 			
-			var monitor:QueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
+			var monitor:IQueueLoadingMonitor = new QueueLoadingMonitor(queueLoader, assetLoadingMonitors);
 			loadingMonitorRepository.add(monitor);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addMonitor(monitor);
 			
 			globalQueueLoader.addLoader(queueLoader);
 			globalQueueLoader.load();
@@ -403,7 +405,7 @@ package org.vostokframework.loadingmanagement.services
 				asset = it.next();
 				assetLoader = loaderRepository.find(asset.identification.toString());
 				
-				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader);
+				assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, assetLoader, asset.settings.cache.allowInternalCache);
 				assetLoadingMonitors.add(assetLoadingMonitor);
 				
 				//may throw DuplicateLoadingMonitorError

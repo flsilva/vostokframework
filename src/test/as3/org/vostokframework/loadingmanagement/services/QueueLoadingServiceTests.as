@@ -45,6 +45,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
@@ -61,7 +63,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase]
+	[TestCase(order=99999999)]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -101,6 +103,19 @@ package org.vostokframework.loadingmanagement.services
 			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			var globalQueueLoader:QueueLoader = new QueueLoader("GlobalQueueLoader", LoadPriority.MEDIUM, queue);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
+			/*
+			try
+			{
+				LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
+			}
+			catch(error:Error)
+			{
+				trace("###############################################################");
+				trace("setUp()");
+				trace(error.getStackTrace());
+				throw error;
+			}
+			*/
 			
 			service = new QueueLoadingService();
 			
@@ -458,6 +473,7 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset1);
 			
 			var monitor:ILoadingMonitor = service.load(QUEUE_ID, list);
+			
 			Assert.assertNotNull(monitor);
 		}
 		
@@ -560,7 +576,7 @@ package org.vostokframework.loadingmanagement.services
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(QUEUE_ID);
 			Assert.assertFalse(exists);
@@ -577,7 +593,7 @@ package org.vostokframework.loadingmanagement.services
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loaderRepository.exists(asset1.identification.toString());
 			Assert.assertFalse(exists);
@@ -594,7 +610,7 @@ package org.vostokframework.loadingmanagement.services
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(asset1.identification.toString());
 			Assert.assertFalse(exists);
@@ -611,7 +627,7 @@ package org.vostokframework.loadingmanagement.services
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
 			
 			var exists:Boolean = LoadingManagementContext.getInstance().loadingMonitorRepository.exists(QUEUE_ID);
 			Assert.assertFalse(exists);
@@ -620,6 +636,8 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callLoadAgain_ReturnsILoadingMonitor(): void
 		{
+			asset1.settings.cache.allowInternalCache = false;
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
@@ -628,10 +646,97 @@ package org.vostokframework.loadingmanagement.services
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
 			
 			var monitor:ILoadingMonitor = service.load(QUEUE_ID, list);
 			Assert.assertNotNull(monitor);
+		}
+		
+		[Test]
+		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_checkIfExistsAssetData_ReturnsFalse(): void
+		{
+			asset1.settings.cache.allowInternalCache = false;
+			
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
+			
+			var assetData:* = LoadingManagementContext.getInstance().loadedAssetRepository.find(asset1.identification);
+			Assert.assertNull(assetData);
+		}
+		
+		[Test(order=99999999)]
+		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_checkIfExistsAssetData_ReturnsTrue(): void
+		{
+			asset1.settings.cache.allowInternalCache = true;
+			
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			
+			
+			service.load(QUEUE_ID, list);
+			
+			trace("################################################");
+			try
+			{
+				trace("globalQueueLoadingMonitor.hasEventListener(AssetLoadingEvent.COMPLETE): " + LoadingManagementContext.getInstance().globalQueueLoadingMonitor.hasEventListener(AssetLoadingEvent.COMPLETE));
+			}
+			catch(error:Error)
+			{
+				trace("Holly Shit!!!");
+				trace(error.getStackTrace());
+				throw error;
+			}
+			
+			var monitor:ILoadingMonitor = LoadingManagementContext.getInstance().loadingMonitorRepository.find(asset1.identification.toString());
+			monitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByAssetLoadingMonitor, false, 0, true);
+			
+			var monitorQueue:ILoadingMonitor = LoadingManagementContext.getInstance().loadingMonitorRepository.find(QUEUE_ID);
+			monitorQueue.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByQueueLoadingMonitor, false, 0, true);
+			
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByGlobalQueueLoadingMonitor, false, 0, true);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
+			
+			
+			
+			var assetData:* = LoadingManagementContext.getInstance().loadedAssetRepository.find(asset1.identification);
+			Assert.assertNotNull(assetData);
+		}
+		
+		private function assetCompleteHandlerByAssetLoadingMonitor(event:AssetLoadingEvent):void
+		{
+			trace("################################################");
+			trace("assetCompleteHandlerByAssetLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+		}
+		
+		private function assetCompleteHandlerByQueueLoadingMonitor(event:AssetLoadingEvent):void
+		{
+			trace("################################################");
+			trace("assetCompleteHandlerByQueueLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+		}
+		
+		private function assetCompleteHandlerByGlobalQueueLoadingMonitor(event:AssetLoadingEvent):void
+		{
+			trace("################################################");
+			trace("assetCompleteHandlerByGlobalQueueLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+		}
+		
+		private function globalCompleteHandler(event:AggregateQueueLoadingEvent):void
+		{
+			trace("################################################");
+			trace("globalCompleteHandler() - event.queueId: " + event.queueId);
 		}
 		
 		////////////////////////////////////////

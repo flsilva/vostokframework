@@ -48,6 +48,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 */
 	public class AssetLoadingMonitor extends EventDispatcher implements ILoadingMonitor
 	{
+		private var _allowInternalCache:Boolean;
 		private var _assetIdentification:AssetIdentification;
 		private var _assetType:AssetType;
 		private var _loader:PlainLoader;
@@ -63,7 +64,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param assetType
 		 * @param loader
 		 */
-		public function AssetLoadingMonitor(identification:AssetIdentification, assetType:AssetType, loader:PlainLoader)
+		public function AssetLoadingMonitor(identification:AssetIdentification, assetType:AssetType, loader:PlainLoader, allowInternalCache:Boolean = false)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!assetType) throw new ArgumentError("Argument <assetType> must not be null.");
@@ -72,6 +73,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_assetIdentification = identification;
 			_assetType = assetType;
 			_loader = loader;
+			_allowInternalCache = allowInternalCache;
 			
 			addLoaderListeners();
 		}
@@ -101,15 +103,15 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function addLoaderListeners():void
 		{
-			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, 0, true);
-			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, 0, true);
-			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, 0, true);
-			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
-			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, 0, true);
-			_loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, 0, true);
-			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, 0, true);
-			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, 0, true);
-			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
+			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, int.MAX_VALUE, true);
 		}
 		
 		private function removeLoaderListeners():void
@@ -127,7 +129,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function createEvent(type:String, assetData:* = null):AssetLoadingEvent
 		{
-			return new AssetLoadingEvent(type, _assetIdentification.id, _assetIdentification.locale, _assetType, _monitoring, assetData);
+			return new AssetLoadingEvent(type, _assetIdentification.id, _assetIdentification.locale, _assetType, _monitoring, assetData, _allowInternalCache);
 		}
 		
 		private function createErrorEvent(type:String, message:String = null):AssetLoadingErrorEvent

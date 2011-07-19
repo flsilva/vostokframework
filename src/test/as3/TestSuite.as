@@ -47,6 +47,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
@@ -88,6 +89,7 @@ package
 		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
+		public var aggregateQueueLoadingMonitorTests:AggregateQueueLoadingMonitorTests;
 		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
 		public var queueLoadingMonitorTests:QueueLoadingMonitorTests;
 		

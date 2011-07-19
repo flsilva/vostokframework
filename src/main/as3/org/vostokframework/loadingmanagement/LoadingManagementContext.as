@@ -28,17 +28,24 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.as3collections.IIterator;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
+	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.GlobalQueueLoadingMonitorWrapper;
+	import org.vostokframework.loadingmanagement.domain.monitors.IQueueLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	import flash.errors.IllegalOperationError;
@@ -58,6 +65,8 @@ package org.vostokframework.loadingmanagement
 		
 		private var _assetLoaderFactory:AssetLoaderFactory;
 		private var _globalQueueLoader:QueueLoader;
+		private var _globalQueueLoadingMonitor:IQueueLoadingMonitor;
+		private var _globalQueueLoadingMonitorWrapper:GlobalQueueLoadingMonitorWrapper;
 		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
@@ -76,6 +85,10 @@ package org.vostokframework.loadingmanagement
 		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
 		
 		public function get globalQueueLoader(): QueueLoader { return _globalQueueLoader; }
+		
+		//public function get globalQueueLoadingMonitor(): QueueLoadingMonitor { return _globalQueueLoadingMonitor; }
+		
+		public function get globalQueueLoadingMonitor(): IQueueLoadingMonitor { return _globalQueueLoadingMonitorWrapper; }
 		
 		public function get loadedAssetRepository(): LoadedAssetRepository { return _loadedAssetRepository; }
 		
@@ -108,7 +121,12 @@ package org.vostokframework.loadingmanagement
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
+			_globalQueueLoadingMonitorWrapper = new GlobalQueueLoadingMonitorWrapper();
+			
 			createGlobalQueueLoader();
+			
+			//_globalQueueLoadingMonitor = new AggregateQueueLoadingMonitor(_globalQueueLoader);
+			//_globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, 0, true);
 		}
 		
 		/**
@@ -158,7 +176,17 @@ package org.vostokframework.loadingmanagement
 			}
 			
 			_globalQueueLoader = queueLoader;
-			_globalQueueLoader.addEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 0, true);
+			//_globalQueueLoader.addEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 0, true);
+			
+			var globalQueueLoadingMonitor:AggregateQueueLoadingMonitor = new AggregateQueueLoadingMonitor(_globalQueueLoader);
+			//_globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, 0, true);
+			
+			_globalQueueLoadingMonitorWrapper.changeMonitor(globalQueueLoadingMonitor);
+			_globalQueueLoadingMonitorWrapper.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 999999, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, 999999, true);
+			
+			if (_globalQueueLoadingMonitor) _globalQueueLoadingMonitor.dispose();
+			_globalQueueLoadingMonitor = globalQueueLoadingMonitor;
 		}
 		
 		/**
@@ -234,8 +262,11 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * @private
 		 */
-		private function globalQueueLoaderCompleteHandler(event:LoaderEvent):void
+		private function globalQueueLoaderCompleteHandler(event:AggregateQueueLoadingEvent):void
 		{
+			trace("#####################################################");
+			trace("globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
+			
 			_globalQueueLoader.removeEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
 			
 			var itGlobalQueueLoader:IIterator = _globalQueueLoader.getLoaders().iterator();
@@ -256,7 +287,12 @@ package org.vostokframework.loadingmanagement
 				}
 				
 				loaderRepository.remove(queueLoader.id);
+				
+				//var monitor:ILoadingMonitor = loadingMonitorRepository.find(queueLoader.id);
+				//globalQueueLoadingMonitor.removeMonitor(monitor);
+				
 				loadingMonitorRepository.remove(queueLoader.id);
+				
 				queueLoader.dispose();
 			}
 			
@@ -264,6 +300,19 @@ package org.vostokframework.loadingmanagement
 			_globalQueueLoader = null;
 			
 			createGlobalQueueLoader();
+		}
+		
+		private function assetCompleteHandler(event:AssetLoadingEvent):void
+		{
+			trace("#####################################################");
+			trace("assetCompleteHandler() - event.assetId: " + event.assetId + " | event.allowInternalCache: " + event.allowInternalCache);
+			
+			if (!event.allowInternalCache) return;
+			
+			//identification:AssetIdentification, queueId:String, data:*, type:AssetType, src:String
+			var identification:AssetIdentification = new AssetIdentification(event.assetId, event.assetLocale);
+			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification, "QUEUE-ID", event.assetData, event.assetType, "SRC");
+			loadedAssetRepository.add(loadedAssetReport); 
 		}
 
 	}

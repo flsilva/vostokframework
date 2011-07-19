@@ -161,7 +161,7 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		protected function getType(src:String): AssetType
 		{
-			return UrlAssetParser.getInstance().getAssetType(src);
+			return UrlAssetParser.getInstance().getAssetType(src);//TODO:pensar sobre injetar parser
 		}
 		
 		/**

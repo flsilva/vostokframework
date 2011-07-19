@@ -51,12 +51,18 @@ package org.vostokframework.loadingmanagement.domain.events
 		/**
 		 * description
 		 */
+		private var _allowInternalCache:Boolean;
 		private var _assetData:*;
 		private var _assetId:String;
 		private var _assetLocale:String;
 		private var _assetType:AssetType;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
+		
+		/**
+		 * description
+		 */
+		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
 		
 		/**
 		 * description
@@ -98,7 +104,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function AssetLoadingEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
+		public function AssetLoadingEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null, allowInternalCache:Boolean = false)
 		{
 			super(type);
 			
@@ -107,11 +113,12 @@ package org.vostokframework.loadingmanagement.domain.events
 			_assetType = assetType;
 			_monitoring = monitoring;
 			_assetData = assetData;
+			_allowInternalCache = allowInternalCache;
 		}
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, _monitoring, _assetData);
+			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, _monitoring, _assetData, _allowInternalCache);
 		}
 		
 	}
