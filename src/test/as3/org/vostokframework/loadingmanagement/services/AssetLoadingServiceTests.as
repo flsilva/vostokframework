@@ -546,6 +546,34 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertEquals(LoaderStatus.STOPPED, assetLoader.status);
 		}
 		
+		////////////////////////////////////
+		// AssetLoadingService().unload() //
+		////////////////////////////////////
+		
+		[Test(expects="ArgumentError")]
+		public function unload_invalidAssetIdArgument_ThrowsError(): void
+		{
+			assetLoadingService.unload(null);
+		}
+		
+		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		public function unload_notLoadedAsset_ThrowsError(): void
+		{
+			assetLoadingService.unload(asset1.identification.id);
+		}
+		
+		[Test]
+		public function unload_loadedAsset_checkIfAssetDataExists_ReturnsFalse(): void
+		{
+			var report:LoadedAssetReport = new LoadedAssetReport(asset1.identification, QUEUE_ID, new MovieClip(), AssetType.SWF, asset1.src);
+			LoadingManagementContext.getInstance().loadedAssetRepository.add(report);
+			
+			assetLoadingService.unload(asset1.identification.id);
+			
+			var exists:Boolean = LoadingManagementContext.getInstance().loadedAssetRepository.exists(asset1.identification);
+			Assert.assertFalse(exists);
+		}
+		
 	}
 
 }

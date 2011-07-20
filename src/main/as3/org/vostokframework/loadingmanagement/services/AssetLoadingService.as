@@ -272,9 +272,23 @@ package org.vostokframework.loadingmanagement.services
 		 * @param locale
 		 * @return
 		 */
-		public function unload(assetId:String, locale:String = null): Boolean
+		public function unload(assetId:String, locale:String = null): void
 		{
-			return false;
+			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID; 
+			
+			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			
+			if (!isLoaded(assetId, locale))
+			{
+				var message:String = "There is no asset data stored for an Asset object with id:\n";
+				message += "<" + identification.toString() + ">\n";
+				message += "Use the method <AssetLoadingService().isLoaded()> to check if an Asset object was loaded and stored.\n";
+				
+				throw new LoadedAssetDataNotFoundError(identification, message);
+			}
+			
+			loadedAssetRepository.remove(identification);
 		}
 
 	}
