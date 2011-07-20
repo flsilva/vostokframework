@@ -75,7 +75,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		public function changeMonitor(monitor:IQueueLoadingMonitor):void
 		{
-			trace("GlobalQueueLoadingMonitorWrapper#changeMonitor()");
+			//trace("GlobalQueueLoadingMonitorWrapper#changeMonitor()");
 			
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
 			
@@ -92,12 +92,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			_listeners.add(eventListener);
 			_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
-			
-			/*
-			if (_listeners.add(eventListener))
-			{
-				_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
-			}*/
 		}
 		
 		override public function dispatchEvent(event: Event) : Boolean
@@ -146,7 +140,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function addListenersOnMonitor():void
 		{
-			trace("GlobalQueueLoadingMonitorWrapper#addListenersOnMonitor()");
+			//trace("GlobalQueueLoadingMonitorWrapper#addListenersOnMonitor()");
 			
 			if (_listeners.isEmpty()) return;
 			
@@ -156,7 +150,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			while (it.hasNext())
 			{
 				eventListener = it.next();
-				trace("GlobalQueueLoadingMonitorWrapper#addListenersOnMonitor() - _monitor.id: " + _monitor.id + " | eventListener.type: " + eventListener.type);
+				//trace("GlobalQueueLoadingMonitorWrapper#addListenersOnMonitor() - _monitor.id: " + _monitor.id + " | eventListener.type: " + eventListener.type);
 				_monitor.addEventListener(eventListener.type, eventListener.listener, eventListener.useCapture, eventListener.priority, eventListener.useWeakReference);
 			}
 		}

@@ -157,7 +157,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			_fakeFileLoader.delayLoadAfterError = 50;
 			_loader.load();
-			
+			//TODO: verify() ??? ou deveria ser stub() ???
 			_timer.delay = 1000;
 			_timer.addEventListener(TimerEvent.TIMER_COMPLETE,
 									Async.asyncHandler(this, validateLoaderPropertyEventHandler, 2000,

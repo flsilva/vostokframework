@@ -29,9 +29,17 @@
 
 package org.vostokframework.loadingmanagement.services
 {
+	import mockolate.ingredients.Sequence;
+	import mockolate.mock;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.sequence;
+	import mockolate.verify;
+
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.vostokframework.HelperTestObject;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
@@ -50,6 +58,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
@@ -71,8 +80,8 @@ package org.vostokframework.loadingmanagement.services
 		private static const QUEUE_ID:String = "queue-1";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		
-		//[Rule]
-		//public var mocks:MockolateRule = new MockolateRule();
+		[Rule]
+		public var mocks:MockolateRule = new MockolateRule();
 		
 		//[Mock(inject="false")]
 		//public var _fakeAsset1:Asset;
@@ -80,6 +89,9 @@ package org.vostokframework.loadingmanagement.services
 		public var service:QueueLoadingService;
 		public var asset1:Asset;
 		public var asset2:Asset;
+		
+		[Mock(inject="false")]
+		public var helperTestObject:HelperTestObject;
 		
 		public function QueueLoadingServiceTests()
 		{
@@ -688,64 +700,57 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			
-			
 			service.load(QUEUE_ID, list);
 			
-			trace("################################################");
-			try
-			{
-				trace("globalQueueLoadingMonitor.hasEventListener(AssetLoadingEvent.COMPLETE): " + LoadingManagementContext.getInstance().globalQueueLoadingMonitor.hasEventListener(AssetLoadingEvent.COMPLETE));
-			}
-			catch(error:Error)
-			{
-				trace("Holly Shit!!!");
-				trace(error.getStackTrace());
-				throw error;
-			}
-			
-			var monitor:ILoadingMonitor = LoadingManagementContext.getInstance().loadingMonitorRepository.find(asset1.identification.toString());
-			monitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByAssetLoadingMonitor, false, 0, true);
-			
-			var monitorQueue:ILoadingMonitor = LoadingManagementContext.getInstance().loadingMonitorRepository.find(QUEUE_ID);
-			monitorQueue.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByQueueLoadingMonitor, false, 0, true);
-			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByGlobalQueueLoadingMonitor, false, 0, true);
-			trace("####2");
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
-			trace("####3");
-			
 			
 			var assetData:* = LoadingManagementContext.getInstance().loadedAssetRepository.find(asset1.identification);
 			Assert.assertNotNull(assetData);
 		}
 		
-		private function assetCompleteHandlerByAssetLoadingMonitor(event:AssetLoadingEvent):void
+		[Test(order=99999999)]
+		public function load_validArguments_verifyIfEventsOrderAreCorrect_ReturnsTrue(): void
 		{
-			trace("################################################");
-			trace("assetCompleteHandlerByAssetLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			helperTestObject = nice(HelperTestObject);
+			
+			var seq:Sequence = sequence();
+			mock(helperTestObject).method("test").args(AssetLoadingEvent).once().ordered(seq);;
+			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);;
+			mock(helperTestObject).method("test").args(AggregateQueueLoadingEvent).once().ordered(seq);;
+			
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.COMPLETE;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
+			
+			verify(helperTestObject);
 		}
 		
-		private function assetCompleteHandlerByQueueLoadingMonitor(event:AssetLoadingEvent):void
+		private function assetLoadingCompleteHandler(event:AssetLoadingEvent):void
 		{
-			trace("################################################");
-			trace("assetCompleteHandlerByQueueLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+			helperTestObject.test(AssetLoadingEvent);
 		}
 		
-		private function assetCompleteHandlerByGlobalQueueLoadingMonitor(event:AssetLoadingEvent):void
+		private function queueLoadingCompleteHandler(event:QueueLoadingEvent):void
 		{
-			trace("################################################");
-			trace("assetCompleteHandlerByGlobalQueueLoadingMonitor() - event.assetId: " + event.assetId + " | event.assetData: " + event.assetData);
+			helperTestObject.test(QueueLoadingEvent);
 		}
 		
-		private function globalCompleteHandler(event:AggregateQueueLoadingEvent):void
+		private function globalQueueLoadingCompleteHandler(event:AggregateQueueLoadingEvent):void
 		{
-			trace("################################################");
-			trace("globalCompleteHandler() - event.queueId: " + event.queueId);
+			helperTestObject.test(AggregateQueueLoadingEvent);
 		}
 		
 		////////////////////////////////////////
