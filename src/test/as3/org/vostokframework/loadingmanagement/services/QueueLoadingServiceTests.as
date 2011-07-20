@@ -37,6 +37,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
+	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
+	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
@@ -91,6 +93,9 @@ package org.vostokframework.loadingmanagement.services
 		[Before]
 		public function setUp(): void
 		{
+			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
+			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
+			
 			LoadingManagementContext.getInstance().setAssetLoaderFactory(new StubAssetLoaderFactory());
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
@@ -123,6 +128,10 @@ package org.vostokframework.loadingmanagement.services
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
 			asset1 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			asset2 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-02.jpg", assetPackage);
+			
+			AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
+			AssetManagementContext.getInstance().assetRepository.add(asset1);
+			AssetManagementContext.getInstance().assetRepository.add(asset2);
 			
 			//_fakeAsset1 = nice(Asset, null, [new AssetIdentification("QueueLoadingServiceTests/asset/image-01.jpg", VostokFramework.CROSS_LOCALE_ID), "QueueLoadingServiceTests/asset/image-01.jpg", AssetType.IMAGE, LoadPriority.MEDIUM]);
 		}
@@ -703,12 +712,12 @@ package org.vostokframework.loadingmanagement.services
 			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalCompleteHandler, false, 0, true);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandlerByGlobalQueueLoadingMonitor, false, 0, true);
-			
+			trace("####2");
 			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
 			assetLoader.status = LoaderStatus.COMPLETE;
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
 			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
-			
+			trace("####3");
 			
 			
 			var assetData:* = LoadingManagementContext.getInstance().loadedAssetRepository.find(asset1.identification);

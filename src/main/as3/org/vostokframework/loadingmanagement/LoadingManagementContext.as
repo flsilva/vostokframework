@@ -29,7 +29,9 @@
 package org.vostokframework.loadingmanagement
 {
 	import org.as3collections.IIterator;
+	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
+	import org.vostokframework.assetmanagement.services.AssetService;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -309,9 +311,42 @@ package org.vostokframework.loadingmanagement
 			
 			if (!event.allowInternalCache) return;
 			
-			//identification:AssetIdentification, queueId:String, data:*, type:AssetType, src:String
+			var errorMessage:String;
+			
+			var assetService:AssetService = new AssetService();
+			if (!assetService.assetExists(event.assetId, event.assetLocale))
+			{
+				errorMessage = "It was expected that the Asset object was found:\n";
+				errorMessage += "<assetId>: " + event.assetId + "\n";
+				errorMessage += "<assetLocale>: " + event.assetLocale;
+				
+				throw new IllegalOperationError(errorMessage); 
+			}
+			
+			var asset:Asset = assetService.getAsset(event.assetId, event.assetLocale);
+			var src:String = asset.src;
+			
 			var identification:AssetIdentification = new AssetIdentification(event.assetId, event.assetLocale);
-			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification, "QUEUE-ID", event.assetData, event.assetType, "SRC");
+			var assetLoader:StatefulLoader = loaderRepository.find(identification.toString());
+			if (!assetLoader)
+			{
+				errorMessage = "It was expected that the AssetLoader object for the loaded Asset object was found.\n";
+				errorMessage += "<assetId>: " + event.assetId + "\n";
+				errorMessage += "<assetLocale>: " + event.assetLocale;
+				
+				throw new IllegalOperationError(errorMessage); 
+			}
+			
+			var queueLoader:QueueLoader = loaderRepository.findQueueLoaderByAssetLoader(assetLoader.id);
+			if (!queueLoader)
+			{
+				errorMessage = "It was expected that the QueueLoader object for the AssetLoader object was found.\n";
+				errorMessage += "<AssetLoader.id>: " + assetLoader.id;
+				
+				throw new IllegalOperationError(errorMessage); 
+			}
+			
+			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification,queueLoader.id, event.assetData, event.assetType, src);
 			loadedAssetRepository.add(loadedAssetReport); 
 		}
 
