@@ -259,9 +259,35 @@ package org.vostokframework.loadingmanagement.services
 			assetLoader.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS));
 		}
 		
-		////////////////////////////////////////////
+		/////////////////////////////////////////////
 		// globalQueueLoadingMonitor other events ///
-		///////////////////////////////////////////
+		/////////////////////////////////////////////
+		
+		[Test]
+		public function load_validArguments_verifyIfGlobalMonitorDispatchesOpenEventsInCorrectOrder(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			helperTestObject = nice(HelperTestObject);
+			
+			var seq:Sequence = sequence();
+			mock(helperTestObject).method("test").args(AssetLoadingEvent).once().ordered(seq);;
+			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);;
+			mock(helperTestObject).method("test").args(AggregateQueueLoadingEvent).once().ordered(seq);;
+			
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false, 0, true);
+			
+			service.load(QUEUE_ID, list);
+			
+			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
+			assetLoader.status = LoaderStatus.LOADING;
+			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
+			
+			verify(helperTestObject);
+		}
 		
 		[Test]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesCompleteEventsInCorrectOrder(): void
