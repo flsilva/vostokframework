@@ -53,6 +53,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.services.AssetLoadingServiceTests;
 	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTests;
+	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTestsIntegration;
 
 	/**
 	 * @author Flávio Silva
@@ -99,6 +100,7 @@ package
 		//org.vostokframework.loadingmanagement.services
 		public var assetLoadingServiceTests:AssetLoadingServiceTests;
 		public var queueLoadingServiceTests:QueueLoadingServiceTests;
+		public var queueLoadingServiceTestsIntegration:QueueLoadingServiceTestsIntegration;
 		
 		public function TestSuite()
 		{

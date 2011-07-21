@@ -34,6 +34,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
+	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 
@@ -74,6 +75,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		
+		override public function dispatchEvent(event:Event):Boolean
+		{
+			validateDisposal();
+			
+			if (!LoaderEvent.typeBelongs(event.type)) return _loader.dispatchEvent(event);
+			
+			return super.dispatchEvent(event);
 		}
 		
 		override public function hasEventListener(type:String):Boolean

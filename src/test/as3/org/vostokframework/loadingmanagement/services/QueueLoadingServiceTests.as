@@ -29,17 +29,9 @@
 
 package org.vostokframework.loadingmanagement.services
 {
-	import mockolate.ingredients.Sequence;
-	import mockolate.mock;
-	import mockolate.nice;
-	import mockolate.runner.MockolateRule;
-	import mockolate.sequence;
-	import mockolate.verify;
-
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.HelperTestObject;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
@@ -55,10 +47,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
-	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
@@ -80,8 +69,8 @@ package org.vostokframework.loadingmanagement.services
 		private static const QUEUE_ID:String = "queue-1";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		
-		[Rule]
-		public var mocks:MockolateRule = new MockolateRule();
+		//[Rule]
+		//public var mocks:MockolateRule = new MockolateRule();
 		
 		//[Mock(inject="false")]
 		//public var _fakeAsset1:Asset;
@@ -89,9 +78,6 @@ package org.vostokframework.loadingmanagement.services
 		public var service:QueueLoadingService;
 		public var asset1:Asset;
 		public var asset2:Asset;
-		
-		[Mock(inject="false")]
-		public var helperTestObject:HelperTestObject;
 		
 		public function QueueLoadingServiceTests()
 		{
@@ -120,19 +106,6 @@ package org.vostokframework.loadingmanagement.services
 			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
 			var globalQueueLoader:QueueLoader = new QueueLoader("GlobalQueueLoader", LoadPriority.MEDIUM, queue);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
-			/*
-			try
-			{
-				LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
-			}
-			catch(error:Error)
-			{
-				trace("###############################################################");
-				trace("setUp()");
-				trace(error.getStackTrace());
-				throw error;
-			}
-			*/
 			
 			service = new QueueLoadingService();
 			
@@ -152,15 +125,6 @@ package org.vostokframework.loadingmanagement.services
 		public function tearDown(): void
 		{
 			service = null;
-		}
-		
-		////////////////////
-		// HELPER METHODS //
-		////////////////////
-		
-		public function getLoader():StatefulLoader
-		{
-			return null;
 		}
 		
 		//////////////////////////////////////////////
@@ -709,48 +673,6 @@ package org.vostokframework.loadingmanagement.services
 			
 			var assetData:* = LoadingManagementContext.getInstance().loadedAssetRepository.find(asset1.identification);
 			Assert.assertNotNull(assetData);
-		}
-		
-		[Test(order=99999999)]
-		public function load_validArguments_verifyIfEventsOrderAreCorrect_ReturnsTrue(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			helperTestObject = nice(HelperTestObject);
-			
-			var seq:Sequence = sequence();
-			mock(helperTestObject).method("test").args(AssetLoadingEvent).once().ordered(seq);;
-			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);;
-			mock(helperTestObject).method("test").args(AggregateQueueLoadingEvent).once().ordered(seq);;
-			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
-			
-			service.load(QUEUE_ID, list);
-			
-			var assetLoader:StubAssetLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString()) as StubAssetLoader;
-			assetLoader.status = LoaderStatus.COMPLETE;
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			assetLoader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
-			
-			verify(helperTestObject);
-		}
-		
-		private function assetLoadingCompleteHandler(event:AssetLoadingEvent):void
-		{
-			helperTestObject.test(AssetLoadingEvent);
-		}
-		
-		private function queueLoadingCompleteHandler(event:QueueLoadingEvent):void
-		{
-			helperTestObject.test(QueueLoadingEvent);
-		}
-		
-		private function globalQueueLoadingCompleteHandler(event:AggregateQueueLoadingEvent):void
-		{
-			helperTestObject.test(AggregateQueueLoadingEvent);
 		}
 		
 		////////////////////////////////////////

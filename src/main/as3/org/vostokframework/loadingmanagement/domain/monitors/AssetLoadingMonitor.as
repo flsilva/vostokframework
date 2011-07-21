@@ -157,7 +157,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			_monitoring.update(bytesTotal, bytesLoaded);
 			dispatchEvent(createEvent(AssetLoadingEvent.PROGRESS));
-			
 		}
 		
 		private function loaderCompleteHandler(event:LoaderEvent):void
