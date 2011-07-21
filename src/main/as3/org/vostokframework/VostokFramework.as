@@ -38,6 +38,7 @@ package org.vostokframework
 	public class VostokFramework
 	{
 		public static const CROSS_LOCALE_ID:String = "CROSS-LOCALE";
+		public static const KILL_CACHE_VAR_NAME:String = "VostokFrameworkKillCache";
 		public static const VERSION:String = "0.1-SNAPSHOT";
 		
 		public function VostokFramework()
