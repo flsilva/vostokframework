@@ -34,6 +34,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -187,6 +188,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIOErrorHandler, false, 0, true);
 			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, 0, true);
+			_loader.addEventListener(ErrorEvent.ERROR, loaderUnknownErrorHandler, false, 0, true);
 		}
 		
 		private function loaderInitHandler(event:LoaderEvent):void
@@ -220,6 +222,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			error(LoadError.SECURITY_ERROR, event.text);
 		}
 		
+		private function loaderUnknownErrorHandler(event:ErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.UNKNOWN_ERROR, event.text);
+		}
+		
 		private function removeFileLoaderListeners():void
 		{
 			validateDisposal();
@@ -229,6 +237,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIOErrorHandler, false);
 			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
+			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderUnknownErrorHandler, false);
 		}
 		
 	}

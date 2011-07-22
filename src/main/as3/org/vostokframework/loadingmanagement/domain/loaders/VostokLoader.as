@@ -33,7 +33,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
+	import flash.errors.IOError;
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
@@ -165,7 +168,23 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_timeConnectionStarted = getTimer();
 			
 			addFileLoaderListeners();
-			_loader.load(_request, _context);
+			
+			try
+			{
+				_loader.load(_request, _context);
+			}
+			catch (error:SecurityError)
+			{
+				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
+			catch (error:IOError)
+			{
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message));
+			}
+			catch (error:Error)
+			{
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+			}
 		}
 		
 		/**
@@ -213,6 +232,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			{
 				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
 			}
+			catch (error:Error)
+			{
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+			}
 		}
 		
 		private function openHandler(event:Event):void
@@ -227,6 +250,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			catch (error:SecurityError)
 			{
 				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
+			catch (error:Error)
+			{
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
 			}
 		}
 		
@@ -247,6 +274,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			catch (error:SecurityError)
 			{
 				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
+			catch (error:Error)
+			{
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
 			}
 		}
 

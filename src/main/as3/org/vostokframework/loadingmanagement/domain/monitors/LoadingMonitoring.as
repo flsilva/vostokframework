@@ -47,7 +47,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		private var _elapsedTime:int;
 		private var _latency:int;
 		private var _percent:int;
-
+		
 		public function get averageSpeed(): int { return 0; }
 
 		/**
@@ -99,7 +99,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * description
 		 */
 		public function get remainingTime(): int { return 0; }
-		
+		//TODO:implement detailed statistics
 		/**
 		 * description
 		 * 

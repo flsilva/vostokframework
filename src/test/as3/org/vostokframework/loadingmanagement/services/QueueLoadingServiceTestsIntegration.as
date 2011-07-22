@@ -316,6 +316,7 @@ package org.vostokframework.loadingmanagement.services
 			verify(helperTestObject);
 		}
 		
+		
 	}
 
 }
