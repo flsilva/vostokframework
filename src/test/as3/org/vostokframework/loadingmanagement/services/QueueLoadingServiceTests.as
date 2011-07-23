@@ -63,7 +63,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=99999999)]
+	[TestCase]
 	public class QueueLoadingServiceTests
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -656,7 +656,7 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertNull(assetData);
 		}
 		
-		[Test(order=99999999)]
+		[Test]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_checkIfExistsAssetData_ReturnsTrue(): void
 		{
 			asset1.settings.cache.allowInternalCache = true;

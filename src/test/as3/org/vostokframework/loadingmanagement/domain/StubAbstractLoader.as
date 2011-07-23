@@ -28,46 +28,48 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
-	import org.as3coreaddendum.system.Enum;
-
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderStatus extends Enum
+	public class StubAbstractLoader extends AbstractLoader
 	{
-		public static const CANCELED:LoaderStatus = new LoaderStatus("CANCELED", 0);
-		public static const COMPLETE:LoaderStatus = new LoaderStatus("COMPLETE", 1);
-		public static const CONNECTING:LoaderStatus = new LoaderStatus("CONNECTING", 2);
-		public static const CONNECTION_ERROR:LoaderStatus = new LoaderStatus("CONNECTION_ERROR", 3);
-		public static const FAILED:LoaderStatus = new LoaderStatus("FAILED", 4);
-		public static const LOADING:LoaderStatus = new LoaderStatus("LOADING", 5);
-		public static const QUEUED:LoaderStatus = new LoaderStatus("QUEUED", 6);
-		public static const STOPPED:LoaderStatus = new LoaderStatus("STOPPED", 7);
+		private var _cancelCalled:Boolean;
+		private var _loadCalled:Boolean;
+		private var _stopCalled:Boolean;
 		
+		public function get cancelCalled():Boolean { return _cancelCalled; }
 		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
+		public function get loadCalled():Boolean { return _loadCalled; }
 		
+		public function get stopCalled():Boolean { return _stopCalled; }
+		
+		public function StubAbstractLoader(id:String, maxAttempts:int, priority:LoadPriority = null)
 		{
-			_created = true;
+			if (!priority) priority = LoadPriority.MEDIUM;
+			super(id, priority, maxAttempts);
 		}
 		
-		/**
-		 * description
-		 * 
-		 * @param name
-		 * @param ordinal
-		 */
-		public function LoaderStatus(name:String, ordinal:int)
+		public function $loadingComplete():void
 		{
-			super(name, ordinal);
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			super.loadingComplete();
+		}
+		
+		override internal function doCancel(): void
+		{
+			_cancelCalled = true;
+		}
+		
+		override internal function doLoad(): void
+		{
+			_loadCalled = true;
+		}
+
+		override internal function doStop(): void
+		{
+			_stopCalled = true;
 		}
 
 	}

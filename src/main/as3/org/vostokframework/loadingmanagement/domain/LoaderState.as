@@ -29,6 +29,11 @@
 package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3coreaddendum.system.Enum;
+	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 
 	import flash.errors.IllegalOperationError;
 
@@ -37,26 +42,8 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderStatus extends Enum
+	public class LoaderState extends Enum
 	{
-		public static const CANCELED:LoaderStatus = new LoaderStatus("CANCELED", 0);
-		public static const COMPLETE:LoaderStatus = new LoaderStatus("COMPLETE", 1);
-		public static const CONNECTING:LoaderStatus = new LoaderStatus("CONNECTING", 2);
-		public static const CONNECTION_ERROR:LoaderStatus = new LoaderStatus("CONNECTION_ERROR", 3);
-		public static const FAILED:LoaderStatus = new LoaderStatus("FAILED", 4);
-		public static const LOADING:LoaderStatus = new LoaderStatus("LOADING", 5);
-		public static const QUEUED:LoaderStatus = new LoaderStatus("QUEUED", 6);
-		public static const STOPPED:LoaderStatus = new LoaderStatus("STOPPED", 7);
-		
-		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
-		
-		{
-			_created = true;
-		}
 		
 		/**
 		 * description
@@ -64,10 +51,46 @@ package org.vostokframework.loadingmanagement.domain
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoaderStatus(name:String, ordinal:int)
+		public function LoaderState(name:String, ordinal:int)
 		{
 			super(name, ordinal);
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			
+			if (ReflectionUtil.classPathEquals(this, LoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+		}
+		
+		public function cancel(loader:AbstractLoader):void
+		{
+			loader.doCancel();
+			
+			loader.setState(LoaderCanceled.INSTANCE);
+			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
+		}
+		
+		public function load(loader:AbstractLoader):void
+		{
+			loader.currentAttempt++;
+			
+			if (loader.currentAttempt > loader.maxAttempts)
+			{
+				loader.failed();
+				return;
+			}
+			
+			loader.setState(LoaderConnecting.INSTANCE);
+			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
+			loader.doLoad();
+		}
+		
+		public function stop(loader:AbstractLoader):void
+		{
+			loader.setState(LoaderStopped.INSTANCE);
+			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
+			loader.doStop();
+		}
+		
+		protected function decreaseLoaderCurrentAttempt(loader:AbstractLoader):void
+		{
+			loader.currentAttempt--;
 		}
 
 	}

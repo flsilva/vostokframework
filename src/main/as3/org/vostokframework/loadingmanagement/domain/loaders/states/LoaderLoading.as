@@ -26,9 +26,11 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.as3coreaddendum.system.Enum;
+	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.AbstractLoader;
+	import org.vostokframework.loadingmanagement.domain.LoaderState;
 
 	import flash.errors.IllegalOperationError;
 
@@ -37,17 +39,9 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderStatus extends Enum
+	public class LoaderLoading extends LoaderState
 	{
-		public static const CANCELED:LoaderStatus = new LoaderStatus("CANCELED", 0);
-		public static const COMPLETE:LoaderStatus = new LoaderStatus("COMPLETE", 1);
-		public static const CONNECTING:LoaderStatus = new LoaderStatus("CONNECTING", 2);
-		public static const CONNECTION_ERROR:LoaderStatus = new LoaderStatus("CONNECTION_ERROR", 3);
-		public static const FAILED:LoaderStatus = new LoaderStatus("FAILED", 4);
-		public static const LOADING:LoaderStatus = new LoaderStatus("LOADING", 5);
-		public static const QUEUED:LoaderStatus = new LoaderStatus("QUEUED", 6);
-		public static const STOPPED:LoaderStatus = new LoaderStatus("STOPPED", 7);
-		
+		public static const INSTANCE:LoaderState = new LoaderLoading("LOADING", 5);
 		
 		/**
 		 * @private
@@ -64,10 +58,22 @@ package org.vostokframework.loadingmanagement.domain
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoaderStatus(name:String, ordinal:int)
+		public function LoaderLoading(name:String, ordinal:int)
 		{
 			super(name, ordinal);
+			
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+		}
+		
+		override public function load(loader:AbstractLoader):void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
+		}
+		
+		override public function stop(loader:AbstractLoader):void
+		{
+			decreaseLoaderCurrentAttempt(loader);
+			super.stop(loader);
 		}
 
 	}

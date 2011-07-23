@@ -32,16 +32,20 @@ package org.vostokframework.loadingmanagement.domain
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase]
-	public class StatefulLoaderTests
+	[TestCase(order=9999999)]
+	public class AbstractLoaderTests
 	{
-		public var _loader:StatefulLoader;
+		public var _loader:AbstractLoader;
 		
-		public function StatefulLoaderTests()
+		public function AbstractLoaderTests()
 		{
 			
 		}
@@ -66,9 +70,9 @@ package org.vostokframework.loadingmanagement.domain
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():StatefulLoader
+		public function getLoader():AbstractLoader
 		{
-			return new StubStatefulLoader("id", 3);
+			return new StubAbstractLoader("id", 3);
 		}
 		
 		///////////////////////////////
@@ -108,31 +112,31 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.priority = 5;
 		}
 		
-		/////////////////////////////
-		// StatefulLoader().status //
-		/////////////////////////////
+		////////////////////////////
+		// StatefulLoader().state //
+		////////////////////////////
 		
 		[Test]
-		public function status_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
+		public function state_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
 		{
-			Assert.assertEquals(LoaderStatus.QUEUED, _loader.status);
+			Assert.assertEquals(LoaderQueued.INSTANCE, _loader.state);
 		}
 		
 		////////////////////////////////////
-		// StatefulLoader().statusHistory //
+		// StatefulLoader().stateHistory //
 		////////////////////////////////////
 		
 		[Test]
-		public function statusHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
+		public function stateHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
 		{
-			Assert.assertEquals(LoaderStatus.QUEUED, _loader.statusHistory.getAt(0));
+			Assert.assertEquals(LoaderQueued.INSTANCE, _loader.stateHistory.getAt(0));
 		}
 		
-		[Test]
-		public function statusHistory_afterCallLoad_checkIfSecondElementIsTryingToConnect_ReturnsTrue(): void
+		[Test(order=9999999)]
+		public function stateHistory_afterCallLoad_checkIfSecondElementIsTryingToConnect_ReturnsTrue(): void
 		{
 			_loader.load();
-			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.statusHistory.getAt(1));
+			Assert.assertEquals(LoaderConnecting.INSTANCE, _loader.stateHistory.getAt(1));
 		}
 		
 		///////////////////////////////
@@ -143,7 +147,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function cancel_simpleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
 		{
 			_loader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
+			Assert.assertEquals(LoaderCanceled.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -151,7 +155,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_loader.cancel();
 			_loader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
+			Assert.assertEquals(LoaderCanceled.INSTANCE, _loader.state);
 		}
 		
 		[Test(async)]
@@ -169,7 +173,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function load_simpleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
 			_loader.load();
-			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
+			Assert.assertEquals(LoaderConnecting.INSTANCE, _loader.state);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
@@ -194,7 +198,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function stop_simpleCall_checkIfStatusIsStopped_ReturnsTrue(): void
 		{
 			_loader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -202,7 +206,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_loader.stop();
 			_loader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, _loader.state);
 		}
 		
 		[Test(async)]
@@ -221,7 +225,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_loader.load();
 			_loader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -229,7 +233,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_loader.stop();
 			_loader.load();
-			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
+			Assert.assertEquals(LoaderConnecting.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -237,7 +241,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			_loader.load();
 			_loader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
+			Assert.assertEquals(LoaderCanceled.INSTANCE, _loader.state);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
@@ -261,7 +265,7 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.load();
 			_loader.stop();
 			_loader.load();
-			Assert.assertEquals(LoaderStatus.CONNECTING, _loader.status);
+			Assert.assertEquals(LoaderConnecting.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -270,7 +274,7 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.stop();
 			_loader.load();
 			_loader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -280,7 +284,7 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.stop();
 			_loader.load();
 			_loader.stop();
-			Assert.assertEquals(LoaderStatus.STOPPED, _loader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, _loader.state);
 		}
 		
 		[Test]
@@ -289,7 +293,7 @@ package org.vostokframework.loadingmanagement.domain
 			_loader.load();
 			_loader.stop();
 			_loader.cancel();
-			Assert.assertEquals(LoaderStatus.CANCELED, _loader.status);
+			Assert.assertEquals(LoaderCanceled.INSTANCE, _loader.state);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]
