@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.loadingmanagement.domain.AsyncLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.display.DisplayObject;
@@ -47,7 +46,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoader extends AsyncLoader
+	public class VostokLoader extends FileLoaderStrategy
 	{
 		/**
 		 * @private
@@ -85,41 +84,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		override public function hasEventListener(type:String):Boolean
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				return _loader.contentLoaderInfo.hasEventListener(type);
-			}
-			
-			return super.hasEventListener(type);
-		}
-		
-		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				_loader.contentLoaderInfo.removeEventListener(type, listener, useCapture);
-				return;
-			}
-			
-			super.removeEventListener(type, listener, useCapture);
-		}
-		
-		override public function willTrigger(type:String):Boolean
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				return _loader.contentLoaderInfo.willTrigger(type);
-			}
-			
-			return super.willTrigger(type);
-		}
-		
 		/**
-		 * @private
+		 * description
 		 */
-		override protected function doCancel(): void
+		override public function cancel(): void
 		{
 			removeFileLoaderListeners();
 			
@@ -138,9 +106,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		}
 		
 		/**
-		 * @private
+		 * description
 		 */
-		override protected function doDispose():void
+		override public function dispose():void
 		{
 			try
 			{
@@ -160,10 +128,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_context = null;
 		}
 		
+		override public function hasEventListener(type:String):Boolean
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.contentLoaderInfo.hasEventListener(type);
+			}
+			
+			return super.hasEventListener(type);
+		}
+		
 		/**
-		 * @private
+		 * description
 		 */
-		override protected function doLoad(): void
+		override public function load(): void
 		{
 			_timeConnectionStarted = getTimer();
 			
@@ -187,10 +165,21 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
+		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				_loader.contentLoaderInfo.removeEventListener(type, listener, useCapture);
+				return;
+			}
+			
+			super.removeEventListener(type, listener, useCapture);
+		}
+		
 		/**
-		 * @private
+		 * description
 		 */
-		override protected function doStop():void
+		override public function stop():void
 		{
 			try
 			{
@@ -206,6 +195,16 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
+		override public function willTrigger(type:String):Boolean
+		{
+			if (!LoaderEvent.typeBelongs(type))
+			{
+				return _loader.contentLoaderInfo.willTrigger(type);
+			}
+			
+			return super.willTrigger(type);
+		}
+		
 		private function addFileLoaderListeners():void
 		{
 			_loader.contentLoaderInfo.addEventListener(Event.INIT, initHandler, false, 0, true);
@@ -214,11 +213,28 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO: inserir listeners de erros e no erro chamar super.error();
 		}
 		
-		private function removeFileLoaderListeners():void
+		private function complete():void
 		{
-			_loader.contentLoaderInfo.removeEventListener(Event.INIT, initHandler, false);
-			_loader.contentLoaderInfo.removeEventListener(Event.OPEN, openHandler, false);
-			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, completeHandler, false);
+			removeFileLoaderListeners();
+			
+			try
+			{
+				var data:DisplayObject = _loader.content;
+				dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
+			}
+			catch (error:SecurityError)
+			{
+				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+			}
+			catch (error:Error)
+			{
+				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+			}
+		}
+		
+		private function completeHandler(event:Event):void
+		{
+			complete();
 		}
 		
 		private function initHandler(event:Event):void
@@ -257,28 +273,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
-		private function completeHandler(event:Event):void
+		private function removeFileLoaderListeners():void
 		{
-			complete();
-		}
-		
-		private function complete():void
-		{
-			removeFileLoaderListeners();
-			
-			try
-			{
-				var data:DisplayObject = _loader.content;
-				dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
-			}
-			catch (error:SecurityError)
-			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
-			}
-			catch (error:Error)
-			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
-			}
+			_loader.contentLoaderInfo.removeEventListener(Event.INIT, initHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(Event.OPEN, openHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, completeHandler, false);
 		}
 
 	}

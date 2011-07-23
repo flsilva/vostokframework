@@ -41,13 +41,13 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderComplete;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnectionError;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderFailed;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
 
-	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;
 
 	/**
@@ -55,7 +55,7 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority, IIndexable
+	public class FileLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority, IIndexable
 	{
 		/**
 		 * @private
@@ -70,6 +70,7 @@ package org.vostokframework.loadingmanagement.domain
 		private var _priority:LoadPriority;
 		private var _state:LoaderState;
 		private var _stateHistory:IList;
+		private var _strategy:FileLoaderStrategy;
 		
 		/**
 		 * description
@@ -128,17 +129,19 @@ package org.vostokframework.loadingmanagement.domain
 		 * description
 		 * 
 		 */
-		public function AbstractLoader(id:String, priority:LoadPriority, maxAttempts:int)
+		public function FileLoader(id:String, strategy:FileLoaderStrategy, priority:LoadPriority, maxAttempts:int)
 		{
-			if (ReflectionUtil.classPathEquals(this, AbstractLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			//if (ReflectionUtil.classPathEquals(this, AbstractLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
 			_id = id;
+			_strategy = strategy;
 			_priority = priority;
 			_maxAttempts = maxAttempts;
+			
 			_errorHistory = new ArrayList();
 			_stateHistory = new TypedList(new ArrayList(), LoaderState);
 			
@@ -152,7 +155,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function cancel(): void
 		{
 			validateDisposal();
-			_state.cancel(this);
+			_state.cancel(this, _strategy);
 		}
 		
 		/**
@@ -165,10 +168,12 @@ package org.vostokframework.loadingmanagement.domain
 			
 			_errorHistory.clear();
 			_stateHistory.clear();
+			_strategy.dispose();
 			
 			_errorHistory = null;
 			_stateHistory = null;
 			_state = null;
+			_strategy = null;
 			
 			doDispose();
 			_disposed = true;
@@ -192,7 +197,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function load(): void
 		{
 			validateDisposal();
-			_state.load(this);
+			_state.load(this, _strategy);
 		}
 
 		/**
@@ -201,31 +206,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function stop(): void
 		{
 			validateDisposal();
-			_state.stop(this);
-		}
-		
-		/**
-		 * @private
-		 */
-		internal function doCancel():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		/**
-		 * @private
-		 */
-		internal function doLoad():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		/**
-		 * @private
-		 */
-		internal function doStop():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			_state.stop(this, _strategy);
 		}
 		
 		internal function failed():void

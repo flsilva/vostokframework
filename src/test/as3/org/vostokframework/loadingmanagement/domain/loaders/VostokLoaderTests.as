@@ -30,7 +30,6 @@
 package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
 
 	import flash.display.Loader;
 	import flash.net.URLRequest;
@@ -54,21 +53,21 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidLoader_ThrowsError(): void
 		{
-			var loader:PlainLoader = new VostokLoader(null, null);
+			var loader:FileLoaderStrategy = new VostokLoader(null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidURLRequest_ThrowsError(): void
 		{
-			var loader:PlainLoader = new VostokLoader(new Loader(), null);
+			var loader:FileLoaderStrategy = new VostokLoader(new Loader(), null);
 			loader = null;
 		}
 		
 		[Test]
 		public function constructor_validInstantiation_ReturnsValidInstance(): void
 		{
-			var loader:PlainLoader = new VostokLoader(new Loader(), new URLRequest());
+			var loader:FileLoaderStrategy = new VostokLoader(new Loader(), new URLRequest());
 			Assert.assertNotNull(loader);
 		}
 		

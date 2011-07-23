@@ -26,59 +26,63 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders.states
+package org.vostokframework.loadingmanagement.domain.loaders
 {
+	import org.as3coreaddendum.errors.UnsupportedOperationError;
+	import org.as3coreaddendum.system.IDisposable;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.loadingmanagement.domain.FileLoader;
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
 
 	import flash.errors.IllegalOperationError;
+	import flash.events.EventDispatcher;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderComplete extends LoaderState
+	public class FileLoaderStrategy extends EventDispatcher implements IDisposable
 	{
-		public static const INSTANCE:LoaderState = new LoaderComplete("COMPLETE", 1);
 		
 		/**
-		 * @private
+		 * description
+		 * 
 		 */
-		private static var _created :Boolean = false;
-		
+		public function FileLoaderStrategy()
 		{
-			_created = true;
+			if (ReflectionUtil.classPathEquals(this, FileLoaderStrategy))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
 		/**
 		 * description
 		 * 
-		 * @param name
-		 * @param ordinal
+		 * @return
+ 		 */
+		public function cancel(): void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		public function dispose():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		public function load(): void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+
+		/**
+		 * description
 		 */
-		public function LoaderComplete(name:String, ordinal:int)
+		public function stop(): void
 		{
-			super(name, ordinal);
-			
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
-		}
-		
-		override public function cancel(loader:FileLoader, strategy:FileLoaderStrategy):void
-		{
-			// do nothing
-		}
-		
-		override public function load(loader:FileLoader, strategy:FileLoaderStrategy):void
-		{
-			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
-		}
-		
-		override public function stop(loader:FileLoader, strategy:FileLoaderStrategy):void
-		{
-			// do nothing
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 
 	}
