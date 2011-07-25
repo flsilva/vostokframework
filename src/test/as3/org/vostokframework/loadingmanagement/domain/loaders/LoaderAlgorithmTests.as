@@ -38,10 +38,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class VostokLoaderTests
+	public class LoaderAlgorithmTests
 	{
 		
-		public function VostokLoaderTests()
+		public function LoaderAlgorithmTests()
 		{
 			
 		}
@@ -53,21 +53,21 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidLoader_ThrowsError(): void
 		{
-			var loader:FileLoaderStrategy = new VostokLoader(null, null);
+			var loader:LoadingAlgorithm = new LoaderAlgorithm(null, null);
 			loader = null;
 		}
 		
 		[Test(expects="ArgumentError")]
 		public function constructor_invalidURLRequest_ThrowsError(): void
 		{
-			var loader:FileLoaderStrategy = new VostokLoader(new Loader(), null);
+			var loader:LoadingAlgorithm = new LoaderAlgorithm(new Loader(), null);
 			loader = null;
 		}
 		
 		[Test]
 		public function constructor_validInstantiation_ReturnsValidInstance(): void
 		{
-			var loader:FileLoaderStrategy = new VostokLoader(new Loader(), new URLRequest());
+			var loader:LoadingAlgorithm = new LoaderAlgorithm(new Loader(), new URLRequest());
 			Assert.assertNotNull(loader);
 		}
 		

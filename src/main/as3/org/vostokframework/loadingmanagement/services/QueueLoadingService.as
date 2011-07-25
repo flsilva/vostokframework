@@ -41,6 +41,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
@@ -364,16 +365,16 @@ package org.vostokframework.loadingmanagement.services
 		private function createAssetLoadersAndPutInRepository(assets:IList):IList
 		{
 			var asset:Asset;
-			var assetLoader:AssetLoader;
+			var loader:VostokLoader;
 			var assetLoaders:IList = new ArrayList();
 			var it:IIterator = assets.iterator();
 			
 			while (it.hasNext())
 			{
 				asset = it.next();
-				assetLoader = assetLoaderFactory.create(asset);
+				loader = assetLoaderFactory.create(asset);
 				
-				if (assetLoaders.contains(assetLoader))
+				if (assetLoaders.contains(loader))
 				{
 					var errorMessage:String = "Argument <assets> must not contain duplicate elements.\n";
 					errorMessage += "Found duplicate Asset object:\n";
@@ -384,9 +385,9 @@ package org.vostokframework.loadingmanagement.services
 				
 				//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
 				//if <loaderRepository> already contains AssetLoader object with its id
-				putAssetLoaderInRepository(assetLoader);
+				putAssetLoaderInRepository(loader);
 				
-				assetLoaders.add(assetLoader);
+				assetLoaders.add(loader);
 			}
 			
 			return assetLoaders;

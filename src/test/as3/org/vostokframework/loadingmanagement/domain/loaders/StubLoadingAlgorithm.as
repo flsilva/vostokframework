@@ -28,25 +28,55 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoaderFactory extends AssetLoaderFactory
+	public class StubLoadingAlgorithm extends LoadingAlgorithm
 	{
 		
-		public function StubAssetLoaderFactory()
+		/**
+		 * description
+		 * 
+		 */
+		public function StubLoadingAlgorithm()
 		{
 			
 		}
 		
-		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):LoadingAlgorithm
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		override public function cancel(): void
 		{
-			return new StubLoadingAlgorithm();
+			
+		}
+		
+		override public function dispose():void
+		{
+			
+		}
+
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		override public function load(): void
+		{
+			
+		}
+
+		/**
+		 * description
+		 */
+		override public function stop(): void
+		{
+			
 		}
 
 	}

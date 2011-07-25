@@ -36,7 +36,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 
 	import flash.display.Loader;
 	import flash.net.URLRequest;
@@ -64,16 +65,18 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 		}
 		
-		public function create(asset:Asset):AssetLoader
+		public function create(asset:Asset):VostokLoader
 		{
-			var fileLoader:PlainLoader = getFileLoader(asset.type, asset.src, asset.settings);
-			var assetLoader:AssetLoader = new AssetLoader(asset.identification.toString(), asset.priority, fileLoader, asset.settings.policy.maxAttempts);
-			return assetLoader;
+			var id:String = asset.identification.toString();
+			var maxAttempts:int = asset.settings.policy.maxAttempts;
+			var algorithm:LoadingAlgorithm = createLoaderAlgorithm(asset.type, asset.src, asset.settings);
+			
+			return instanciate(id, algorithm, asset.priority, maxAttempts);
 			
 			//TODO:settings.policy.latencyTimeout
 		}
 		
-		protected function getFileLoader(type:AssetType, url:String, settings:AssetLoadingSettings):PlainLoader
+		protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):LoadingAlgorithm
 		{
 			var killExternalCache:Boolean = settings.cache.killExternalCache;
 			var baseURL:String = settings.extra.baseURL;
@@ -86,7 +89,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				var request:URLRequest = new URLRequest(url);
 				var loaderContext:LoaderContext = createLoaderContext(settings.security);
 				
-				return new VostokLoader(loader, request, loaderContext);
+				return new LoaderAlgorithm(loader, request, loaderContext);
 			}
 			
 			//TODO:settings.extra.userDataContainer
@@ -100,6 +103,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.media.bufferTime
 			
 			return null;
+		}
+		
+		protected function instanciate(id:String, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int):VostokLoader
+		{
+			return new VostokLoader(id, algorithm, priority, maxAttempts);
 		}
 		
 		protected function parseUrl(url:String, killExternalCache:Boolean, baseURL:String):String

@@ -31,7 +31,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3coreaddendum.system.Enum;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
@@ -59,14 +59,14 @@ package org.vostokframework.loadingmanagement.domain
 			if (ReflectionUtil.classPathEquals(this, LoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
-		public function cancel(loader:FileLoader, strategy:FileLoaderStrategy):void
+		public function cancel(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			loader.setState(LoaderCanceled.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
-			strategy.cancel();
+			algorithm.cancel();
 		}
 		
-		public function load(loader:FileLoader, strategy:FileLoaderStrategy):void
+		public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			loader.currentAttempt++;
 			
@@ -78,17 +78,17 @@ package org.vostokframework.loadingmanagement.domain
 			
 			loader.setState(LoaderConnecting.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
-			strategy.load();
+			algorithm.load();
 		}
 		
-		public function stop(loader:FileLoader, strategy:FileLoaderStrategy):void
+		public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			loader.setState(LoaderStopped.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
-			strategy.stop();
+			algorithm.stop();
 		}
 		
-		protected function decreaseLoaderCurrentAttempt(loader:FileLoader):void
+		protected function decreaseLoaderCurrentAttempt(loader:VostokLoader):void
 		{
 			loader.currentAttempt--;
 		}

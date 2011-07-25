@@ -41,7 +41,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderComplete;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnectionError;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderFailed;
@@ -55,11 +55,12 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority, IIndexable
+	public class VostokLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority, IIndexable
 	{
 		/**
 		 * @private
 		 */
+		private var _algorithm:LoadingAlgorithm;
 		private var _currentAttempt:int;
 		private var _disposed:Boolean;
 		private var _errorHistory:IList;
@@ -70,7 +71,6 @@ package org.vostokframework.loadingmanagement.domain
 		private var _priority:LoadPriority;
 		private var _state:LoaderState;
 		private var _stateHistory:IList;
-		private var _strategy:FileLoaderStrategy;
 		
 		/**
 		 * description
@@ -129,16 +129,14 @@ package org.vostokframework.loadingmanagement.domain
 		 * description
 		 * 
 		 */
-		public function FileLoader(id:String, strategy:FileLoaderStrategy, priority:LoadPriority, maxAttempts:int)
+		public function VostokLoader(id:String, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int)
 		{
-			//if (ReflectionUtil.classPathEquals(this, AbstractLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
-			
 			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
 			_id = id;
-			_strategy = strategy;
+			_algorithm = algorithm;
 			_priority = priority;
 			_maxAttempts = maxAttempts;
 			
@@ -155,7 +153,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function cancel(): void
 		{
 			validateDisposal();
-			_state.cancel(this, _strategy);
+			_state.cancel(this, _algorithm);
 		}
 		
 		/**
@@ -168,12 +166,12 @@ package org.vostokframework.loadingmanagement.domain
 			
 			_errorHistory.clear();
 			_stateHistory.clear();
-			_strategy.dispose();
+			_algorithm.dispose();
 			
 			_errorHistory = null;
 			_stateHistory = null;
 			_state = null;
-			_strategy = null;
+			_algorithm = null;
 			
 			doDispose();
 			_disposed = true;
@@ -197,7 +195,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function load(): void
 		{
 			validateDisposal();
-			_state.load(this, _strategy);
+			_state.load(this, _algorithm);
 		}
 
 		/**
@@ -206,7 +204,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function stop(): void
 		{
 			validateDisposal();
-			_state.stop(this, _strategy);
+			_state.stop(this, _algorithm);
 		}
 		
 		internal function failed():void

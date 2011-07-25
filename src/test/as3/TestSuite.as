@@ -41,13 +41,13 @@ package
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTests;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNext;
 	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
-	import org.vostokframework.loadingmanagement.domain.FileLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTests;
 	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTestsGetNext;
 	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoaderAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
@@ -78,7 +78,7 @@ package
 		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
 		//org.vostokframework.loadingmanagement.domain
-		public var fileLoaderTests:FileLoaderTests;
+		public var vostokLoaderTests:VostokLoaderTests;
 		public var statefulLoaderTests:StatefulLoaderTests;
 		public var assetLoaderTests:AssetLoaderTests;
 		public var queueLoaderTests:QueueLoaderTests;
@@ -89,7 +89,7 @@ package
 		public var elaboratePriorityLoadQueueTestsGetNextHighestLowest:ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 		
 		//org.vostokframework.loadingmanagement.domain.assetloaders
-		public var vostokLoaderTests:VostokLoaderTests;
+		public var loaderAlgorithm:LoaderAlgorithm;
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
 		public var aggregateQueueLoadingMonitorTests:AggregateQueueLoadingMonitorTests;

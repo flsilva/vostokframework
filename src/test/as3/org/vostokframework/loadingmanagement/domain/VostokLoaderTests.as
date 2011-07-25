@@ -38,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
@@ -48,17 +48,17 @@ package org.vostokframework.loadingmanagement.domain
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=9999999)]
-	public class FileLoaderTests
+	public class VostokLoaderTests
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var stubFileLoaderStrategy:FileLoaderStrategy;
+		public var stubLoadingAlgorithm:LoadingAlgorithm;
 		
-		public var loader:FileLoader;
+		public var loader:VostokLoader;
 		
-		public function FileLoaderTests()
+		public function VostokLoaderTests()
 		{
 			
 		}
@@ -83,12 +83,12 @@ package org.vostokframework.loadingmanagement.domain
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():FileLoader
+		public function getLoader():VostokLoader
 		{
-			stubFileLoaderStrategy = nice(FileLoaderStrategy);
-			stub(stubFileLoaderStrategy).asEventDispatcher();
+			stubLoadingAlgorithm = nice(LoadingAlgorithm);
+			stub(stubLoadingAlgorithm).asEventDispatcher();
 			
-			return new FileLoader("id", stubFileLoaderStrategy, LoadPriority.MEDIUM, 3);
+			return new VostokLoader("id", stubLoadingAlgorithm, LoadPriority.MEDIUM, 3);
 		}
 		
 		///////////////////////////////
@@ -184,9 +184,9 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function cancel_simpleCall_verifyIfStrategyWasCalled(): void
 		{
-			mock(stubFileLoaderStrategy).method("cancel");
+			mock(stubLoadingAlgorithm).method("cancel");
 			loader.cancel();
-			verify(stubFileLoaderStrategy);
+			verify(stubLoadingAlgorithm);
 		}
 		
 		/////////////////////////////
@@ -217,9 +217,9 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function load_simpleCall_verifyIfStrategyWasCalled(): void
 		{
-			mock(stubFileLoaderStrategy).method("load");
+			mock(stubLoadingAlgorithm).method("load");
 			loader.load();
-			verify(stubFileLoaderStrategy);
+			verify(stubLoadingAlgorithm);
 		}
 		
 		/////////////////////////////
@@ -251,9 +251,9 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function stop_simpleCall_verifyIfStrategyWasCalled(): void
 		{
-			mock(stubFileLoaderStrategy).method("stop");
+			mock(stubLoadingAlgorithm).method("stop");
 			loader.stop();
-			verify(stubFileLoaderStrategy);
+			verify(stubLoadingAlgorithm);
 		}
 		
 		///////////////////////////////////////////////////////////

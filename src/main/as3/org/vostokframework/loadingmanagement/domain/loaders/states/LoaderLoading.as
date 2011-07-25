@@ -29,9 +29,9 @@
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.loadingmanagement.domain.FileLoader;
 	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.loaders.FileLoaderStrategy;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	import flash.errors.IllegalOperationError;
 
@@ -66,15 +66,15 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
 		
-		override public function load(loader:FileLoader, strategy:FileLoaderStrategy):void
+		override public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
 		}
 		
-		override public function stop(loader:FileLoader, strategy:FileLoaderStrategy):void
+		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			decreaseLoaderCurrentAttempt(loader);
-			super.stop(loader, strategy);
+			super.stop(loader, algorithm);
 		}
 
 	}

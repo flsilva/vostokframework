@@ -40,16 +40,16 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoaderStrategy extends EventDispatcher implements IDisposable
+	public class LoadingAlgorithm extends EventDispatcher implements IDisposable
 	{
 		
 		/**
 		 * description
 		 * 
 		 */
-		public function FileLoaderStrategy()
+		public function LoadingAlgorithm ()
 		{
-			if (ReflectionUtil.classPathEquals(this, FileLoaderStrategy))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, LoadingAlgorithm ))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
 		/**

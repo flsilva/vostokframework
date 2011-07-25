@@ -46,7 +46,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoader extends FileLoaderStrategy
+	public class LoaderAlgorithm extends LoadingAlgorithm
 	{
 		/**
 		 * @private
@@ -63,7 +63,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * @param request
 		 * @param context
 		 */
-		public function VostokLoader(loader:Loader, request:URLRequest, context:LoaderContext = null)
+		public function LoaderAlgorithm(loader:Loader, request:URLRequest, context:LoaderContext = null)
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!request) throw new ArgumentError("Argument <request> must not be null.");
