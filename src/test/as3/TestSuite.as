@@ -99,7 +99,6 @@ package
 		public var elaborateLoadingPolicyTestsHighestLowest:ElaborateLoadingPolicyTestsHighestLowest;
 		
 		//org.vostokframework.loadingmanagement.services
-		//public var assetLoadingServiceTests:AssetLoadingServiceTests;
 		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
 		public var loadingServiceTestsExists:LoadingServiceTestsExists;
 		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;

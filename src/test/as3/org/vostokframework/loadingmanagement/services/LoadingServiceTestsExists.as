@@ -52,6 +52,8 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().exists() //
 		///////////////////////////////
 		
+		//QUEUE testing
+		
 		[Test(expects="ArgumentError")]
 		public function exists_invalidLoaderIdArgument_ThrowsError(): void
 		{
@@ -78,18 +80,6 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function exists_callLoadAndCheckIfAssetLoaderExists_ReturnsTrue(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			service.load(QUEUE_ID, list);
-			
-			var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
-			Assert.assertTrue(exists);
-		}
-		
-		[Test]
 		public function exists_callLoad_queueLoadingCompletes_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
 			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
@@ -103,6 +93,20 @@ package org.vostokframework.loadingmanagement.services
 			
 			var exists:Boolean = service.exists(QUEUE_ID);
 			Assert.assertFalse(exists);
+		}
+		
+		//ASSET testing
+		
+		[Test]
+		public function exists_callLoadAndCheckIfAssetLoaderExists_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(exists);
 		}
 		
 		[Test]

@@ -39,7 +39,9 @@ package org.vostokframework.loadingmanagement.services
 	[TestCase]
 	public class LoadingServiceTestsIsQueued extends LoadingServiceTestsConfiguration
 	{
-		private static const QUEUE_ID:String = "queue-1";
+		private static const QUEUE1_ID:String = "queue-1";
+		private static const QUEUE2_ID:String = "queue-2";
+		private static const QUEUE3_ID:String = "queue-3";
 		
 		public function LoadingServiceTestsIsQueued()
 		{
@@ -50,6 +52,8 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().isQueued() //
 		/////////////////////////////////
 		
+		//QUEUE testing
+		
 		[Test(expects="ArgumentError")]
 		public function isQueued_invalidLoaderIdArgument_ThrowsError(): void
 		{
@@ -59,29 +63,66 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
 		public function isQueued_notExistingLoader_ThrowsError(): void
 		{
-			service.isQueued(QUEUE_ID);
+			service.isQueued(QUEUE1_ID);
 		}
 		
 		[Test]
-		public function isQueued_queuedLoader_ReturnsTrue(): void
+		public function isQueued_queuedQueueLoader_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			list.add(asset2);
 			
-			service.load(QUEUE_ID, list, null, 1);
+			service.load(QUEUE1_ID, list, null, 1);
+			
+			var list2:IList = new ArrayList();
+			list2.add(asset3);
+			
+			service.load(QUEUE2_ID, list2, null, 1);
+			
+			var list3:IList = new ArrayList();
+			list3.add(asset4);
+			
+			service.load(QUEUE3_ID, list3, null, 1);
+			
+			var isQueued:Boolean = service.isQueued(QUEUE3_ID);
+			Assert.assertTrue(isQueued);
+		}
+		
+		[Test]
+		public function isQueued_loadingQueueLoader_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE1_ID, list);
+			
+			var isQueued:Boolean = service.isQueued(asset1.identification.id, asset1.identification.locale);
+			Assert.assertFalse(isQueued);
+		}
+		
+		//ASSET testing
+		
+		[Test]
+		public function isQueued_queuedAssetLoader_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			service.load(QUEUE1_ID, list, null, 1);
 			
 			var isQueued:Boolean = service.isQueued(asset2.identification.id, asset2.identification.locale);
 			Assert.assertTrue(isQueued);
 		}
 		
 		[Test]
-		public function isQueued_loadingLoader_ReturnsFalse(): void
+		public function isQueued_loadingAssetLoader_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
+			service.load(QUEUE1_ID, list);
 			
 			var isQueued:Boolean = service.isQueued(asset1.identification.id, asset1.identification.locale);
 			Assert.assertFalse(isQueued);

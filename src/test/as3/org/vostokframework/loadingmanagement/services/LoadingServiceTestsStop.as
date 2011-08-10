@@ -46,7 +46,9 @@ package org.vostokframework.loadingmanagement.services
 	[TestCase]
 	public class LoadingServiceTestsStop extends LoadingServiceTestsConfiguration
 	{
-		private static const QUEUE_ID:String = "queue-1";
+		private static const QUEUE1_ID:String = "queue-1";
+		private static const QUEUE2_ID:String = "queue-2";
+		private static const QUEUE3_ID:String = "queue-3";
 		
 		public function LoadingServiceTestsStop()
 		{
@@ -57,6 +59,8 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().stop() //
 		/////////////////////////////
 		
+		//QUEUE testing
+		
 		[Test(expects="ArgumentError")]
 		public function stop_invalidLoaderIdArgument_ThrowsError(): void
 		{
@@ -66,58 +70,95 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
 		public function stop_notExistingLoader_ThrowsError(): void
 		{
-			service.stop(QUEUE_ID);
+			service.stop(QUEUE1_ID);
 		}
 		
 		[Test]
-		public function stop_loadingLoader_ReturnsTrue(): void
+		public function stop_loadingQueueLoader_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
+			service.load(QUEUE1_ID, list);
 			
-			var stopped:Boolean = service.stop(QUEUE_ID);
+			var stopped:Boolean = service.stop(QUEUE1_ID);
 			Assert.assertTrue(stopped);
 		}
 		
 		[Test]
-		public function stop_notLoadingLoader_ReturnsTrue(): void
+		public function stop_queuedQueueLoader_ReturnsTrue(): void
 		{
-			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 1);
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
 			
-			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
+			service.load(QUEUE1_ID, list, null, 1);
 			
-			var stopped:Boolean = service.stop(QUEUE_ID);
+			var list2:IList = new ArrayList();
+			list2.add(asset3);
+			
+			service.load(QUEUE2_ID, list2, null, 1);
+			
+			var list3:IList = new ArrayList();
+			list3.add(asset4);
+			
+			service.load(QUEUE3_ID, list3, null, 1);
+			
+			var stopped:Boolean = service.stop(QUEUE3_ID);
 			Assert.assertTrue(stopped);
 		}
 		
 		[Test]
-		public function stop_stoppedLoader_ReturnsFalse(): void
+		public function stop_stoppedQueueLoader_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
-			service.stop(QUEUE_ID);
+			service.load(QUEUE1_ID, list);
+			service.stop(QUEUE1_ID);
 			
-			var stopped:Boolean = service.stop(QUEUE_ID);
+			var stopped:Boolean = service.stop(QUEUE1_ID);
 			Assert.assertFalse(stopped);
 		}
 		
+		//ASSET testing
+		
 		[Test]
-		public function stop_loadingLoader_CheckIfLoaderStateIsStopped_ReturnsTrue(): void
+		public function stop_loadingAssetLoader_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
-			service.stop(QUEUE_ID);
+			service.load(QUEUE1_ID, list);
 			
-			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(identification);
-			Assert.assertEquals(LoaderStopped.INSTANCE, queueLoader.state);
+			var stopped:Boolean = service.stop(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_queuedAssetLoader_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			service.load(QUEUE1_ID, list, null, 1);
+			
+			var stopped:Boolean = service.stop(asset2.identification.id, asset2.identification.locale);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_stoppedAssetLoader_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE1_ID, list);
+			service.stop(asset1.identification.id, asset1.identification.locale);
+			
+			var stopped:Boolean = service.stop(asset1.identification.id, asset1.identification.locale);
+			Assert.assertFalse(stopped);
 		}
 		
 	}

@@ -59,6 +59,8 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().cancel() //
 		///////////////////////////////
 		
+		//QUEUE testing
+		
 		[Test(expects="ArgumentError")]
 		public function cancel_invalidLoaderIdArgument_ThrowsError(): void
 		{
@@ -72,17 +74,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function cancel_loadingLoader_Void(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			service.load(QUEUE_ID, list);
-			service.cancel(QUEUE_ID);
-		}
-		
-		[Test]
-		public function cancel_loadingLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
+		public function cancel_loadingQueueLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -95,7 +87,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function cancel_loadingLoader_checkIfAssetLoaderExists_ReturnsFalse(): void
+		public function cancel_loadingQueueLoader_checkIfAssetLoaderExists_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -108,18 +100,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function cancel_stoppedLoader_Void(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			service.load(QUEUE_ID, list);
-			service.stop(QUEUE_ID);
-			service.cancel(QUEUE_ID);
-		}
-		
-		[Test]
-		public function cancel_stoppedLoader_checkIfLoaderExists_ReturnsFalse(): void
+		public function cancel_stoppedQueueLoader_checkIfLoaderExists_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -133,7 +114,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function cancel_queuedLoader_checkIfLoaderExists_ReturnsFalse(): void
+		public function cancel_queuedQueueLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 1);
@@ -158,6 +139,60 @@ package org.vostokframework.loadingmanagement.services
 			service.load(QUEUE_ID, list);
 			service.cancel(QUEUE_ID);
 			service.cancel(QUEUE_ID);
+		}
+		
+		//ASSET testing
+		
+		[Test]
+		public function cancel_uniqueAssetLoaderInQueueLoader_loadingAssetLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.cancel(asset1.identification.id, asset1.identification.locale);
+			
+			var exists:Boolean = service.exists(QUEUE_ID);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function cancel_uniqueAssetLoaderInQueueLoader_loadingAssetLoader_checkIfAssetLoaderExists_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.cancel(asset1.identification.id, asset1.identification.locale);
+			
+			var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function cancel_uniqueAssetLoaderInQueueLoader_stoppedAssetLoader_checkIfAssetLoaderExists_ReturnsFalse(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			service.stop(asset1.identification.id, asset1.identification.locale);
+			service.cancel(asset1.identification.id, asset1.identification.locale);
+			
+			var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale); 
+			Assert.assertFalse(exists);
+		}
+		
+		[Test]
+		public function cancel_notUniqueAssetLoaderInQueueLoader_callsTwiceForSameAsset_Void(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			service.load(QUEUE_ID, list);
+			service.cancel(asset1.identification.id, asset1.identification.locale);
+			service.cancel(asset1.identification.id, asset1.identification.locale);
 		}
 		
 	}

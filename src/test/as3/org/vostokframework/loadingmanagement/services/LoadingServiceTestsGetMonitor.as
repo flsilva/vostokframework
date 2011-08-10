@@ -51,6 +51,8 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().getMonitor() //
 		///////////////////////////////////
 		
+		//QUEUE testing
+		
 		[Test(expects="ArgumentError")]
 		public function getMonitor_invalidLoaderIdArgument_ThrowsError(): void
 		{
@@ -64,7 +66,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function getMonitor_existingMonitor_ReturnsValidObject(): void
+		public function getMonitor_existingMonitorForQueueLoader_ReturnsValidObject(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -72,6 +74,20 @@ package org.vostokframework.loadingmanagement.services
 			service.load(QUEUE_ID, list);
 			
 			var monitor:ILoadingMonitor = service.getMonitor(QUEUE_ID);
+			Assert.assertNotNull(monitor);
+		}
+		
+		//ASSET testing
+		
+		[Test]
+		public function getMonitor_existingMonitorForAssetLoader_ReturnsValidObject(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE_ID, list);
+			
+			var monitor:ILoadingMonitor = service.getMonitor(asset1.identification.id, asset1.identification.locale);
 			Assert.assertNotNull(monitor);
 		}
 		
