@@ -71,7 +71,7 @@ package org.vostokframework.loadingmanagement.services
 	 * @author Flávio Silva
 	 */
 	[TestCase(order=999)]
-	public class QueueLoadingServiceTestsIntegration
+	public class LoadingServiceTestsIntegration
 	{
 		private static const QUEUE_ID:String = "queue-1";
 		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
@@ -79,7 +79,7 @@ package org.vostokframework.loadingmanagement.services
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
-		public var service:QueueLoadingService;
+		public var service:LoadingService;
 		public var asset1:Asset;
 		public var asset2:Asset;
 		
@@ -88,7 +88,7 @@ package org.vostokframework.loadingmanagement.services
 		
 		public var timer:Timer;
 		
-		public function QueueLoadingServiceTestsIntegration()
+		public function LoadingServiceTestsIntegration()
 		{
 			
 		}
@@ -120,12 +120,12 @@ package org.vostokframework.loadingmanagement.services
 			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
-			service = new QueueLoadingService();
+			service = new LoadingService();
 			
 			var assetIdentification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(assetIdentification);
-			asset1 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
-			asset2 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-02.jpg", assetPackage);
+			asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-01.jpg", assetPackage);
+			asset2 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-02.jpg", assetPackage);
 			
 			AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
 			AssetManagementContext.getInstance().assetRepository.add(asset1);
@@ -284,7 +284,7 @@ package org.vostokframework.loadingmanagement.services
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent(): void
 		{
 			trace("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			trace("QueueLoadingServiceTestsIntegration::load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent");
+			trace("LoadingServiceTestsIntegration::load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent");
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

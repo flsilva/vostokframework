@@ -47,7 +47,18 @@ package
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
-	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTests;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsCancel;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsExists;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetAssetData;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetMonitor;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoaded;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoading;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsQueued;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsLoad;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsMergeAssets;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsRemoveAssetData;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsResume;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsStop;
 
 	/**
 	 * @author Flávio Silva
@@ -89,7 +100,18 @@ package
 		
 		//org.vostokframework.loadingmanagement.services
 		//public var assetLoadingServiceTests:AssetLoadingServiceTests;
-		public var queueLoadingServiceTests:QueueLoadingServiceTests;
+		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
+		public var loadingServiceTestsExists:LoadingServiceTestsExists;
+		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;
+		public var loadingServiceTestsGetMonitor:LoadingServiceTestsGetMonitor;
+		public var loadingServiceTestsIsLoaded:LoadingServiceTestsIsLoaded;
+		public var loadingServiceTestsIsLoading:LoadingServiceTestsIsLoading;
+		public var loadingServiceTestsIsQueued:LoadingServiceTestsIsQueued;
+		public var loadingServiceTestsLoad:LoadingServiceTestsLoad;
+		public var loadingServiceTestsMergeAssets:LoadingServiceTestsMergeAssets;
+		public var loadingServiceTestsRemoveAssetData:LoadingServiceTestsRemoveAssetData;
+		public var loadingServiceTestsResume:LoadingServiceTestsResume;
+		public var loadingServiceTestsStop:LoadingServiceTestsStop;
 		//public var queueLoadingServiceTestsIntegration:QueueLoadingServiceTestsIntegration;
 		
 		public function TestSuite()
