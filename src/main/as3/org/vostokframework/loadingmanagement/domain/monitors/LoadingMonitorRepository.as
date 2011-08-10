@@ -34,7 +34,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoadingMonitorError;
 
 	/**
@@ -64,16 +64,16 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
 			
-			if (_monitorMap.containsKey(monitor.id))
+			if (_monitorMap.containsKey(monitor.loader.identification.toString()))
 			{
-				var message:String = "There is already an ILoadingMonitor object stored with id:\n";
-				message += "<" + monitor.id + ">\n";
+				var message:String = "There is already an ILoadingMonitor object stored with identification:\n";
+				message += "<" + monitor.loader.identification + ">\n";
 				message += "Use the method <LoadingMonitorRepository().exists()> to check if an ILoadingMonitor object already exists.\n";
 				
-				throw new DuplicateLoadingMonitorError(monitor.id, message);
+				throw new DuplicateLoadingMonitorError(message);
 			}
 			
-			_monitorMap.put(monitor.id, monitor);
+			_monitorMap.put(monitor.loader.identification.toString(), monitor);
 		}
 		
 		/**
@@ -93,11 +93,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function exists(id:String): Boolean
+		public function exists(identification:VostokIdentification): Boolean
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _monitorMap.containsKey(id);
+			return _monitorMap.containsKey(identification.toString());
 		}
 
 		/**
@@ -107,11 +107,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function find(id:String): ILoadingMonitor
+		public function find(identification:VostokIdentification): ILoadingMonitor
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _monitorMap.getValue(id);
+			return _monitorMap.getValue(identification.toString());
 		}
 
 		/**
@@ -144,11 +144,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(id:String): Boolean
+		public function remove(identification:VostokIdentification): Boolean
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _monitorMap.remove(id) != null;
+			return _monitorMap.remove(identification.toString()) != null;
 		}
 		
 		/**

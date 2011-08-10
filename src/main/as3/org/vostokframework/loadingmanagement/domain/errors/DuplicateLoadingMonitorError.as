@@ -37,20 +37,15 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 */
 	public class DuplicateLoadingMonitorError extends VostokFrameworkError
 	{
-		private var _monitorId:String;
-		
-		public function get monitorId():String { return _monitorId; }
-		
 		/**
 		 * Constructor, creates a new DuplicateAssetLoaderError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function DuplicateLoadingMonitorError(monitorId:String, message:String = null)
+		public function DuplicateLoadingMonitorError(message:String = null)
 		{
 			super(message);
 			name = "DuplicateLoadingMonitorError";
-			_monitorId = monitorId;
 		}
 
 	}

@@ -28,12 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
+	import org.as3collections.IList;
 	import org.as3coreaddendum.system.Enum;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 
 	import flash.errors.IllegalOperationError;
@@ -45,7 +46,7 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public class LoaderState extends Enum
 	{
-		
+		//TODO:implementar equals em cada um dos states, comparando com a instancia flyweight
 		/**
 		 * description
 		 * 
@@ -59,33 +60,65 @@ package org.vostokframework.loadingmanagement.domain
 			if (ReflectionUtil.classPathEquals(this, LoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
+		public function addLoader(loader:VostokLoader, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.addLoader(loader);
+		}
+		
+		public function addLoaders(loaders:IList, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.addLoaders(loaders);
+		}
+		
 		public function cancel(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
+			algorithm.cancel();
 			loader.setState(LoaderCanceled.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
-			algorithm.cancel();
+		}
+		
+		public function cancelLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.cancelLoader(identification);
 		}
 		
 		public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
 			loader.currentAttempt++;
-			
+			//TODO:refactoring:tirar incremento daqui e colocar em failed(). state nao precisara acessar essa variavel. logica de max attempts fica dentro do loader, em failed().
 			if (loader.currentAttempt > loader.maxAttempts)
 			{
 				loader.failed();
 				return;
 			}
 			
-			loader.setState(LoaderConnecting.INSTANCE);
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
+			// here first set state then call algorithm
+			// because anyway algorithm is async
+			//loader.setState(LoaderConnecting.INSTANCE);
+			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
 			algorithm.load();
+		}
+		
+		public function removeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.removeLoader(identification);
+		}
+		
+		public function resumeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.resumeLoader(identification);
 		}
 		
 		public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
+			algorithm.stop();
 			loader.setState(LoaderStopped.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
-			algorithm.stop();
+		}
+		
+		public function stopLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			algorithm.stopLoader(identification);
 		}
 		
 		protected function decreaseLoaderCurrentAttempt(loader:VostokLoader):void

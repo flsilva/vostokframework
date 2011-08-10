@@ -28,13 +28,15 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.errors.IOError;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
+	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
@@ -56,6 +58,20 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		private var _request:URLRequest;
 		private var _timeConnectionStarted:int;
 		
+		override public function get openedConnections():int
+		{
+			validateDisposal();
+			
+			if (isLoading)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		
 		/**
 		 * description
 		 * 
@@ -72,23 +88,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_request = request;
 			_context = context;
 		}
-		
-		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				_loader.contentLoaderInfo.addEventListener(type, listener, useCapture, priority, useWeakReference);
-				return;
-			}
-			
-			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-		}
-		
+		//TODO:implementar ProgressEvent.PROGRESS
 		/**
 		 * description
 		 */
-		override public function cancel(): void
+		override protected function doCancel(): void
 		{
+			validateDisposal();
 			removeFileLoaderListeners();
 			
 			try
@@ -108,43 +114,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		/**
 		 * description
 		 */
-		override public function dispose():void
+		override protected function doLoad(): void
 		{
-			try
-			{
-				_loader.close();
-			}
-			catch (error:Error)
-			{
-				//do nothing
-			}
-			finally
-			{
-				_loader.unload();
-			}
+			validateDisposal();
 			
-			_loader = null;
-			_request = null;
-			_context = null;
-		}
-		
-		override public function hasEventListener(type:String):Boolean
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				return _loader.contentLoaderInfo.hasEventListener(type);
-			}
-			
-			return super.hasEventListener(type);
-		}
-		
-		/**
-		 * description
-		 */
-		override public function load(): void
-		{
+			dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			_timeConnectionStarted = getTimer();
-			
 			addFileLoaderListeners();
 			
 			try
@@ -165,22 +140,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
-		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
-		{
-			if (!LoaderEvent.typeBelongs(type))
-			{
-				_loader.contentLoaderInfo.removeEventListener(type, listener, useCapture);
-				return;
-			}
-			
-			super.removeEventListener(type, listener, useCapture);
-		}
-		
 		/**
 		 * description
 		 */
-		override public function stop():void
+		override protected function doStop():void
 		{
+			validateDisposal();
+			
 			try
 			{
 				_loader.close();
@@ -195,40 +161,58 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
-		override public function willTrigger(type:String):Boolean
+		/**
+		 * @private
+		 */
+		override protected function doDispose():void
 		{
-			if (!LoaderEvent.typeBelongs(type))
+			try
 			{
-				return _loader.contentLoaderInfo.willTrigger(type);
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
+			finally
+			{
+				_loader.unload();
 			}
 			
-			return super.willTrigger(type);
+			_loader = null;
+			_request = null;
+			_context = null;
 		}
 		
 		private function addFileLoaderListeners():void
 		{
+			validateDisposal();
+			
 			_loader.contentLoaderInfo.addEventListener(Event.INIT, initHandler, false, 0, true);
 			_loader.contentLoaderInfo.addEventListener(Event.OPEN, openHandler, false, 0, true);
 			_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
-			//TODO: inserir listeners de erros e no erro chamar super.error();
+			_loader.contentLoaderInfo.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
+			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
+			_loader.contentLoaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
 		}
 		
 		private function complete():void
 		{
+			validateDisposal();
 			removeFileLoaderListeners();
 			
 			try
 			{
 				var data:DisplayObject = _loader.content;
-				dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
+				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE, data));
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.SECURITY_ERROR, false, false, error.message));
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, false, false, error.message));
 			}
 		}
 		
@@ -239,45 +223,76 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function initHandler(event:Event):void
 		{
+			validateDisposal();
+			
 			try
 			{
 				var data:DisplayObject = _loader.content;
-				dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.INIT, data));
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.SECURITY_ERROR, false, false, error.message));
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, false, false, error.message));
 			}
 		}
 		
 		private function openHandler(event:Event):void
 		{
+			validateDisposal();
+			
 			try
 			{
 				var latency:int = getTimer() - _timeConnectionStarted;
 				var data:DisplayObject = _loader.content;
 				
-				dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
+				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN, data, latency));
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.SECURITY_ERROR, false, false, error.message));
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, false, false, error.message));
 			}
+		}
+		
+		private function httpStatusHandler(event:HTTPStatusEvent):void
+		{
+			validateDisposal();
+			
+			var $event:LoadingAlgorithmEvent = new LoadingAlgorithmEvent(LoadingAlgorithmEvent.HTTP_STATUS);
+			$event.httpStatus = event.status;
+			
+			dispatchEvent($event);
+		}
+		
+		private function ioErrorHandler(event:IOErrorEvent):void
+		{
+			validateDisposal();
+			dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.IO_ERROR, false, false, event.text));
+		}
+		
+		private function securityErrorHandler(event:SecurityErrorEvent):void
+		{
+			validateDisposal();
+			dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.SECURITY_ERROR, false, false, event.text));
 		}
 		
 		private function removeFileLoaderListeners():void
 		{
+			validateDisposal();
+			
 			_loader.contentLoaderInfo.removeEventListener(Event.INIT, initHandler, false);
 			_loader.contentLoaderInfo.removeEventListener(Event.OPEN, openHandler, false);
 			_loader.contentLoaderInfo.removeEventListener(Event.COMPLETE, completeHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false);
+			_loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false);
 		}
 
 	}

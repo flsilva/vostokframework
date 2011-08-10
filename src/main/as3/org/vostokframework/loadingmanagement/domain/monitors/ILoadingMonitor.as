@@ -29,8 +29,10 @@
 
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import org.as3coreaddendum.system.IEquatable;
+	import org.as3collections.IList;
 	import org.as3coreaddendum.system.IDisposable;
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 
 	import flash.events.IEventDispatcher;
 
@@ -39,11 +41,21 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoadingMonitor extends IEventDispatcher, IDisposable, IEquatable
+	public interface ILoadingMonitor extends IEventDispatcher, IDisposable
 	{
-		function get id():String;
+		function get loader():VostokLoader;
 		
 		function get monitoring():LoadingMonitoring;
+		
+		function addMonitor(monitor:ILoadingMonitor):void;
+		
+		function addMonitors(monitors:IList):void;
+		
+		function contains(identification:VostokIdentification):Boolean;
+		
+		function getMonitor(identification:VostokIdentification):ILoadingMonitor;
+		
+		function removeMonitor(identification:VostokIdentification):void;
 	}
 
 }

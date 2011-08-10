@@ -26,25 +26,38 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders
+package org.vostokframework.loadingmanagement.domain.events
 {
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.StubPriorityLoadQueue;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubQueueLoader extends QueueLoader
+	public class LoaderErrorEvent extends ErrorEvent
 	{
+		public static const IO_ERROR:String = "VostokFramework.LoaderErrorEvent.IO_ERROR";
+		public static const SECURITY_ERROR:String = "VostokFramework.LoaderErrorEvent.SECURITY_ERROR";
+		public static const UNKNOWN_ERROR:String = "VostokFramework.LoaderErrorEvent.UNKNOWN_ERROR";
 		
-		public function StubQueueLoader(id:String, priority:LoadPriority = null)
+		/**
+		 * description
+		 * 
+		 * @param type
+		 * @param loadedAssetData
+		 */
+		public function LoaderErrorEvent(type: String, bubbles: Boolean = false, cancelable: Boolean = false, text: String = "")
 		{
-			if (!priority) priority = LoadPriority.MEDIUM;
-			super(id, priority, new StubPriorityLoadQueue());
+			super(type, bubbles, cancelable, text);
 		}
-
+		
+		override public function clone():Event
+		{
+			return new LoaderErrorEvent(type, bubbles, cancelable, text);
+		}
+		
 	}
 
 }

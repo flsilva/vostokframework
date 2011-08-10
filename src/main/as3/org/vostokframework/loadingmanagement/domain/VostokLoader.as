@@ -33,22 +33,26 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.lists.TypedList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
-	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3coreaddendum.system.IIndexable;
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderComplete;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnectionError;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderFailed;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
 
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.ProgressEvent;
 
 	/**
 	 * description
@@ -65,7 +69,7 @@ package org.vostokframework.loadingmanagement.domain
 		private var _disposed:Boolean;
 		private var _errorHistory:IList;
 		private var _failDescription:String;
-		private var _id:String;
+		private var _identification:VostokIdentification;
 		private var _index:int;
 		private var _maxAttempts:int;
 		private var _priority:LoadPriority;
@@ -80,7 +84,7 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get id(): String { return _id; }
+		public function get identification(): VostokIdentification { return _identification; }
 		
 		/**
 		 * description
@@ -115,7 +119,11 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get stateHistory(): IList { return new ReadOnlyArrayList(_stateHistory.toArray()); }
+		public function get stateHistory(): IList
+		{
+			validateDisposal();
+			return new ReadOnlyArrayList(_stateHistory.toArray());
+		}
 		
 		/**
 		 * @private
@@ -125,17 +133,24 @@ package org.vostokframework.loadingmanagement.domain
 		
 		internal function get maxAttempts():int { return _maxAttempts; }
 		
+		public function get openedConnections():int
+		{
+			validateDisposal();
+			return _algorithm.openedConnections;
+		}
+		//TODO:pensar sobre deixar maxAttempts opcional (maxAttempts:int = 1) 
 		/**
 		 * description
 		 * 
 		 */
-		public function VostokLoader(id:String, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int)
+		public function VostokLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int)
 		{
-			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
+			if (!algorithm) throw new ArgumentError("Argument <algorithm> must not be null.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
-			_id = id;
+			_identification = identification;
 			_algorithm = algorithm;
 			_priority = priority;
 			_maxAttempts = maxAttempts;
@@ -143,7 +158,44 @@ package org.vostokframework.loadingmanagement.domain
 			_errorHistory = new ArrayList();
 			_stateHistory = new TypedList(new ArrayList(), LoaderState);
 			
+			addAlgorithmListeners();
 			setState(LoaderQueued.INSTANCE);
+		}
+		
+		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
+		{
+			validateDisposal();
+			
+			if (type == ProgressEvent.PROGRESS)
+			{
+				_algorithm.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			}
+			else
+			{
+				super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			}
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 */
+		public function addLoader(loader:VostokLoader): void
+		{
+			validateDisposal();
+			_state.addLoader(loader, _algorithm);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 */
+		public function addLoaders(loaders:IList): void
+		{
+			validateDisposal();
+			_state.addLoaders(loaders, _algorithm);
 		}
 		
 		/**
@@ -159,10 +211,48 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 * 
+		 * @param loaderId
+		 */
+		public function cancelLoader(identification:VostokIdentification): void
+		{
+			validateDisposal();
+			_state.cancelLoader(identification, _algorithm);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param identification
+		 */
+		public function containsLoader(identification:VostokIdentification): Boolean
+		{
+			validateDisposal();
+			return _algorithm.containsLoader(identification);
+		}
+		
+		override public function dispatchEvent(event : Event) : Boolean
+		{
+			validateDisposal();
+			
+			if (event.type == ProgressEvent.PROGRESS)
+			{
+				return _algorithm.dispatchEvent(event);
+			}
+			else
+			{
+				return super.dispatchEvent(event);
+			}
+		}
+		
+		/**
+		 * description
+		 * 
  		 */
 		public function dispose():void
 		{
 			if (_disposed) return;
+			
+			removeAlgorithmListeners();
 			
 			_errorHistory.clear();
 			_stateHistory.clear();
@@ -173,7 +263,6 @@ package org.vostokframework.loadingmanagement.domain
 			_state = null;
 			_algorithm = null;
 			
-			doDispose();
 			_disposed = true;
 		}
 		
@@ -182,12 +271,73 @@ package org.vostokframework.loadingmanagement.domain
 			validateDisposal();
 			
 			if (this == other) return true;
-			if (!(other is StatefulLoader)) return false;
+			if (!(other is VostokLoader)) return false;
 			
-			var otherLoader:StatefulLoader = other as StatefulLoader;
-			return _id == otherLoader.id;
+			var otherLoader:VostokLoader = other as VostokLoader;
+			return _identification.equals(otherLoader.identification);
 		}
-
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function getLoader(identification:VostokIdentification): VostokLoader
+		{
+			validateDisposal();
+			return _algorithm.getLoader(identification);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function getLoaderState(identification:VostokIdentification): LoaderState
+		{
+			validateDisposal();
+			return _algorithm.getLoaderState(identification);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param identification
+		 */
+		public function getParent(identification:VostokIdentification): VostokLoader
+		{
+			validateDisposal();
+			return _algorithm.getParent(this, identification);
+		}
+		
+		override public function hasEventListener(type : String) : Boolean
+		{
+			validateDisposal();
+			
+			if (type == ProgressEvent.PROGRESS)
+			{
+				return _algorithm.hasEventListener(type);
+			}
+			else
+			{
+				return super.hasEventListener(type);
+			}
+		}
+		
+		override public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
+		{
+			validateDisposal();
+			
+			if (type == ProgressEvent.PROGRESS)
+			{
+				_algorithm.removeEventListener(type, listener, useCapture);
+			}
+			else
+			{
+				super.removeEventListener(type, listener, useCapture);
+			}
+		}
+		
 		/**
 		 * description
 		 * 
@@ -200,6 +350,28 @@ package org.vostokframework.loadingmanagement.domain
 
 		/**
 		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function removeLoader(identification:VostokIdentification): void
+		{
+			validateDisposal();
+			_state.removeLoader(identification, _algorithm);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function resumeLoader(identification:VostokIdentification): void
+		{
+			validateDisposal();
+			_state.resumeLoader(identification, _algorithm);
+		}
+
+		/**
+		 * description
 		 */
 		public function stop(): void
 		{
@@ -207,10 +379,40 @@ package org.vostokframework.loadingmanagement.domain
 			_state.stop(this, _algorithm);
 		}
 		
-		internal function failed():void
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 */
+		public function stopLoader(identification:VostokIdentification): void
+		{
+			validateDisposal();
+			_state.stopLoader(identification, _algorithm);
+		}
+		
+		override public function toString():String
+		{
+			return "[VostokLoader " + identification + "]";
+		}
+		
+		override public function willTrigger(type : String) : Boolean
 		{
 			validateDisposal();
 			
+			if (type == ProgressEvent.PROGRESS)
+			{
+				return _algorithm.willTrigger(type);
+			}
+			else
+			{
+				return super.willTrigger(type);
+			}
+		}
+		
+		internal function failed():void
+		{
+			validateDisposal();
+			//TODO:implementar _currentAttempt++ aqui 
 			setState(LoaderFailed.INSTANCE);
 			dispatchEvent(new LoaderEvent(LoaderEvent.FAILED));
 		}
@@ -226,57 +428,115 @@ package org.vostokframework.loadingmanagement.domain
 			_stateHistory.add(_state);
 		}
 		
-		protected function doDispose():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		protected function loadingInit(data:* = null):void
+		private function addAlgorithmListeners():void
 		{
 			validateDisposal();
-			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+			
+			_algorithm.addEventListener(LoadingAlgorithmEvent.COMPLETE, completeHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmEvent.CONNECTING, connectingHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmEvent.INIT, initHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, unknownErrorHandler, false, 0, true);
 		}
 		
-		protected function loadingStarted(data:* = null, latency:int = 0):void
-		{
-			validateDisposal();
-			setState(LoaderLoading.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
-		}
-		
-		protected function loadingComplete(data:* = null):void
+		private function completeHandler(event:LoadingAlgorithmEvent):void
 		{
 			validateDisposal();
 			setState(LoaderComplete.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
+			dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, event.data));
 		}
 		
-		protected function error(error:LoadError, errorDescription:String):void
+		private function connectingHandler(event:LoadingAlgorithmEvent):void
+		{
+			validateDisposal();
+			setState(LoaderConnecting.INSTANCE);
+			dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
+		}
+		
+		private function error(error:LoadError, errorDescription:String):void
 		{
 			validateDisposal();
 			
 			_failDescription = errorDescription;
 			_errorHistory.add(error);
 			
-			setState(LoaderConnectionError.INSTANCE);
-			
 			if (error.equals(LoadError.SECURITY_ERROR))
 			{
 				failed();
 				return;
 			}
+			else
+			{
+				setState(LoaderConnectionError.INSTANCE);
+				load();
+			}
+		}
+		
+		private function httpStatusHandler(event:LoadingAlgorithmEvent):void
+		{
+			validateDisposal();
 			
-			load();
+			var $event:LoaderEvent = new LoaderEvent(LoaderEvent.HTTP_STATUS);
+			$event.httpStatus = event.httpStatus;
+			
+			dispatchEvent($event);
+		}
+		
+		private function ioErrorHandler(event:LoadingAlgorithmErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.IO_ERROR, event.text);
+		}
+
+		private function securityErrorHandler(event:LoadingAlgorithmErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.SECURITY_ERROR, event.text);
+		}
+
+		private function unknownErrorHandler(event:LoadingAlgorithmErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.UNKNOWN_ERROR, event.text);
+		}
+		
+		private function initHandler(event:LoadingAlgorithmEvent):void
+		{
+			validateDisposal();
+			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, event.data));
+		}
+		
+		private function openHandler(event:LoadingAlgorithmEvent):void
+		{
+			validateDisposal();
+			setState(LoaderLoading.INSTANCE);
+			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, event.data, event.latency));
+		}
+		
+		private function removeAlgorithmListeners():void
+		{
+			validateDisposal();
+			
+			_algorithm.removeEventListener(LoadingAlgorithmEvent.COMPLETE, completeHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmEvent.CONNECTING, connectingHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmEvent.INIT, initHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.IO_ERROR, ioErrorHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.SECURITY_ERROR, securityErrorHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, unknownErrorHandler, false);
 		}
 		
 		/**
 		 * @private
 		 */
-		protected function validateDisposal():void
+		private function validateDisposal():void
 		{
 			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
 		}
-		
 	}
 
 }

@@ -36,16 +36,16 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public class StubLoaderRepository extends LoaderRepository
 	{
-		public var $totalLoading:int;
+		public var $openedConnections:int;
 		
 		public function StubLoaderRepository()
 		{
 			
 		}
 		
-		override public function totalLoading():int
+		override public function get openedConnections():int
 		{
-			return $totalLoading;
+			return $openedConnections;
 		}
 
 	}

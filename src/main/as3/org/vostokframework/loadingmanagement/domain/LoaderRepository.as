@@ -38,9 +38,10 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
-	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 
 	/**
 	 * description
@@ -49,14 +50,29 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public class LoaderRepository
 	{
-		private var _loaderMap:IMap;//key = AssetLoader().id (String) | value = AssetLoader 
+		private var _loaderMap:IMap;//key = VostokLoader().identification.toString() (String) | value = VostokLoader 
+		
+		public function get openedConnections():int
+		{
+			var it:IIterator = _loaderMap.iterator();
+			var loader:VostokLoader;
+			var sum:int;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				sum += loader.openedConnections;
+			}
+			
+			return sum;
+		}
 
 		/**
 		 * description
 		 */
 		public function LoaderRepository()
 		{
-			_loaderMap = new TypedMap(new HashMap(), String, StatefulLoader);
+			_loaderMap = new TypedMap(new HashMap(), String, VostokLoader);
 		}
 		
 		/**
@@ -64,24 +80,24 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param 	loader
 		 * @throws 	ArgumentError 	if the <code>loader</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateStatefulLoaderError 	if already exists an <code>StatefulLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
+		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateLoaderError 	if already exists an <code>VostokLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
 		 * @return
 		 */
-		public function add(loader:StatefulLoader): void
+		public function add(loader:VostokLoader): void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
-			if (_loaderMap.containsKey(loader.id))
+			if (_loaderMap.containsKey(loader.identification.toString()))
 			{
-				var message:String = "There is already an StatefulLoader object stored with id:\n";
-				message += "<" + loader.id + ">\n";
-				message += "Use the method <StatefulLoaderRepository().exists()> to check if a StatefulLoader object already exists.\n";
-				message += "For further information please read the documentation section about the StatefulLoader object.";
+				var message:String = "There is already an VostokLoader object stored with identification:\n";
+				message += "<" + loader.identification + ">\n";
+				message += "Use the method <LoaderRepository().exists()> to check if a VostokLoader object already exists.\n";
+				message += "For further information please read the documentation section about the VostokLoader object.";
 				
-				throw new DuplicateLoaderError(loader.id, message);
+				throw new DuplicateLoaderError(loader.identification, message);
 			}
 			
-			_loaderMap.put(loader.id, loader);
+			_loaderMap.put(loader.identification.toString(), loader);
 		}
 		
 		/**
@@ -101,11 +117,11 @@ package org.vostokframework.loadingmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function exists(loaderId:String): Boolean
+		public function exists(identification:VostokIdentification): Boolean
 		{
-			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _loaderMap.containsKey(loaderId);
+			return _loaderMap.containsKey(identification.toString());
 		}
 
 		/**
@@ -115,11 +131,11 @@ package org.vostokframework.loadingmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(loaderId:String): StatefulLoader
+		public function find(identification:VostokIdentification): VostokLoader
 		{
-			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _loaderMap.getValue(loaderId);
+			return _loaderMap.getValue(identification.toString());
 		}
 
 		/**
@@ -142,8 +158,8 @@ package org.vostokframework.loadingmanagement.domain
  		 */
 		public function findAllLoading(): IList
 		{
-			var list1:IList = new ArrayList(findByStatus(LoaderStatus.CONNECTING).toArray());
-			var list2:IList = new ArrayList(findByStatus(LoaderStatus.LOADING).toArray());
+			var list1:IList = new ArrayList(findByStatus(LoaderConnecting.INSTANCE).toArray());
+			var list2:IList = new ArrayList(findByStatus(LoaderLoading.INSTANCE).toArray());
 			//TODO: otimizar
 			var unique:UniqueList = new UniqueList(new ArrayList());
 			unique.addAll(list1);
@@ -157,18 +173,18 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @return
  		 */
-		public function findByStatus(status:LoaderStatus): IList
+		public function findByStatus(status:LoaderState): IList
 		{
 			if (!status) throw new ArgumentError("Argument <status> must not be null.");
 			
 			var it:IIterator = _loaderMap.getValues().iterator();
-			var loader:StatefulLoader;
+			var loader:VostokLoader;
 			var list:IList = new ArrayList();
 			
 			while (it.hasNext())
 			{
 				loader = it.next();
-				if (loader.status.equals(status))
+				if (loader.state.equals(status))
 				{
 					list.add(loader);
 				}
@@ -177,20 +193,15 @@ package org.vostokframework.loadingmanagement.domain
 			return new ReadOnlyArrayList(list.toArray());
 		}
 		
-		public function findQueueLoaderByAssetLoader(loaderId:String):QueueLoader
+		public function findParentLoader(childIdentification:VostokIdentification):VostokLoader
 		{
-			var loader:StatefulLoader;
-			var queueLoader:QueueLoader;
 			var it:IIterator = _loaderMap.getValues().iterator();
+			var parentLoader:VostokLoader;
 			
 			while (it.hasNext())
 			{
-				loader = it.next();
-				if (loader is QueueLoader)
-				{
-					queueLoader = loader as QueueLoader;
-					if (queueLoader.containsLoader(loaderId)) return queueLoader;
-				}
+				parentLoader = it.next();
+				if (parentLoader.containsLoader(childIdentification)) return parentLoader;
 			}
 			
 			return null;
@@ -213,11 +224,11 @@ package org.vostokframework.loadingmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(loaderId:String): Boolean
+		public function remove(identification:VostokIdentification): Boolean
 		{
-			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _loaderMap.remove(loaderId) != null;
+			return _loaderMap.remove(identification.toString()) != null;
 		}
 		
 		/**
@@ -233,14 +244,14 @@ package org.vostokframework.loadingmanagement.domain
 			if (loaders.isEmpty()) return false;
 			
 			var prevSize:int = size();
-			var $loaders:IList = new TypedList(loaders, StatefulLoader);
+			var $loaders:IList = new TypedList(loaders, VostokLoader);
 			var it:IIterator = $loaders.iterator();
-			var loader:StatefulLoader;
+			var loader:VostokLoader;
 			
 			while (it.hasNext())
 			{
 				loader = it.next();
-				remove(loader.id);
+				remove(loader.identification);
 			}
 			
 			return size() != prevSize;
@@ -265,17 +276,7 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			return "[" + ReflectionUtil.getClassName(this) + "] <" + _loaderMap.getValues() + ">";
 		}
-		//TODO: issue here. if this reporitory contains
-		//1 queue loader with 2 loaders that are loading,
-		//the returned value will be 3, but should be 2
-		//because queue loader will be considered too
-		public function totalLoading():int
-		{
-			var loadings:IList = findAllLoading();
-			if (!loadings) return 0;
-			return loadings.size();
-		}
-
+		
 	}
 
 }

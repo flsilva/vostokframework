@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
+	import org.vostokframework.VostokIdentification;
+	import org.as3collections.IList;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.loadingmanagement.domain.LoaderState;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
@@ -66,7 +68,22 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
 		
+		override public function addLoader(loader:VostokLoader, algorithm:LoadingAlgorithm): void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to add new loaders.");
+		}
+		
+		override public function addLoaders(loaders:IList, algorithm:LoadingAlgorithm): void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to add new loaders.");
+		}
+		
 		override public function cancel(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		{
+			// do nothing
+		}
+		
+		override public function cancelLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
 		{
 			// do nothing
 		}
@@ -76,7 +93,22 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
 		}
 		
+		override public function removeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to remove loaders.");
+		}
+		
+		override public function resumeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to resume any loader.");
+		}
+		
 		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		{
+			// do nothing
+		}
+		
+		override public function stopLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
 		{
 			// do nothing
 		}

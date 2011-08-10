@@ -30,6 +30,7 @@
 package org.vostokframework.loadingmanagement.domain.errors
 {
 	import org.vostokframework.errors.VostokFrameworkError;
+
 	/**
 	 * description
 	 * 
@@ -37,20 +38,15 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 */
 	public class LoadingMonitorNotFoundError extends VostokFrameworkError
 	{
-		private var _monitorId:String;
-		
-		public function get monitorId():String { return _monitorId; }
-		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function LoadingMonitorNotFoundError(monitorId:String, message:String = null)
+		public function LoadingMonitorNotFoundError(message:String = null)
 		{
 			super(message);
 			name = "LoadingMonitorNotFoundError";
-			_monitorId = monitorId;
 		}
 
 	}

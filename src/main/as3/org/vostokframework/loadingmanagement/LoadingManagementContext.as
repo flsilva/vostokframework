@@ -28,25 +28,28 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.as3collections.IIterator;
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.services.AssetService;
-	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
-	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.IQueueLoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.GlobalLoadingMonitorDispatcher;
+	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorWrapper;
-	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
@@ -66,8 +69,8 @@ package org.vostokframework.loadingmanagement
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
 		private var _assetLoaderFactory:AssetLoaderFactory;
-		private var _globalQueueLoader:QueueLoader;
-		private var _globalQueueLoadingMonitor:IQueueLoadingMonitor;
+		private var _globalQueueLoader:VostokLoader;
+		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:QueueLoadingMonitorWrapper;
 		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderRepository:LoaderRepository;
@@ -86,11 +89,11 @@ package org.vostokframework.loadingmanagement
 		
 		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
 		
-		public function get globalQueueLoader(): QueueLoader { return _globalQueueLoader; }
+		public function get globalQueueLoader(): VostokLoader { return _globalQueueLoader; }
 		
 		//public function get globalQueueLoadingMonitor(): QueueLoadingMonitor { return _globalQueueLoadingMonitor; }
 		
-		public function get globalQueueLoadingMonitor(): IQueueLoadingMonitor { return _globalQueueLoadingMonitorWrapper; }
+		public function get globalQueueLoadingMonitor(): ILoadingMonitor { return _globalQueueLoadingMonitorWrapper; }
 		
 		public function get loadedAssetRepository(): LoadedAssetRepository { return _loadedAssetRepository; }
 		
@@ -111,7 +114,7 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function LoadingManagementContext(): void
+		public function LoadingManagementContext()
 		{
 			if (_created) throw new IllegalOperationError("<LoadingManagementContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
@@ -157,12 +160,16 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param queueLoader
 		 */
-		public function setGlobalQueueLoader(queueLoader:QueueLoader): void
+		public function setGlobalQueueLoader(queueLoader:VostokLoader): void
 		{
 			if (!queueLoader) throw new ArgumentError("Argument <queueLoader> must not be null.");
 			
+			if (_globalQueueLoadingMonitor) _globalQueueLoadingMonitor.dispose();
+			
 			if (_globalQueueLoader)
 			{
+				loaderRepository.remove(_globalQueueLoader.identification);
+				
 				try
 				{
 					_globalQueueLoader.cancel();
@@ -178,16 +185,19 @@ package org.vostokframework.loadingmanagement
 			}
 			
 			_globalQueueLoader = queueLoader;
-			//_globalQueueLoader.addEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 0, true);
+			loaderRepository.add(_globalQueueLoader);
 			
-			var globalQueueLoadingMonitor:AggregateQueueLoadingMonitor = new AggregateQueueLoadingMonitor(_globalQueueLoader);
-			//_globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, 0, true);
+			//var globalQueueLoadingMonitor:AggregateQueueLoadingMonitor = new AggregateQueueLoadingMonitor(_globalQueueLoader);
+			var globalQueueLoadingMonitorDispatcher:LoadingMonitorDispatcher = new GlobalLoadingMonitorDispatcher(_globalQueueLoader.identification.id, _globalQueueLoader.identification.locale);
+			var globalQueueLoadingMonitor:ILoadingMonitor = new CompositeLoadingMonitor(_globalQueueLoader, globalQueueLoadingMonitorDispatcher);
 			
 			_globalQueueLoadingMonitorWrapper.changeMonitor(globalQueueLoadingMonitor);
-			_globalQueueLoadingMonitorWrapper.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, 999999, true);
-			_globalQueueLoadingMonitorWrapper.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, 999999, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, int.MAX_VALUE, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(QueueLoadingEvent.COMPLETE, queueLoaderCompleteHandler, false, int.MAX_VALUE, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(QueueLoadingEvent.CANCELED, queueLoaderCanceledHandler, false, int.MAX_VALUE, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, int.MAX_VALUE, true);
 			
-			if (_globalQueueLoadingMonitor) _globalQueueLoadingMonitor.dispose();
+			//if (_globalQueueLoadingMonitor) _globalQueueLoadingMonitor.dispose();
 			_globalQueueLoadingMonitor = globalQueueLoadingMonitor;
 		}
 		
@@ -251,12 +261,16 @@ package org.vostokframework.loadingmanagement
 		 */
 		private function createGlobalQueueLoader(): void
 		{
-			var policy:LoadingPolicy = new LoadingPolicy(_loaderRepository);
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(_loaderRepository);
 			policy.globalMaxConnections = _maxConcurrentConnections;
 			policy.localMaxConnections = _maxConcurrentQueues;
 			
-			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
-			var queueLoader:QueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
+			//var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
+			//var queueLoader:QueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
+			
+			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
+			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
+			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
 			
 			setGlobalQueueLoader(queueLoader);
 		}
@@ -267,36 +281,9 @@ package org.vostokframework.loadingmanagement
 		private function globalQueueLoaderCompleteHandler(event:AggregateQueueLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
+			trace("LoadingManagementContext::globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
 			
-			_globalQueueLoader.removeEventListener(LoaderEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
-			
-			var itGlobalQueueLoader:IIterator = _globalQueueLoader.getLoaders().iterator();
-			var itQueueLoader:IIterator;
-			var queueLoader:QueueLoader;
-			var loader:StatefulLoader;
-			
-			while (itGlobalQueueLoader.hasNext())
-			{
-				queueLoader = itGlobalQueueLoader.next();
-				itQueueLoader = queueLoader.getLoaders().iterator();
-				
-				while (itQueueLoader.hasNext())
-				{
-					loader = itQueueLoader.next();
-					loaderRepository.remove(loader.id);
-					loadingMonitorRepository.remove(loader.id);
-				}
-				
-				loaderRepository.remove(queueLoader.id);
-				
-				//var monitor:ILoadingMonitor = loadingMonitorRepository.find(queueLoader.id);
-				//globalQueueLoadingMonitor.removeMonitor(monitor);
-				
-				loadingMonitorRepository.remove(queueLoader.id);
-				
-				queueLoader.dispose();
-			}
+			//_globalQueueLoadingMonitorWrapper.removeEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
 			
 			_globalQueueLoader.dispose();
 			_globalQueueLoader = null;
@@ -304,12 +291,39 @@ package org.vostokframework.loadingmanagement
 			createGlobalQueueLoader();
 		}
 		
+		private function queueLoaderCanceledHandler(event:QueueLoadingEvent):void
+		{
+			trace("#####################################################");
+			trace("LoadingManagementContext::queueLoaderCanceledHandler() - event.queueId: " + event.queueId);
+			
+			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
+			
+			globalQueueLoadingMonitor.removeMonitor(identification);
+			globalQueueLoader.removeLoader(identification);
+		}
+		
+		private function queueLoaderCompleteHandler(event:QueueLoadingEvent):void
+		{
+			trace("#####################################################");
+			trace("LoadingManagementContext::queueLoaderCompleteHandler() - event.queueId: " + event.queueId);
+			
+			//_globalQueueLoadingMonitorWrapper.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoaderCompleteHandler, false);
+			
+			//var loader:VostokLoader = loaderRepository.find(event.queueId);
+			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
+			//var loader:VostokLoader = globalQueueLoader.getLoader(identification);
+			//loader.dispose();
+			globalQueueLoadingMonitor.removeMonitor(identification);
+			globalQueueLoader.removeLoader(identification);
+			
+			//loaderRepository.remove(event.queueId);
+			//loadingMonitorRepository.remove(event.queueId);
+		}
+		
 		private function assetCompleteHandler(event:AssetLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("assetCompleteHandler() - event.assetId: " + event.assetId + " | event.allowInternalCache: " + event.allowInternalCache);
-			
-			if (!event.allowInternalCache) return;
+			trace("LoadingManagementContext::assetCompleteHandler() - event.assetId: " + event.assetId);
 			
 			var errorMessage:String;
 			
@@ -324,29 +338,22 @@ package org.vostokframework.loadingmanagement
 			}
 			
 			var asset:Asset = assetService.getAsset(event.assetId, event.assetLocale);
+			if (!asset.settings.cache.allowInternalCache) return;
+			
 			var src:String = asset.src;
 			
 			var identification:AssetIdentification = new AssetIdentification(event.assetId, event.assetLocale);
-			var assetLoader:StatefulLoader = loaderRepository.find(identification.toString());
-			if (!assetLoader)
-			{
-				errorMessage = "It was expected that the AssetLoader object for the loaded Asset object was found.\n";
-				errorMessage += "<assetId>: " + event.assetId + "\n";
-				errorMessage += "<assetLocale>: " + event.assetLocale;
-				
-				throw new IllegalOperationError(errorMessage); 
-			}
 			
-			var queueLoader:QueueLoader = loaderRepository.findQueueLoaderByAssetLoader(assetLoader.id);
+			var queueLoader:VostokLoader = globalQueueLoader.getParent(new VostokIdentification(identification.id, identification.locale));//TODO:refactor identification
 			if (!queueLoader)
 			{
-				errorMessage = "It was expected that the QueueLoader object for the AssetLoader object was found.\n";
-				errorMessage += "<AssetLoader.id>: " + assetLoader.id;
+				errorMessage = "It was expected that the parent VostokLoader object for the child VostokLoader object was found.\n";
+				errorMessage += "child VostokLoader id: " + identification.toString();
 				
 				throw new IllegalOperationError(errorMessage); 
 			}
 			
-			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification,queueLoader.id, event.assetData, event.assetType, src);
+			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification, queueLoader.identification, event.assetData, event.assetType, src);
 			loadedAssetRepository.add(loadedAssetReport); 
 		}
 

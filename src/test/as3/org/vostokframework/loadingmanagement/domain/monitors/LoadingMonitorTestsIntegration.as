@@ -1,0 +1,187 @@
+/*
+ * Licensed under the MIT License
+ * 
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documentation
+ * files (the "Software"), to deal in the Software without
+ * restriction, including without limitation the rights to use,
+ * copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following
+ * conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+ * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+ * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+ * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ * 
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+
+package org.vostokframework.loadingmanagement.domain.monitors
+{
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+	import mockolate.stub;
+
+	import org.flexunit.async.Async;
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
+
+	/**
+	 * @author Flávio Silva
+	 */
+	[TestCase]
+	public class LoadingMonitorTestsIntegration
+	{
+		[Rule]
+		public var mocks:MockolateRule = new MockolateRule();
+		
+		[Mock(inject="false")]
+		public var globalLoader:VostokLoader;
+		
+		[Mock(inject="false")]
+		public var queueLoader:VostokLoader;
+		
+		[Mock(inject="false")]
+		public var assetLoader:VostokLoader;
+		
+		public var globalMonitor:ILoadingMonitor;
+		public var queueMonitor:ILoadingMonitor;
+		public var assetMonitor:ILoadingMonitor;
+		
+		public function LoadingMonitorTestsIntegration()
+		{
+			
+		}
+		
+		
+		/////////////////////////
+		// TESTS CONFIGURATION //
+		/////////////////////////
+		
+		[Before]
+		public function setUp(): void
+		{
+			globalMonitor = getGlobalMonitor("global-loader");
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			globalMonitor = null;
+			queueMonitor = null;
+			assetMonitor = null;
+		}
+		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		protected function getFakeLoader(id:String):VostokLoader
+		{
+			var loader:VostokLoader = nice(VostokLoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 3]);
+			stub(loader).asEventDispatcher();
+			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
+			
+			return loader;
+		}
+		
+		protected function getGlobalMonitor(loaderId:String):ILoadingMonitor
+		{
+			//return new CompositeLoadingMonitor(getFakeLoader(loaderId), getFakeDispatcher());
+			
+			globalLoader = getFakeLoader(loaderId);
+			queueLoader = getFakeLoader("queue-id");
+			assetLoader = getFakeLoader("asset-id");
+			
+			var globalDispatcher:LoadingMonitorDispatcher = new GlobalLoadingMonitorDispatcher(loaderId, VostokFramework.CROSS_LOCALE_ID);
+			var queueDispatcher:LoadingMonitorDispatcher = new QueueLoadingMonitorDispatcher("queue-id", VostokFramework.CROSS_LOCALE_ID);
+			var assetDispatcher:LoadingMonitorDispatcher = new AssetLoadingMonitorDispatcher("asset-id", VostokFramework.CROSS_LOCALE_ID, AssetType.SWF);
+			
+			var globalMonitor:ILoadingMonitor = new CompositeLoadingMonitor(globalLoader, globalDispatcher);
+			queueMonitor = new CompositeLoadingMonitor(queueLoader, queueDispatcher);
+			assetMonitor = new CompositeLoadingMonitor(assetLoader, assetDispatcher);
+			
+			queueMonitor.addMonitor(assetMonitor);
+			globalMonitor.addMonitor(queueMonitor);
+			
+			return globalMonitor;
+		}
+		
+		///////////////////////
+		// CONSTRUCTOR TESTS //
+		///////////////////////
+		/*
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidAssetId_ThrowsError(): void
+		{
+			new AssetLoadingMonitor(null, null, null);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidAssetType_ThrowsError(): void
+		{
+			new AssetLoadingMonitor("id", null, null);
+		}
+		
+		[Test(expects="ArgumentError")]
+		public function constructor_invalidLoader_ThrowsError(): void
+		{
+			new AssetLoadingMonitor("id", AssetType.SWF, null);
+		}
+		*/
+		///////////////////////////////////////////////
+		// LoadingMonitor().addEventListener() TESTS //
+		///////////////////////////////////////////////
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAssetLoaderDispatchesCompleteEvent_mustBeAbleToCatchAssetLoadingMonitorEvent(): void
+		{
+			stub(assetLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			Async.proceedOnEvent(this, globalMonitor, AssetLoadingEvent.COMPLETE, 200);
+			
+			assetLoader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubQueueLoaderDispatchesCompleteEvent_mustBeAbleToCatchQueueLoadingMonitorEvent(): void
+		{
+			stub(queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			Async.proceedOnEvent(this, globalMonitor, QueueLoadingEvent.COMPLETE, 200);
+			
+			queueLoader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubGlobalLoaderDispatchesCompleteEvent_mustBeAbleToCatchGlobalLoadingMonitorEvent(): void
+		{
+			stub(globalLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			Async.proceedOnEvent(this, globalMonitor, AggregateQueueLoadingEvent.COMPLETE, 200);
+			
+			globalLoader.load();
+		}
+		
+	}
+
+}

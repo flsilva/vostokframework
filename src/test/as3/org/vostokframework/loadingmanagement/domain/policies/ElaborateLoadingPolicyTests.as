@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2011 (c) Flávio Silva, flsilva.com
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,42 +26,39 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+
+package org.vostokframework.loadingmanagement.domain.policies
 {
+	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
 
 	/**
-	 * description
-	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubPlainLoader extends PlainLoader
+	[TestCase]
+	public class ElaborateLoadingPolicyTests extends LoadingPolicyTests
 	{
 		
-		public function StubPlainLoader()
+		public function ElaborateLoadingPolicyTests()
 		{
 			
 		}
 		
-		override public function cancel(): void
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		override protected function getPolicy(totalGlobalConnections:int):ILoadingPolicy
 		{
+			var repository:StubLoaderRepository = new StubLoaderRepository();
+			repository.$openedConnections = totalGlobalConnections;
 			
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository);
+			policy.localMaxConnections = 3;
+			policy.globalMaxConnections = 6;
+			
+			return policy;
 		}
 		
-		override public function dispose(): void
-		{
-			
-		}
-		
-		override public function load(): void
-		{
-			
-		}
-
-		override public function stop(): void
-		{
-			
-		}
-
 	}
 
 }

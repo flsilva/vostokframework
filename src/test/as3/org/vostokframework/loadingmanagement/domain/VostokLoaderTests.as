@@ -29,6 +29,8 @@
 
 package org.vostokframework.loadingmanagement.domain
 {
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -38,16 +40,19 @@ package org.vostokframework.loadingmanagement.domain
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 
+	import flash.events.ProgressEvent;
+
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=9999999)]
+	[TestCase]
 	public class VostokLoaderTests
 	{
 		[Rule]
@@ -88,7 +93,8 @@ package org.vostokframework.loadingmanagement.domain
 			stubLoadingAlgorithm = nice(LoadingAlgorithm);
 			stub(stubLoadingAlgorithm).asEventDispatcher();
 			
-			return new VostokLoader("id", stubLoadingAlgorithm, LoadPriority.MEDIUM, 3);
+			var identification:VostokIdentification = new VostokIdentification("id", VostokFramework.CROSS_LOCALE_ID);
+			return new VostokLoader(identification, stubLoadingAlgorithm, LoadPriority.MEDIUM, 3);
 		}
 		
 		///////////////////////////////
@@ -105,9 +111,9 @@ package org.vostokframework.loadingmanagement.domain
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
-		///////////////////////////////
-		// StatefulLoader().priority //
-		///////////////////////////////
+		/////////////////////////////
+		// VostokLoader().priority //
+		/////////////////////////////
 		
 		[Test]
 		public function priority_setValidPriority_checkIfPriorityMatches_ReturnsTrue(): void
@@ -128,9 +134,9 @@ package org.vostokframework.loadingmanagement.domain
 			loader.priority = 5;
 		}
 		
-		////////////////////////////
-		// StatefulLoader().state //
-		////////////////////////////
+		//////////////////////////
+		// VostokLoader().state //
+		//////////////////////////
 		
 		[Test]
 		public function state_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
@@ -138,9 +144,9 @@ package org.vostokframework.loadingmanagement.domain
 			Assert.assertEquals(LoaderQueued.INSTANCE, loader.state);
 		}
 		
-		////////////////////////////////////
-		// StatefulLoader().stateHistory //
-		////////////////////////////////////
+		/////////////////////////////////
+		// VostokLoader().stateHistory //
+		/////////////////////////////////
 		
 		[Test]
 		public function stateHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
@@ -148,16 +154,48 @@ package org.vostokframework.loadingmanagement.domain
 			Assert.assertEquals(LoaderQueued.INSTANCE, loader.stateHistory.getAt(0));
 		}
 		
-		[Test(order=9999999)]
+		[Test]
 		public function stateHistory_afterCallLoad_checkIfSecondElementIsTryingToConnect_ReturnsTrue(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			loader.load();
 			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.stateHistory.getAt(1));
 		}
 		
-		///////////////////////////////
-		// StatefulLoader().cancel() //
-		///////////////////////////////
+		///////////////////////////////////////
+		// VostokLoader().addEventListener() //
+		///////////////////////////////////////
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.OPEN, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesProgressEvent_mustCatchStubEventAndDispatchOwnProgressEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, ProgressEvent.PROGRESS, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(ProgressEvent.PROGRESS), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.COMPLETE, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE), 50);
+			
+			loader.load();
+		}
+		
+		/////////////////////////////
+		// VostokLoader().cancel() //
+		/////////////////////////////
 		
 		[Test]
 		public function cancel_simpleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
@@ -189,27 +227,32 @@ package org.vostokframework.loadingmanagement.domain
 			verify(stubLoadingAlgorithm);
 		}
 		
-		/////////////////////////////
-		// StatefulLoader().load() //
-		/////////////////////////////
+		///////////////////////////
+		// VostokLoader().load() //
+		///////////////////////////
 		
 		[Test]
 		public function load_simpleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			loader.load();
 			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
 		}
 		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function load_doubleCall_ThrowsError(): void
+		[Test]
+		public function load_doubleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
+			
 			loader.load();
 			loader.load();
+			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
 		}
 		
 		[Test(async)]
 		public function load_simpleCall_waitTryingToConnectLoaderEvent(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			Async.proceedOnEvent(this, loader, LoaderEvent.CONNECTING, 50, asyncTimeoutHandler);
 			loader.load();
 		}
@@ -222,9 +265,9 @@ package org.vostokframework.loadingmanagement.domain
 			verify(stubLoadingAlgorithm);
 		}
 		
-		/////////////////////////////
-		// StatefulLoader().stop() //
-		/////////////////////////////
+		///////////////////////////
+		// VostokLoader().stop() //
+		///////////////////////////
 		
 		[Test]
 		public function stop_simpleCall_checkIfStatusIsStopped_ReturnsTrue(): void
@@ -256,9 +299,9 @@ package org.vostokframework.loadingmanagement.domain
 			verify(stubLoadingAlgorithm);
 		}
 		
-		///////////////////////////////////////////////////////////
-		// StatefulLoader().stop()-load()-cancel() - MIXED TESTS //
-		///////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////
+		// VostokLoader().stop()-load()-cancel() - MIXED TESTS //
+		/////////////////////////////////////////////////////////
 		
 		[Test]
 		public function loadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
@@ -271,6 +314,8 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function stopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
+			
 			loader.stop();
 			loader.load();
 			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
@@ -302,6 +347,8 @@ package org.vostokframework.loadingmanagement.domain
 		[Test]
 		public function loadAndStopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
 		{
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
+			
 			loader.load();
 			loader.stop();
 			loader.load();

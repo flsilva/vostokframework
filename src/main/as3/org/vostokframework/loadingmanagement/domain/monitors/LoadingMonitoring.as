@@ -107,7 +107,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param bytesTotal
 		 * @param bufferPercent
 		 */
-		public function LoadingMonitoring(latency:int, bufferPercent:int = 100): void
+		public function LoadingMonitoring(latency:int, bufferPercent:int = 100)
 		{
 			_latency = latency;
 			_bufferPercent = bufferPercent;

@@ -26,49 +26,53 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework
 {
-	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.as3coreaddendum.system.IEquatable;
+	import org.as3utils.StringUtil;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class PlainPriorityLoadQueue extends PriorityLoadQueue
+	public class VostokIdentification implements IEquatable
 	{
-		/**
-		 * @private
-		 */
-		private var _policy:LoadingPolicy;
-
+		private var _id:String;
+		private var _locale:String;
+		
+		public function get id():String { return _id; }
+		
+		public function get locale():String { return _locale; }
+		
+		public function VostokIdentification(id:String, locale:String)
+		{
+			if (StringUtil.isBlank(id)) throw new ArgumentError("Argument <id> must not be null nor an empty String.");
+			if (StringUtil.isBlank(locale)) throw new ArgumentError("Argument <locale> must not be null nor an empty String.");
+			
+			_id = id;
+			_locale = locale;
+		}
+		
+		public function equals(other : *) : Boolean
+		{
+			if (this == other) return true;
+			if (!(other is VostokIdentification)) return false;
+			
+			var otherIdentification:VostokIdentification = other as VostokIdentification;
+			return id == otherIdentification.id && locale == otherIdentification.locale;
+		}
+		
 		/**
 		 * description
 		 * 
-		 * @param requestLoaders
+		 * @return
 		 */
-		public function PlainPriorityLoadQueue(policy:LoadingPolicy)
+		public function toString(): String
 		{
-			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
-			_policy = policy;
+			return id + "-" + locale;
 		}
-		
-		override public function dispose():void
-		{
-			_policy = null;
-			super.dispose();
-		}
-		
-		override protected function allowGetNext():Boolean
-		{
-			return _policy.allow(totalLoading);
-		}
-		
-		override protected function doGetNext():StatefulLoader
-		{
-			return queuedLoaders.poll();
-		}
-		
+
 	}
 
 }

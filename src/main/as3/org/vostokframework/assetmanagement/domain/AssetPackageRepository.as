@@ -49,7 +49,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function AssetPackageRepository(): void
+		public function AssetPackageRepository()
 		{
 			_assetPackageMap = new TypedMap(new HashMap(), AssetPackageIdentification, AssetPackage);
 		}

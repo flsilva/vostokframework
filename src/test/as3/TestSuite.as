@@ -38,23 +38,16 @@ package
 	import org.vostokframework.assetmanagement.domain.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
 	import org.vostokframework.assetmanagement.services.AssetServiceTests;
-	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTests;
-	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNext;
-	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
-	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTests;
-	import org.vostokframework.loadingmanagement.domain.PlainPriorityLoadQueueTestsGetNext;
-	import org.vostokframework.loadingmanagement.domain.StatefulLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.VostokLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoaderAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.monitors.AggregateQueueLoadingMonitorTests;
-	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorTests;
-	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoaderAlgorithmTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithmTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTestsIntegration;
+	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
+	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
-	import org.vostokframework.loadingmanagement.services.AssetLoadingServiceTests;
 	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTests;
-	import org.vostokframework.loadingmanagement.services.QueueLoadingServiceTestsIntegration;
 
 	/**
 	 * @author Flávio Silva
@@ -79,30 +72,25 @@ package
 		
 		//org.vostokframework.loadingmanagement.domain
 		public var vostokLoaderTests:VostokLoaderTests;
-		public var statefulLoaderTests:StatefulLoaderTests;
-		public var assetLoaderTests:AssetLoaderTests;
-		public var queueLoaderTests:QueueLoaderTests;
-		public var plainPriorityLoadQueueTests:PlainPriorityLoadQueueTests;
-		public var plainPriorityLoadQueueTestsGetNext:PlainPriorityLoadQueueTestsGetNext;
-		public var elaboratePriorityLoadQueueTests:ElaboratePriorityLoadQueueTests;
-		public var elaboratePriorityLoadQueueTestsGetNext:ElaboratePriorityLoadQueueTestsGetNext;
-		public var elaboratePriorityLoadQueueTestsGetNextHighestLowest:ElaboratePriorityLoadQueueTestsGetNextHighestLowest;
 		
-		//org.vostokframework.loadingmanagement.domain.assetloaders
-		public var loaderAlgorithm:LoaderAlgorithm;
+		//org.vostokframework.loadingmanagement.domain.loaders
+		public var loaderAlgorithmTests:LoaderAlgorithmTests;
+		public var queueLoadingAlgorithmTests:QueueLoadingAlgorithmTests;
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
-		public var aggregateQueueLoadingMonitorTests:AggregateQueueLoadingMonitorTests;
-		public var assetLoadingMonitorTests:AssetLoadingMonitorTests;
-		public var queueLoadingMonitorTests:QueueLoadingMonitorTests;
+		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
+		public var loadingMonitorTests:LoadingMonitorTests;
+		public var loadingMonitorTestsIntegration:LoadingMonitorTestsIntegration;
 		
 		//org.vostokframework.loadingmanagement.domain.policies
 		public var loadingPolicyTests:LoadingPolicyTests;
+		public var elaborateLoadingPolicyTests:ElaborateLoadingPolicyTests;
+		public var elaborateLoadingPolicyTestsHighestLowest:ElaborateLoadingPolicyTestsHighestLowest;
 		
 		//org.vostokframework.loadingmanagement.services
-		public var assetLoadingServiceTests:AssetLoadingServiceTests;
+		//public var assetLoadingServiceTests:AssetLoadingServiceTests;
 		public var queueLoadingServiceTests:QueueLoadingServiceTests;
-		public var queueLoadingServiceTestsIntegration:QueueLoadingServiceTestsIntegration;
+		//public var queueLoadingServiceTestsIntegration:QueueLoadingServiceTestsIntegration;
 		
 		public function TestSuite()
 		{

@@ -26,50 +26,58 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.events
 {
-	import org.as3coreaddendum.system.Enum;
-
-	import flash.errors.IllegalOperationError;
+	import flash.events.Event;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderStatus extends Enum
+	public class LoadingAlgorithmEvent extends Event
 	{
-		public static const CANCELED:LoaderStatus = new LoaderStatus("CANCELED", 0);
-		public static const COMPLETE:LoaderStatus = new LoaderStatus("COMPLETE", 1);
-		public static const CONNECTING:LoaderStatus = new LoaderStatus("CONNECTING", 2);
-		public static const CONNECTION_ERROR:LoaderStatus = new LoaderStatus("CONNECTION_ERROR", 3);
-		public static const FAILED:LoaderStatus = new LoaderStatus("FAILED", 4);
-		public static const LOADING:LoaderStatus = new LoaderStatus("LOADING", 5);
-		public static const QUEUED:LoaderStatus = new LoaderStatus("QUEUED", 6);
-		public static const STOPPED:LoaderStatus = new LoaderStatus("STOPPED", 7);
-		
+		public static const COMPLETE:String = "VostokFramework.LoadingAlgorithmEvent.COMPLETE";
+		public static const CONNECTING:String = "VostokFramework.LoadingAlgorithmEvent.CONNECTING";
+		public static const HTTP_STATUS:String = "VostokFramework.LoadingAlgorithmEvent.HTTP_STATUS";
+		public static const INIT:String = "VostokFramework.LoadingAlgorithmEvent.INIT";
+		public static const OPEN:String = "VostokFramework.LoadingAlgorithmEvent.OPEN";
 		
 		/**
 		 * @private
-		 */
-		private static var _created :Boolean = false;
+ 		 */
+		private var _data:*;
+		private var _httpStatus:int;
+		private var _latency:int;
 		
-		{
-			_created = true;
-		}
+		public function get data():* { return _data; }
+		
+		public function get httpStatus():int { return _httpStatus; }
+		public function set httpStatus(value:int):void { _httpStatus = value; }
+		
+		public function get latency():int { return _latency; }
 		
 		/**
 		 * description
 		 * 
-		 * @param name
-		 * @param ordinal
+		 * @param type
+		 * @param loadedAssetData
 		 */
-		public function LoaderStatus(name:String, ordinal:int)
+		public function LoadingAlgorithmEvent(type:String, data:* = null, latency:int = 0)
 		{
-			super(name, ordinal);
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			super(type, true);
+			_data = data;
+			_latency = latency;
 		}
-
+		
+		override public function clone():Event
+		{
+			var event:LoadingAlgorithmEvent = new LoadingAlgorithmEvent(type, _data, _latency);
+			event.httpStatus = httpStatus;
+			
+			return event;
+		}
+		
 	}
 
 }

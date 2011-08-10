@@ -28,8 +28,10 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
+	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3utils.URLUtil;
 	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.settings.ApplicationDomainSetting;
@@ -67,11 +69,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function create(asset:Asset):VostokLoader
 		{
-			var id:String = asset.identification.toString();
 			var maxAttempts:int = asset.settings.policy.maxAttempts;
 			var algorithm:LoadingAlgorithm = createLoaderAlgorithm(asset.type, asset.src, asset.settings);
-			
-			return instanciate(id, algorithm, asset.priority, maxAttempts);
+			//TODO: depois q AssetIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
+			var identification:VostokIdentification = new VostokIdentification(asset.identification.id, asset.identification.locale);
+			return instanciate(identification, algorithm, asset.priority, maxAttempts);
 			
 			//TODO:settings.policy.latencyTimeout
 		}
@@ -102,12 +104,17 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.media.bufferPercent
 			//TODO:settings.media.bufferTime
 			
-			return null;
+			var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received arguments:\n";
+			errorMessage = "<type> :" + type + "\n";
+			errorMessage = "<url> :" + url + "\n";
+			errorMessage = "<settings> :" + settings + "\n";
+			
+			throw new IllegalStateError(errorMessage);
 		}
 		
-		protected function instanciate(id:String, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int):VostokLoader
+		protected function instanciate(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int):VostokLoader
 		{
-			return new VostokLoader(id, algorithm, priority, maxAttempts);
+			return new VostokLoader(identification, algorithm, priority, maxAttempts);
 		}
 		
 		protected function parseUrl(url:String, killExternalCache:Boolean, baseURL:String):String

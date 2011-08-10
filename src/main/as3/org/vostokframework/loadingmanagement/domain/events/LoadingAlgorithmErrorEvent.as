@@ -26,65 +26,38 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.events
 {
-	import org.as3coreaddendum.errors.UnsupportedOperationError;
-	import org.as3coreaddendum.system.IDisposable;
-	import org.as3utils.ReflectionUtil;
-
-	import flash.errors.IllegalOperationError;
-	import flash.events.EventDispatcher;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class PlainLoader extends EventDispatcher implements IDisposable
+	public class LoadingAlgorithmErrorEvent extends ErrorEvent
 	{
+		public static const IO_ERROR:String = "VostokFramework.LoadingAlgorithmErrorEvent.IO_ERROR";
+		public static const SECURITY_ERROR:String = "VostokFramework.LoadingAlgorithmErrorEvent.SECURITY_ERROR";
+		public static const UNKNOWN_ERROR:String = "VostokFramework.LoadingAlgorithmErrorEvent.UNKNOWN_ERROR";
 		
 		/**
 		 * description
 		 * 
+		 * @param type
+		 * @param loadedAssetData
 		 */
-		public function PlainLoader()
+		public function LoadingAlgorithmErrorEvent(type: String, bubbles: Boolean = false, cancelable: Boolean = false, text: String = "")
 		{
-			if (ReflectionUtil.classPathEquals(this, PlainLoader))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			super(type, bubbles, cancelable, text);
 		}
 		
-		/**
-		 * description
-		 * 
-		 * @return
- 		 */
-		public function cancel(): void
+		override public function clone():Event
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			return new LoadingAlgorithmErrorEvent(type, bubbles, cancelable, text);
 		}
 		
-		public function dispose():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-
-		/**
-		 * description
-		 * 
-		 * @return
- 		 */
-		public function load(): void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-
-		/**
-		 * description
-		 */
-		public function stop(): void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-
 	}
 
 }

@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,21 +26,46 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.loadingmanagement.domain
 {
-	import org.as3collections.IList;
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
+
+	import flash.events.Event;
+	import flash.utils.setTimeout;
 
 	/**
-	 * Description
+	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IQueueLoadingMonitor extends ILoadingMonitor
+	public class StubVostokLoader extends VostokLoader
 	{
-		function addMonitor(monitor:ILoadingMonitor):void;
+		public var $state:LoaderState;
 		
-		function addMonitors(monitors:IList):void;
+		override public function get state():LoaderState
+		{
+			if ($state) return $state;
+			return super.state;
+		}
+		
+		public function StubVostokLoader(identification:VostokIdentification)
+		{
+			super(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 3);
+		}
+		
+		public function asyncDispatchEvent(event:Event, state:LoaderState, delay:int = 50):int
+		{
+			return setTimeout(_dispatchEvent, delay, event, state);
+		}
+		
+		private function _dispatchEvent(event:Event, state:LoaderState):void
+		{
+			setState(state);
+			$state = state;
+			dispatchEvent(event);
+		}
+		
 	}
 
 }

@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoaderState;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
@@ -66,6 +67,11 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 		}
 		
 		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		{
+			// do nothing
+		}
+		
+		override public function stopLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
 		{
 			// do nothing
 		}

@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.VostokIdentification;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -41,13 +43,15 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class QueueLoadingMonitorWrapper extends EventDispatcher  implements IQueueLoadingMonitor
+	public class QueueLoadingMonitorWrapper extends EventDispatcher  implements ILoadingMonitor
 	{
 		
 		private var _listeners:IList;
-		private var _monitor:IQueueLoadingMonitor;
+		private var _monitor:ILoadingMonitor;
 		
 		public function get id():String { return "test"; }
+		
+		public function get loader():VostokLoader { return _monitor.loader; }
 		
 		public function get monitoring():LoadingMonitoring { return _monitor.monitoring; }
 		
@@ -57,10 +61,18 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param requestId
 		 * @param loaders
 		 */
-		public function QueueLoadingMonitorWrapper(monitor:IQueueLoadingMonitor = null): void
+		public function QueueLoadingMonitorWrapper(monitor:ILoadingMonitor = null)
 		{
 			_listeners = ListUtil.getUniqueTypedList(new ArrayList(), EventListener);
 			if (monitor) changeMonitor(monitor);
+		}
+		
+		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
+		{
+			var eventListener:EventListener = new EventListener(type, listener, useCapture, priority, useWeakReference);
+			
+			_listeners.add(eventListener);
+			_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
 		public function addMonitor(monitor:ILoadingMonitor):void
@@ -73,25 +85,22 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_monitor.addMonitors(monitors);
 		}
 		
-		public function changeMonitor(monitor:IQueueLoadingMonitor):void
+		public function changeMonitor(monitor:ILoadingMonitor):void
 		{
 			//trace("GlobalQueueLoadingMonitorWrapper#changeMonitor()");
 			
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
 			
-			//if (_monitor) removeListenersFromMonitor();
+			//if (_monitor) removeListenersFromMonitor();//TODO:repensar se nao deve descomentar
 			
 			_monitor = monitor;
 			
 			addListenersOnMonitor();
 		}
 		
-		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
+		public function contains(identification:VostokIdentification):Boolean
 		{
-			var eventListener:EventListener = new EventListener(type, listener, useCapture, priority, useWeakReference);
-			
-			_listeners.add(eventListener);
-			_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
+			return _monitor.contains(identification);
 		}
 		
 		override public function dispatchEvent(event: Event) : Boolean
@@ -111,13 +120,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_listeners = null;
 		}
 		
-		public function equals(other : *): Boolean
+		public function getMonitor(identification:VostokIdentification):ILoadingMonitor
 		{
-			if (this == other) return true;
-			if (!(other is ILoadingMonitor)) return false;
-			
-			var otherMonitor:ILoadingMonitor = other as ILoadingMonitor;
-			return id == otherMonitor.id;
+			return _monitor.getMonitor(identification);
 		}
 		
 		override public function hasEventListener(type : String) : Boolean
@@ -131,6 +136,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			var eventListener:EventListener = new EventListener(type, listener, useCapture);
 			_listeners.remove(eventListener);
+		}
+		
+		public function removeMonitor(identification:VostokIdentification):void
+		{
+			_monitor.removeMonitor(identification);
 		}
 		
 		override public function willTrigger(type : String) : Boolean

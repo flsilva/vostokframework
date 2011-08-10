@@ -29,7 +29,9 @@
 
 package org.vostokframework.loadingmanagement.domain.errors
 {
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
+
 	/**
 	 * description
 	 * 
@@ -37,20 +39,20 @@ package org.vostokframework.loadingmanagement.domain.errors
 	 */
 	public class LoaderNotFoundError extends VostokFrameworkError
 	{
-		private var _loaderId:String;
+		private var _loaderIdentification:VostokIdentification;
 		
-		public function get loaderId():String { return _loaderId; }
+		public function get loaderIdentification():VostokIdentification { return _loaderIdentification; }
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function LoaderNotFoundError(loaderId:String, message:String = null)
+		public function LoaderNotFoundError(loaderIdentification:VostokIdentification, message:String = null)
 		{
 			super(message);
 			name = "LoaderNotFoundError";
-			_loaderId = loaderId;
+			_loaderIdentification = loaderIdentification;
 		}
 
 	}

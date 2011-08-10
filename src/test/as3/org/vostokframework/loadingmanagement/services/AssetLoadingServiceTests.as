@@ -29,6 +29,11 @@
 
 package org.vostokframework.loadingmanagement.services
 {
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
+	import mockolate.nice;
+	import mockolate.runner.MockolateRule;
+
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
@@ -39,19 +44,19 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ElaboratePriorityLoadQueue;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.LoaderStatus;
-	import org.vostokframework.loadingmanagement.domain.PriorityLoadQueue;
-	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoader;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
-	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
@@ -60,11 +65,17 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999999)]
+	[TestCase]
 	public class AssetLoadingServiceTests
 	{
-		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
+		/*private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		private static const QUEUE_ID:String = "queue-1";
+		
+		[Rule]
+		public var mocks:MockolateRule = new MockolateRule();
+		
+		[Mock(inject="false")]
+		public var loader:VostokLoader;//only used here to prepare mockolate
 		
 		public var assetLoadingService:AssetLoadingService;
 		public var queueLoadingService:QueueLoadingService;
@@ -88,19 +99,20 @@ package org.vostokframework.loadingmanagement.services
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			
-			var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
 			policy.localMaxConnections = LoadingManagementContext.getInstance().maxConcurrentQueues;
 			
-			var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
-			var globalQueueLoader:QueueLoader = new QueueLoader("GlobalQueueLoader", LoadPriority.MEDIUM, queue);
+			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
+			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
+			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			assetLoadingService = new AssetLoadingService();
 			queueLoadingService = new QueueLoadingService();
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(identification);
+			var packageIdentification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
 			asset1 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-01.jpg", assetPackage);
 			asset2 = AssetManagementContext.getInstance().assetFactory.create("QueueLoadingServiceTests/asset/image-02.jpg", assetPackage);
 		}
@@ -115,7 +127,7 @@ package org.vostokframework.loadingmanagement.services
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():StatefulLoader
+		public function getLoader():VostokLoader
 		{
 			return null;
 		}
@@ -136,7 +148,7 @@ package org.vostokframework.loadingmanagement.services
 			assetLoadingService.cancel(QUEUE_ID);
 		}
 		
-		[Test(order=999999)]
+		[Test]
 		public function cancel_loadingAsset_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
@@ -144,17 +156,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			queueLoadingService.load(QUEUE_ID, list);
 			
-			try
-			{
-				var canceled:Boolean = assetLoadingService.cancel(asset1.identification.id);
-			}
-			catch(error:Error)
-			{
-				trace("##################################################################");
-				trace(error.getStackTrace());
-				throw error;
-			}
-			
+			var canceled:Boolean = assetLoadingService.cancel(asset1.identification.id);
 			Assert.assertTrue(canceled);
 		}
 		
@@ -168,8 +170,8 @@ package org.vostokframework.loadingmanagement.services
 			queueLoadingService.load(QUEUE_ID, list);
 			assetLoadingService.cancel(asset1.identification.id);
 			
-			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			Assert.assertEquals(LoaderStatus.CANCELED, assetLoader.status);
+			var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			Assert.assertEquals(LoaderCanceled.INSTANCE, loader.state);
 		}
 		
 		[Test]
@@ -196,8 +198,8 @@ package org.vostokframework.loadingmanagement.services
 			assetLoadingService.stop(asset1.identification.id);
 			assetLoadingService.cancel(asset1.identification.id);
 			
-			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			Assert.assertEquals(LoaderStatus.CANCELED, assetLoader.status);
+			var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			Assert.assertEquals(LoaderCanceled.INSTANCE, loader.state);
 		}
 		
 		[Test]
@@ -476,9 +478,9 @@ package org.vostokframework.loadingmanagement.services
 			assetLoadingService.stop(asset1.identification.id);
 			assetLoadingService.resume(asset1.identification.id);
 			
-			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
 			
-			Assert.assertEquals(LoaderStatus.CONNECTING, assetLoader.status);
+			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
 		}
 		
 		//////////////////////////////////
@@ -512,9 +514,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function stop_notLoadingAsset_ReturnsTrue(): void
 		{
-			var assetLoader:AssetLoader = new StubAssetLoader(asset1.identification.toString());
-			LoadingManagementContext.getInstance().loaderRepository.add(assetLoader);
-			//TODO: pensar em substituir hard coded stubs por mockolate stubs
+			var loader:VostokLoader = nice(VostokLoader, null, ["loader-1", new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 1]);
+			LoadingManagementContext.getInstance().loaderRepository.add(loader);
+			
 			var stopped:Boolean = assetLoadingService.stop(asset1.identification.id);
 			Assert.assertTrue(stopped);
 		}
@@ -541,9 +543,9 @@ package org.vostokframework.loadingmanagement.services
 			queueLoadingService.load(QUEUE_ID, list);
 			assetLoadingService.stop(asset1.identification.id);
 			
-			var assetLoader:StatefulLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
+			var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
 			
-			Assert.assertEquals(LoaderStatus.STOPPED, assetLoader.status);
+			Assert.assertEquals(LoaderStopped.INSTANCE, loader.state);
 		}
 		
 		////////////////////////////////////
@@ -573,7 +575,7 @@ package org.vostokframework.loadingmanagement.services
 			var exists:Boolean = LoadingManagementContext.getInstance().loadedAssetRepository.exists(asset1.identification);
 			Assert.assertFalse(exists);
 		}
-		
+		*/
 	}
 
 }

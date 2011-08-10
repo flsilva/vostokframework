@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.loadingmanagement.domain.LoaderState;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
@@ -68,7 +67,7 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 		
 		override public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
-			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
+			// do nothing
 		}
 		
 		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void

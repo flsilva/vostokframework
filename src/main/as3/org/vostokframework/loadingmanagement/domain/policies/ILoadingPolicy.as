@@ -1,7 +1,7 @@
-/*
+﻿/*
  * Licensed under the MIT License
  * 
- * Copyright 2011 (c) Flávio Silva, flsilva.com
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,22 +26,28 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+
+package org.vostokframework.loadingmanagement.domain.policies
 {
+	import org.as3collections.ICollection;
+	import org.as3collections.IQueue;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
-	 * description
+	 * Description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubPriorityLoadQueue extends PriorityLoadQueue
+	public interface ILoadingPolicy
 	{
+		function get localMaxConnections():int;
+		function set localMaxConnections(value:int):void;
 		
-		public function StubPriorityLoadQueue()
-		{
-			
-		}
-
+		function get globalMaxConnections():int;
+		function set globalMaxConnections(value:int):void;
+		
+		function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader;
 	}
 
 }

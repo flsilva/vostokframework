@@ -39,16 +39,36 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	public class StubAssetLoaderFactory extends AssetLoaderFactory
 	{
 		
+		private var _openBehaviorSync:Boolean;
+		private var _successBehaviorAsync:Boolean;
+		private var _successBehaviorSync:Boolean;
+		
+		public function set openBehaviorSync(value:Boolean):void { _openBehaviorSync = value; }
+		
+		public function set successBehaviorAsync(value:Boolean):void { _successBehaviorAsync = value; }
+		
+		public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
+		
 		public function StubAssetLoaderFactory()
 		{
 			
 		}
+		/*
+		override public function create(asset:Asset):VostokLoader
+		{
+			return new StubVostokLoader(asset.identification.toString());
+		}*/
 		
 		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):LoadingAlgorithm
 		{
-			return new StubLoadingAlgorithm();
+			var stub:StubLoadingAlgorithm = new StubLoadingAlgorithm();
+			stub.openBehaviorSync = _openBehaviorSync;
+			stub.successBehaviorAsync = _successBehaviorAsync;
+			stub.successBehaviorSync = _successBehaviorSync;
+			
+			return stub;
 		}
-
+		
 	}
 
 }

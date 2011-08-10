@@ -41,6 +41,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		public static const COMPLETE:String = "VostokFramework.LoaderEvent.COMPLETE";
 		public static const CONNECTING:String = "VostokFramework.LoaderEvent.CONNECTING";
 		public static const FAILED:String = "VostokFramework.LoaderEvent.FAILED";
+		public static const HTTP_STATUS:String = "VostokFramework.LoaderEvent.HTTP_STATUS";
 		public static const INIT:String = "VostokFramework.LoaderEvent.INIT";
 		public static const OPEN:String = "VostokFramework.LoaderEvent.OPEN";
 		public static const STOPPED:String = "VostokFramework.LoaderEvent.STOPPED";
@@ -49,9 +50,13 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @private
  		 */
 		private var _data:*;
+		private var _httpStatus:int;
 		private var _latency:int;
 		
 		public function get data():* { return _data; }
+		
+		public function get httpStatus():int { return _httpStatus; }
+		public function set httpStatus(value:int):void { _httpStatus = value; }
 		
 		public function get latency():int { return _latency; }
 		
@@ -70,18 +75,10 @@ package org.vostokframework.loadingmanagement.domain.events
 		
 		override public function clone():Event
 		{
-			return new LoaderEvent(type, _data, _latency);
-		}
-		
-		public static function typeBelongs(type:String):Boolean
-		{
-			return type == CANCELED ||
-			       type == COMPLETE ||
-			       type == CONNECTING ||
-			       type == FAILED ||
-			       type == INIT ||
-			       type == OPEN ||
-			       type == STOPPED;
+			var event:LoaderEvent = new LoaderEvent(type, _data, _latency);
+			event.httpStatus = httpStatus;
+			
+			return event;
 		}
 		
 	}

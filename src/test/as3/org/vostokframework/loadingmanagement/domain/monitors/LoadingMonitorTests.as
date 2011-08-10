@@ -29,51 +29,43 @@
 
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
-	import org.vostokframework.VostokFramework;
+	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
+	import mockolate.verify;
 
-	import org.flexunit.Assert;
-	import org.flexunit.async.Async;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.PlainLoader;
-	import org.vostokframework.loadingmanagement.domain.StatefulLoader;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-
-	import flash.events.Event;
-	import flash.events.HTTPStatusEvent;
-	import flash.events.IOErrorEvent;
-	import flash.events.ProgressEvent;
-	import flash.events.SecurityErrorEvent;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
 
 	/**
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class AssetLoadingMonitorTests
+	public class LoadingMonitorTests
 	{
-		private static const ASSET_ID:String = "asset-id";
-		private static const ASSET_LOCALE:String = VostokFramework.CROSS_LOCALE_ID;
-		private static const ASSET_TYPE:AssetType = AssetType.IMAGE;
-		
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var loader:StatefulLoader;
+		public var fakeLoader:VostokLoader;
 		
-		public var monitor:AssetLoadingMonitor;
+		[Mock(inject="false")]
+		public var mockDispatcher:LoadingMonitorDispatcher;
 		
-		public function AssetLoadingMonitorTests()
+		[Mock(inject="false")]
+		public var fakeMonitor:ILoadingMonitor;//variable used only here to prepare mockolate
+		
+		public var monitor:ILoadingMonitor;
+		
+		public function LoadingMonitorTests()
 		{
 			
 		}
-		
 		
 		/////////////////////////
 		// TESTS CONFIGURATION //
@@ -82,14 +74,17 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		[Before]
 		public function setUp(): void
 		{
-			loader = getNiceLoader();
-			monitor = getMonitor(loader);
+			fakeLoader = getFakeLoader("loader-id");
+			mockDispatcher = getFakeDispatcher();
+			
+			monitor = getMonitor(fakeLoader, mockDispatcher);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
-			loader = null;
+			fakeLoader = null;
+			mockDispatcher = null;
 			monitor = null;
 		}
 		
@@ -97,17 +92,31 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getMonitor(loader:PlainLoader): AssetLoadingMonitor
+		protected function getFakeDispatcher():LoadingMonitorDispatcher
 		{
-			var identification:AssetIdentification = new AssetIdentification(ASSET_ID, ASSET_LOCALE);
-			return new AssetLoadingMonitor(identification, ASSET_TYPE, loader);
+			return nice(LoadingMonitorDispatcher);
 		}
 		
-		public function getNiceLoader():StatefulLoader
+		protected function getFakeLoader(id:String):VostokLoader
 		{
-			var loader:StatefulLoader = nice(StatefulLoader, null, ["loader-id", LoadPriority.MEDIUM, 3]);
+			var loader:VostokLoader = nice(VostokLoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 3]);
 			stub(loader).asEventDispatcher();
+			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
+			
 			return loader;
+		}
+		
+		protected function getFakeMonitor():ILoadingMonitor
+		{
+			var fakeMonitor:ILoadingMonitor = nice(ILoadingMonitor);
+			stub(fakeMonitor).getter("loader").returns(getFakeLoader("fake-monitor-loader"));
+			
+			return fakeMonitor;
+		}
+		
+		protected function getMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
+		{
+			return new LoadingMonitor(loader, dispatcher);
 		}
 		
 		///////////////////////
@@ -132,65 +141,88 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			new AssetLoadingMonitor("id", AssetType.SWF, null);
 		}
 		*/
-		////////////////////////////////////////////////////
-		// AssetLoadingMonitor().addEventListener() TESTS //
-		////////////////////////////////////////////////////
+		///////////////////////////////////////////////
+		// LoadingMonitor().addEventListener() TESTS //
+		///////////////////////////////////////////////
+		[Test]
+		public function addEventListener_stubLoaderDispatchesCompleteEvent_mustCatchStubLoaderEventAndCallMockDispatcher(): void
+		{
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			mock(mockDispatcher).method("dispatchCompleteEvent");
+			
+			fakeLoader.load();
+			
+			verify(mockDispatcher);
+		}
 		
+		[Test]
+		public function addEventListener_stubLoaderDispatchesOpenEvent_mustCatchStubLoaderEventAndCallMockDispatcher(): void
+		{
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			mock(mockDispatcher).method("dispatchOpenEvent");
+			
+			fakeLoader.load();
+			
+			verify(mockDispatcher);
+		}
+		
+		/*
 		[Test(async, timeout=2000)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.OPEN, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async, timeout=2000)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfAssetIdOfEventMatches(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			monitor.addEventListener(AssetLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent_checkIfLatencyIsGreaterThanZero(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN, null, 10), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN, null, 10), 50);
 			monitor.addEventListener(AssetLoadingEvent.OPEN,
 									Async.asyncHandler(this, monitorEventHandlerCheckIfMonitoringLatencyGreaterThanZero, 1000,
 														null, asyncTimeoutHandler),
 									false, 0, true);
 
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesInitEvent_mustCatchStubEventAndDispatchOwnInitEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.INIT), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.INIT), 50);
+			
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.INIT, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
-		[Test(async)]
+		[Test(async, timeout=1000)]
 		public function addEventListener_stubDispatchesProgressEvent_mustCatchStubEventAndDispatchOwnProgressEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new ProgressEvent(ProgressEvent.PROGRESS), 100);
 			
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesProgressEventWithControlledBytes_mustCatchStubEventAndDispatchOwnProgressEvent_checkIfMonitoringPercentMatches(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 50, 200), 100);
 			
 			monitor.addEventListener(AssetLoadingEvent.PROGRESS,
@@ -199,23 +231,23 @@ package org.vostokframework.loadingmanagement.domain.monitors
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE, {}), 100);
 			
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesCompleteEventWithGenericAssetData_mustCatchStubEventAndDispatchOwnCompleteEvent_checkIfAssetDataIsValidGenericObject(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE, {}), 100);
 			
 			monitor.addEventListener(AssetLoadingEvent.COMPLETE,
@@ -223,63 +255,63 @@ package org.vostokframework.loadingmanagement.domain.monitors
 														null, asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesHttpStatusEvent_mustCatchStubEventAndDispatchOwnHttpStatusEvent(): void
 		{
-			stub(loader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS), 50);
+			stub(fakeLoader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.HTTP_STATUS, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesHttpStatusEventWithControlledStatusValue_mustCatchStubEventAndDispatchOwnHttpStatusEvent_checkIfStatusValueMatches(): void
 		{
-			stub(loader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404), 50);
+			stub(fakeLoader).method("load").dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, 404), 50);
 			monitor.addEventListener(AssetLoadingEvent.HTTP_STATUS,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"httpStatus", propertyValue:404},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesIoErrorEvent_mustCatchStubEventAndDispatchOwnIoErrorEvent(): void
 		{
-			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
+			stub(fakeLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingErrorEvent.IO_ERROR, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesIoErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnIoErrorEvent_checkIfErrorMessageMatches(): void
 		{
-			stub(loader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"), 50);
+			stub(fakeLoader).method("load").dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "IO Error Test Text"), 50);
 			monitor.addEventListener(AssetLoadingErrorEvent.IO_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"text", propertyValue:"IO Error Test Text"},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesSecurityErrorEvent_mustCatchStubEventAndDispatchOwnSecurityErrorEvent(): void
 		{
-			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
+			stub(fakeLoader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingErrorEvent.SECURITY_ERROR, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesSecurityErrorEventWithControlledMessage_mustCatchStubEventAndDispatchOwnSecurityErrorEvent_checkIfErrorMessageMatches(): void
 		{
-			stub(loader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"), 50);
+			stub(fakeLoader).method("load").dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, "Security Error Test Text"), 50);
 			monitor.addEventListener(AssetLoadingErrorEvent.SECURITY_ERROR,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"text", propertyValue:"Security Error Test Text"},
@@ -287,49 +319,49 @@ package org.vostokframework.loadingmanagement.domain.monitors
 									false, 0, true);
 			
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.CANCELED, 1000, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesCanceledEvent_mustCatchStubEventAndDispatchOwnCanceledEvent_checkIfAssetIdMatches(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CANCELED), 50);
 			monitor.addEventListener(AssetLoadingEvent.CANCELED,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
 			Async.proceedOnEvent(this, monitor, AssetLoadingEvent.STOPPED, 200, asyncTimeoutHandler);
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		[Test(async)]
 		public function addEventListener_stubDispatchesStoppedEvent_mustCatchStubEventAndDispatchOwnStoppedEvent_checkIfAssetIdMatches(): void
 		{
-			stub(loader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.STOPPED), 50);
 			monitor.addEventListener(AssetLoadingEvent.STOPPED,
 									Async.asyncHandler(this, monitorEventHandlerCheckEventProperty, 1000,
 														{propertyName:"assetId", propertyValue:ASSET_ID},
 														asyncTimeoutHandler),
 									false, 0, true);
 			
-			loader.load();
+			fakeLoader.load();
 		}
 		
 		public function monitorEventHandlerCheckEventProperty(event:Event, passThroughData:Object):void
@@ -359,7 +391,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			Assert.fail("Asynchronous Test Failed: Timeout");
 			passThroughData = null;
 		}
-		
+		*/
 	}
 
 }

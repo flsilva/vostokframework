@@ -29,27 +29,33 @@
 
 package org.vostokframework.loadingmanagement.domain.policies
 {
+	import org.as3collections.ICollection;
+	import org.as3collections.IQueue;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingPolicy
+	public class LoadingPolicy implements ILoadingPolicy
 	{
 		private var _loaderRepository:LoaderRepository;
 		private var _globalMaxConnections:int;
 		private var _localMaxConnections:int;
 		
-		private function get totalGlobalConnections():int { return _loaderRepository.totalLoading(); }
+		private function get totalGlobalConnections():int { return _loaderRepository.openedConnections; }
 		
+		public function get globalMaxConnections():int { return _globalMaxConnections; }
 		public function set globalMaxConnections(value:int):void
 		{
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
 			_globalMaxConnections = value;
 		}
 		
+		public function get localMaxConnections():int { return _localMaxConnections; }
 		public function set localMaxConnections(value:int):void
 		{
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
@@ -68,11 +74,18 @@ package org.vostokframework.loadingmanagement.domain.policies
 			_loaderRepository = loaderRepository;
 		}
 		
-		public function allow(localActiveConnections:int):Boolean
+		public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader
 		{
-			if (localActiveConnections < 0) throw new ArgumentError("Argument <localActiveConnections> must be a positive integer. Received: <" + localActiveConnections + ">");
-			
-			return localActiveConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
+			//if (hasAvailableConnection(algorithm.openedConnections)) return queue.poll();
+			if (hasAvailableConnection(loadingLoaders.size())) return queue.poll();
+			//TODO:pensar sobre usar loadingLoaders.size(). porem precisaria implementar remoção dos loaders da lista no ElaborateLoadingPolicy.as qnd chamar stop()
+			return null;
+		}
+		
+		private function hasAvailableConnection(activeLocalConnections:int):Boolean
+		{
+			if (activeLocalConnections < 0) throw new ArgumentError("Argument <activeLocalConnections> must not be a negative integer. Received: <" + activeLocalConnections + ">");
+			return activeLocalConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
 		}
 
 	}

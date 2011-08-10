@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2011 (c) Flávio Silva, flsilva.com
+ * Copyright 2010 (c) Flávio Silva, http://flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,64 +26,71 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+
+package org.vostokframework.loadingmanagement.domain.policies
 {
+	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
-	import org.as3collections.IList;
-	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.as3collections.IQueue;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class ElaboratePriorityLoadQueue extends PlainPriorityLoadQueue
+	public class ElaborateLoadingPolicy extends LoadingPolicy
 	{
-
+		
 		/**
-		 * description
+		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
-		 * @param requestLoaders
+		 * @param message 	A string associated with the error object.
 		 */
-		public function ElaboratePriorityLoadQueue(policy:LoadingPolicy)
+		public function ElaborateLoadingPolicy(loaderRepository:LoaderRepository)
 		{
-			super(policy);
+			super(loaderRepository);
 		}
 		
-		override protected function allowGetNext():Boolean
+		override public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader
 		{
-			var nextLoader:StatefulLoader = queuedLoaders.peek();
+			if (queue.isEmpty()) return null;
+			
+			var nextLoader:VostokLoader = queue.peek();
 			var nextLoaderPriority:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);
 			
 			if (nextLoaderPriority.equals(LoadPriority.HIGHEST))
 			{
-				stopNotHighest();
-				return super.allowGetNext();
+				stopAnyNotHighest(algorithm, loadingLoaders);
+				return super.getNext(algorithm, queue, loadingLoaders);
 			}
 			
 			if (nextLoaderPriority.equals(LoadPriority.LOWEST))
 			{
-				if (containsOnlyLowest(getLoading())) return super.allowGetNext();
-				return false; 
+				if (isOnlyLowestLoading(loadingLoaders)) return super.getNext(algorithm, queue, loadingLoaders);
+				return null; 
 			}
 			
 			//nextLoaderPriority is not LoadPriority.HIGHEST nor LoadPriority.LOWEST
 			//if it contains any HIGHEST it's denied
 			//otherwise all LOWEST loaders are stopped and
-			//the permission is delegated to super.allowGetNext()
-			if (containsHighest(getLoading())) return false;
+			//the permission is delegated to super.getNext()
+			if (containsSomeHighest(loadingLoaders)) return null;
 			
-			stopLowest(); 
+			stopAnyLowest(algorithm, loadingLoaders); 
 			
-			return super.allowGetNext();
+			return super.getNext(algorithm, queue, loadingLoaders);
 		}
 		
-		private function containsHighest(loadingLoaders:IList):Boolean
+		private function containsSomeHighest(loadingLoaders:ICollection):Boolean
 		{
 			if (loadingLoaders.isEmpty()) return false;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:StatefulLoader;
+			var loader:VostokLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -96,12 +103,12 @@ package org.vostokframework.loadingmanagement.domain
 			return false;
 		}
 		
-		private function containsOnlyLowest(loadingLoaders:IList):Boolean
+		private function isOnlyLowestLoading(loadingLoaders:ICollection):Boolean
 		{
 			if (loadingLoaders.isEmpty()) return true;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:StatefulLoader;
+			var loader:VostokLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -114,46 +121,44 @@ package org.vostokframework.loadingmanagement.domain
 			return true;
 		}
 		
-		private function stopNotHighest():void
+		private function stopAnyNotHighest(algorithm:LoadingAlgorithm, loadingLoaders:ICollection):void
 		{
-			var loadings:IList = getLoading();
-			if (loadings.isEmpty()) return;
+			if (loadingLoaders.isEmpty()) return;
 			
-			var it:IIterator = loadings.iterator();
-			var loader:StatefulLoader;
+			var it:IIterator = loadingLoaders.iterator();
+			var loader:VostokLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
 			{
 				loader = it.next();
 				loaderPriority = LoadPriority.getByOrdinal(loader.priority);
+				
 				if (!loaderPriority.equals(LoadPriority.HIGHEST))
 				{
-					loader.stop();
-					stoppedLoaders.remove(loader);
-					queuedLoaders.add(loader);
+					algorithm.stopLoader(loader.identification);
+					it.remove();
 				}
 			}
 		}
 		
-		private function stopLowest():void
+		private function stopAnyLowest(algorithm:LoadingAlgorithm, loadingLoaders:ICollection):void
 		{
-			var loadings:IList = getLoading();
-			if (loadings.isEmpty()) return;
+			if (loadingLoaders.isEmpty()) return;
 			
-			var it:IIterator = loadings.iterator();
-			var loader:StatefulLoader;
+			var it:IIterator = loadingLoaders.iterator();
+			var loader:VostokLoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
 			{
 				loader = it.next();
 				loaderPriority = LoadPriority.getByOrdinal(loader.priority);
+				
 				if (loaderPriority.equals(LoadPriority.LOWEST))
 				{
-					loader.stop();
-					stoppedLoaders.remove(loader);
-					queuedLoaders.add(loader);
+					algorithm.stopLoader(loader.identification);
+					it.remove();
 				}
 			}
 		}
