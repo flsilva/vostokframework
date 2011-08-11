@@ -198,7 +198,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				_stoppedLoaders.remove(loader);
 				
 				loader.cancel();
-				loadNext();
+				removeLoader(loader.identification);
+				//loadNext();
 			}
 			else
 			{
@@ -377,12 +378,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			if (_allLoaders.containsKey(identification.toString()))
 			{
 				var loader:VostokLoader = _allLoaders.getValue(identification.toString());
-				loader.dispose();
 				
-				if (_queuedLoaders.contains(loader)) _queuedLoaders.remove(loader);
-				if (_stoppedLoaders.contains(loader)) _stoppedLoaders.remove(loader);
-				
+				_queuedLoaders.remove(loader);
+				_stoppedLoaders.remove(loader);
 				_allLoaders.remove(identification.toString());
+				removeLoaderListeners(loader);
+				
+				loader.dispose();//TODO:pensar se tirar a chamada daqui e colocar no client (acho melhor)
 				loadNext();
 			}
 			else
@@ -620,13 +622,21 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			return loading;
 		}
-
+		
 		private function isLoadingComplete():Boolean
 		{
-			return !_allLoaders.isEmpty()
-				&& _queuedLoaders.isEmpty()
-				&& _stoppedLoaders.isEmpty()
-				&& getLoadingLoaders().size() == 0;
+			validateDisposal();
+			
+			return _queuedLoaders.isEmpty() &&
+				_stoppedLoaders.isEmpty() &&
+				getLoadingLoaders().size() == 0;
+			
+			/*
+			return !_allLoaders.isEmpty() &&
+				_queuedLoaders.isEmpty() &&
+				_stoppedLoaders.isEmpty() &&
+				getLoadingLoaders().size() == 0;
+			*/
 		}
 		
 		private function loaderConnectingHandler(event:LoaderEvent):void

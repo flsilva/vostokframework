@@ -28,12 +28,12 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.VostokIdentification;
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.utils.ListUtil;
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -43,7 +43,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class QueueLoadingMonitorWrapper extends EventDispatcher  implements ILoadingMonitor
+	public class LoadingMonitorWrapper extends EventDispatcher  implements ILoadingMonitor
 	{
 		
 		private var _listeners:IList;
@@ -61,7 +61,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * @param requestId
 		 * @param loaders
 		 */
-		public function QueueLoadingMonitorWrapper(monitor:ILoadingMonitor = null)
+		public function LoadingMonitorWrapper(monitor:ILoadingMonitor = null)
 		{
 			_listeners = ListUtil.getUniqueTypedList(new ArrayList(), EventListener);
 			if (monitor) changeMonitor(monitor);
@@ -70,8 +70,10 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
 		{
 			var eventListener:EventListener = new EventListener(type, listener, useCapture, priority, useWeakReference);
-			
+			//trace("LoadingMonitorWrapper::addEventListener() - type: " + type + " | _listeners.size(): " + _listeners.size());
 			_listeners.add(eventListener);
+			
+			//trace("LoadingMonitorWrapper::addEventListener() - DEPOIS - _listeners.size(): " + _listeners.size());
 			_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
@@ -87,11 +89,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		public function changeMonitor(monitor:ILoadingMonitor):void
 		{
-			//trace("GlobalQueueLoadingMonitorWrapper#changeMonitor()");
+			trace("GlobalQueueLoadingMonitorWrapper::changeMonitor() - _monitor: " + _monitor);
 			
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
 			
-			//if (_monitor) removeListenersFromMonitor();//TODO:repensar se nao deve descomentar
+			if (_monitor) removeListenersFromMonitor(_monitor);//TODO:repensar se nao deve descomentar
 			
 			_monitor = monitor;
 			
@@ -167,6 +169,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		private function removeListenersFromMonitor(monitor:ILoadingMonitor):void
 		{
+			trace("GlobalQueueLoadingMonitorWrapper::removeListenersFromMonitor() - _listeners.size(): " + _listeners.size());
+			
 			if (_listeners.isEmpty()) return;
 			
 			var it:IIterator = _listeners.iterator();
@@ -176,6 +180,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			{
 				eventListener = it.next();
 				monitor.removeEventListener(eventListener.type, eventListener.listener, eventListener.useCapture);
+				//trace("GlobalQueueLoadingMonitorWrapper::removeListenersFromMonitor() - monitor.removeEventListener: " + eventListener.type);
 			}
 		}
 	}

@@ -104,11 +104,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			removeLoaderListeners();
 			
-			_disposed = true;
 			_loader = null;
 			_monitoring = null;
 			
 			doDispose();
+			_disposed = true;
 		}
 		
 		public function getMonitor(identification:VostokIdentification):ILoadingMonitor

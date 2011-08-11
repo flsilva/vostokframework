@@ -44,6 +44,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTestsIntegration;
+	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorWrapperTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
@@ -51,6 +52,7 @@ package
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsExists;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetAssetData;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetMonitor;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIntegration;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoaded;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoading;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsQueued;
@@ -92,6 +94,7 @@ package
 		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
 		public var loadingMonitorTests:LoadingMonitorTests;
 		public var loadingMonitorTestsIntegration:LoadingMonitorTestsIntegration;
+		public var loadingMonitorWrapperTestsIntegration:LoadingMonitorWrapperTestsIntegration;
 		
 		//org.vostokframework.loadingmanagement.domain.policies
 		public var loadingPolicyTests:LoadingPolicyTests;
@@ -111,7 +114,7 @@ package
 		public var loadingServiceTestsRemoveAssetData:LoadingServiceTestsRemoveAssetData;
 		public var loadingServiceTestsResume:LoadingServiceTestsResume;
 		public var loadingServiceTestsStop:LoadingServiceTestsStop;
-		//public var queueLoadingServiceTestsIntegration:QueueLoadingServiceTestsIntegration;
+		public var loadingServiceTestsIntegration:LoadingServiceTestsIntegration;
 		
 		public function TestSuite()
 		{

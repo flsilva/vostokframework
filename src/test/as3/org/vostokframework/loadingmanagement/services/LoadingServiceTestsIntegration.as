@@ -70,7 +70,7 @@ package org.vostokframework.loadingmanagement.services
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=999)]
+	[TestCase]
 	public class LoadingServiceTestsIntegration
 	{
 		private static const QUEUE_ID:String = "queue-1";
@@ -137,6 +137,14 @@ package org.vostokframework.loadingmanagement.services
 		[After]
 		public function tearDown(): void
 		{
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AggregateQueueLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
+			
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false);
+			
 			timer.stop();
 			
 			helperTestObject = null;
@@ -176,49 +184,46 @@ package org.vostokframework.loadingmanagement.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalOpenEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.CONNECTING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
 		}
 		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueOpenEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.CONNECTING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
 		}
 		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetOpenEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.CONNECTING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
 		}
 		
 		///////////////////////////////////////////////
@@ -228,108 +233,95 @@ package org.vostokframework.loadingmanagement.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalProgressEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.LOADING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			//loader.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS));
 		}
 		
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueProgressEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.LOADING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			//loader.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS));
 		}
 		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetProgressEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.PROGRESS, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.LOADING;TODO:deletar codigo comentado
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			//loader.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS));
 		}
 		
 		///////////////////////////////////////////////
 		// globalQueueLoadingMonitor COMPLETE events //
 		///////////////////////////////////////////////
 		
-		[Test(async, timeout=1000, order=999)]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent(): void
 		{
-			trace("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-			trace("LoadingServiceTestsIntegration::load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent");
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
-			
 			service.load(QUEUE_ID, list);
-			/*
-			var loader:StubVostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString()) as StubVostokLoader;
-			loader.asyncDispatchEvent(new LoaderEvent(LoaderEvent.OPEN), LoaderConnecting.INSTANCE, 50);
-			loader.asyncDispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE), LoaderComplete.INSTANCE, 100);*/
 		}
+		
 		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueCompleteEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			/*
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.CONNECTING;TODO:deletar codigo comentado
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));*/
 		}
 		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetCompleteEvent(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
-			/*
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.CONNECTING;TODO:deletar codigo comentado
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));*/
 		}
 		
 		/////////////////////////////////////////////
@@ -338,17 +330,15 @@ package org.vostokframework.loadingmanagement.services
 		
 		private function verifyHelperTestObject(event:Event, passThroughData:Object):void
 		{
-			trace("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
-			trace("verifyHelperTestObject()");
-			
 			verify(helperTestObject);
 		}
 		
-		[Test(async, timeout=1000, order=999)]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesOpenEventsInCorrectOrder(): void
 		{
-			trace("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-			trace("load_validArguments_verifyIfGlobalMonitorDispatchesOpenEventsInCorrectOrder");
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -371,19 +361,15 @@ package org.vostokframework.loadingmanagement.services
 			timer.start();
 			
 			service.load(QUEUE_ID, list);
-			
-			/*
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.LOADING;TODO:deletar codigo comentado
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			*/
-			//verify(helperTestObject);
 		}
 		
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesCompleteEventsInCorrectOrder(): void
 		{
+			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
+			stubAssetLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
@@ -401,18 +387,10 @@ package org.vostokframework.loadingmanagement.services
 			var asyncHandler:Function = Async.asyncHandler(this, verifyHelperTestObject, 1000);
 			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
 			
-			timer.delay = 500;
+			timer.delay = 900;
 			timer.start();
 			
 			service.load(QUEUE_ID, list);
-			/*
-			//var loader:VostokLoader = LoadingManagementContext.getInstance().loaderRepository.find(asset1.identification.toString());
-			var loader:VostokLoader = LoadingManagementContext.getInstance().globalQueueLoader.getLoader(asset1.identification.toString());
-			//loader.status = LoaderStatus.COMPLETE;TODO:deletar codigo comentado
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN));
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, new MovieClip()));
-			
-			verify(helperTestObject);*/
 		}
 		
 	}

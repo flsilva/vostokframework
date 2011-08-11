@@ -124,24 +124,7 @@ package org.vostokframework.loadingmanagement.services
 				throw new LoaderNotFoundError(identification, message);
 			}
 			
-			//var queueLoader:VostokLoader = loaderRepository.find(queueId) as VostokLoader;
-			//TODO:deletar codigo comentado
-			//removeMonitorsOfLoaders(queueLoader.getLoaders());
-			//loadingMonitorRepository.remove(queueLoader.id);
-			//loaderRepository.removeAll(queueLoader.getLoaders());
-			//loaderRepository.remove(queueId);
-			
-			// if queueId is the only loader in globalQueueLoader
-			// then after call to globalQueueLoader.cancelLoader(queueId)
-			// globalQueueLoader state will be COMPLETE
-			// and LoadingManagementContext object will dispose and replace it
-			// with a new VostokLoader object.
-			// therefore the subsequent call to globalQueueLoader.removeLoader()
-			// will be performed on the new object producing no effect.
 			globalQueueLoader.cancelLoader(identification);
-			//globalQueueLoader.removeLoader(queueId);
-			//TODO:criar teste com 2 queues rolando, cancelar uma das duas e tentar carregar novamente a cancelada, nao pode dar erro
-			//queueLoader.dispose();
 		}
 		
 		/**

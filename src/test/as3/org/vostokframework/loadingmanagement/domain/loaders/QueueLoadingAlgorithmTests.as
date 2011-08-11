@@ -189,7 +189,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			Async.proceedOnEvent(this, algorithm, LoadingAlgorithmEvent.OPEN, 200);
 			
 			stub(_fakePolicy).method("getNext").returns(_fakeLoader1).once();
-			stub(_fakeLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
+			stub(_fakeLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING), 25)
+				.dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			
 			algorithm.addLoader(_fakeLoader1);
 			algorithm.load();
@@ -209,7 +210,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			var $algorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			
 			Async.proceedOnEvent(this, $algorithm, LoadingAlgorithmEvent.COMPLETE, 200);
-			stub(_fakeLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE), 50);
+			
+			stub(_fakeLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING), 50)
+				.dispatches(new LoaderEvent(LoaderEvent.OPEN), 50)
+				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE), 75);
 			
 			$algorithm.addLoader(_fakeLoader1);
 			$algorithm.load();
@@ -234,10 +238,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		[Test]
 		public function addLoader_validArgument_checkIfMockPolicyWasCalled(): void
 		{
+			algorithm.addLoader(_fakeLoader1);
 			algorithm.load();
 			
-			mock(_fakePolicy).method("getNext");
-			algorithm.addLoader(_fakeLoader2);//second call
+			mock(_fakePolicy).method("getNext").once();
+			algorithm.addLoader(_fakeLoader2);
 			
 			verify(_fakePolicy);
 		}
