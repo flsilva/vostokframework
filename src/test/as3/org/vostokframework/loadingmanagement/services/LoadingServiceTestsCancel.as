@@ -119,7 +119,7 @@ package org.vostokframework.loadingmanagement.services
 		public function cancel_queuedQueueLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(QUEUE1_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 1);
+			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
 			
 			var monitor:ILoadingMonitor = new CompositeLoadingMonitor(queueLoader, new QueueLoadingMonitorDispatcher(identification.id, identification.locale));
 			

@@ -41,7 +41,7 @@ package org.vostokframework.loadingmanagement.domain
 	{
 		public static const ASYNC_ERROR:LoadError = new LoadError("ASYNC ERROR", 0);
 		public static const IO_ERROR:LoadError = new LoadError("IO ERROR", 1);
-		public static const LATENCY_TIMEOUT:LoadError = new LoadError("LATENCY TIMEOUT", 2);
+		public static const LATENCY_TIMEOUT_ERROR:LoadError = new LoadError("LATENCY TIMEOUT ERROR", 2);
 		public static const SECURITY_ERROR:LoadError = new LoadError("SECURITY ERROR", 3);
 		public static const UNKNOWN_ERROR:LoadError = new LoadError("UNKNOWN ERROR", 4);
 				

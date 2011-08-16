@@ -119,10 +119,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//stub(_fakePolicy).getter("globalMaxConnections").returns(3);
 			//stub(_fakePolicy).getter("localMaxConnections").returns(3);
 			
-			fakeAlgorithm = nice(LoadingAlgorithm);
+			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
-			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM, 3]);
-			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW, 3]);
+			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
+			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
 			
 			stub(_fakeLoader1).asEventDispatcher();
 			stub(_fakeLoader2).asEventDispatcher();

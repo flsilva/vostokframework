@@ -307,6 +307,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			//TODO:implementar mesmo erro acima porem para LoadingMonitor
 			
+			//TODO: mover lógica para factory
 			var queueLoader:VostokLoader = createQueueLoader(identification, priority, concurrentConnections);
 			
 			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
@@ -612,7 +613,7 @@ package org.vostokframework.loadingmanagement.services
 			policy.localMaxConnections = concurrentConnections;
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
-			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, priority, 1);
+			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, priority);
 			/*
 			try
 			{

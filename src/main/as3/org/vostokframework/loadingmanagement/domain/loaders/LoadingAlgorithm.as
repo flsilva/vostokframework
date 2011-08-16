@@ -29,16 +29,28 @@
 package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.as3collections.ICollection;
+	import org.as3collections.IMap;
+	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.maps.TypedMap;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.LoadError;
 	import org.vostokframework.loadingmanagement.domain.LoaderState;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 
 	import flash.errors.IllegalOperationError;
+	import flash.events.ErrorEvent;
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.events.HTTPStatusEvent;
+	import flash.events.IEventDispatcher;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 
 	/**
 	 * description
@@ -51,13 +63,23 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * @private
  		 */
 		private var _disposed:Boolean;
+		private var _errors:IMap;//<LoadError, String> - where String is the original Flash Player error message
 		private var _isLoading:Boolean;
+		private var _loaderDispatcher:IEventDispatcher;
+		private var _maxAttempts:int;
+		private var _performedAttempts:int;
 		
 		/**
 		 * @private
  		 */
 		protected function get isLoading():Boolean { return _isLoading; }
 		protected function set isLoading(value:Boolean):void { _isLoading = value; }
+		
+		/**
+		 * @private
+ 		 */
+		protected function get loaderDispatcher():IEventDispatcher { return _loaderDispatcher; }
+		protected function set loaderDispatcher(value:IEventDispatcher):void { _loaderDispatcher = value; }
 		
 		public function get openedConnections():int
 		{
@@ -68,9 +90,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * description
 		 * 
 		 */
-		public function LoadingAlgorithm ()
+		public function LoadingAlgorithm (maxAttempts:int = 1)
 		{
-			if (ReflectionUtil.classPathEquals(this, LoadingAlgorithm ))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, LoadingAlgorithm))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
+			
+			_maxAttempts = maxAttempts;
+			_errors = new TypedMap(new ArrayListMap(), LoadError, String);
 		}
 		
 		/**
@@ -100,7 +126,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		public function cancel(): void
 		{
+			validateDisposal();
+			
 			_isLoading = false;
+			removeLoaderDispatcherListeners();
 			doCancel();
 		}
 		
@@ -118,6 +147,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			if (_disposed) return;
 			
+			removeLoaderDispatcherListeners();
 			doDispose();
 			_disposed = true;
 		}
@@ -149,8 +179,27 @@ package org.vostokframework.loadingmanagement.domain.loaders
  		 */
 		public function load(): void
 		{
+			validateDisposal();
+			
+			/*if (isExaustedAttempts())
+			{
+				var errorMessage:String = "This object has reached its attempt limit.\n";
+				errorMessage += "<maxAttempts>: " + _maxAttempts;
+				errorMessage += "<performedAttempts>: " + _performedAttempts;
+				
+				throw new IllegalOperationError(errorMessage);
+			}*/
+			
+			if (isExaustedAttempts())
+			{
+				failed();
+				return;
+			}
+			
 			_isLoading = true;
-			doLoad();
+			addLoaderDispatcherListeners();
+			dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
+			doLoad();//TODO:implementar delay inicial e de erro
 		}
 		
 		public function removeLoader(identification:VostokIdentification): void
@@ -173,8 +222,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function stop(): void
 		{
+			validateDisposal();
+			
 			_isLoading = false;
 			doStop();
+		}
+		
+		protected function complete():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
 		/**
@@ -209,12 +265,129 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
+		protected function init():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function open():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		
+		
 		/**
 		 * @private
 		 */
 		protected function validateDisposal():void
 		{
 			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
+		}
+		
+		private function addLoaderDispatcherListeners():void
+		{
+			if (!_loaderDispatcher) return;
+			
+			_loaderDispatcher.addEventListener(Event.INIT, initHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(Event.OPEN, openHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
+			_loaderDispatcher.addEventListener(ErrorEvent.ERROR, unknownErrorHandler, false, 0, true);
+		}
+		
+		private function completeHandler(event:Event):void
+		{
+			validateDisposal();
+			removeLoaderDispatcherListeners();
+			complete();
+		}
+		
+		private function error(error:LoadError, errorMessage:String):void
+		{
+			validateDisposal();
+			
+			_performedAttempts++;
+			_errors.put(error, errorMessage);
+			
+			// IF IT'S A SECURITY ERROR
+			// IT DOES NOT USE ATTEMPTS TO TRY AGAIN
+			if (error.equals(LoadError.SECURITY_ERROR))
+			{
+				failed();
+				return;
+			}
+			else
+			{
+				load();
+			}
+		}
+		
+		private function failed():void
+		{
+			validateDisposal();
+			_isLoading = false;
+			dispatchEvent(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.FAILED, _errors));
+		}
+		
+		private function initHandler(event:Event):void
+		{
+			validateDisposal();
+			init();
+		}
+		
+		private function isExaustedAttempts():Boolean
+		{
+			return _performedAttempts >= _maxAttempts;
+		}
+
+		private function openHandler(event:Event):void
+		{
+			validateDisposal();
+			open();
+		}
+		
+		private function httpStatusHandler(event:HTTPStatusEvent):void
+		{
+			validateDisposal();
+			
+			var $event:LoadingAlgorithmEvent = new LoadingAlgorithmEvent(LoadingAlgorithmEvent.HTTP_STATUS);
+			$event.httpStatus = event.status;
+			
+			dispatchEvent($event);
+		}
+		
+		private function ioErrorHandler(event:IOErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.IO_ERROR, event.text);
+		}
+		
+		private function securityErrorHandler(event:SecurityErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.SECURITY_ERROR, event.text);
+		}
+		
+		private function unknownErrorHandler(event:ErrorEvent):void
+		{
+			validateDisposal();
+			error(LoadError.UNKNOWN_ERROR, event.text);
+		}
+		
+		private function removeLoaderDispatcherListeners():void
+		{
+			if (!_loaderDispatcher) return;
+			
+			_loaderDispatcher.removeEventListener(Event.INIT, initHandler, false);
+			_loaderDispatcher.removeEventListener(Event.OPEN, openHandler, false);
+			_loaderDispatcher.removeEventListener(Event.COMPLETE, completeHandler, false);
+			_loaderDispatcher.removeEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false);
+			_loaderDispatcher.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false);
+			_loaderDispatcher.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false);
+			_loaderDispatcher.removeEventListener(ErrorEvent.ERROR, unknownErrorHandler, false);
 		}
 
 	}

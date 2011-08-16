@@ -72,9 +72,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * description
 		 * 
 		 */
-		public function StubLoadingAlgorithm()
+		public function StubLoadingAlgorithm(maxAttempts:int = 1)
 		{
-			
+			super(maxAttempts);
 		}
 		
 		override public function addLoader(loader:VostokLoader): void

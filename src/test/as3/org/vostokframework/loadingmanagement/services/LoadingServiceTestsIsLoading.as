@@ -99,7 +99,7 @@ package org.vostokframework.loadingmanagement.services
 		public function isLoading_queuedQueueLoader_ReturnsFalse(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 1);
+			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
 			
 			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
 			

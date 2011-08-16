@@ -97,7 +97,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
+			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();

@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.events
 {
+	import org.as3collections.IMap;
+
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 
@@ -38,9 +40,14 @@ package org.vostokframework.loadingmanagement.domain.events
 	 */
 	public class LoaderErrorEvent extends ErrorEvent
 	{
-		public static const IO_ERROR:String = "VostokFramework.LoaderErrorEvent.IO_ERROR";
-		public static const SECURITY_ERROR:String = "VostokFramework.LoaderErrorEvent.SECURITY_ERROR";
-		public static const UNKNOWN_ERROR:String = "VostokFramework.LoaderErrorEvent.UNKNOWN_ERROR";
+		public static const FAILED:String = "VostokFramework.LoaderErrorEvent.FAILED";
+		
+		/**
+		 * @private
+		 */
+		private var _errors:IMap;
+		
+		public function get errors():IMap { return _errors; }
 		
 		/**
 		 * description
@@ -48,14 +55,15 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function LoaderErrorEvent(type: String, bubbles: Boolean = false, cancelable: Boolean = false, text: String = "")
+		public function LoaderErrorEvent(type: String, errors:IMap)
 		{
-			super(type, bubbles, cancelable, text);
+			super(type);
+			_errors = errors;
 		}
 		
 		override public function clone():Event
 		{
-			return new LoaderErrorEvent(type, bubbles, cancelable, text);
+			return new LoaderErrorEvent(type, _errors);
 		}
 		
 	}

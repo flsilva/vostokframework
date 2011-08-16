@@ -28,11 +28,12 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import flash.events.EventDispatcher;
+	import org.as3collections.IMap;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 
 	import flash.errors.IllegalOperationError;
+	import flash.events.EventDispatcher;
 
 	/**
 	 * @author Flavio
@@ -59,12 +60,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function dispatchHttpStatusEvent(monitoring:LoadingMonitoring, status:int):void
+		public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IMap):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function dispatchIoErrorEvent(monitoring:LoadingMonitoring, errorMessage:String):void
+		public function dispatchHttpStatusEvent(monitoring:LoadingMonitoring, status:int):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
@@ -80,11 +81,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		}
 		
 		public function dispatchProgressEvent(monitoring:LoadingMonitoring):void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		public function dispatchSecurityErrorEvent(monitoring:LoadingMonitoring, errorMessage:String):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}

@@ -43,6 +43,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
@@ -598,7 +599,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, 0, true);
 			loader.addEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false, 0, true);
-			loader.addEventListener(LoaderEvent.FAILED, loaderFailedHandler, false, 0, true);
+			loader.addEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false, 0, true);
 			loader.addEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false, 0, true);
 		}
 		//TODO:pensar em eliminar esse metodo e manter uma lista de loadingLoaders (já tem o listener para o evento LoaderEvent.CONNECTING)
@@ -649,7 +650,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			loadNext();
 		}
 		
-		private function loaderFailedHandler(event:LoaderEvent):void
+		private function loaderFailedHandler(event:LoaderErrorEvent):void
 		{
 			loadNext();
 		}
@@ -682,7 +683,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			loader.removeEventListener(LoaderEvent.CONNECTING, loaderConnectingHandler, false);
-			loader.removeEventListener(LoaderEvent.FAILED, loaderFailedHandler, false);
+			loader.removeEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false);
 			loader.removeEventListener(LoaderEvent.OPEN, loaderOpenedHandler, false);
 		}
 

@@ -55,7 +55,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	public class AssetLoaderFactory
 	{
 		
-
 		/**
 		 * description
 		 * 
@@ -66,19 +65,21 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			
 		}
-		
+		//TODO: renomear classe para VostokLoaderFactory
+		//TODO: renomear metodo para createLeaf
+		//TODO: criar metodo createComposite
 		public function create(asset:Asset):VostokLoader
 		{
 			var maxAttempts:int = asset.settings.policy.maxAttempts;
-			var algorithm:LoadingAlgorithm = createLoaderAlgorithm(asset.type, asset.src, asset.settings);
+			var algorithm:LoadingAlgorithm = createLoaderAlgorithm(asset.type, asset.src, asset.settings, maxAttempts);
 			//TODO: depois q AssetIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
 			var identification:VostokIdentification = new VostokIdentification(asset.identification.id, asset.identification.locale);
-			return instanciate(identification, algorithm, asset.priority, maxAttempts);
+			return instanciate(identification, algorithm, asset.priority);
 			
 			//TODO:settings.policy.latencyTimeout
 		}
 		
-		protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):LoadingAlgorithm
+		protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):LoadingAlgorithm
 		{
 			var killExternalCache:Boolean = settings.cache.killExternalCache;
 			var baseURL:String = settings.extra.baseURL;
@@ -91,7 +92,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				var request:URLRequest = new URLRequest(url);
 				var loaderContext:LoaderContext = createLoaderContext(settings.security);
 				
-				return new LoaderAlgorithm(loader, request, loaderContext);
+				return new LoaderAlgorithm(loader, request, loaderContext, maxAttempts);
 			}
 			
 			//TODO:settings.extra.userDataContainer
@@ -112,9 +113,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			throw new IllegalStateError(errorMessage);
 		}
 		
-		protected function instanciate(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int):VostokLoader
+		protected function instanciate(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority):VostokLoader
 		{
-			return new VostokLoader(identification, algorithm, priority, maxAttempts);
+			return new VostokLoader(identification, algorithm, priority);
 		}
 		
 		protected function parseUrl(url:String, killExternalCache:Boolean, baseURL:String):String

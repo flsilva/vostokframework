@@ -117,7 +117,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
+			var globalQueueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();
@@ -293,7 +293,6 @@ package org.vostokframework.loadingmanagement.services
 			service.load(QUEUE_ID, list);
 		}
 		
-		
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueCompleteEvent(): void
 		{
@@ -330,6 +329,7 @@ package org.vostokframework.loadingmanagement.services
 		
 		private function verifyHelperTestObject(event:Event, passThroughData:Object):void
 		{
+			passThroughData = null;
 			verify(helperTestObject);
 		}
 		

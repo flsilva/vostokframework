@@ -40,7 +40,6 @@ package org.vostokframework.loadingmanagement.domain.events
 		public static const CANCELED:String = "VostokFramework.LoaderEvent.CANCELED";
 		public static const COMPLETE:String = "VostokFramework.LoaderEvent.COMPLETE";
 		public static const CONNECTING:String = "VostokFramework.LoaderEvent.CONNECTING";
-		public static const FAILED:String = "VostokFramework.LoaderEvent.FAILED";
 		public static const HTTP_STATUS:String = "VostokFramework.LoaderEvent.HTTP_STATUS";
 		public static const INIT:String = "VostokFramework.LoaderEvent.INIT";
 		public static const OPEN:String = "VostokFramework.LoaderEvent.OPEN";

@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.events
 {
+	import org.as3collections.IMap;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitoring;
 
@@ -41,8 +42,7 @@ package org.vostokframework.loadingmanagement.domain.events
 	 */
 	public class AssetLoadingErrorEvent extends ErrorEvent
 	{
-		public static const IO_ERROR:String = "VostokFramework.AssetLoadingErrorEvent.IO_ERROR";
-		public static const SECURITY_ERROR:String = "VostokFramework.AssetLoadingErrorEvent.SECURITY_ERROR";
+		public static const FAILED:String = "VostokFramework.AssetLoadingErrorEvent.FAILED";
 		
 		/**
 		 * description
@@ -50,6 +50,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		private var _assetId:String;
 		private var _assetLocale:String;
 		private var _assetType:AssetType;
+		private var _errors:IMap;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
 		
@@ -71,6 +72,11 @@ package org.vostokframework.loadingmanagement.domain.events
 		/**
 		 * description
 		 */
+		public function get errors(): IMap { return _errors; }
+		
+		/**
+		 * description
+		 */
 		public function get httpStatus(): int { return _httpStatus; }
 		
 		public function set httpStatus(value:int): void { _httpStatus = value; }
@@ -88,19 +94,20 @@ package org.vostokframework.loadingmanagement.domain.events
 		 * @param monitoring
 		 * @param message
 		 */
-		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, message:String = null)
+		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, errors:IMap, monitoring:LoadingMonitoring = null)
 		{
-			super(type, false, false, message);
+			super(type);
 			
 			_assetId = assetId;
 			_assetLocale = assetLocale;
 			_assetType = assetType;
+			_errors = errors;
 			_monitoring = monitoring;
 		}
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, _monitoring, text);
+			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, _errors, _monitoring);
 		}
 		
 	}

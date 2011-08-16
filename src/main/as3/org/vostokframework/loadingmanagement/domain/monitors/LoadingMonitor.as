@@ -28,18 +28,18 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
-	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3collections.IList;
+	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
-	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 
@@ -167,12 +167,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, int.MAX_VALUE, true);
-			_loader.addEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, int.MAX_VALUE, true);
-			_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false, int.MAX_VALUE, true);
 		}
 		
@@ -182,12 +181,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			_loader.removeEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false);
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
+			_loader.removeEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false);
 			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
 			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
-			_loader.removeEventListener(IOErrorEvent.IO_ERROR, loaderIoErrorHandler, false);
 			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
-			_loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loaderSecurityErrorHandler, false);
 			_loader.removeEventListener(LoaderEvent.STOPPED, loaderStoppedHandler, false);
 		}
 		
@@ -207,6 +205,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_dispatcher.dispatchCompleteEvent(_monitoring, event.data);
 		}
 		
+		private function loaderFailedHandler(event:LoaderErrorEvent):void
+		{
+			validateDisposal();
+			_dispatcher.dispatchFailedEvent(_monitoring, event.errors);
+		}
+		
 		private function loaderHttpStatusHandler(event:HTTPStatusEvent):void
 		{
 			validateDisposal();
@@ -217,12 +221,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			validateDisposal();
 			_dispatcher.dispatchInitEvent(_monitoring, event.data);
-		}
-		
-		private function loaderIoErrorHandler(event:IOErrorEvent):void
-		{
-			validateDisposal();
-			_dispatcher.dispatchIoErrorEvent(_monitoring, event.text);
 		}
 		
 		private function loaderOpenHandler(event:LoaderEvent):void
@@ -246,12 +244,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			updateMonitoring(event.bytesTotal, event.bytesLoaded);
 			_dispatcher.dispatchProgressEvent(_monitoring);
-		}
-		
-		private function loaderSecurityErrorHandler(event:SecurityErrorEvent):void
-		{
-			validateDisposal();
-			_dispatcher.dispatchSecurityErrorEvent(_monitoring, event.text);
 		}
 		
 		private function loaderStoppedHandler(event:LoaderEvent):void

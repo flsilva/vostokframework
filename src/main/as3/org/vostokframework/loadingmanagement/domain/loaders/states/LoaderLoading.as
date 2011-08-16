@@ -70,12 +70,6 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 			// do nothing
 		}
 		
-		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
-		{
-			decreaseLoaderCurrentAttempt(loader);
-			super.stop(loader, algorithm);
-		}
-
 	}
 
 }

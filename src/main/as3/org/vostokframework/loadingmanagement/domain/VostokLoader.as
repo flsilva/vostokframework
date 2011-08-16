@@ -39,13 +39,13 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderComplete;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnectionError;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderFailed;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
@@ -65,21 +65,12 @@ package org.vostokframework.loadingmanagement.domain
 		 * @private
 		 */
 		private var _algorithm:LoadingAlgorithm;
-		private var _currentAttempt:int;
 		private var _disposed:Boolean;
-		private var _errorHistory:IList;
-		private var _failDescription:String;
 		private var _identification:VostokIdentification;
 		private var _index:int;
-		private var _maxAttempts:int;
 		private var _priority:LoadPriority;
 		private var _state:LoaderState;
 		private var _stateHistory:IList;
-		
-		/**
-		 * description
-		 */
-		public function get errorHistory(): IList { return _errorHistory; }
 		
 		/**
 		 * description
@@ -125,37 +116,26 @@ package org.vostokframework.loadingmanagement.domain
 			return new ReadOnlyArrayList(_stateHistory.toArray());
 		}
 		
-		/**
-		 * @private
-		 */
-		internal function get currentAttempt():int { return _currentAttempt; }
-		internal function set currentAttempt(value:int):void { _currentAttempt = value; }
-		
-		internal function get maxAttempts():int { return _maxAttempts; }
-		
 		public function get openedConnections():int
 		{
 			validateDisposal();
 			return _algorithm.openedConnections;
 		}
-		//TODO:pensar sobre deixar maxAttempts opcional (maxAttempts:int = 1) 
+		
 		/**
 		 * description
 		 * 
 		 */
-		public function VostokLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority, maxAttempts:int)
+		public function VostokLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!algorithm) throw new ArgumentError("Argument <algorithm> must not be null.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
-			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
 			_identification = identification;
 			_algorithm = algorithm;
 			_priority = priority;
-			_maxAttempts = maxAttempts;
 			
-			_errorHistory = new ArrayList();
 			_stateHistory = new TypedList(new ArrayList(), LoaderState);
 			
 			addAlgorithmListeners();
@@ -254,11 +234,9 @@ package org.vostokframework.loadingmanagement.domain
 			
 			removeAlgorithmListeners();
 			
-			_errorHistory.clear();
 			_stateHistory.clear();
 			_algorithm.dispose();
 			
-			_errorHistory = null;
 			_stateHistory = null;
 			_state = null;
 			_algorithm = null;
@@ -409,14 +387,6 @@ package org.vostokframework.loadingmanagement.domain
 			}
 		}
 		
-		internal function failed():void
-		{
-			validateDisposal();
-			//TODO:implementar _currentAttempt++ aqui 
-			setState(LoaderFailed.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.FAILED));
-		}
-		
 		/**
 		 * @private
 		 */
@@ -437,9 +407,7 @@ package org.vostokframework.loadingmanagement.domain
 			_algorithm.addEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false, 0, true);
 			_algorithm.addEventListener(LoadingAlgorithmEvent.INIT, initHandler, false, 0, true);
 			_algorithm.addEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, unknownErrorHandler, false, 0, true);
+			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.FAILED, failedHandler, false, 0, true);
 		}
 		
 		private function completeHandler(event:LoadingAlgorithmEvent):void
@@ -456,23 +424,10 @@ package org.vostokframework.loadingmanagement.domain
 			dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
 		}
 		
-		private function error(error:LoadError, errorDescription:String):void
+		private function failedHandler(event:LoadingAlgorithmErrorEvent):void
 		{
-			validateDisposal();
-			
-			_failDescription = errorDescription;
-			_errorHistory.add(error);
-			
-			if (error.equals(LoadError.SECURITY_ERROR))
-			{
-				failed();
-				return;
-			}
-			else
-			{
-				setState(LoaderConnectionError.INSTANCE);
-				load();
-			}
+			setState(LoaderFailed.INSTANCE);
+			dispatchEvent(new LoaderErrorEvent(LoaderErrorEvent.FAILED, event.errors));
 		}
 		
 		private function httpStatusHandler(event:LoadingAlgorithmEvent):void
@@ -483,24 +438,6 @@ package org.vostokframework.loadingmanagement.domain
 			$event.httpStatus = event.httpStatus;
 			
 			dispatchEvent($event);
-		}
-		
-		private function ioErrorHandler(event:LoadingAlgorithmErrorEvent):void
-		{
-			validateDisposal();
-			error(LoadError.IO_ERROR, event.text);
-		}
-
-		private function securityErrorHandler(event:LoadingAlgorithmErrorEvent):void
-		{
-			validateDisposal();
-			error(LoadError.SECURITY_ERROR, event.text);
-		}
-
-		private function unknownErrorHandler(event:LoadingAlgorithmErrorEvent):void
-		{
-			validateDisposal();
-			error(LoadError.UNKNOWN_ERROR, event.text);
 		}
 		
 		private function initHandler(event:LoadingAlgorithmEvent):void
@@ -525,9 +462,7 @@ package org.vostokframework.loadingmanagement.domain
 			_algorithm.removeEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false);
 			_algorithm.removeEventListener(LoadingAlgorithmEvent.INIT, initHandler, false);
 			_algorithm.removeEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.IO_ERROR, ioErrorHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.SECURITY_ERROR, securityErrorHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.UNKNOWN_ERROR, unknownErrorHandler, false);
+			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.FAILED, failedHandler, false);
 		}
 		
 		/**

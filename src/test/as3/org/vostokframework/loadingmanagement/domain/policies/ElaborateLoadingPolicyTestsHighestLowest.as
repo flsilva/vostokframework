@@ -79,7 +79,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Before]
 		public function setUp(): void
 		{
-			fakeAlgorithm = nice(LoadingAlgorithm);
+			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
 			//_fakeLoader1 = nice(VostokLoader, null, ["fake-loader-1", fakeAlgorithm, LoadPriority.MEDIUM, 3]);
 			//_fakeLoader2 = nice(VostokLoader, null, ["fake-loader-2", fakeAlgorithm, LoadPriority.LOW, 3]);

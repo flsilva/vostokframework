@@ -46,7 +46,7 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public class LoaderState extends Enum
 	{
-		//TODO:implementar equals em cada um dos states, comparando com a instancia flyweight
+		
 		/**
 		 * description
 		 * 
@@ -75,6 +75,8 @@ package org.vostokframework.loadingmanagement.domain
 			algorithm.cancel();
 			loader.setState(LoaderCanceled.INSTANCE);
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
+			//pensar sobre essa lógica sair daqui e o algorithm disparar todos os eventos
+			//entao VostokLoader pegaria LoadingAlgorithEvent.CANCELED e faria essa logica
 		}
 		
 		public function cancelLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
@@ -84,18 +86,6 @@ package org.vostokframework.loadingmanagement.domain
 		
 		public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
 		{
-			loader.currentAttempt++;
-			//TODO:refactoring:tirar incremento daqui e colocar em failed(). state nao precisara acessar essa variavel. logica de max attempts fica dentro do loader, em failed().
-			if (loader.currentAttempt > loader.maxAttempts)
-			{
-				loader.failed();
-				return;
-			}
-			
-			// here first set state then call algorithm
-			// because anyway algorithm is async
-			//loader.setState(LoaderConnecting.INSTANCE);
-			//loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
 			algorithm.load();
 		}
 		
@@ -121,11 +111,6 @@ package org.vostokframework.loadingmanagement.domain
 			algorithm.stopLoader(identification);
 		}
 		
-		protected function decreaseLoaderCurrentAttempt(loader:VostokLoader):void
-		{
-			loader.currentAttempt--;
-		}
-
 	}
 
 }

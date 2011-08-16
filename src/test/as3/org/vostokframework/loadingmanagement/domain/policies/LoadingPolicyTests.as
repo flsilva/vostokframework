@@ -81,11 +81,11 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Before]
 		public function setUp(): void
 		{
-			fakeAlgorithm = nice(LoadingAlgorithm);
+			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
-			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM, 3]);
-			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW, 3]);
-			_fakeLoader3 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-3", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW, 3]);
+			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
+			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
+			_fakeLoader3 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-3", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
 			
 			stub(_fakeLoader1).getter("identification").returns(new VostokIdentification("fake-loader-1", LOADER_LOCALE));
 			stub(_fakeLoader2).getter("identification").returns(new VostokIdentification("fake-loader-2", LOADER_LOCALE));

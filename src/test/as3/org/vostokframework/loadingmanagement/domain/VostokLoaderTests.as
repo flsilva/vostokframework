@@ -29,17 +29,20 @@
 
 package org.vostokframework.loadingmanagement.domain
 {
-	import org.vostokframework.VostokFramework;
-	import org.vostokframework.VostokIdentification;
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.as3collections.maps.HashMap;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
+	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
@@ -90,11 +93,11 @@ package org.vostokframework.loadingmanagement.domain
 		
 		public function getLoader():VostokLoader
 		{
-			stubLoadingAlgorithm = nice(LoadingAlgorithm);
+			stubLoadingAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			stub(stubLoadingAlgorithm).asEventDispatcher();
 			
 			var identification:VostokIdentification = new VostokIdentification("id", VostokFramework.CROSS_LOCALE_ID);
-			return new VostokLoader(identification, stubLoadingAlgorithm, LoadPriority.MEDIUM, 3);
+			return new VostokLoader(identification, stubLoadingAlgorithm, LoadPriority.MEDIUM);
 		}
 		
 		///////////////////////////////
@@ -167,6 +170,42 @@ package org.vostokframework.loadingmanagement.domain
 		///////////////////////////////////////
 		
 		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.COMPLETE, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesConnectingEvent_mustCatchStubEventAndDispatchOwnConnectingEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.CONNECTING, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesHttpStatusEvent_mustCatchStubEventAndDispatchOwnHttpStatusEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.HTTP_STATUS, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.HTTP_STATUS), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function addEventListener_stubAlgorithmDispatchesInitEvent_mustCatchStubEventAndDispatchOwnInitEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, LoaderEvent.INIT, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.INIT), 50);
+			
+			loader.load();
+		}
+		
+		[Test(async, timeout=200)]
 		public function addEventListener_stubAlgorithmDispatchesOpenEvent_mustCatchStubEventAndDispatchOwnOpenEvent(): void
 		{
 			Async.proceedOnEvent(this, loader, LoaderEvent.OPEN, 200);
@@ -179,16 +218,18 @@ package org.vostokframework.loadingmanagement.domain
 		public function addEventListener_stubAlgorithmDispatchesProgressEvent_mustCatchStubEventAndDispatchOwnProgressEvent(): void
 		{
 			Async.proceedOnEvent(this, loader, ProgressEvent.PROGRESS, 200);
-			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(ProgressEvent.PROGRESS), 50);
+			
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN), 25)
+				.dispatches(new ProgressEvent(ProgressEvent.PROGRESS), 50);
 			
 			loader.load();
 		}
 		
 		[Test(async, timeout=200)]
-		public function addEventListener_stubAlgorithmDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
+		public function addEventListener_stubAlgorithmDispatchesFailedErrorEvent_mustCatchStubEventAndDispatchOwnFailedErrorEvent(): void
 		{
-			Async.proceedOnEvent(this, loader, LoaderEvent.COMPLETE, 200);
-			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE), 50);
+			Async.proceedOnEvent(this, loader, LoaderErrorEvent.FAILED, 200);
+			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmErrorEvent(LoadingAlgorithmErrorEvent.FAILED, new HashMap()), 50);
 			
 			loader.load();
 		}

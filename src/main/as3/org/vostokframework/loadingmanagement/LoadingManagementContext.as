@@ -293,7 +293,7 @@ package org.vostokframework.loadingmanagement
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM, 1);
+			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
 			
 			setGlobalQueueLoader(queueLoader);
 		}
@@ -305,11 +305,6 @@ package org.vostokframework.loadingmanagement
 		{
 			trace("#####################################################");
 			trace("LoadingManagementContext::globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
-			
-			//_globalQueueLoadingMonitorWrapper.removeEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false);
-			
-			//_globalQueueLoader.dispose();
-			//_globalQueueLoader = null;
 			
 			createGlobalQueueLoader();
 		}
@@ -330,17 +325,10 @@ package org.vostokframework.loadingmanagement
 			trace("#####################################################");
 			trace("LoadingManagementContext::queueLoaderCompleteHandler() - event.queueId: " + event.queueId);
 			
-			//_globalQueueLoadingMonitorWrapper.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoaderCompleteHandler, false);
-			
-			//var loader:VostokLoader = loaderRepository.find(event.queueId);
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
-			//var loader:VostokLoader = globalQueueLoader.getLoader(identification);
-			//loader.dispose();
+			
 			globalQueueLoadingMonitor.removeMonitor(identification);
 			globalQueueLoader.removeLoader(identification);
-			
-			//loaderRepository.remove(event.queueId);
-			//loadingMonitorRepository.remove(event.queueId);
 		}
 		
 		private function assetCompleteHandler(event:AssetLoadingEvent):void

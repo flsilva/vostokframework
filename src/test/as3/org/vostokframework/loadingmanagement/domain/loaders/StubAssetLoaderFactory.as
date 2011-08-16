@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			return new StubVostokLoader(asset.identification.toString());
 		}*/
 		
-		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):LoadingAlgorithm
+		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):LoadingAlgorithm
 		{
 			var stub:StubLoadingAlgorithm = new StubLoadingAlgorithm();
 			stub.openBehaviorSync = _openBehaviorSync;

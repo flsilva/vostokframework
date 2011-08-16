@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.monitors
 {
+	import org.as3collections.IMap;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
@@ -71,16 +72,16 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			dispatchEvent(createEvent(AssetLoadingEvent.COMPLETE, monitoring, data));
 		}
 		
+		override public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IMap):void
+		{
+			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.FAILED, monitoring, errors));
+		}
+		
 		override public function dispatchHttpStatusEvent(monitoring:LoadingMonitoring, status:int):void
 		{
 			var event:AssetLoadingEvent = createEvent(AssetLoadingEvent.HTTP_STATUS, monitoring);
 			event.httpStatus = status;
 			dispatchEvent(event);
-		}
-		
-		override public function dispatchIoErrorEvent(monitoring:LoadingMonitoring, errorMessage:String):void
-		{
-			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.IO_ERROR, monitoring, errorMessage));
 		}
 		
 		override public function dispatchInitEvent(monitoring:LoadingMonitoring, data:* = null):void
@@ -98,11 +99,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			dispatchEvent(createEvent(AssetLoadingEvent.PROGRESS, monitoring));
 		}
 		
-		override public function dispatchSecurityErrorEvent(monitoring:LoadingMonitoring, errorMessage:String):void
-		{
-			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.SECURITY_ERROR, monitoring, errorMessage));
-		}
-		
 		override public function dispatchStoppedEvent(monitoring:LoadingMonitoring):void
 		{
 			dispatchEvent(createEvent(AssetLoadingEvent.STOPPED, monitoring));
@@ -118,9 +114,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, monitoring, data);
 		}
 		
-		private function createErrorEvent(type:String, monitoring:LoadingMonitoring, message:String = null):AssetLoadingErrorEvent
+		private function createErrorEvent(type:String, monitoring:LoadingMonitoring, errors:IMap):AssetLoadingErrorEvent
 		{
-			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, monitoring, message);
+			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, errors, monitoring);
 		}
 		
 	}

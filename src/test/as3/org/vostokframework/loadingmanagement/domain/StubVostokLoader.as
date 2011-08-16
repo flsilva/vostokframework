@@ -51,7 +51,7 @@ package org.vostokframework.loadingmanagement.domain
 		
 		public function StubVostokLoader(identification:VostokIdentification)
 		{
-			super(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 3);
+			super(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
 		}
 		
 		public function asyncDispatchEvent(event:Event, state:LoaderState, delay:int = 50):int
