@@ -72,6 +72,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_monitors = new TypedMap(new HashMap(), String, ILoadingMonitor);
 			_monitorsListeners = new TypedList(new ArrayList(), EventListener);
 			_progressTimer = new Timer(TIMER_DELAY);
+			_isFirstProgressDispatch = true;
 			
 			addTimerListener();
 		}
@@ -246,6 +247,17 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_monitors = null;
 			_monitorsListeners = null;
 			_progressTimer = null;
+		}
+		
+		override protected function loadingComplete():void
+		{
+			_progressTimer.stop();
+			_progressTimer.reset();
+		}
+		
+		override protected function loadingStarted():void
+		{
+			_progressTimer.start();
 		}
 		
 		private function addListenersOnMonitors():void

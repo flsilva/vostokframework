@@ -33,9 +33,14 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.Event;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * @author Flávio Silva
@@ -43,7 +48,6 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	[TestCase]
 	public class CompositeLoadingMonitorTests extends LoadingMonitorTests
 	{
-		
 		
 		public function CompositeLoadingMonitorTests()
 		{
@@ -58,6 +62,25 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		override protected function getMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
 		{
 			return new CompositeLoadingMonitor(loader, dispatcher);
+		}
+		
+		////////////////////////
+		// ASYNC TEST HELPERS //
+		////////////////////////
+		
+		private function verifyMockDispatcher(event:Event = null, passThroughData:Object = null):void
+		{
+			passThroughData = null;
+			verify(mockDispatcher);
+		}
+		
+		private function assertMonitoringPercent(event:Event = null, passThroughData:Object = null):void
+		{
+			//using * here in case that "percent" is sent incorrect
+			//so it will prevent casting to 0 (zero)
+			//and passing tests that in fact wait for zero
+			var expectedPercent:* = passThroughData["percent"];
+			Assert.assertEquals(expectedPercent, monitor.monitoring.percent);
 		}
 		
 		///////////////////////////////////////////////
@@ -80,7 +103,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			var priority:int = 0;
 			var weakReference:Boolean = true;
 			
-			var mockChild:ILoadingMonitor = getFakeMonitor();
+			var mockChild:ILoadingMonitor = getFakeMonitor("loader-1");
 			mock(mockChild).method("addEventListener").args(eventType, eventListener, useCapture, priority, weakReference);
 			
 			monitor.addMonitor(mockChild);
@@ -88,6 +111,146 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			verify(mockChild);
 		}
+		
+		[Test(async, timeout=500)]
+		public function addEventListener_stubLoaderDispatchesOpenEvent_mustCallMockDispatcher(): void
+		{
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			mock(mockDispatcher).method("dispatchProgressEvent");
+			
+			fakeLoader.load();
+			
+			var timer:Timer = new Timer(300, 1);
+			
+			var asyncHandler:Function = Async.asyncHandler(this, verifyMockDispatcher, 500);
+			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
+			
+			timer.start();
+		}
+		
+		[Test(async, timeout=500)]
+		public function addEventListener_monitorWithOneChild_stubLoaderDispatchesOpenEvent_mustCallMockDispatcher_checkIfMonitoringPercentIs25(): void
+		{
+			var fakeMonitoring:LoadingMonitoring = new LoadingMonitoring(50);
+			fakeMonitoring.update(200, 50);
+			
+			var fakeChild:ILoadingMonitor = getFakeMonitor("loader-1");
+			stub(fakeChild).getter("monitoring").returns(fakeMonitoring);
+			monitor.addMonitor(fakeChild);
+			
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			fakeLoader.load();
+			
+			var timer:Timer = new Timer(300, 1);
+			
+			var asyncHandler:Function = Async.asyncHandler(this, assertMonitoringPercent, 500, {percent:25});
+			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
+			
+			timer.start();
+		}
+		
+		[Test(async, timeout=500)]
+		public function addEventListener_monitorWithThreeChild_stubLoaderDispatchesOpenEvent_mustCallMockDispatcher_checkIfMonitoringPercentIs100(): void
+		{
+			var fakeMonitoring1:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring2:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring3:LoadingMonitoring = new LoadingMonitoring(50);
+			
+			fakeMonitoring1.update(1260, 1260);
+			fakeMonitoring2.update(395, 395);
+			fakeMonitoring3.update(900, 900);
+			
+			var fakeChild1:ILoadingMonitor = getFakeMonitor("loader-1");
+			var fakeChild2:ILoadingMonitor = getFakeMonitor("loader-2");
+			var fakeChild3:ILoadingMonitor = getFakeMonitor("loader-3");
+			
+			stub(fakeChild1).getter("monitoring").returns(fakeMonitoring1);
+			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
+			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
+			
+			monitor.addMonitor(fakeChild1);
+			monitor.addMonitor(fakeChild2);
+			monitor.addMonitor(fakeChild3);
+			
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			fakeLoader.load();
+			
+			var timer:Timer = new Timer(300, 1);
+			
+			var asyncHandler:Function = Async.asyncHandler(this, assertMonitoringPercent, 500, {percent:100});
+			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
+			
+			timer.start();
+		}
+		
+		[Test(async, timeout=500)]
+		public function addEventListener_monitorWithThreeChild_stubLoaderDispatchesOpenEvent_mustCallMockDispatcher_checkIfMonitoringPercentIsZero(): void
+		{
+			var fakeMonitoring1:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring2:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring3:LoadingMonitoring = new LoadingMonitoring(50);
+			
+			fakeMonitoring1.update(0, 0);
+			fakeMonitoring2.update(395, 0);
+			fakeMonitoring3.update(900, 0);
+			
+			var fakeChild1:ILoadingMonitor = getFakeMonitor("loader-1");
+			var fakeChild2:ILoadingMonitor = getFakeMonitor("loader-2");
+			var fakeChild3:ILoadingMonitor = getFakeMonitor("loader-3");
+			
+			stub(fakeChild1).getter("monitoring").returns(fakeMonitoring1);
+			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
+			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
+			
+			monitor.addMonitor(fakeChild1);
+			monitor.addMonitor(fakeChild2);
+			monitor.addMonitor(fakeChild3);
+			
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			fakeLoader.load();
+			
+			var timer:Timer = new Timer(300, 1);
+			
+			var asyncHandler:Function = Async.asyncHandler(this, assertMonitoringPercent, 500, {percent:0});
+			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
+			
+			timer.start();
+		}
+		
+		[Test(async, timeout=500)]
+		public function addEventListener_monitorWithThreeChild_stubLoaderDispatchesOpenEvent_mustCallMockDispatcher_checkIfMonitoringPercentIs72(): void
+		{
+			var fakeMonitoring1:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring2:LoadingMonitoring = new LoadingMonitoring(50);
+			var fakeMonitoring3:LoadingMonitoring = new LoadingMonitoring(50);
+			
+			fakeMonitoring1.update(2365, 1909);
+			fakeMonitoring2.update(860, 0);
+			fakeMonitoring3.update(1475, 1475);
+			
+			var fakeChild1:ILoadingMonitor = getFakeMonitor("loader-1");
+			var fakeChild2:ILoadingMonitor = getFakeMonitor("loader-2");
+			var fakeChild3:ILoadingMonitor = getFakeMonitor("loader-3");
+			
+			stub(fakeChild1).getter("monitoring").returns(fakeMonitoring1);
+			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
+			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
+			
+			monitor.addMonitor(fakeChild1);
+			monitor.addMonitor(fakeChild2);
+			monitor.addMonitor(fakeChild3);
+			
+			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
+			fakeLoader.load();
+			
+			var timer:Timer = new Timer(300, 1);
+			
+			var asyncHandler:Function = Async.asyncHandler(this, assertMonitoringPercent, 500, {percent:72});
+			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
+			
+			timer.start();
+		}
+		
 	}
 
 }

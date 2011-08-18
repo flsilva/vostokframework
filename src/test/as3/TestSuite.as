@@ -42,8 +42,8 @@ package
 	import org.vostokframework.loadingmanagement.domain.loaders.LoaderAlgorithmTests;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithmTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTests;
+	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTests;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorWrapperTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
@@ -92,8 +92,8 @@ package
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
 		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
+		public var compositeLoadingMonitorTestsIntegration:CompositeLoadingMonitorTestsIntegration;
 		public var loadingMonitorTests:LoadingMonitorTests;
-		public var loadingMonitorTestsIntegration:LoadingMonitorTestsIntegration;
 		public var loadingMonitorWrapperTestsIntegration:LoadingMonitorWrapperTestsIntegration;
 		
 		//org.vostokframework.loadingmanagement.domain.policies

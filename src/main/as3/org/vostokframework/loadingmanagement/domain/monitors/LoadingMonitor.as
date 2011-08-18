@@ -39,9 +39,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.EventDispatcher;
-	import flash.events.HTTPStatusEvent;
 	import flash.events.ProgressEvent;
-	import flash.events.SecurityErrorEvent;
 
 	/**
 	 * @author Flavio
@@ -147,6 +145,16 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 		}
 		
+		protected function loadingComplete():void
+		{
+			
+		}
+		
+		protected function loadingStarted():void
+		{
+			
+		}
+		
 		protected function updateMonitoring(bytesTotal:int, bytesLoaded:int):void
 		{
 			validateDisposal();
@@ -168,7 +176,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_loader.addEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false, int.MAX_VALUE, true);
-			_loader.addEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false, int.MAX_VALUE, true);
+			_loader.addEventListener(LoaderEvent.HTTP_STATUS, loaderHttpStatusHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.INIT, loaderInitHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(LoaderEvent.OPEN, loaderOpenHandler, false, int.MAX_VALUE, true);
 			_loader.addEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false, int.MAX_VALUE, true);
@@ -182,7 +190,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_loader.removeEventListener(LoaderEvent.CANCELED, loaderCanceledHandler, false);
 			_loader.removeEventListener(LoaderEvent.COMPLETE, loaderCompleteHandler, false);
 			_loader.removeEventListener(LoaderErrorEvent.FAILED, loaderFailedHandler, false);
-			_loader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
+			_loader.removeEventListener(LoaderEvent.HTTP_STATUS, loaderHttpStatusHandler, false);
 			_loader.removeEventListener(LoaderEvent.INIT, loaderInitHandler, false);
 			_loader.removeEventListener(LoaderEvent.OPEN, loaderOpenHandler, false);
 			_loader.removeEventListener(ProgressEvent.PROGRESS, loaderProgressHandler, false);
@@ -201,6 +209,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			if (_monitoring) updateMonitoring(_monitoring.bytesTotal, _monitoring.bytesTotal);
 			
+			loadingComplete();
 			_dispatcher.dispatchProgressEvent(_monitoring);
 			_dispatcher.dispatchCompleteEvent(_monitoring, event.data);
 		}
@@ -211,10 +220,10 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_dispatcher.dispatchFailedEvent(_monitoring, event.errors);
 		}
 		
-		private function loaderHttpStatusHandler(event:HTTPStatusEvent):void
+		private function loaderHttpStatusHandler(event:LoaderEvent):void
 		{
 			validateDisposal();
-			_dispatcher.dispatchHttpStatusEvent(_monitoring, event.status);
+			_dispatcher.dispatchHttpStatusEvent(_monitoring, event.httpStatus);
 		}
 		
 		private function loaderInitHandler(event:LoaderEvent):void
@@ -228,6 +237,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			validateDisposal();
 			createLoadingMonitoring(event.latency);
 			_dispatcher.dispatchOpenEvent(_monitoring, event.data);
+			loadingStarted();
 		}
 		
 		private function loaderProgressHandler(event:ProgressEvent):void

@@ -122,10 +122,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			else if (_successBehaviorAsync)
 			{
-				setTimeout(dispatchEvent, 50, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN));
-				setTimeout(dispatchEvent, 75, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
+				setTimeout(dispatchEvent, 25, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN));
+				setTimeout(dispatchEvent, 80, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
 				setTimeout(dispatchEvent, 100, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
-				setTimeout(dispatchEvent, 125, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE, new MovieClip()));
+				setTimeout(dispatchEvent, 150, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE, new MovieClip()));
 			}
 			else if (_successBehaviorSync)
 			{

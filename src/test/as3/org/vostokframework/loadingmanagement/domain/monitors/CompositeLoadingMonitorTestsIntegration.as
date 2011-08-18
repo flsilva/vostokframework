@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class LoadingMonitorTestsIntegration
+	public class CompositeLoadingMonitorTestsIntegration
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -69,8 +69,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public var globalMonitor:ILoadingMonitor;
 		public var queueMonitor:ILoadingMonitor;
 		public var assetMonitor:ILoadingMonitor;
-		//TODO:rename to CompositeLoadingMonitorTestsIntegration
-		public function LoadingMonitorTestsIntegration()
+		
+		public function CompositeLoadingMonitorTestsIntegration()
 		{
 			
 		}

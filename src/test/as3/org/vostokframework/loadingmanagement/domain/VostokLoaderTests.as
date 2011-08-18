@@ -142,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain
 		//////////////////////////
 		
 		[Test]
-		public function state_freshObject_checkIfStatusIsQueued_ReturnsTrue(): void
+		public function state_freshObject_checkIfStateIsQueued_ReturnsTrue(): void
 		{
 			Assert.assertEquals(LoaderQueued.INSTANCE, loader.state);
 		}
@@ -188,7 +188,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test(async, timeout=200)]
-		public function addEventListener_stubAlgorithmDispatchesHttpStatusEvent_mustCatchStubEventAndDispatchOwnHttpStatusEvent(): void
+		public function addEventListener_stubAlgorithmDispatchesHttpStateEvent_mustCatchStubEventAndDispatchOwnHttpStateEvent(): void
 		{
 			Async.proceedOnEvent(this, loader, LoaderEvent.HTTP_STATUS, 200);
 			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.HTTP_STATUS), 50);
@@ -239,14 +239,14 @@ package org.vostokframework.loadingmanagement.domain
 		/////////////////////////////
 		
 		[Test]
-		public function cancel_simpleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
+		public function cancel_simpleCall_checkIfStateIsCanceled_ReturnsTrue(): void
 		{
 			loader.cancel();
 			Assert.assertEquals(LoaderCanceled.INSTANCE, loader.state);
 		}
 		
 		[Test]
-		public function cancel_doubleCall_checkIfStatusIsCanceled_ReturnsTrue(): void
+		public function cancel_doubleCall_checkIfStateIsCanceled_ReturnsTrue(): void
 		{
 			loader.cancel();
 			loader.cancel();
@@ -273,7 +273,7 @@ package org.vostokframework.loadingmanagement.domain
 		///////////////////////////
 		
 		[Test]
-		public function load_simpleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
+		public function load_simpleCall_checkIfStateIsTryingToConnect_ReturnsTrue(): void
 		{
 			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			loader.load();
@@ -281,7 +281,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function load_doubleCall_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
+		public function load_doubleCall_checkIfStateIsTryingToConnect_ReturnsTrue(): void
 		{
 			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			
@@ -311,14 +311,14 @@ package org.vostokframework.loadingmanagement.domain
 		///////////////////////////
 		
 		[Test]
-		public function stop_simpleCall_checkIfStatusIsStopped_ReturnsTrue(): void
+		public function stop_simpleCall_checkIfStateIsStopped_ReturnsTrue(): void
 		{
 			loader.stop();
 			Assert.assertEquals(LoaderStopped.INSTANCE, loader.state);
 		}
 		
 		[Test]
-		public function stop_doubleCall_checkIfStatusIsStopped_ReturnsTrue(): void
+		public function stop_doubleCall_checkIfStateIsStopped_ReturnsTrue(): void
 		{
 			loader.stop();
 			loader.stop();
@@ -345,7 +345,7 @@ package org.vostokframework.loadingmanagement.domain
 		/////////////////////////////////////////////////////////
 		
 		[Test]
-		public function loadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
+		public function loadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
 		{
 			loader.load();
 			loader.stop();
@@ -353,7 +353,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function stopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
+		public function stopAndLoad_checkIfStateIsTryingToConnect_ReturnsTrue(): void
 		{
 			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			
@@ -363,7 +363,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function loadAndCancel_checkIfStatusIsCanceled_ReturnsTrue(): void
+		public function loadAndCancel_checkIfStateIsCanceled_ReturnsTrue(): void
 		{
 			loader.load();
 			loader.cancel();
@@ -386,7 +386,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function loadAndStopAndLoad_checkIfStatusIsTryingToConnect_ReturnsTrue(): void
+		public function loadAndStopAndLoad_checkIfStateIsTryingToConnect_ReturnsTrue(): void
 		{
 			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
 			
@@ -397,7 +397,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function stopAndLoadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
+		public function stopAndLoadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
 		{
 			loader.stop();
 			loader.load();
@@ -406,7 +406,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function loadAndStopAndLoadAndStop_checkIfStatusIsStopped_ReturnsTrue(): void
+		public function loadAndStopAndLoadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
 		{
 			loader.load();
 			loader.stop();
@@ -416,7 +416,7 @@ package org.vostokframework.loadingmanagement.domain
 		}
 		
 		[Test]
-		public function loadAndStopAndCancel_checkIfStatusIsCanceled_ReturnsTrue(): void
+		public function loadAndStopAndCancel_checkIfStateIsCanceled_ReturnsTrue(): void
 		{
 			loader.load();
 			loader.stop();
