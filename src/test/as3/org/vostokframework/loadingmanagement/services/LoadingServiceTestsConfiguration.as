@@ -43,7 +43,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
@@ -78,12 +78,12 @@ package org.vostokframework.loadingmanagement.services
 			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.openBehaviorSync = false;
-			stubAssetLoaderFactory.successBehaviorAsync = false;
-			stubAssetLoaderFactory.successBehaviorSync = false;
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.openBehaviorSync = false;
+			stubVostokLoaderFactory.successBehaviorAsync = false;
+			stubVostokLoaderFactory.successBehaviorSync = false;
 			
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());

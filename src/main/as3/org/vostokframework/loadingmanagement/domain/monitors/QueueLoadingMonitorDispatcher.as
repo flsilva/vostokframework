@@ -65,11 +65,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		override public function dispatchCompleteEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
+			data = null;//just to avoid FDT warnings
 			dispatchEvent(createEvent(QueueLoadingEvent.COMPLETE, monitoring));
 		}
 		
 		override public function dispatchOpenEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
+			data = null;//just to avoid FDT warnings
 			dispatchEvent(createEvent(QueueLoadingEvent.OPEN, monitoring));
 		}
 		

@@ -49,9 +49,9 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
@@ -61,7 +61,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorDispatcher;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
@@ -82,8 +81,6 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		private var _context:LoadingManagementContext;
 		
-		private function get assetLoaderFactory():AssetLoaderFactory { return _context.assetLoaderFactory; }
-		
 		private function get globalMonitor():ILoadingMonitor { return _context.globalQueueLoadingMonitor; }
 		
 		private function get globalQueueLoader():VostokLoader { return _context.globalQueueLoader; }
@@ -92,7 +89,9 @@ package org.vostokframework.loadingmanagement.services
 		
 		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
 		
-		private function get loadingMonitorRepository():LoadingMonitorRepository { return _context.loadingMonitorRepository; }
+		//private function get loadingMonitorRepository():LoadingMonitorRepository { return _context.loadingMonitorRepository; }
+		
+		private function get vostokLoaderFactory():VostokLoaderFactory { return _context.vostokLoaderFactory; }
 		
 		/**
 		 * description
@@ -552,7 +551,7 @@ package org.vostokframework.loadingmanagement.services
 			while (it.hasNext())
 			{
 				asset = it.next();
-				loader = assetLoaderFactory.create(asset);
+				loader = vostokLoaderFactory.create(asset);
 				
 				if (globalQueueLoader.containsLoader(loader.identification))
 				{

@@ -37,7 +37,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 
@@ -233,9 +233,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForQueueLoader_ThrowsError(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -247,9 +247,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForAssetLoader_ThrowsError(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -261,9 +261,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callLoadAgain_ReturnsILoadingMonitor(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -279,9 +279,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callIsLoaded_ReturnsFalse(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -297,9 +297,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callIsLoaded_ReturnsTrue(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			
@@ -315,9 +315,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callGetAssetData_ThrowsError(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -331,9 +331,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			

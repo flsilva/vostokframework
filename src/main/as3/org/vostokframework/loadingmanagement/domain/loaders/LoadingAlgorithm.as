@@ -225,12 +225,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			validateDisposal();
 			
 			_isLoading = false;
+			removeLoaderDispatcherListeners();
 			doStop();
-		}
-		
-		protected function complete():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
 		/**
@@ -265,17 +261,38 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		protected function init():void
+		protected function loadingComplete():void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		protected function open():void
+		protected function loadingInit():void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
+		protected function loadingOpen():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
 		
+		protected function ioError(errorMessage:String):void
+		{
+			validateDisposal();
+			error(LoadError.IO_ERROR, errorMessage);
+		}
+		
+		protected function securityError(errorMessage:String):void
+		{
+			validateDisposal();
+			error(LoadError.SECURITY_ERROR, errorMessage);
+		}
+		
+		protected function unknownError(errorMessage:String):void
+		{
+			validateDisposal();
+			error(LoadError.UNKNOWN_ERROR, errorMessage);
+		}
 		
 		/**
 		 * @private
@@ -302,7 +319,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			removeLoaderDispatcherListeners();
-			complete();
+			loadingComplete();
 		}
 		
 		private function error(error:LoadError, errorMessage:String):void
@@ -335,7 +352,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		private function initHandler(event:Event):void
 		{
 			validateDisposal();
-			init();
+			loadingInit();
 		}
 		
 		private function isExaustedAttempts():Boolean
@@ -346,7 +363,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		private function openHandler(event:Event):void
 		{
 			validateDisposal();
-			open();
+			loadingOpen();
 		}
 		
 		private function httpStatusHandler(event:HTTPStatusEvent):void
@@ -361,20 +378,17 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private function ioErrorHandler(event:IOErrorEvent):void
 		{
-			validateDisposal();
-			error(LoadError.IO_ERROR, event.text);
+			ioError(event.text);
 		}
 		
 		private function securityErrorHandler(event:SecurityErrorEvent):void
 		{
-			validateDisposal();
-			error(LoadError.SECURITY_ERROR, event.text);
+			securityError(event.text);
 		}
 		
 		private function unknownErrorHandler(event:ErrorEvent):void
 		{
-			validateDisposal();
-			error(LoadError.UNKNOWN_ERROR, event.text);
+			unknownError(event.text);
 		}
 		
 		private function removeLoaderDispatcherListeners():void

@@ -33,7 +33,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 
 	/**
 	 * @author Flávio Silva
@@ -67,9 +67,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function removeAssetData_loadedAsset_callsGetAssetData_ReturnsNull(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			

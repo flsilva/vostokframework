@@ -52,7 +52,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoaderFactory
+	public class VostokLoaderFactory
 	{
 		
 		/**
@@ -61,7 +61,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function AssetLoaderFactory()
+		public function VostokLoaderFactory()
 		{
 			
 		}

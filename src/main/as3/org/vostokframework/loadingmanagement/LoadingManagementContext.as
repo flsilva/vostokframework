@@ -39,9 +39,9 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.AssetLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.GlobalLoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -68,7 +68,6 @@ package org.vostokframework.loadingmanagement
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
-		private var _assetLoaderFactory:AssetLoaderFactory;
 		private var _globalQueueLoader:VostokLoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
@@ -77,6 +76,7 @@ package org.vostokframework.loadingmanagement
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
+		private var _vostokLoaderFactory:VostokLoaderFactory;
 		
 		/**
 		 * @private
@@ -86,8 +86,6 @@ package org.vostokframework.loadingmanagement
 		{
 			_created = true;
 		}
-		
-		public function get assetLoaderFactory(): AssetLoaderFactory { return _assetLoaderFactory; }
 		
 		public function get globalQueueLoader(): VostokLoader { return _globalQueueLoader; }
 		
@@ -111,6 +109,8 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function get maxConcurrentQueues(): int { return _maxConcurrentQueues; }
 		
+		public function get vostokLoaderFactory(): VostokLoaderFactory { return _vostokLoaderFactory; }
+		
 		/**
 		 * description
 		 */
@@ -121,7 +121,7 @@ package org.vostokframework.loadingmanagement
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
 			
-			_assetLoaderFactory = new AssetLoaderFactory();
+			_vostokLoaderFactory = new VostokLoaderFactory();
 			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
@@ -146,10 +146,10 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param factory
 		 */
-		public function setAssetLoaderFactory(factory:AssetLoaderFactory): void
+		public function setAssetLoaderFactory(factory:VostokLoaderFactory): void
 		{
 			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
-			_assetLoaderFactory = factory;
+			_vostokLoaderFactory = factory;
 		}
 
 		/**

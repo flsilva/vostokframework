@@ -99,6 +99,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override public function containsLoader(identification:VostokIdentification): Boolean
 		{
+			identification = null;//just to avoid FDT warnings
 			return false;
 		}
 		
@@ -109,6 +110,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override public function getLoaderState(identification:VostokIdentification): LoaderState
 		{
+			identification = null;//just to avoid FDT warnings
 			return null;
 		}
 		

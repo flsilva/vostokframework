@@ -33,9 +33,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
 	import flash.errors.IOError;
-	import flash.events.ErrorEvent;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 	import flash.utils.getTimer;
@@ -110,6 +107,29 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		}
 		
 		/**
+		 * @private
+		 */
+		override protected function doDispose():void
+		{
+			try
+			{
+				_loader.close();
+			}
+			catch (error:Error)
+			{
+				//do nothing
+			}
+			finally
+			{
+				_loader.unload();
+			}
+			
+			_loader = null;
+			_request = null;
+			_context = null;
+		}
+		
+		/**
 		 * description
 		 */
 		override protected function doLoad(): void
@@ -122,15 +142,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				securityError(error.message);
 			}
 			catch (error:IOError)
 			{
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message));
+				ioError(error.message);
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				unknownError(error.message);
 			}
 		}
 		
@@ -155,30 +175,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 		}
 		
-		/**
-		 * @private
-		 */
-		override protected function doDispose():void
-		{
-			try
-			{
-				_loader.close();
-			}
-			catch (error:Error)
-			{
-				//do nothing
-			}
-			finally
-			{
-				_loader.unload();
-			}
-			
-			_loader = null;
-			_request = null;
-			_context = null;
-		}
-		
-		override protected function complete():void
+		override protected function loadingComplete():void
 		{
 			try
 			{
@@ -187,15 +184,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				securityError(error.message);
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				unknownError(error.message);
 			}
 		}
 		
-		override protected function init():void
+		override protected function loadingInit():void
 		{
 			try
 			{
@@ -204,30 +201,30 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				securityError(error.message);
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				unknownError(error.message);
 			}
 		}
 		
-		override protected function open():void
+		override protected function loadingOpen():void
 		{
+			var latency:int = getTimer() - _timeConnectionStarted;
+			
 			try
 			{
-				var latency:int = getTimer() - _timeConnectionStarted;
 				var data:DisplayObject = _loader.content;
-				
 				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN, data, latency));
 			}
 			catch (error:SecurityError)
 			{
-				dispatchEvent(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR, false, false, error.message));
+				securityError(error.message);
 			}
 			catch (error:Error)
 			{
-				dispatchEvent(new ErrorEvent(ErrorEvent.ERROR, false, false, error.message));
+				unknownError(error.message);
 			}
 		}
 

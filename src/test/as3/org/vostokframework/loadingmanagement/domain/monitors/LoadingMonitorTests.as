@@ -45,12 +45,10 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.LoadError;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
 
-	import flash.events.Event;
 	import flash.events.ProgressEvent;
 
 	/**

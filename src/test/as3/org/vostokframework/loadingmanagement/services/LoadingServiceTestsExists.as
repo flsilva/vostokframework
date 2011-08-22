@@ -33,7 +33,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubAssetLoaderFactory;
+	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 
 	/**
 	 * @author Flávio Silva
@@ -82,9 +82,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function exists_callLoad_queueLoadingCompletes_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -112,9 +112,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function exists_callLoad_queueLoadingCompletes_checkIfAssetLoaderExists_ReturnsFalse(): void
 		{
-			var stubAssetLoaderFactory:StubAssetLoaderFactory = new StubAssetLoaderFactory();
-			stubAssetLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubAssetLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

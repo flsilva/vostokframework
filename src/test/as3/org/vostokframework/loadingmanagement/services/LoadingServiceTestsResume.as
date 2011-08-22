@@ -32,11 +32,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.VostokFramework;
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
 
 	/**
 	 * @author Flávio Silva

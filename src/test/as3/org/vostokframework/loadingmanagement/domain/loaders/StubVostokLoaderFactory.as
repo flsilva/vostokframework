@@ -36,7 +36,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubAssetLoaderFactory extends AssetLoaderFactory
+	public class StubVostokLoaderFactory extends VostokLoaderFactory
 	{
 		
 		private var _openBehaviorSync:Boolean;
@@ -49,7 +49,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
 		
-		public function StubAssetLoaderFactory()
+		public function StubVostokLoaderFactory ()
 		{
 			
 		}
@@ -61,6 +61,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):LoadingAlgorithm
 		{
+			type = null;//just to avoid FDT warnings
+			url = null;//just to avoid FDT warnings
+			settings = null;//just to avoid FDT warnings
+			maxAttempts = 0;//just to avoid FDT warnings
+			
 			var stub:StubLoadingAlgorithm = new StubLoadingAlgorithm();
 			stub.openBehaviorSync = _openBehaviorSync;
 			stub.successBehaviorAsync = _successBehaviorAsync;

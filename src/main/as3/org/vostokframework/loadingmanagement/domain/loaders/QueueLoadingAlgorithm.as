@@ -117,7 +117,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				
 				throw new DuplicateLoaderError(loader.identification, errorMessage);
 			}
-			//if (_allLoaders.containsKey(loader.id)) throw new DuplicateLoaderError(loader.id, "There is already an VostokLoader object stored with id:\n<" + loader.id + ">");
 			
 			loader.index = _index++;
 			
@@ -175,21 +174,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			/*
-			var loader:VostokLoader = _allLoaders.getValue(loaderId);
-			if (!loader)
-			{
-				var message:String = "There is no VostokLoader object stored with id:\n";
-				message += "<" + loaderId + ">";
-				throw new LoaderNotFoundError(loaderId, message);
-			}
-			
-			_queuedLoaders.remove(loader);
-			_stoppedLoaders.remove(loader);
-			
-			loader.cancel();
-			loadNext();
-			*/
 			
 			if (_allLoaders.containsKey(identification.toString()))
 			{
@@ -232,7 +216,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			//return _allLoaders.containsKey(loaderId);
 			
 			if (_allLoaders.isEmpty()) return false;
 			if (_allLoaders.containsKey(identification.toString())) return true;
@@ -253,17 +236,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			/*
-			var loader:VostokLoader = _allLoaders.getValue(loaderId);
-			if (!loader)
-			{
-				var message:String = "There is no VostokLoader object stored with id:\n";
-				message += "<" + loaderId + ">";
-				throw new LoaderNotFoundError(loaderId, message);
-			}
-			
-			return loader;
-			*/
 			
 			if (_allLoaders.containsKey(identification.toString()))
 			{
@@ -290,17 +262,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			/*
-			var loader:VostokLoader = _allLoaders.getValue(loaderId);
-			if (!loader)
-			{
-				var message:String = "There is no VostokLoader object stored with id:\n";
-				message += "<" + loaderId + ">";
-				throw new LoaderNotFoundError(loaderId, message);
-			}
-			
-			return loader.state;
-			*/
 			
 			if (_allLoaders.containsKey(identification.toString()))
 			{
@@ -418,21 +379,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			/*
-			var loader:VostokLoader = _allLoaders.getValue(loaderId);
-			if (!loader)
-			{
-				var message:String = "There is no VostokLoader object stored with id:\n";
-				message += "<" + loaderId + ">";
-				throw new LoaderNotFoundError(loaderId, message);
-			}
-			
-			if (!_queuedLoaders.contains(loader)) _queuedLoaders.add(loader);
-			_stoppedLoaders.remove(loader);
-			
-			_isLoading = true;//IMPORTANT: if queue is stopped, it will resume its loading
-			loadNext();
-			*/
 			
 			if (_allLoaders.containsKey(identification.toString()))
 			{
@@ -497,28 +443,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			validateDisposal();
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			/*
-			var loader:VostokLoader = _allLoaders.getValue(loaderId);
-			if (!loader)
-			{
-				var message:String = "There is no VostokLoader object stored with id:\n";
-				message += "<" + loaderId + ">";
-				throw new LoaderNotFoundError(loaderId, message);
-			}
-			
-			_queuedLoaders.remove(loader);
-			if (loader.state.equals(LoaderStopped.INSTANCE)) _stoppedLoaders.add(loader);
-			
-			loader.stop();
-			loadNext();
-			*/
 			
 			if (_allLoaders.containsKey(identification.toString()))
 			{
 				var loader:VostokLoader = _allLoaders.getValue(identification.toString());
 				
 				_queuedLoaders.remove(loader);
-				//if (loader.state.equals(LoaderStopped.INSTANCE)) _stoppedLoaders.add(loader);
 				if (!_stoppedLoaders.contains(loader)) _stoppedLoaders.add(loader);
 				
 				loader.stop();
