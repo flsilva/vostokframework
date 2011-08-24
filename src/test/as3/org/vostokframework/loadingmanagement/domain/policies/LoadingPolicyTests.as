@@ -41,7 +41,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
@@ -59,13 +59,13 @@ package org.vostokframework.loadingmanagement.domain.policies
 		public var fakeAlgorithm:LoadingAlgorithm;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader1:VostokLoader;
+		public var _fakeLoader1:ILoader;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader2:VostokLoader;
+		public var _fakeLoader2:ILoader;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader3:VostokLoader;
+		public var _fakeLoader3:ILoader;
 		
 		public var queue:IQueue;
 		
@@ -83,9 +83,9 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
-			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
-			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
-			_fakeLoader3 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-3", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
+			_fakeLoader1 = nice(ILoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
+			_fakeLoader2 = nice(ILoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
+			_fakeLoader3 = nice(ILoader, null, [new VostokIdentification("fake-loader-3", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
 			
 			stub(_fakeLoader1).getter("identification").returns(new VostokIdentification("fake-loader-1", LOADER_LOCALE));
 			stub(_fakeLoader2).getter("identification").returns(new VostokIdentification("fake-loader-2", LOADER_LOCALE));
@@ -95,9 +95,9 @@ package org.vostokframework.loadingmanagement.domain.policies
 			stub(_fakeLoader2).getter("priority").returns(LoadPriority.LOW.ordinal);
 			stub(_fakeLoader3).getter("priority").returns(LoadPriority.LOW.ordinal);
 			
-			stub(_fakeLoader1).method("toString").noArgs().returns("[VostokLoader <fake-loader-1>]");
-			stub(_fakeLoader2).method("toString").noArgs().returns("[VostokLoader <fake-loader-2>]");
-			stub(_fakeLoader3).method("toString").noArgs().returns("[VostokLoader <fake-loader-3>]");
+			stub(_fakeLoader1).method("toString").noArgs().returns("[ILoader <fake-loader-1>]");
+			stub(_fakeLoader2).method("toString").noArgs().returns("[ILoader <fake-loader-2>]");
+			stub(_fakeLoader3).method("toString").noArgs().returns("[ILoader <fake-loader-3>]");
 			
 			queue = new IndexablePriorityQueue();
 			queue.add(_fakeLoader2);
@@ -143,7 +143,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(0);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
 			Assert.assertNotNull(loader);
 		}
 		
@@ -154,7 +154,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(0);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
 			Assert.assertEquals(_fakeLoader1, loader);
 		}
 		
@@ -165,7 +165,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(2);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList([_fakeLoader1, _fakeLoader2]));
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList([_fakeLoader1, _fakeLoader2]));
 			Assert.assertNotNull(loader);
 		}
 		
@@ -176,7 +176,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(3);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList([_fakeLoader1, _fakeLoader2, _fakeLoader3]));
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList([_fakeLoader1, _fakeLoader2, _fakeLoader3]));
 			Assert.assertNull(loader);
 		}
 		
@@ -187,7 +187,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(0);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
 			Assert.assertNotNull(loader);
 		}
 		
@@ -198,7 +198,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			//stub(fakeAlgorithm).getter("openedConnections").returns(0);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, new ArrayList());
 			Assert.assertNull(loader);
 		}
 		

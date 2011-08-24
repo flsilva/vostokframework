@@ -32,10 +32,10 @@ package org.vostokframework.loadingmanagement.domain.policies
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
 	import org.as3collections.IQueue;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 
 	/**
 	 * description
@@ -55,22 +55,23 @@ package org.vostokframework.loadingmanagement.domain.policies
 			super(loaderRepository);
 		}
 		
-		override public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader
+		//override public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader
+		override public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
 		{
 			if (queue.isEmpty()) return null;
 			
-			var nextLoader:VostokLoader = queue.peek();
+			var nextLoader:ILoader = queue.peek();
 			var nextLoaderPriority:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);
 			
 			if (nextLoaderPriority.equals(LoadPriority.HIGHEST))
 			{
-				stopAnyNotHighest(algorithm, loadingLoaders);
-				return super.getNext(algorithm, queue, loadingLoaders);
+				stopAnyNotHighest(state, loadingLoaders);
+				return super.getNext(state, queue, loadingLoaders);
 			}
 			
 			if (nextLoaderPriority.equals(LoadPriority.LOWEST))
 			{
-				if (isOnlyLowestLoading(loadingLoaders)) return super.getNext(algorithm, queue, loadingLoaders);
+				if (isOnlyLowestLoading(loadingLoaders)) return super.getNext(state, queue, loadingLoaders);
 				return null; 
 			}
 			
@@ -80,9 +81,9 @@ package org.vostokframework.loadingmanagement.domain.policies
 			//the permission is delegated to super.getNext()
 			if (containsSomeHighest(loadingLoaders)) return null;
 			
-			stopAnyLowest(algorithm, loadingLoaders); 
+			stopAnyLowest(state, loadingLoaders); 
 			
-			return super.getNext(algorithm, queue, loadingLoaders);
+			return super.getNext(state, queue, loadingLoaders);
 		}
 		
 		private function containsSomeHighest(loadingLoaders:ICollection):Boolean
@@ -90,7 +91,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			if (loadingLoaders.isEmpty()) return false;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -108,7 +109,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			if (loadingLoaders.isEmpty()) return true;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -121,12 +122,12 @@ package org.vostokframework.loadingmanagement.domain.policies
 			return true;
 		}
 		
-		private function stopAnyNotHighest(algorithm:LoadingAlgorithm, loadingLoaders:ICollection):void
+		private function stopAnyNotHighest(state:ILoaderState, loadingLoaders:ICollection):void
 		{
 			if (loadingLoaders.isEmpty()) return;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -136,18 +137,18 @@ package org.vostokframework.loadingmanagement.domain.policies
 				
 				if (!loaderPriority.equals(LoadPriority.HIGHEST))
 				{
-					algorithm.stopLoader(loader.identification);
+					state.stopLoader(loader.identification);
 					it.remove();
 				}
 			}
 		}
 		
-		private function stopAnyLowest(algorithm:LoadingAlgorithm, loadingLoaders:ICollection):void
+		private function stopAnyLowest(state:ILoaderState, loadingLoaders:ICollection):void
 		{
 			if (loadingLoaders.isEmpty()) return;
 			
 			var it:IIterator = loadingLoaders.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var loaderPriority:LoadPriority;
 			
 			while (it.hasNext())
@@ -157,7 +158,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 				
 				if (loaderPriority.equals(LoadPriority.LOWEST))
 				{
-					algorithm.stopLoader(loader.identification);
+					state.stopLoader(loader.identification);
 					it.remove();
 				}
 			}

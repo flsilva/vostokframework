@@ -44,11 +44,6 @@ package org.vostokframework.loadingmanagement.domain
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderCanceled;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
 
 	import flash.events.ProgressEvent;
 
@@ -62,9 +57,9 @@ package org.vostokframework.loadingmanagement.domain
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var stubLoadingAlgorithm:LoadingAlgorithm;
+		public var stubState:ILoaderState;
 		
-		public var loader:VostokLoader;
+		public var loader:ILoader;
 		
 		public function VostokLoaderTests()
 		{
@@ -91,13 +86,13 @@ package org.vostokframework.loadingmanagement.domain
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getLoader():VostokLoader
+		public function getLoader():ILoader
 		{
-			stubLoadingAlgorithm = nice(LoadingAlgorithm, null, [1]);
-			stub(stubLoadingAlgorithm).asEventDispatcher();
+			stubState = nice(ILoaderState);
+			stub(stubState).asEventDispatcher();
 			
 			var identification:VostokIdentification = new VostokIdentification("id", VostokFramework.CROSS_LOCALE_ID);
-			return new VostokLoader(identification, stubLoadingAlgorithm, LoadPriority.MEDIUM);
+			return new VostokLoader(identification, stubState, LoadPriority.MEDIUM);
 		}
 		
 		///////////////////////////////
@@ -140,17 +135,17 @@ package org.vostokframework.loadingmanagement.domain
 		//////////////////////////
 		// VostokLoader().state //
 		//////////////////////////
-		
+		/*
 		[Test]
 		public function state_freshObject_checkIfStateIsQueued_ReturnsTrue(): void
 		{
 			Assert.assertEquals(LoaderQueued.INSTANCE, loader.state);
 		}
-		
+		*/
 		/////////////////////////////////
 		// VostokLoader().stateHistory //
 		/////////////////////////////////
-		
+		/*
 		[Test]
 		public function stateHistory_freshObject_checkIfFirstElementIsQueued_ReturnsTrue(): void
 		{
@@ -164,11 +159,11 @@ package org.vostokframework.loadingmanagement.domain
 			loader.load();
 			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.stateHistory.getAt(1));
 		}
-		
+		*/
 		///////////////////////////////////////
 		// VostokLoader().addEventListener() //
 		///////////////////////////////////////
-		
+		/*
 		[Test(async, timeout=200)]
 		public function addEventListener_stubAlgorithmDispatchesCompleteEvent_mustCatchStubEventAndDispatchOwnCompleteEvent(): void
 		{
@@ -233,11 +228,11 @@ package org.vostokframework.loadingmanagement.domain
 			
 			loader.load();
 		}
-		
+		*/
 		/////////////////////////////
 		// VostokLoader().cancel() //
 		/////////////////////////////
-		
+		/*
 		[Test]
 		public function cancel_simpleCall_checkIfStateIsCanceled_ReturnsTrue(): void
 		{
@@ -259,19 +254,28 @@ package org.vostokframework.loadingmanagement.domain
 			Async.proceedOnEvent(this, loader, LoaderEvent.CANCELED, 50, asyncTimeoutHandler);
 			loader.cancel();
 		}
+		*/
+		[Test]
+		public function cancel_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("cancel").once();
+			loader.cancel();
+			verify(stubState);
+		}
 		
 		[Test]
-		public function cancel_simpleCall_verifyIfStrategyWasCalled(): void
+		public function cancel_doubleCall_verifyIfStubStateWasCalledTwice(): void
 		{
-			mock(stubLoadingAlgorithm).method("cancel");
+			mock(stubState).method("cancel").twice();
 			loader.cancel();
-			verify(stubLoadingAlgorithm);
+			loader.cancel();
+			verify(stubState);
 		}
 		
 		///////////////////////////
 		// VostokLoader().load() //
 		///////////////////////////
-		
+		/*
 		[Test]
 		public function load_simpleCall_checkIfStateIsTryingToConnect_ReturnsTrue(): void
 		{
@@ -297,19 +301,28 @@ package org.vostokframework.loadingmanagement.domain
 			Async.proceedOnEvent(this, loader, LoaderEvent.CONNECTING, 50, asyncTimeoutHandler);
 			loader.load();
 		}
+		*/
+		[Test]
+		public function load_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("load").once();
+			loader.load();
+			verify(stubState);
+		}
 		
 		[Test]
-		public function load_simpleCall_verifyIfStrategyWasCalled(): void
+		public function load_doubleCall_verifyIfStubStateWasCalledTwice(): void
 		{
-			mock(stubLoadingAlgorithm).method("load");
+			mock(stubState).method("load").twice();
 			loader.load();
-			verify(stubLoadingAlgorithm);
+			loader.load();
+			verify(stubState);
 		}
 		
 		///////////////////////////
 		// VostokLoader().stop() //
 		///////////////////////////
-		
+		/*
 		[Test]
 		public function stop_simpleCall_checkIfStateIsStopped_ReturnsTrue(): void
 		{
@@ -331,19 +344,27 @@ package org.vostokframework.loadingmanagement.domain
 			Async.proceedOnEvent(this, loader, LoaderEvent.STOPPED, 50, asyncTimeoutHandler);
 			loader.stop();
 		}
+		*/
+		[Test]
+		public function stop_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("stop").once();
+			loader.stop();
+			verify(stubState);
+		}
 		
 		[Test]
-		public function stop_simpleCall_verifyIfStrategyWasCalled(): void
+		public function stop_doubleCall_verifyIfStubStateWasCalledTwice(): void
 		{
-			mock(stubLoadingAlgorithm).method("stop");
+			mock(stubState).method("stop").twice();
 			loader.stop();
-			verify(stubLoadingAlgorithm);
+			verify(stubState);
 		}
 		
 		/////////////////////////////////////////////////////////
 		// VostokLoader().stop()-load()-cancel() - MIXED TESTS //
 		/////////////////////////////////////////////////////////
-		
+		/*
 		[Test]
 		public function loadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
 		{
@@ -432,7 +453,7 @@ package org.vostokframework.loadingmanagement.domain
 			loader.cancel();
 			loader.load();
 		}
-		
+		*/
 	}
 
 }

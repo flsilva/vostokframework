@@ -84,7 +84,7 @@ package
 		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
 		//org.vostokframework.loadingmanagement.domain
-		public var vostokLoaderTests:VostokLoaderTests;
+		public var VostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.domain.loaders
 		public var loaderAlgorithmTests:LoaderAlgorithmTests;

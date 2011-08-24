@@ -33,14 +33,13 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.services.AssetService;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.GlobalLoadingMonitorDispatcher;
@@ -68,15 +67,15 @@ package org.vostokframework.loadingmanagement
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
-		private var _globalQueueLoader:VostokLoader;
+		private var _globalQueueLoader:ILoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
 		private var _loadedAssetRepository:LoadedAssetRepository;
+		private var _loaderFactory:VostokLoaderFactory;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
 		private var _maxConcurrentConnections:int;
 		private var _maxConcurrentQueues:int;
-		private var _vostokLoaderFactory:VostokLoaderFactory;
 		
 		/**
 		 * @private
@@ -87,7 +86,7 @@ package org.vostokframework.loadingmanagement
 			_created = true;
 		}
 		
-		public function get globalQueueLoader(): VostokLoader { return _globalQueueLoader; }
+		public function get globalQueueLoader(): ILoader { return _globalQueueLoader; }
 		
 		//public function get globalQueueLoadingMonitor(): QueueLoadingMonitor { return _globalQueueLoadingMonitor; }
 		
@@ -109,7 +108,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function get maxConcurrentQueues(): int { return _maxConcurrentQueues; }
 		
-		public function get vostokLoaderFactory(): VostokLoaderFactory { return _vostokLoaderFactory; }
+		public function get loaderFactory(): VostokLoaderFactory { return _loaderFactory; }
 		
 		/**
 		 * description
@@ -121,7 +120,7 @@ package org.vostokframework.loadingmanagement
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
 			
-			_vostokLoaderFactory = new VostokLoaderFactory();
+			_loaderFactory = new VostokLoaderFactory();
 			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
@@ -149,7 +148,7 @@ package org.vostokframework.loadingmanagement
 		public function setAssetLoaderFactory(factory:VostokLoaderFactory): void
 		{
 			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
-			_vostokLoaderFactory = factory;
+			_loaderFactory = factory;
 		}
 
 		/**
@@ -157,12 +156,12 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param queueLoader
 		 */
-		public function setGlobalQueueLoader(queueLoader:VostokLoader): void
+		public function setGlobalQueueLoader(queueLoader:ILoader): void
 		{
 			if (!queueLoader) throw new ArgumentError("Argument <queueLoader> must not be null.");
 			
 			var oldGlobalMonitor:ILoadingMonitor = _globalQueueLoadingMonitor;
-			var oldGlobalLoader:VostokLoader = _globalQueueLoader;
+			var oldGlobalLoader:ILoader = _globalQueueLoader;
 			
 			if (oldGlobalLoader) loaderRepository.remove(oldGlobalLoader.identification);
 			
@@ -293,7 +292,7 @@ package org.vostokframework.loadingmanagement
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
+			var queueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
 			
 			setGlobalQueueLoader(queueLoader);
 		}
@@ -355,11 +354,11 @@ package org.vostokframework.loadingmanagement
 			
 			var identification:AssetIdentification = new AssetIdentification(event.assetId, event.assetLocale);
 			
-			var queueLoader:VostokLoader = globalQueueLoader.getParent(new VostokIdentification(identification.id, identification.locale));//TODO:refactor identification
+			var queueLoader:ILoader = globalQueueLoader.getParent(new VostokIdentification(identification.id, identification.locale));//TODO:refactor identification
 			if (!queueLoader)
 			{
-				errorMessage = "It was expected that the parent VostokLoader object for the child VostokLoader object was found.\n";
-				errorMessage += "child VostokLoader id: " + identification.toString();
+				errorMessage = "It was expected that the parent ILoader object for the child ILoader object was found.\n";
+				errorMessage += "child ILoader id: " + identification.toString();
 				
 				throw new IllegalOperationError(errorMessage); 
 			}

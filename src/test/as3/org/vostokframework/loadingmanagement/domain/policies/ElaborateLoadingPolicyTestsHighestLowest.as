@@ -44,7 +44,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
@@ -60,10 +60,10 @@ package org.vostokframework.loadingmanagement.domain.policies
 		public var fakeAlgorithm:LoadingAlgorithm;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader1:VostokLoader;
+		public var _fakeLoader1:ILoader;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader2:VostokLoader;
+		public var _fakeLoader2:ILoader;
 		
 		public var queue:IQueue;
 		
@@ -81,8 +81,8 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
-			//_fakeLoader1 = nice(VostokLoader, null, ["fake-loader-1", fakeAlgorithm, LoadPriority.MEDIUM, 3]);
-			//_fakeLoader2 = nice(VostokLoader, null, ["fake-loader-2", fakeAlgorithm, LoadPriority.LOW, 3]);
+			//_fakeLoader1 = nice(ILoader, null, ["fake-loader-1", fakeAlgorithm, LoadPriority.MEDIUM, 3]);
+			//_fakeLoader2 = nice(ILoader, null, ["fake-loader-2", fakeAlgorithm, LoadPriority.LOW, 3]);
 			
 			//stub(_fakeLoader1).getter("id").returns("fake-loader-1");
 			//stub(_fakeLoader2).getter("id").returns("fake-loader-2");
@@ -112,12 +112,12 @@ package org.vostokframework.loadingmanagement.domain.policies
 			return policy;
 		}
 		
-		public function getLoader(id:String, priority:LoadPriority):VostokLoader
+		public function getLoader(id:String, priority:LoadPriority):ILoader
 		{
-			var loader:VostokLoader = nice(VostokLoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), fakeAlgorithm, priority, 3]);
+			var loader:ILoader = nice(ILoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), fakeAlgorithm, priority, 3]);
 			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
 			stub(loader).getter("priority").returns(priority.ordinal);
-			stub(loader).method("toString").noArgs().returns("[VostokLoader <" + new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID) + ">]");
+			stub(loader).method("toString").noArgs().returns("[ILoader <" + new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID) + ">]");
 			
 			return loader;
 		}
@@ -137,15 +137,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderHigh:VostokLoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest:VostokLoader = getLoader("loader-highest", LoadPriority.HIGHEST);
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
 			queue.add(loaderHigh);
 			queue.add(loaderHighest);
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderHighest, loader);
 		}
 		
@@ -154,15 +154,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderHigh:VostokLoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest:VostokLoader = getLoader("loader-highest", LoadPriority.HIGHEST);
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
 			queue.add(loaderHigh);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderHighest);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertNull(loader);
 		}
 		
@@ -171,15 +171,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderHigh:VostokLoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest:VostokLoader = getLoader("loader-highest", LoadPriority.HIGHEST);
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
 			queue.add(loaderHighest);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderHigh);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderHighest, loader);
 		}
 		
@@ -188,8 +188,8 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderHigh:VostokLoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest:VostokLoader = getLoader("loader-highest", LoadPriority.HIGHEST);
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			mock(fakeAlgorithm).method("stopLoader").args(loaderHigh.identification);
 			
 			queue.add(loaderHighest);
@@ -206,9 +206,9 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderHigh:VostokLoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest1:VostokLoader = getLoader("loader-highest-1", LoadPriority.HIGHEST);
-			var loaderHighest2:VostokLoader = getLoader("loader-highest-2", LoadPriority.HIGHEST);
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest1:ILoader = getLoader("loader-highest-1", LoadPriority.HIGHEST);
+			var loaderHighest2:ILoader = getLoader("loader-highest-2", LoadPriority.HIGHEST);
 			
 			queue.add(loaderHighest2);
 			
@@ -216,7 +216,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			loadings.add(loaderHighest1);
 			loadings.add(loaderHigh);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderHighest2, loader);
 		}
 		
@@ -225,15 +225,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLow:VostokLoader = getLoader("loader-low", LoadPriority.LOW);
-			var loaderLowest:VostokLoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
 			queue.add(loaderLow);
 			queue.add(loaderLowest);
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderLow, loader);
 		}
 		
@@ -242,15 +242,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLow:VostokLoader = getLoader("loader-low", LoadPriority.LOW);
-			var loaderLowest:VostokLoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
 			queue.add(loaderLowest);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLow);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertNull(loader);
 		}
 		
@@ -259,13 +259,13 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLowest:VostokLoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
 			queue.add(loaderLowest);
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderLowest, loader);
 		}
 		
@@ -274,15 +274,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLowest1:VostokLoader = getLoader("loader-lowest-1", LoadPriority.LOWEST);
-			var loaderLowest2:VostokLoader = getLoader("loader-lowest-2", LoadPriority.LOWEST);
+			var loaderLowest1:ILoader = getLoader("loader-lowest-1", LoadPriority.LOWEST);
+			var loaderLowest2:ILoader = getLoader("loader-lowest-2", LoadPriority.LOWEST);
 			
 			queue.add(loaderLowest2);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLowest1);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderLowest2, loader);
 		}
 		
@@ -291,15 +291,15 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLow:VostokLoader = getLoader("loader-low", LoadPriority.LOW);
-			var loaderLowest:VostokLoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
 			queue.add(loaderLow);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLowest);
 			
-			var loader:VostokLoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
 			Assert.assertEquals(loaderLow, loader);
 		}
 		
@@ -308,8 +308,8 @@ package org.vostokframework.loadingmanagement.domain.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loaderLow:VostokLoader = getLoader("loader-low", LoadPriority.LOW);
-			var loaderLowest:VostokLoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			mock(fakeAlgorithm).method("stopLoader").args(loaderLowest.identification);
 			
 			queue.add(loaderLow);

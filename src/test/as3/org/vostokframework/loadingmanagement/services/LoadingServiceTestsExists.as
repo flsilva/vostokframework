@@ -82,9 +82,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function exists_callLoad_queueLoadingCompletes_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			StubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -112,9 +112,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function exists_callLoad_queueLoadingCompletes_checkIfAssetLoaderExists_ReturnsFalse(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			StubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

@@ -26,56 +26,19 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders.states
+package org.vostokframework.loadingmanagement.domain
 {
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderStopped extends LoaderState
+	public interface ILoaderStateTransition extends ILoader
 	{
-		public static const INSTANCE:LoaderState = new LoaderStopped("STOPPED", 7);
 		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
+		function setState(state:ILoaderState):void;
 		
-		{
-			_created = true;
-		}
-		
-		/**
-		 * description
-		 * 
-		 * @param name
-		 * @param ordinal
-		 */
-		public function LoaderStopped(name:String, ordinal:int)
-		{
-			super(name, ordinal);
-			
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
-		}
-		
-		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
-		{
-			// do nothing
-		}
-		
-		override public function stopLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
-		{
-			// do nothing
-		}
-
 	}
 
 }

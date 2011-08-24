@@ -28,13 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.VostokIdentification;
-	import org.as3collections.ICollection;
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
-
 	import flash.display.MovieClip;
+	import flash.events.Event;
 	import flash.events.ProgressEvent;
 	import flash.utils.setTimeout;
 
@@ -43,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubLoadingAlgorithm extends LoadingAlgorithm
+	public class StubFileLoadingAlgorithm extends FileLoadingAlgorithm
 	{
 		
 		private var _openBehaviorSync:Boolean;
@@ -56,104 +51,53 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
 		
-		override public function get openedConnections():int
-		{
-			if (isLoading)
-			{
-				return 1;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		
 		/**
 		 * description
 		 * 
 		 */
-		public function StubLoadingAlgorithm(maxAttempts:int = 1)
-		{
-			super(maxAttempts);
-		}
-		
-		override public function addLoader(loader:VostokLoader): void
+		public function StubFileLoadingAlgorithm()
 		{
 			
 		}
 		
-		override public function addLoaders(loaders:ICollection): void
+		override public function cancel(): void
 		{
 			
 		}
 		
-		override protected function doCancel(): void
+		override public function dispose(): void
 		{
 			
 		}
 		
-		override public function cancelLoader(identification:VostokIdentification): void
+		override public function getData():*
 		{
-			
+			return new MovieClip();
 		}
 		
-		override public function containsLoader(identification:VostokIdentification): Boolean
+		override public function load(): void
 		{
-			identification = null;//just to avoid FDT warnings
-			return false;
-		}
-		
-		override public function dispose():void
-		{
-			
-		}
-		
-		override public function getLoaderState(identification:VostokIdentification): LoaderState
-		{
-			identification = null;//just to avoid FDT warnings
-			return null;
-		}
-		
-		override protected function doLoad(): void
-		{
-			dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
-			
 			if (_openBehaviorSync)
 			{
-				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN));
+				dispatchEvent(new Event(Event.OPEN));
 			}
 			else if (_successBehaviorAsync)
 			{
-				setTimeout(dispatchEvent, 25, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN));
+				setTimeout(dispatchEvent, 25, new Event(Event.OPEN));
 				setTimeout(dispatchEvent, 80, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
 				setTimeout(dispatchEvent, 100, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
-				setTimeout(dispatchEvent, 150, new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE, new MovieClip()));
+				setTimeout(dispatchEvent, 150, new Event(Event.COMPLETE));
 			}
 			else if (_successBehaviorSync)
 			{
-				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.OPEN));
+				dispatchEvent(new Event(Event.OPEN));
 				dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
 				dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
-				dispatchEvent(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.COMPLETE, new MovieClip()));
+				dispatchEvent(new Event(Event.COMPLETE));
 			}
 		}
 		
-		override public function removeLoader(identification:VostokIdentification): void
-		{
-			
-		}
-		
-		override public function resumeLoader(identification:VostokIdentification): void
-		{
-			
-		}
-		
-		override public function stopLoader(identification:VostokIdentification): void
-		{
-			
-		}
-		
-		override protected function doStop(): void
+		override public function stop(): void
 		{
 			
 		}

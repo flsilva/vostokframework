@@ -26,44 +26,46 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
+	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
 
-	import flash.events.Event;
-	import flash.utils.setTimeout;
+	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubVostokLoader extends VostokLoader
+	public class FailedFileLoader extends FileLoaderState
 	{
-		public var $state:LoaderState;
 		
-		override public function get state():LoaderState
+		/**
+		 * description
+		 * 
+		 * @param name
+		 * @param ordinal
+		 */
+		public function FailedFileLoader(loader:ILoaderStateTransition, algorithm:FileLoadingAlgorithm, maxAttempts:int)
 		{
-			if ($state) return $state;
-			return super.state;
+			super(algorithm, maxAttempts);
+			setLoader(loader);
 		}
 		
-		public function StubVostokLoader(identification:VostokIdentification)
+		override public function cancel():void
 		{
-			super(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to cancel.");
 		}
 		
-		public function asyncDispatchEvent(event:Event, state:LoaderState, delay:int = 50):int
+		override public function load():void
 		{
-			return setTimeout(_dispatchEvent, delay, event, state);
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
 		}
 		
-		private function _dispatchEvent(event:Event, state:LoaderState):void
+		override public function stop():void
 		{
-			setState(state);
-			$state = state;
-			dispatchEvent(event);
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to stop.");
 		}
 		
 	}

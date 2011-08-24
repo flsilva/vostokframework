@@ -29,10 +29,10 @@
 
 package org.vostokframework.loadingmanagement.domain.policies
 {
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.as3collections.ICollection;
 	import org.as3collections.IQueue;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 
 	/**
 	 * Description
@@ -47,7 +47,8 @@ package org.vostokframework.loadingmanagement.domain.policies
 		function get globalMaxConnections():int;
 		function set globalMaxConnections(value:int):void;
 		
-		function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader;
+		//function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader;
+		function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;
 	}
 
 }

@@ -1,7 +1,7 @@
-﻿/*
+/*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,36 +26,48 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.as3collections.IList;
-	import org.as3coreaddendum.system.IDisposable;
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
 
-	import flash.events.IEventDispatcher;
+	import flash.errors.IllegalOperationError;
 
 	/**
-	 * Description
+	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoadingMonitor extends IEventDispatcher, IDisposable
+	public class CanceledFileLoader extends FileLoaderState
 	{
-		function get loader():ILoader;
 		
-		function get monitoring():LoadingMonitoring;
+		/**
+		 * description
+		 * 
+		 * @param name
+		 * @param ordinal
+		 */
+		public function CanceledFileLoader(loader:ILoaderStateTransition, algorithm:FileLoadingAlgorithm, maxAttempts:int)
+		{
+			super(algorithm, maxAttempts);
+			setLoader(loader);
+		}
 		
-		function addMonitor(monitor:ILoadingMonitor):void;
+		override public function cancel():void
+		{
+			//do nothing
+		}
 		
-		function addMonitors(monitors:IList):void;
+		override public function load():void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
+		}
 		
-		function contains(identification:VostokIdentification):Boolean;
+		override public function stop():void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to stop.");
+		}
 		
-		function getMonitor(identification:VostokIdentification):ILoadingMonitor;
-		
-		function removeMonitor(identification:VostokIdentification):void;
 	}
 
 }

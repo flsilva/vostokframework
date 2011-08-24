@@ -30,6 +30,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedFileLoader;
 
 	/**
 	 * description
@@ -54,24 +56,23 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 		}
 		/*
-		override public function create(asset:Asset):VostokLoader
+		override public function create(asset:Asset):ILoader
 		{
-			return new StubVostokLoader(asset.identification.toString());
+			return new StubILoader(asset.identification.toString());
 		}*/
 		
-		override protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):LoadingAlgorithm
+		override protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):ILoaderState
 		{
 			type = null;//just to avoid FDT warnings
 			url = null;//just to avoid FDT warnings
 			settings = null;//just to avoid FDT warnings
-			maxAttempts = 0;//just to avoid FDT warnings
 			
-			var stub:StubLoadingAlgorithm = new StubLoadingAlgorithm();
-			stub.openBehaviorSync = _openBehaviorSync;
-			stub.successBehaviorAsync = _successBehaviorAsync;
-			stub.successBehaviorSync = _successBehaviorSync;
+			var algorithm:StubFileLoadingAlgorithm = new StubFileLoadingAlgorithm();
+			algorithm.openBehaviorSync = _openBehaviorSync;
+			algorithm.successBehaviorAsync = _successBehaviorAsync;
+			algorithm.successBehaviorSync = _successBehaviorSync;
 			
-			return stub;
+			return new QueuedFileLoader(algorithm, maxAttempts);
 		}
 		
 	}

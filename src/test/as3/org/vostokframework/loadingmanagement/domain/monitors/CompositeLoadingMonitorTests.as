@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
 	import flash.events.Event;
@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		// HELPER METHODS //
 		////////////////////
 		
-		override protected function getMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
+		override protected function getMonitor(loader:ILoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
 		{
 			return new CompositeLoadingMonitor(loader, dispatcher);
 		}

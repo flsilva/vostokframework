@@ -33,7 +33,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.utils.ListUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -51,7 +51,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		public function get id():String { return "test"; }
 		
-		public function get loader():VostokLoader { return _monitor.loader; }
+		public function get loader():ILoader { return _monitor.loader; }
 		
 		public function get monitoring():LoadingMonitoring { return _monitor.monitoring; }
 		

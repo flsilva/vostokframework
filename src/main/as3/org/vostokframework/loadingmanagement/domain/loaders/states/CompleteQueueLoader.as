@@ -28,12 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
+	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
 	import org.as3collections.IList;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 
 	import flash.errors.IllegalOperationError;
 
@@ -42,18 +43,8 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderComplete extends LoaderState
+	public class CompleteQueueLoader extends QueueLoaderState
 	{
-		public static const INSTANCE:LoaderState = new LoaderComplete("COMPLETE", 1);
-		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
-		
-		{
-			_created = true;
-		}
 		
 		/**
 		 * description
@@ -61,58 +52,83 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoaderComplete(name:String, ordinal:int)
+		public function CompleteQueueLoader(loader:ILoaderStateTransition, loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy)
 		{
-			super(name, ordinal);
-			
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			super(loadingStatus, policy);
+			setLoader(loader);
 		}
 		
-		override public function addLoader(loader:VostokLoader, algorithm:LoadingAlgorithm): void
-		{
-			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to add new loaders.");
-		}
-		
-		override public function addLoaders(loaders:IList, algorithm:LoadingAlgorithm): void
+		override public function addLoader(loader:ILoader): void
 		{
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to add new loaders.");
 		}
 		
-		override public function cancel(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		override public function addLoaders(loaders:IList): void
 		{
-			// do nothing
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to add new loaders.");
 		}
 		
-		override public function cancelLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		override public function cancel():void
 		{
-			// do nothing
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to cancel.");
 		}
 		
-		override public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		override public function cancelLoader(identification:VostokIdentification): void
+		{
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to cancel any loader.");
+		}
+		
+		override public function containsLoader(identification:VostokIdentification): Boolean
+		{
+			return containsLoaderBehavior(identification);
+		}
+		
+		override public function equals(other:*):Boolean
+		{
+			if (this == other) return true;
+			return other is CompleteQueueLoader;
+		}
+		
+		override public function getLoader(identification:VostokIdentification): ILoader
+		{
+			return getLoaderBehavior(identification);
+		}
+		
+		override public function getLoaderState(identification:VostokIdentification): ILoaderState
+		{
+			return getLoaderStateBehavior(identification);
+		}
+		
+		override public function getParent(identification:VostokIdentification): ILoader
+		{
+			return getParentBehavior(identification);
+		}
+		
+		override public function load():void
 		{
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed loadings.");
 		}
 		
-		override public function removeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		override public function removeLoader(identification:VostokIdentification): void
 		{
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to remove loaders.");
 		}
 		
-		override public function resumeLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		override public function resumeLoader(identification:VostokIdentification): void
 		{
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to resume any loader.");
 		}
 		
-		override public function stop(loader:VostokLoader, algorithm:LoadingAlgorithm):void
+		override public function stop():void
 		{
-			// do nothing
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to stop.");
 		}
 		
-		override public function stopLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm): void
+		override public function stopLoader(identification:VostokIdentification): void
 		{
-			// do nothing
+			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to stop any loader.");
 		}
-
+		
 	}
 
 }

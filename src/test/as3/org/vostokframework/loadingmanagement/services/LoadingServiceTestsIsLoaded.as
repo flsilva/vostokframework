@@ -93,9 +93,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function isLoaded_loadedAndCachedAsset_ReturnsTrue(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			StubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			

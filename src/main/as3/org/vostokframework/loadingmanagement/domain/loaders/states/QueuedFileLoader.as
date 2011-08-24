@@ -28,29 +28,14 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderConnecting extends LoaderState
+	public class QueuedFileLoader extends FileLoaderState
 	{
-		public static const INSTANCE:LoaderState = new LoaderConnecting("CONNECTING", 2);
-		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
-		
-		{
-			_created = true;
-		}
 		
 		/**
 		 * description
@@ -58,16 +43,9 @@ package org.vostokframework.loadingmanagement.domain.loaders.states
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoaderConnecting(name:String, ordinal:int)
+		public function QueuedFileLoader(algorithm:FileLoadingAlgorithm, maxAttempts:int = 1)
 		{
-			super(name, ordinal);
-			
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
-		}
-		
-		override public function load(loader:VostokLoader, algorithm:LoadingAlgorithm):void
-		{
-			// do nothing
+			super(algorithm, maxAttempts);
 		}
 		
 	}

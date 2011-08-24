@@ -26,43 +26,53 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders.states
+package org.vostokframework.loadingmanagement.domain
 {
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
-
-	import flash.errors.IllegalOperationError;
+	import org.as3collections.IList;
+	import org.as3coreaddendum.system.IDisposable;
+	import org.as3coreaddendum.system.IEquatable;
+	import org.vostokframework.VostokIdentification;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoaderQueued extends LoaderState
+	public interface ILoaderState extends IEquatable, IDisposable
 	{
-		public static const INSTANCE:LoaderState = new LoaderQueued("QUEUED", 6);
 		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
+		function get openedConnections():int;
 		
-		{
-			_created = true;
-		}
+		function addLoader(loader:ILoader):void;
 		
-		/**
-		 * description
-		 * 
-		 * @param name
-		 * @param ordinal
-		 */
-		public function LoaderQueued(name:String, ordinal:int)
-		{
-			super(name, ordinal);
-			
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
-		}
-
+		function addLoaders(loaders:IList):void;
+		
+		function cancel():void;
+		
+		function cancelLoader(identification:VostokIdentification):void;
+		
+		function containsLoader(identification:VostokIdentification):Boolean;
+		
+		function equals(other:*):Boolean;
+		
+		function getLoader(identification:VostokIdentification):ILoader;
+		
+		function getLoaderState(identification:VostokIdentification):ILoaderState;
+		
+		function getParent(identification:VostokIdentification):ILoader;
+		
+		function load():void;
+		
+		function removeLoader(identification:VostokIdentification):void;
+		
+		function resumeLoader(identification:VostokIdentification):void;
+		
+		function setLoader(loader:ILoaderStateTransition):void;
+		
+		function stop():void;
+		
+		function stopLoader(identification:VostokIdentification):void;
+		
 	}
 
 }

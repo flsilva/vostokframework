@@ -1,7 +1,7 @@
 /*
  * Licensed under the MIT License
  * 
- * Copyright 2010 (c) Flávio Silva, http://flsilva.com
+ * Copyright 2011 (c) Flávio Silva, flsilva.com
  *
  * Permission is hereby granted, free of charge, to any person
  * obtaining a copy of this software and associated documentation
@@ -26,49 +26,33 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-
-package org.vostokframework.loadingmanagement.domain.loaders
+package org.vostokframework.loadingmanagement.domain.loaders.states
 {
-	import org.flexunit.Assert;
-
-	import flash.display.Loader;
-	import flash.net.URLRequest;
+	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
 
 	/**
+	 * description
+	 * 
 	 * @author Flávio Silva
 	 */
-	[TestCase]
-	public class LoaderAlgorithmTests
+	public class StoppedFileLoader extends FileLoaderState
 	{
 		
-		public function LoaderAlgorithmTests()
+		/**
+		 * description
+		 * 
+		 * @param name
+		 * @param ordinal
+		 */
+		public function StoppedFileLoader(loader:ILoaderStateTransition, algorithm:FileLoadingAlgorithm, maxAttempts:int)
 		{
-			
+			super(algorithm, maxAttempts);
+			setLoader(loader);
 		}
 		
-		///////////////////////
-		// CONSTRUCTOR TESTS //
-		///////////////////////
-		
-		[Test(expects="ArgumentError")]
-		public function constructor_invalidLoader_ThrowsError(): void
+		override public function stop():void
 		{
-			var loader:LoadingAlgorithm = new LoaderAlgorithm(null, null);
-			loader = null;
-		}
-		
-		[Test(expects="ArgumentError")]
-		public function constructor_invalidURLRequest_ThrowsError(): void
-		{
-			var loader:LoadingAlgorithm = new LoaderAlgorithm(new Loader(), null);
-			loader = null;
-		}
-		
-		[Test]
-		public function constructor_validInstantiation_ReturnsValidInstance(): void
-		{
-			var loader:LoadingAlgorithm = new LoaderAlgorithm(new Loader(), new URLRequest());
-			Assert.assertNotNull(loader);
+			//do nothing
 		}
 		
 	}

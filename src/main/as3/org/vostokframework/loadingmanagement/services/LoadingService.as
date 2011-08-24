@@ -42,20 +42,17 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.LoaderState;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderStopped;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueueLoadingStatus;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedQueueLoader;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -83,7 +80,7 @@ package org.vostokframework.loadingmanagement.services
 		
 		private function get globalMonitor():ILoadingMonitor { return _context.globalQueueLoadingMonitor; }
 		
-		private function get globalQueueLoader():VostokLoader { return _context.globalQueueLoader; }
+		private function get globalQueueLoader():ILoader { return _context.globalQueueLoader; }
 		
 		private function get loadedAssetRepository():LoadedAssetRepository { return _context.loadedAssetRepository; }
 		
@@ -91,7 +88,7 @@ package org.vostokframework.loadingmanagement.services
 		
 		//private function get loadingMonitorRepository():LoadingMonitorRepository { return _context.loadingMonitorRepository; }
 		
-		private function get vostokLoaderFactory():VostokLoaderFactory { return _context.vostokLoaderFactory; }
+		private function get loaderFactory():VostokLoaderFactory { return _context.loaderFactory; }
 		
 		/**
 		 * description
@@ -115,10 +112,10 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
@@ -185,7 +182,7 @@ package org.vostokframework.loadingmanagement.services
 				var message:String = "There is no ILoadingMonitor object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if an ILoadingMonitor object is mapped for a VostokLoader object.\n";
+				message += "Use method <LoadingService().exists()> to check if an ILoadingMonitor object is mapped for a ILoader object.\n";
 				
 				throw new LoadingMonitorNotFoundError(message);
 			}
@@ -202,6 +199,7 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function isLoaded(loaderId:String, locale:String = null): Boolean
 		{
+			//TODO:pensar em renomear para: containsAssetData
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
@@ -217,8 +215,6 @@ package org.vostokframework.loadingmanagement.services
 		 */
 		public function isLoading(loaderId:String, locale:String = null): Boolean
 		{
-			trace("LoadingService::isLoading() - loaderId: " + loaderId + " | locale: " + locale);
-			
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
@@ -226,16 +222,15 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
 			
-			var state:LoaderState = globalQueueLoader.getLoaderState(identification);
-			trace("LoadingService::isLoading() - state: " + state);
+			var state:ILoaderState = globalQueueLoader.getLoaderState(identification);
 			return state.equals(LoaderConnecting.INSTANCE) || state.equals(LoaderLoading.INSTANCE);
 		}
 		
@@ -254,15 +249,15 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
 			
-			var state:LoaderState = globalQueueLoader.getLoaderState(identification);
+			var state:ILoaderState = globalQueueLoader.getLoaderState(identification);
 			return state.equals(LoaderQueued.INSTANCE);
 		}
 
@@ -295,26 +290,26 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (globalQueueLoader.containsLoader(identification))
 			{
-				var errorMessage:String = "There is already a VostokLoader object stored with specified arguments:\n";
+				var errorMessage:String = "There is already a ILoader object stored with specified arguments:\n";
 				errorMessage += "<loaderId>: <" + loaderId + ">\n";
 				errorMessage += "utilized locale: <" + VostokFramework.CROSS_LOCALE_ID + ">\n";
-				errorMessage += "Use method <LoadingService().exists()> to check if a VostokLoader object already exists.\n";
-				errorMessage += "For further information please read the documentation section about VostokLoader object.";
+				errorMessage += "Use method <LoadingService().exists()> to check if a ILoader object already exists.\n";
+				errorMessage += "For further information please read the documentation section about ILoader object.";
 				
 				throw new DuplicateLoaderError(identification, errorMessage);
 			}
 			
 			//TODO:implementar mesmo erro acima porem para LoadingMonitor
 			
-			//TODO: mover lógica para factory
-			var queueLoader:VostokLoader = createQueueLoader(identification, priority, concurrentConnections);
+			var globalMaxConnections:int = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, priority, globalMaxConnections, concurrentConnections);
 			
 			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
 			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
-			//if there is a VostokLoader object with the identification of any Asset inside <assets>
+			//if there is a ILoader object with the identification of any Asset inside <assets>
 			var loaders:IList = createAssetLoaders(assets);
 			
 			queueLoader.addLoaders(loaders);
@@ -365,10 +360,10 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
@@ -386,13 +381,13 @@ package org.vostokframework.loadingmanagement.services
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
 			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
-			//if there is a VostokLoader object with the identification of any Asset inside <assets>
+			//if there is a ILoader object with the identification of any Asset inside <assets>
 			var loaders:IList = createAssetLoaders(assets);
 			
 			var assetsAndLoadersMap:IListMap = createAssetsAndLoadersMap(assets, loaders);
 			var assetLoadingMonitors:IList = createAssetLoadingMonitors(assetsAndLoadersMap);
 			
-			var queueLoader:VostokLoader = globalQueueLoader.getLoader(identification);
+			var queueLoader:ILoader = globalQueueLoader.getLoader(identification);
 			queueLoader.addLoaders(loaders);
 			
 			//var monitor:IQueueLoadingMonitor = loadingMonitorRepository.find(queueLoader.id) as IQueueLoadingMonitor;//TODO:type coercion issue
@@ -443,15 +438,15 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
 			
-			var state:LoaderState = globalQueueLoader.getLoaderState(identification);
+			var state:ILoaderState = globalQueueLoader.getLoaderState(identification);
 			if (state.equals(LoaderConnecting.INSTANCE) || state.equals(LoaderLoading.INSTANCE)) return false;
 			
 			globalQueueLoader.resumeLoader(identification);
@@ -474,15 +469,15 @@ package org.vostokframework.loadingmanagement.services
 			
 			if (!exists(loaderId, locale))
 			{
-				var message:String = "There is no VostokLoader object stored with specified arguments:\n";
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
 				message += "<loaderId>: <" + loaderId + ">\n";
 				message += "<locale>: <" + locale + ">\n";
-				message += "Use method <LoadingService().exists()> to check if a VostokLoader object exists.\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
 			
-			var state:LoaderState = globalQueueLoader.getLoaderState(identification);
+			var state:ILoaderState = globalQueueLoader.getLoaderState(identification);
 			if (state.equals(LoaderStopped.INSTANCE)) return false;
 			
 			globalQueueLoader.stopLoader(identification);
@@ -506,7 +501,7 @@ package org.vostokframework.loadingmanagement.services
 					var errorMessage:String = "The Asset object with identification:\n";
 					errorMessage += "<" + asset.identification + ">\n";
 					errorMessage += "Is already loaded and cached internally.\n";
-					errorMessage += "It was loaded by a VostokLoader object with identification:\n";
+					errorMessage += "It was loaded by a ILoader object with identification:\n";
 					errorMessage += "<" + report.queueIdentification + ">\n";
 					errorMessage += "Use the method <LoadingService().isLoaded()> to find it out.\n";
 					errorMessage += "Also, cached asset data can be retrieved using <LoadingService().getAssetData()>.";
@@ -544,26 +539,26 @@ package org.vostokframework.loadingmanagement.services
 		private function createAssetLoaders(assets:IList):IList
 		{
 			var asset:Asset;
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var loaders:IList = new ArrayList();
 			var it:IIterator = assets.iterator();
 			
 			while (it.hasNext())
 			{
 				asset = it.next();
-				loader = vostokLoaderFactory.create(asset);
+				loader = loaderFactory.createLeaf(asset);
 				
 				if (globalQueueLoader.containsLoader(loader.identification))
 				{
-					var childLoaderState:LoaderState = globalQueueLoader.getLoaderState(loader.identification);
-					var parent:VostokLoader = globalQueueLoader.getParent(loader.identification);
+					var childLoaderState:ILoaderState = globalQueueLoader.getLoaderState(loader.identification);
+					var parent:ILoader = globalQueueLoader.getParent(loader.identification);
 					
-					var errorMessage:String = "There is already a VostokLoader object stored with identification:\n";
+					var errorMessage:String = "There is already a ILoader object stored with identification:\n";
 					errorMessage += "<" + loader.identification + ">\n";
 					errorMessage += "Its current state is: <" + childLoaderState + ">\n";
-					errorMessage += "And it belongs to a VostokLoader object with identification: <" + parent.identification + ">\n";
-					errorMessage += "Use method <LoadingService().exists()> to check if a VostokLoader object already exists for some Asset.\n";
-					errorMessage += "For further information please read the documentation section about the VostokLoader object.";
+					errorMessage += "And it belongs to a ILoader object with identification: <" + parent.identification + ">\n";
+					errorMessage += "Use method <LoadingService().exists()> to check if a ILoader object already exists for some Asset.\n";
+					errorMessage += "For further information please read the documentation section about the ILoader object.";
 					
 					throw new DuplicateLoaderError(loader.identification, errorMessage);
 				}
@@ -581,7 +576,7 @@ package org.vostokframework.loadingmanagement.services
 		private function createAssetLoadingMonitors(assetsAndLoaders:IListMap):IList
 		{
 			var asset:Asset;
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var assetLoadingMonitor:ILoadingMonitor;
 			var assetLoadingMonitors:IList = new ArrayList();
 			var loadingMonitorDispatcher:LoadingMonitorDispatcher;
@@ -605,14 +600,16 @@ package org.vostokframework.loadingmanagement.services
 			return assetLoadingMonitors;
 		}
 		
-		private function createQueueLoader(identification:VostokIdentification, priority:LoadPriority, concurrentConnections:int):VostokLoader
+		private function createQueueLoader(identification:VostokIdentification, priority:LoadPriority, concurrentConnections:int):ILoader
 		{
 			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
 			policy.localMaxConnections = concurrentConnections;
 			
-			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
-			var queueLoader:VostokLoader = new VostokLoader(identification, queueLoadingAlgorithm, priority);
+			//var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
+			var state:ILoaderState = new QueuedQueueLoader(new QueueLoadingStatus(), policy);
+			var queueLoader:ILoader = new VostokLoader(identification, state, priority);
+			
 			/*
 			try
 			{
@@ -622,7 +619,7 @@ package org.vostokframework.loadingmanagement.services
 			{
 				var errorMessage:String = "There is already a QueueLoader object stored with id:\n";
 				errorMessage += "<" + queueLoader.id + ">\n";
-				errorMessage += "Use the method <LoadingService().queueExists()> to check if a QueueLoader object already exists.\n";
+				errorMessage += "Use the method <LoadingService().exists()> to check if a QueueLoader object already exists.\n";
 				errorMessage += "For further information please read the documentation section about the QueueLoader object.";
 				
 				throw new DuplicateLoaderError(queueId, errorMessage);

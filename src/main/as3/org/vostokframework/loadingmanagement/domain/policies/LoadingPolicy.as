@@ -31,9 +31,9 @@ package org.vostokframework.loadingmanagement.domain.policies
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IQueue;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 
 	/**
 	 * description
@@ -74,11 +74,12 @@ package org.vostokframework.loadingmanagement.domain.policies
 			_loaderRepository = loaderRepository;
 		}
 		
-		public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):VostokLoader
+		//public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader
+		public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
 		{
 			//if (hasAvailableConnection(algorithm.openedConnections)) return queue.poll();
 			if (hasAvailableConnection(loadingLoaders.size())) return queue.poll();
-			//TODO:pensar sobre usar loadingLoaders.size(). porem precisaria implementar remoção dos loaders da lista no ElaborateLoadingPolicy.as qnd chamar stop()
+			
 			return null;
 		}
 		

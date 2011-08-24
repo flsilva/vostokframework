@@ -36,7 +36,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
 
 	/**
@@ -99,7 +99,7 @@ package org.vostokframework.loadingmanagement.services
 		public function isLoading_queuedQueueLoader_ReturnsFalse(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
+			var queueLoader:ILoader = new ILoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
 			
 			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
 			

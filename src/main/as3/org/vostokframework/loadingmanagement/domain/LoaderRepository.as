@@ -31,17 +31,13 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
-	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.lists.TypedList;
-	import org.as3collections.lists.UniqueList;
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
 
 	/**
 	 * description
@@ -50,12 +46,12 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public class LoaderRepository
 	{
-		private var _loaderMap:IMap;//key = VostokLoader().identification.toString() (String) | value = VostokLoader 
+		private var _loaderMap:IMap;//key = ILoader().identification.toString() (String) | value = ILoader 
 		
 		public function get openedConnections():int
 		{
 			var it:IIterator = _loaderMap.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var sum:int;
 			
 			while (it.hasNext())
@@ -72,7 +68,7 @@ package org.vostokframework.loadingmanagement.domain
 		 */
 		public function LoaderRepository()
 		{
-			_loaderMap = new TypedMap(new HashMap(), String, VostokLoader);
+			_loaderMap = new TypedMap(new HashMap(), String, ILoader);
 		}
 		
 		/**
@@ -80,19 +76,19 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param 	loader
 		 * @throws 	ArgumentError 	if the <code>loader</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateLoaderError 	if already exists an <code>VostokLoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
+		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateLoaderError 	if already exists an <code>ILoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
 		 * @return
 		 */
-		public function add(loader:VostokLoader): void
+		public function add(loader:ILoader): void
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
 			if (_loaderMap.containsKey(loader.identification.toString()))
 			{
-				var message:String = "There is already an VostokLoader object stored with identification:\n";
+				var message:String = "There is already an ILoader object stored with identification:\n";
 				message += "<" + loader.identification + ">\n";
-				message += "Use the method <LoaderRepository().exists()> to check if a VostokLoader object already exists.\n";
-				message += "For further information please read the documentation section about the VostokLoader object.";
+				message += "Use the method <LoaderRepository().exists()> to check if a ILoader object already exists.\n";
+				message += "For further information please read the documentation section about the ILoader object.";
 				
 				throw new DuplicateLoaderError(loader.identification, message);
 			}
@@ -131,7 +127,7 @@ package org.vostokframework.loadingmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(identification:VostokIdentification): VostokLoader
+		public function find(identification:VostokIdentification): ILoader
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -156,7 +152,7 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @return
  		 */
-		public function findAllLoading(): IList
+		/*public function findAllLoading(): IList
 		{
 			var list1:IList = new ArrayList(findByStatus(LoaderConnecting.INSTANCE).toArray());
 			var list2:IList = new ArrayList(findByStatus(LoaderLoading.INSTANCE).toArray());
@@ -166,19 +162,19 @@ package org.vostokframework.loadingmanagement.domain
 			unique.addAll(list2);
 			
 			return new ReadOnlyArrayList(unique.toArray());
-		}
+		}*/
 		
 		/**
 		 * description
 		 * 
 		 * @return
  		 */
-		public function findByStatus(status:LoaderState): IList
+		/*public function findByStatus(status:LoaderState): IList
 		{
 			if (!status) throw new ArgumentError("Argument <status> must not be null.");
 			
 			var it:IIterator = _loaderMap.getValues().iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			var list:IList = new ArrayList();
 			
 			while (it.hasNext())
@@ -191,12 +187,12 @@ package org.vostokframework.loadingmanagement.domain
 			}
 			
 			return new ReadOnlyArrayList(list.toArray());
-		}
+		}*/
 		
-		public function findParentLoader(childIdentification:VostokIdentification):VostokLoader
+		public function findParentLoader(childIdentification:VostokIdentification):ILoader
 		{
 			var it:IIterator = _loaderMap.getValues().iterator();
-			var parentLoader:VostokLoader;
+			var parentLoader:ILoader;
 			
 			while (it.hasNext())
 			{
@@ -244,9 +240,9 @@ package org.vostokframework.loadingmanagement.domain
 			if (loaders.isEmpty()) return false;
 			
 			var prevSize:int = size();
-			var $loaders:IList = new TypedList(loaders, VostokLoader);
+			var $loaders:IList = new TypedList(loaders, ILoader);
 			var it:IIterator = $loaders.iterator();
-			var loader:VostokLoader;
+			var loader:ILoader;
 			
 			while (it.hasNext())
 			{

@@ -38,8 +38,18 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.algorithms.NativeLoaderAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.FileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueueLoadingStatus;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedFileLoader;
+	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedQueueLoader;
+	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 
 	import flash.display.Loader;
 	import flash.net.URLRequest;
@@ -54,7 +64,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 */
 	public class VostokLoaderFactory
 	{
-		
+		//TODO:criar interface ILoaderFactory.as
 		/**
 		 * description
 		 * 
@@ -65,21 +75,37 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			
 		}
-		//TODO: renomear classe para VostokLoaderFactory
-		//TODO: renomear metodo para createLeaf
-		//TODO: criar metodo createComposite
-		public function create(asset:Asset):VostokLoader
+		
+		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader
+		{
+			if (!priority) priority = LoadPriority.MEDIUM;
+			
+			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalMaxConnections, localMaxConnections);
+			var state:ILoaderState = createCompositeLoaderState(policy);
+			
+			return instanciateComposite(identification, state, priority);
+		}
+		
+		public function createLeaf(asset:Asset):ILoader
 		{
 			var maxAttempts:int = asset.settings.policy.maxAttempts;
-			var algorithm:LoadingAlgorithm = createLoaderAlgorithm(asset.type, asset.src, asset.settings, maxAttempts);
+			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings, maxAttempts);
 			//TODO: depois q AssetIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
 			var identification:VostokIdentification = new VostokIdentification(asset.identification.id, asset.identification.locale);
-			return instanciate(identification, algorithm, asset.priority);
+			return instanciateLeaf(identification, state, asset.priority);
 			
 			//TODO:settings.policy.latencyTimeout
 		}
 		
-		protected function createLoaderAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):LoadingAlgorithm
+		protected function createCompositeLoaderState(policy:ILoadingPolicy):ILoaderState
+		{
+			var queueLoadingStatus:QueueLoadingStatus = new QueueLoadingStatus();
+			var state:ILoaderState = new QueuedQueueLoader(queueLoadingStatus, policy);
+			
+			return state;
+		}
+		
+		protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):ILoaderState
 		{
 			var killExternalCache:Boolean = settings.cache.killExternalCache;
 			var baseURL:String = settings.extra.baseURL;
@@ -92,7 +118,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				var request:URLRequest = new URLRequest(url);
 				var loaderContext:LoaderContext = createLoaderContext(settings.security);
 				
-				return new LoaderAlgorithm(loader, request, loaderContext, maxAttempts);
+				var algorithm:FileLoadingAlgorithm = new NativeLoaderAlgorithm(loader, request, loaderContext);
+				
+				return new QueuedFileLoader(algorithm, maxAttempts);
 			}
 			
 			//TODO:settings.extra.userDataContainer
@@ -113,9 +141,14 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			throw new IllegalStateError(errorMessage);
 		}
 		
-		protected function instanciate(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority):VostokLoader
+		protected function instanciateComposite(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
 		{
-			return new VostokLoader(identification, algorithm, priority);
+			return new VostokLoader(identification, state, priority);
+		}
+		
+		protected function instanciateLeaf(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
+		{
+			return new VostokLoader(identification, state, priority);
 		}
 		
 		protected function parseUrl(url:String, killExternalCache:Boolean, baseURL:String):String
@@ -137,6 +170,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//if (ignoreLocalSecurityDomain && isLocal) securityDomain = null;//TODO:implement it
 			
 			return new LoaderContext(checkPolicyFile, applicationDomain, securityDomain);
+		}
+		
+		protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int, localMaxConnections:int):ILoadingPolicy
+		{
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository);
+			policy.globalMaxConnections = globalMaxConnections;
+			policy.localMaxConnections = localMaxConnections;
+			
+			return policy;
 		}
 		
 		protected function getApplicationDomain(setting:ApplicationDomainSetting):ApplicationDomain

@@ -44,7 +44,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
@@ -71,10 +71,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public var fakeAlgorithm:LoadingAlgorithm;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader1:VostokLoader;
+		public var _fakeLoader1:ILoader;
 		
 		[Mock(inject="false")]
-		public var _fakeLoader2:VostokLoader;
+		public var _fakeLoader2:ILoader;
 		
 		public var algorithm:LoadingAlgorithm;
 		
@@ -121,8 +121,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
 			
-			_fakeLoader1 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
-			_fakeLoader2 = nice(VostokLoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
+			_fakeLoader1 = nice(ILoader, null, [new VostokIdentification("fake-loader-1", LOADER_LOCALE), fakeAlgorithm, LoadPriority.MEDIUM]);
+			_fakeLoader2 = nice(ILoader, null, [new VostokIdentification("fake-loader-2", LOADER_LOCALE), fakeAlgorithm, LoadPriority.LOW]);
 			
 			stub(_fakeLoader1).asEventDispatcher();
 			stub(_fakeLoader2).asEventDispatcher();

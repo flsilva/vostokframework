@@ -67,9 +67,9 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function removeAssetData_loadedAsset_callsGetAssetData_ReturnsNull(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			StubVostokLoaderFactory.successBehaviorSync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			

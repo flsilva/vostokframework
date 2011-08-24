@@ -33,43 +33,26 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.lists.TypedList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
-	import org.as3coreaddendum.system.IDisposable;
-	import org.as3coreaddendum.system.IEquatable;
-	import org.as3coreaddendum.system.IIndexable;
-	import org.as3coreaddendum.system.IPriority;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderComplete;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderConnecting;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderFailed;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderLoading;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.LoaderQueued;
 
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
-	import flash.events.ProgressEvent;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoader extends EventDispatcher implements IEquatable, IDisposable, IPriority, IIndexable
+	public class VostokLoader extends EventDispatcher implements ILoaderStateTransition
 	{
 		/**
 		 * @private
 		 */
-		private var _algorithm:LoadingAlgorithm;
 		private var _disposed:Boolean;
 		private var _identification:VostokIdentification;
 		private var _index:int;
 		private var _priority:LoadPriority;
-		private var _state:LoaderState;
+		private var _state:ILoaderState;
 		private var _stateHistory:IList;
 		
 		/**
@@ -105,7 +88,7 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get state(): LoaderState { return _state; }
+		public function get state(): ILoaderState { return _state; }
 		
 		/**
 		 * description
@@ -119,41 +102,25 @@ package org.vostokframework.loadingmanagement.domain
 		public function get openedConnections():int
 		{
 			validateDisposal();
-			return _algorithm.openedConnections;
+			return _state.openedConnections;
 		}
 		
 		/**
 		 * description
 		 * 
 		 */
-		public function VostokLoader(identification:VostokIdentification, algorithm:LoadingAlgorithm, priority:LoadPriority)
+		public function VostokLoader(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			if (!algorithm) throw new ArgumentError("Argument <algorithm> must not be null.");
+			if (!state) throw new ArgumentError("Argument <state> must not be null.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			
 			_identification = identification;
-			_algorithm = algorithm;
+			_state = state;
 			_priority = priority;
+			_stateHistory = new TypedList(new ArrayList(), ILoaderState);
 			
-			_stateHistory = new TypedList(new ArrayList(), LoaderState);
-			
-			addAlgorithmListeners();
-			setState(LoaderQueued.INSTANCE);
-		}
-		
-		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
-		{
-			validateDisposal();
-			
-			if (type == ProgressEvent.PROGRESS)
-			{
-				_algorithm.addEventListener(type, listener, useCapture, priority, useWeakReference);
-			}
-			else
-			{
-				super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-			}
+			_state.setLoader(this);
 		}
 		
 		/**
@@ -161,10 +128,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loader
 		 */
-		public function addLoader(loader:VostokLoader): void
+		public function addLoader(loader:ILoader): void
 		{
 			validateDisposal();
-			_state.addLoader(loader, _algorithm);
+			_state.addLoader(loader);
 		}
 		
 		/**
@@ -175,7 +142,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function addLoaders(loaders:IList): void
 		{
 			validateDisposal();
-			_state.addLoaders(loaders, _algorithm);
+			_state.addLoaders(loaders);
 		}
 		
 		/**
@@ -185,7 +152,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function cancel(): void
 		{
 			validateDisposal();
-			_state.cancel(this, _algorithm);
+			_state.cancel();
 		}
 		
 		/**
@@ -196,7 +163,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function cancelLoader(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.cancelLoader(identification, _algorithm);
+			_state.cancelLoader(identification);
 		}
 		
 		/**
@@ -207,21 +174,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function containsLoader(identification:VostokIdentification): Boolean
 		{
 			validateDisposal();
-			return _algorithm.containsLoader(identification);
-		}
-		
-		override public function dispatchEvent(event : Event) : Boolean
-		{
-			validateDisposal();
-			
-			if (event.type == ProgressEvent.PROGRESS)
-			{
-				return _algorithm.dispatchEvent(event);
-			}
-			else
-			{
-				return super.dispatchEvent(event);
-			}
+			return _state.containsLoader(identification);
 		}
 		
 		/**
@@ -232,14 +185,11 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			if (_disposed) return;
 			
-			removeAlgorithmListeners();
-			
+			_state.dispose();
 			_stateHistory.clear();
-			_algorithm.dispose();
 			
 			_stateHistory = null;
 			_state = null;
-			_algorithm = null;
 			
 			_disposed = true;
 		}
@@ -249,9 +199,9 @@ package org.vostokframework.loadingmanagement.domain
 			validateDisposal();
 			
 			if (this == other) return true;
-			if (!(other is VostokLoader)) return false;
+			if (!(other is ILoader)) return false;
 			
-			var otherLoader:VostokLoader = other as VostokLoader;
+			var otherLoader:ILoader = other as ILoader;
 			return _identification.equals(otherLoader.identification);
 		}
 		
@@ -260,10 +210,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function getLoader(identification:VostokIdentification): VostokLoader
+		public function getLoader(identification:VostokIdentification): ILoader
 		{
 			validateDisposal();
-			return _algorithm.getLoader(identification);
+			return _state.getLoader(identification);
 		}
 		
 		/**
@@ -271,10 +221,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function getLoaderState(identification:VostokIdentification): LoaderState
+		public function getLoaderState(identification:VostokIdentification): ILoaderState
 		{
 			validateDisposal();
-			return _algorithm.getLoaderState(identification);
+			return _state.getLoaderState(identification);
 		}
 		
 		/**
@@ -282,38 +232,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param identification
 		 */
-		public function getParent(identification:VostokIdentification): VostokLoader
+		public function getParent(identification:VostokIdentification): ILoader
 		{
 			validateDisposal();
-			return _algorithm.getParent(this, identification);
-		}
-		
-		override public function hasEventListener(type : String) : Boolean
-		{
-			validateDisposal();
-			
-			if (type == ProgressEvent.PROGRESS)
-			{
-				return _algorithm.hasEventListener(type);
-			}
-			else
-			{
-				return super.hasEventListener(type);
-			}
-		}
-		
-		override public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
-		{
-			validateDisposal();
-			
-			if (type == ProgressEvent.PROGRESS)
-			{
-				_algorithm.removeEventListener(type, listener, useCapture);
-			}
-			else
-			{
-				super.removeEventListener(type, listener, useCapture);
-			}
+			return _state.getParent(identification);
 		}
 		
 		/**
@@ -323,7 +245,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function load(): void
 		{
 			validateDisposal();
-			_state.load(this, _algorithm);
+			_state.load();
 		}
 
 		/**
@@ -334,7 +256,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function removeLoader(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.removeLoader(identification, _algorithm);
+			_state.removeLoader(identification);
 		}
 		
 		/**
@@ -345,7 +267,18 @@ package org.vostokframework.loadingmanagement.domain
 		public function resumeLoader(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.resumeLoader(identification, _algorithm);
+			_state.resumeLoader(identification);
+		}
+		
+		/**
+		 * @private
+		 */
+		public function setState(state:ILoaderState):void
+		{
+			validateDisposal();
+			
+			_state = state;
+			_stateHistory.add(_state);
 		}
 
 		/**
@@ -354,7 +287,7 @@ package org.vostokframework.loadingmanagement.domain
 		public function stop(): void
 		{
 			validateDisposal();
-			_state.stop(this, _algorithm);
+			_state.stop();
 		}
 		
 		/**
@@ -365,104 +298,12 @@ package org.vostokframework.loadingmanagement.domain
 		public function stopLoader(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.stopLoader(identification, _algorithm);
+			_state.stopLoader(identification);
 		}
 		
 		override public function toString():String
 		{
-			return "[VostokLoader " + identification + "]";
-		}
-		
-		override public function willTrigger(type : String) : Boolean
-		{
-			validateDisposal();
-			
-			if (type == ProgressEvent.PROGRESS)
-			{
-				return _algorithm.willTrigger(type);
-			}
-			else
-			{
-				return super.willTrigger(type);
-			}
-		}
-		
-		/**
-		 * @private
-		 */
-		internal function setState(state:LoaderState):void
-		{
-			validateDisposal();
-			
-			_state = state;
-			_stateHistory.add(_state);
-		}
-		
-		private function addAlgorithmListeners():void
-		{
-			validateDisposal();
-			
-			_algorithm.addEventListener(LoadingAlgorithmEvent.COMPLETE, completeHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmEvent.CONNECTING, connectingHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmEvent.INIT, initHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
-			_algorithm.addEventListener(LoadingAlgorithmErrorEvent.FAILED, failedHandler, false, 0, true);
-		}
-		
-		private function completeHandler(event:LoadingAlgorithmEvent):void
-		{
-			validateDisposal();
-			setState(LoaderComplete.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, event.data));
-		}
-		
-		private function connectingHandler(event:LoadingAlgorithmEvent):void
-		{
-			validateDisposal();
-			setState(LoaderConnecting.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
-		}
-		
-		private function failedHandler(event:LoadingAlgorithmErrorEvent):void
-		{
-			setState(LoaderFailed.INSTANCE);
-			dispatchEvent(new LoaderErrorEvent(LoaderErrorEvent.FAILED, event.errors));
-		}
-		
-		private function httpStatusHandler(event:LoadingAlgorithmEvent):void
-		{
-			validateDisposal();
-			
-			var $event:LoaderEvent = new LoaderEvent(LoaderEvent.HTTP_STATUS);
-			$event.httpStatus = event.httpStatus;
-			
-			dispatchEvent($event);
-		}
-		
-		private function initHandler(event:LoadingAlgorithmEvent):void
-		{
-			validateDisposal();
-			dispatchEvent(new LoaderEvent(LoaderEvent.INIT, event.data));
-		}
-		
-		private function openHandler(event:LoadingAlgorithmEvent):void
-		{
-			validateDisposal();
-			setState(LoaderLoading.INSTANCE);
-			dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, event.data, event.latency));
-		}
-		
-		private function removeAlgorithmListeners():void
-		{
-			validateDisposal();
-			
-			_algorithm.removeEventListener(LoadingAlgorithmEvent.COMPLETE, completeHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmEvent.CONNECTING, connectingHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmEvent.OPEN, openHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmEvent.INIT, initHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmEvent.HTTP_STATUS, httpStatusHandler, false);
-			_algorithm.removeEventListener(LoadingAlgorithmErrorEvent.FAILED, failedHandler, false);
+			return "[ILoader " + identification + "]";
 		}
 		
 		/**

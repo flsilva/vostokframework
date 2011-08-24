@@ -44,7 +44,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoadError;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
@@ -61,7 +61,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public var mocks:MockolateRule = new MockolateRule();
 
 		[Mock(inject="false")]
-		public var fakeLoader:VostokLoader;
+		public var fakeLoader:ILoader;
 		
 		[Mock(inject="false")]
 		public var mockDispatcher:LoadingMonitorDispatcher;
@@ -106,9 +106,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return nice(LoadingMonitorDispatcher);
 		}
 		
-		protected function getFakeLoader(id:String):VostokLoader
+		protected function getFakeLoader(id:String):ILoader
 		{
-			var loader:VostokLoader = nice(VostokLoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), new StubLoadingAlgorithm(), LoadPriority.MEDIUM]);
+			var loader:ILoader = nice(ILoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), new StubLoadingAlgorithm(), LoadPriority.MEDIUM]);
 			stub(loader).asEventDispatcher();
 			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
 			
@@ -123,7 +123,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			return fakeMonitor;
 		}
 		
-		protected function getMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
+		protected function getMonitor(loader:ILoader, dispatcher:LoadingMonitorDispatcher):ILoadingMonitor
 		{
 			return new LoadingMonitor(loader, dispatcher);
 		}

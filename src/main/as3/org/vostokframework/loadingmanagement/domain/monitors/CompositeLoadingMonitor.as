@@ -36,7 +36,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoadingMonitorError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
 
@@ -65,7 +65,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * 
 		 * @param loader
 		 */
-		public function CompositeLoadingMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher)
+		public function CompositeLoadingMonitor(loader:ILoader, dispatcher:LoadingMonitorDispatcher)
 		{
 			super(loader, dispatcher);
 			
@@ -98,7 +98,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			validateDisposal();
 			
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
-			if (contains(monitor.loader.identification)) throw new DuplicateLoadingMonitorError("There is already an ILoadingMonitor object stored for a VostokLoader object with identification:\n<" + monitor.loader.identification + ">");
+			if (contains(monitor.loader.identification)) throw new DuplicateLoadingMonitorError("There is already an ILoadingMonitor object stored for a ILoader object with identification:\n<" + monitor.loader.identification + ">");
 			
 			_monitors.put(monitor.loader.identification.toString(), monitor);
 			addListenersOnMonitors();

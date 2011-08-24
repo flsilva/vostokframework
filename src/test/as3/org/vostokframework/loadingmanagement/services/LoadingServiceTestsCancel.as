@@ -35,6 +35,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
@@ -119,7 +120,7 @@ package org.vostokframework.loadingmanagement.services
 		public function cancel_queuedQueueLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(QUEUE1_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:VostokLoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
+			var queueLoader:ILoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
 			
 			var monitor:ILoadingMonitor = new CompositeLoadingMonitor(queueLoader, new QueueLoadingMonitorDispatcher(identification.id, identification.locale));
 			

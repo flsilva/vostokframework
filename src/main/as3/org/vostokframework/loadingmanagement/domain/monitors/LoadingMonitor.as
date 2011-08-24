@@ -34,7 +34,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
@@ -53,10 +53,10 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 */
 		private var _dispatcher:LoadingMonitorDispatcher;
 		private var _disposed:Boolean;
-		private var _loader:VostokLoader;
+		private var _loader:ILoader;
 		private var _monitoring:LoadingMonitoring;
 		
-		public function get loader():VostokLoader { return _loader; }
+		public function get loader():ILoader { return _loader; }
 		
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
 		
@@ -66,7 +66,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		 * 
 		 * @param loader
 		 */
-		public function LoadingMonitor(loader:VostokLoader, dispatcher:LoadingMonitorDispatcher)
+		public function LoadingMonitor(loader:ILoader, dispatcher:LoadingMonitorDispatcher)
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			
