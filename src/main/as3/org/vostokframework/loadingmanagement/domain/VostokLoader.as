@@ -30,7 +30,6 @@ package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
-	import org.as3collections.lists.ReadOnlyArrayList;
 	import org.as3collections.lists.TypedList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3utils.ReflectionUtil;
@@ -58,20 +57,56 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get identification(): VostokIdentification { return _identification; }
+		public function get identification(): VostokIdentification
+		{
+			validateDisposal();
+			return _identification;
+		}
 		
 		/**
 		 * description
 		 */
-		public function get index(): int { return _index; }
-		public function set index(value:int): void { _index = value; }
+		public function get index(): int
+		{
+			validateDisposal();
+			return _index;
+		}
+		public function set index(value:int): void
+		{
+			validateDisposal();
+			_index = value;
+		}
+		
+		public function get isLoading():Boolean
+		{
+			validateDisposal();
+			return _state.isLoading;
+		}
+		
+		public function get isQueued():Boolean
+		{
+			validateDisposal();
+			return _state.isQueued;
+		}
+		
+		public function get isStopped():Boolean
+		{
+			validateDisposal();
+			return _state.isStopped;
+		}
 		
 		/**
 		 * description
 		 */
-		public function get priority(): int { return _priority.ordinal; }
+		public function get priority(): int
+		{
+			validateDisposal();
+			return _priority.ordinal;
+		}
 		public function set priority(value:int): void
 		{
+			validateDisposal();
+			
 			try
 			{
 				_priority = LoadPriority.getByOrdinal(value);
@@ -88,16 +123,16 @@ package org.vostokframework.loadingmanagement.domain
 		/**
 		 * description
 		 */
-		public function get state(): ILoaderState { return _state; }
+		//public function get state(): ILoaderState { return _state; }
 		
 		/**
 		 * description
 		 */
-		public function get stateHistory(): IList
+		/*public function get stateHistory(): IList
 		{
 			validateDisposal();
 			return new ReadOnlyArrayList(_stateHistory.toArray());
-		}
+		}*/
 		
 		public function get openedConnections():int
 		{
@@ -128,10 +163,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loader
 		 */
-		public function addLoader(loader:ILoader): void
+		public function addChild(child:ILoader): void
 		{
 			validateDisposal();
-			_state.addLoader(loader);
+			_state.addChild(child);
 		}
 		
 		/**
@@ -139,10 +174,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loader
 		 */
-		public function addLoaders(loaders:IList): void
+		public function addChildren(children:IList): void
 		{
 			validateDisposal();
-			_state.addLoaders(loaders);
+			_state.addChildren(children);
 		}
 		
 		/**
@@ -160,10 +195,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function cancelLoader(identification:VostokIdentification): void
+		public function cancelChild(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.cancelLoader(identification);
+			_state.cancelChild(identification);
 		}
 		
 		/**
@@ -171,10 +206,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param identification
 		 */
-		public function containsLoader(identification:VostokIdentification): Boolean
+		public function containsChild(identification:VostokIdentification): Boolean
 		{
 			validateDisposal();
-			return _state.containsLoader(identification);
+			return _state.containsChild(identification);
 		}
 		
 		/**
@@ -210,10 +245,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function getLoader(identification:VostokIdentification): ILoader
+		public function getChild(identification:VostokIdentification): ILoader
 		{
 			validateDisposal();
-			return _state.getLoader(identification);
+			return _state.getChild(identification);
 		}
 		
 		/**
@@ -221,11 +256,11 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function getLoaderState(identification:VostokIdentification): ILoaderState
+		/*public function getLoaderState(identification:VostokIdentification): ILoaderState
 		{
 			validateDisposal();
 			return _state.getLoaderState(identification);
-		}
+		}*/
 		
 		/**
 		 * description
@@ -253,10 +288,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function removeLoader(identification:VostokIdentification): void
+		public function removeChild(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.removeLoader(identification);
+			_state.removeChild(identification);
 		}
 		
 		/**
@@ -264,10 +299,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function resumeLoader(identification:VostokIdentification): void
+		public function resumeChild(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.resumeLoader(identification);
+			_state.resumeChild(identification);
 		}
 		
 		/**
@@ -295,10 +330,10 @@ package org.vostokframework.loadingmanagement.domain
 		 * 
 		 * @param loaderId
 		 */
-		public function stopLoader(identification:VostokIdentification): void
+		public function stopChild(identification:VostokIdentification): void
 		{
 			validateDisposal();
-			_state.stopLoader(identification);
+			_state.stopChild(identification);
 		}
 		
 		override public function toString():String

@@ -39,8 +39,6 @@ package
 	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
 	import org.vostokframework.assetmanagement.services.AssetServiceTests;
 	import org.vostokframework.loadingmanagement.domain.VostokLoaderTests;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoaderAlgorithmTests;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithmTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTests;
@@ -48,6 +46,45 @@ package
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsContainsChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTestsContainsChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsAddChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsAddChildren;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsCancelChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsContainsChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsInstanciation;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsLoad;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsRemoveChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsResumeChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsStop;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsStopChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsAddChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsAddChildren;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsCancelChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsContainsChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsLoad;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsRemoveChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsResumeChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsStop;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoaderTestsStopChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsAddChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsAddChildren;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsCancelChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsContainsChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsLoad;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsRemoveChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsResumeChild;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsCancel;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsExists;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetAssetData;
@@ -84,11 +121,10 @@ package
 		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
 		//org.vostokframework.loadingmanagement.domain
-		public var VostokLoaderTests:VostokLoaderTests;
+		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.domain.loaders
-		public var loaderAlgorithmTests:LoaderAlgorithmTests;
-		public var queueLoadingAlgorithmTests:QueueLoadingAlgorithmTests;
+		
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
 		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
@@ -100,6 +136,51 @@ package
 		public var loadingPolicyTests:LoadingPolicyTests;
 		public var elaborateLoadingPolicyTests:ElaborateLoadingPolicyTests;
 		public var elaborateLoadingPolicyTestsHighestLowest:ElaborateLoadingPolicyTestsHighestLowest;
+		
+		//org.vostokframework.loadingmanagement.domain.states.queueloader
+		public var canceledQueueLoaderTests:CanceledQueueLoaderTests;
+		public var canceledQueueLoaderTestsContainsChild:CanceledQueueLoaderTestsContainsChild;
+		public var canceledQueueLoaderTestsGetChild:CanceledQueueLoaderTestsGetChild;
+		
+		public var completeQueueLoaderTests:CompleteQueueLoaderTests;
+		public var completeQueueLoaderTestsContainsChild:CompleteQueueLoaderTestsContainsChild;
+		public var completeQueueLoaderTestsGetChild:CompleteQueueLoaderTestsGetChild;
+		
+		public var loadingQueueLoaderTestsAddChild:LoadingQueueLoaderTestsAddChild;
+		public var loadingQueueLoaderTestsAddChildren:LoadingQueueLoaderTestsAddChildren;
+		public var loadingQueueLoaderTestsCancel:LoadingQueueLoaderTestsCancel;
+		public var loadingQueueLoaderTestsCancelChild:LoadingQueueLoaderTestsCancelChild;
+		public var loadingQueueLoaderTestsContainsChild:LoadingQueueLoaderTestsContainsChild;
+		public var loadingQueueLoaderTestsGetChild:LoadingQueueLoaderTestsGetChild;
+		public var loadingQueueLoaderTestsInstanciation:LoadingQueueLoaderTestsInstanciation;
+		public var loadingQueueLoaderTestsLoad:LoadingQueueLoaderTestsLoad;
+		public var loadingQueueLoaderTestsRemoveChild:LoadingQueueLoaderTestsRemoveChild;
+		public var loadingQueueLoaderTestsResumeChild:LoadingQueueLoaderTestsResumeChild;
+		public var loadingQueueLoaderTestsStop:LoadingQueueLoaderTestsStop;
+		public var loadingQueueLoaderTestsStopChild:LoadingQueueLoaderTestsStopChild;
+		
+		public var queuedQueueLoaderTestsAddChild:QueuedQueueLoaderTestsAddChild;
+		public var queuedQueueLoaderTestsAddChildren:QueuedQueueLoaderTestsAddChildren;
+		public var queuedQueueLoaderTestsCancel:QueuedQueueLoaderTestsCancel;
+		public var queuedQueueLoaderTestsCancelChild:QueuedQueueLoaderTestsCancelChild;
+		public var queuedQueueLoaderTestsContainsChild:QueuedQueueLoaderTestsContainsChild;
+		public var queuedQueueLoaderTestsGetChild:QueuedQueueLoaderTestsGetChild;
+		public var queuedQueueLoaderTestsLoad:QueuedQueueLoaderTestsLoad;
+		public var queuedQueueLoaderTestsRemoveChild:QueuedQueueLoaderTestsRemoveChild;
+		public var queuedQueueLoaderTestsResumeChild:QueuedQueueLoaderTestsResumeChild;
+		public var queuedQueueLoaderTestsStop:QueuedQueueLoaderTestsStop;
+		public var queuedQueueLoaderTestsStopChild:QueuedQueueLoaderTestsStopChild;
+		
+		public var stoppedQueueLoaderTests:StoppedQueueLoaderTests;
+		public var stoppedQueueLoaderTestsAddChild:StoppedQueueLoaderTestsAddChild;
+		public var stoppedQueueLoaderTestsAddChildren:StoppedQueueLoaderTestsAddChildren;
+		public var stoppedQueueLoaderTestsCancel:StoppedQueueLoaderTestsCancel;
+		public var stoppedQueueLoaderTestsCancelChild:StoppedQueueLoaderTestsCancelChild;
+		public var stoppedQueueLoaderTestsContainsChild:StoppedQueueLoaderTestsContainsChild;
+		public var stoppedQueueLoaderTestsGetChild:StoppedQueueLoaderTestsGetChild;
+		public var stoppedQueueLoaderTestsLoad:StoppedQueueLoaderTestsLoad;
+		public var stoppedQueueLoaderTestsRemoveChild:StoppedQueueLoaderTestsRemoveChild;
+		public var stoppedQueueLoaderTestsResumeChild:StoppedQueueLoaderTestsResumeChild;
 		
 		//org.vostokframework.loadingmanagement.services
 		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;

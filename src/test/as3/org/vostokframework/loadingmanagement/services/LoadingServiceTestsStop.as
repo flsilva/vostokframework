@@ -67,19 +67,20 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function stop_loadingQueueLoader_ReturnsTrue(): void
+		public function stop_loadingQueueLoader_callIsStopped_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);
+			service.stop(QUEUE1_ID);
 			
-			var stopped:Boolean = service.stop(QUEUE1_ID);
+			var stopped:Boolean = service.isStopped(QUEUE1_ID);
 			Assert.assertTrue(stopped);
 		}
 		
 		[Test]
-		public function stop_queuedQueueLoader_ReturnsTrue(): void
+		public function stop_queuedQueueLoader_callIsStopped_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -96,53 +97,30 @@ package org.vostokframework.loadingmanagement.services
 			list3.add(asset4);
 			
 			service.load(QUEUE3_ID, list3, null, 1);
+			service.stop(QUEUE3_ID);
 			
-			var stopped:Boolean = service.stop(QUEUE3_ID);
+			var stopped:Boolean = service.isStopped(QUEUE3_ID);
 			Assert.assertTrue(stopped);
 		}
 		
 		[Test]
-		public function stop_stoppedQueueLoader_ReturnsFalse(): void
+		public function stop_callTwiceForQueueLoader_callIsStopped_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);
 			service.stop(QUEUE1_ID);
+			service.stop(QUEUE1_ID);
 			
-			var stopped:Boolean = service.stop(QUEUE1_ID);
-			Assert.assertFalse(stopped);
+			var stopped:Boolean = service.isStopped(QUEUE1_ID);
+			Assert.assertTrue(stopped);
 		}
 		
 		//ASSET testing
 		
 		[Test]
-		public function stop_loadingAssetLoader_ReturnsTrue(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			
-			service.load(QUEUE1_ID, list);
-			
-			var stopped:Boolean = service.stop(asset1.identification.id, asset1.identification.locale);
-			Assert.assertTrue(stopped);
-		}
-		
-		[Test]
-		public function stop_queuedAssetLoader_ReturnsTrue(): void
-		{
-			var list:IList = new ArrayList();
-			list.add(asset1);
-			list.add(asset2);
-			
-			service.load(QUEUE1_ID, list, null, 1);
-			
-			var stopped:Boolean = service.stop(asset2.identification.id, asset2.identification.locale);
-			Assert.assertTrue(stopped);
-		}
-		
-		[Test]
-		public function stop_stoppedAssetLoader_ReturnsFalse(): void
+		public function stop_loadingAssetLoader_callIsStopped_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -150,8 +128,36 @@ package org.vostokframework.loadingmanagement.services
 			service.load(QUEUE1_ID, list);
 			service.stop(asset1.identification.id, asset1.identification.locale);
 			
-			var stopped:Boolean = service.stop(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(stopped);
+			var stopped:Boolean = service.isStopped(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_queuedAssetLoader_callIsStopped_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			list.add(asset2);
+			
+			service.load(QUEUE1_ID, list, null, 1);
+			service.stop(asset2.identification.id, asset2.identification.locale);
+			
+			var stopped:Boolean = service.isStopped(asset2.identification.id, asset2.identification.locale);
+			Assert.assertTrue(stopped);
+		}
+		
+		[Test]
+		public function stop_callTwiceForAssetLoader_callIsStopped_ReturnsTrue(): void
+		{
+			var list:IList = new ArrayList();
+			list.add(asset1);
+			
+			service.load(QUEUE1_ID, list);
+			service.stop(asset1.identification.id, asset1.identification.locale);
+			service.stop(asset1.identification.id, asset1.identification.locale);
+			
+			var stopped:Boolean = service.isStopped(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(stopped);
 		}
 		
 	}

@@ -32,8 +32,12 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
+
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * @author Flávio Silva
@@ -85,12 +89,12 @@ package org.vostokframework.loadingmanagement.services
 			service.getAssetData(asset1.identification.id, asset1.identification.locale);
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function getAssetData_loadedAndCachedAsset_ReturnsValidObject(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			
@@ -99,8 +103,21 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE_ID, list);
 			
-			var data:* = service.getAssetData(asset1.identification.id, asset1.identification.locale);
-			Assert.assertNotNull(data);
+			//var data:* = service.getAssetData(asset1.identification.id, asset1.identification.locale);
+			//Assert.assertNotNull(data);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var data:* = service.getAssetData(asset1.identification.id, asset1.identification.locale);
+					Assert.assertNotNull(data);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
 	}

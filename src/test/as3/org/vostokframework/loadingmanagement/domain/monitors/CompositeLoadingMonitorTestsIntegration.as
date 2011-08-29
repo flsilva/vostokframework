@@ -38,13 +38,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
 
 	import flash.events.Event;
 
@@ -100,7 +98,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		protected function getFakeLoader(id:String):ILoader
 		{
-			var loader:ILoader = nice(ILoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), new StubLoadingAlgorithm(), LoadPriority.MEDIUM, 3]);
+			var loader:ILoader = nice(ILoader);
 			stub(loader).asEventDispatcher();
 			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
 			
@@ -123,8 +121,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			queueMonitor = new CompositeLoadingMonitor(queueLoader, queueDispatcher);
 			assetMonitor = new LoadingMonitor(assetLoader, assetDispatcher);
 			
-			queueMonitor.addMonitor(assetMonitor);
-			globalMonitor.addMonitor(queueMonitor);
+			queueMonitor.addChild(assetMonitor);
+			globalMonitor.addChild(queueMonitor);
 			
 			return globalMonitor;
 		}

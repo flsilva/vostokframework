@@ -36,14 +36,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 
 	import flash.events.Event;
-	import flash.events.EventDispatcher;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingMonitorWrapper extends EventDispatcher  implements ILoadingMonitor
+	public class LoadingMonitorWrapper implements ILoadingMonitor
 	{
 		
 		private var _listeners:IList;
@@ -67,7 +66,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			if (monitor) changeMonitor(monitor);
 		}
 		
-		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
+		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
 		{
 			var eventListener:EventListener = new EventListener(type, listener, useCapture, priority, useWeakReference);
 			_listeners.add(eventListener);
@@ -75,14 +74,14 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_monitor.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		public function addMonitor(monitor:ILoadingMonitor):void
+		public function addChild(child:ILoadingMonitor):void
 		{
-			_monitor.addMonitor(monitor);
+			_monitor.addChild(child);
 		}
 		
-		public function addMonitors(monitors:IList):void
+		public function addChildren(children:IList):void
 		{
-			_monitor.addMonitors(monitors);
+			_monitor.addChildren(children);
 		}
 		
 		public function changeMonitor(monitor:ILoadingMonitor):void
@@ -96,12 +95,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			addListenersOnMonitor();
 		}
 		
-		public function contains(identification:VostokIdentification):Boolean
+		public function containsChild(identification:VostokIdentification):Boolean
 		{
-			return _monitor.contains(identification);
+			return _monitor.containsChild(identification);
 		}
 		
-		override public function dispatchEvent(event: Event) : Boolean
+		public function dispatchEvent(event: Event) : Boolean
 		{
 			return _monitor.dispatchEvent(event);
 		}
@@ -118,17 +117,17 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_listeners = null;
 		}
 		
-		public function getMonitor(identification:VostokIdentification):ILoadingMonitor
+		public function getChild(identification:VostokIdentification):ILoadingMonitor
 		{
-			return _monitor.getMonitor(identification);
+			return _monitor.getChild(identification);
 		}
 		
-		override public function hasEventListener(type : String) : Boolean
+		public function hasEventListener(type : String) : Boolean
 		{
 			return _monitor.hasEventListener(type);
 		}
 		
-		override public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
+		public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
 		{
 			_monitor.removeEventListener(type, listener, useCapture);
 			
@@ -136,12 +135,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_listeners.remove(eventListener);
 		}
 		
-		public function removeMonitor(identification:VostokIdentification):void
+		public function removeChild(identification:VostokIdentification):void
 		{
-			_monitor.removeMonitor(identification);
+			_monitor.removeChild(identification);
 		}
 		
-		override public function willTrigger(type : String) : Boolean
+		public function willTrigger(type : String) : Boolean
 		{
 			return _monitor.willTrigger(type);
 		}

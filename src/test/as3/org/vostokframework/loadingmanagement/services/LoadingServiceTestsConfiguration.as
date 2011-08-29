@@ -41,13 +41,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.QueueLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
-	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	/**
@@ -79,12 +74,7 @@ package org.vostokframework.loadingmanagement.services
 			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.openBehaviorSync = false;
-			stubVostokLoaderFactory.successBehaviorAsync = false;
-			stubVostokLoaderFactory.successBehaviorSync = false;
-			
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(new StubVostokLoaderFactory());
 			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
@@ -92,13 +82,15 @@ package org.vostokframework.loadingmanagement.services
 			LoadingManagementContext.getInstance().setMaxConcurrentConnections(4);
 			LoadingManagementContext.getInstance().setMaxConcurrentQueues(2);
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
+			/*var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
 			policy.localMaxConnections = LoadingManagementContext.getInstance().maxConcurrentQueues;
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
+			var globalQueueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);*/
+			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
+			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, LoadingManagementContext.getInstance().loaderRepository, LoadPriority.MEDIUM, LoadingManagementContext.getInstance().maxConcurrentConnections, LoadingManagementContext.getInstance().maxConcurrentQueues);//TODO:refactor this line
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();
@@ -114,6 +106,7 @@ package org.vostokframework.loadingmanagement.services
 			AssetManagementContext.getInstance().assetRepository.add(asset1);
 			AssetManagementContext.getInstance().assetRepository.add(asset2);
 			AssetManagementContext.getInstance().assetRepository.add(asset3);
+			AssetManagementContext.getInstance().assetRepository.add(asset4);
 		}
 		
 		[After]

@@ -32,12 +32,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.VostokFramework;
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
 
 	/**
 	 * @author Flávio Silva
@@ -45,7 +39,9 @@ package org.vostokframework.loadingmanagement.services
 	[TestCase]
 	public class LoadingServiceTestsIsLoading extends LoadingServiceTestsConfiguration
 	{
-		private static const QUEUE_ID:String = "queue-1";
+		private static const QUEUE1_ID:String = "queue-1";
+		private static const QUEUE2_ID:String = "queue-2";
+		private static const QUEUE3_ID:String = "queue-3";
 		
 		public function LoadingServiceTestsIsLoading()
 		{
@@ -67,7 +63,7 @@ package org.vostokframework.loadingmanagement.services
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
 		public function isLoading_notExistingLoader_ThrowsError(): void
 		{
-			service.isLoading(QUEUE_ID);
+			service.isLoading(QUEUE1_ID);
 		}
 		
 		[Test]
@@ -76,9 +72,9 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
+			service.load(QUEUE1_ID, list);
 			
-			var isLoading:Boolean = service.isLoading(QUEUE_ID);
+			var isLoading:Boolean = service.isLoading(QUEUE1_ID);
 			Assert.assertTrue(isLoading);
 		}
 		
@@ -88,22 +84,29 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
-			service.stop(QUEUE_ID);
+			service.load(QUEUE1_ID, list);
+			service.stop(QUEUE1_ID);
 			
-			var isLoading:Boolean = service.isLoading(QUEUE_ID);
+			var isLoading:Boolean = service.isLoading(QUEUE1_ID);
 			Assert.assertFalse(isLoading);
 		}
 		
 		[Test]
 		public function isLoading_queuedQueueLoader_ReturnsFalse(): void
 		{
-			var identification:VostokIdentification = new VostokIdentification(QUEUE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:ILoader = new ILoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
+			var list1:IList = new ArrayList();
+			list1.add(asset1);
+			service.load(QUEUE1_ID, list1);
 			
-			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
+			var list2:IList = new ArrayList();
+			list2.add(asset2);
+			service.load(QUEUE2_ID, list2);
 			
-			var isLoading:Boolean = service.isLoading(QUEUE_ID);
+			var list3:IList = new ArrayList();
+			list3.add(asset3);
+			service.load(QUEUE3_ID, list3);
+			
+			var isLoading:Boolean = service.isLoading(QUEUE3_ID);
 			Assert.assertFalse(isLoading);
 		}
 		
@@ -115,7 +118,7 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
+			service.load(QUEUE1_ID, list);
 			
 			var isLoading:Boolean = service.isLoading(asset1.identification.id, asset1.identification.locale);
 			Assert.assertTrue(isLoading);
@@ -127,7 +130,7 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			service.load(QUEUE_ID, list);
+			service.load(QUEUE1_ID, list);
 			service.stop(asset1.identification.id, asset1.identification.locale);
 			
 			var isLoading:Boolean = service.isLoading(asset1.identification.id, asset1.identification.locale);
@@ -141,7 +144,7 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset1);
 			list.add(asset2);
 			
-			service.load(QUEUE_ID, list, null, 1);
+			service.load(QUEUE1_ID, list, null, 1);
 			
 			var isLoading:Boolean = service.isLoading(asset2.identification.id, asset2.identification.locale);
 			Assert.assertFalse(isLoading);

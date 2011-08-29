@@ -32,16 +32,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.VostokFramework;
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorDispatcher;
 
 	/**
 	 * @author Flávio Silva
@@ -119,17 +110,21 @@ package org.vostokframework.loadingmanagement.services
 		[Test]
 		public function cancel_queuedQueueLoader_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
-			var identification:VostokIdentification = new VostokIdentification(QUEUE1_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:ILoader = new VostokLoader(identification, new StubLoadingAlgorithm(), LoadPriority.MEDIUM);
+			var list1:IList = new ArrayList();
+			list1.add(asset1);
+			service.load(QUEUE1_ID, list1);
 			
-			var monitor:ILoadingMonitor = new CompositeLoadingMonitor(queueLoader, new QueueLoadingMonitorDispatcher(identification.id, identification.locale));
+			var list2:IList = new ArrayList();
+			list2.add(asset2);
+			service.load(QUEUE2_ID, list2);
 			
-			LoadingManagementContext.getInstance().globalQueueLoader.addLoader(queueLoader);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addMonitor(monitor);
+			var list3:IList = new ArrayList();
+			list3.add(asset3);
+			service.load(QUEUE3_ID, list3);
 			
-			service.cancel(QUEUE1_ID);
+			service.cancel(QUEUE3_ID);
 			
-			var exists:Boolean = service.exists(QUEUE1_ID);
+			var exists:Boolean = service.exists(QUEUE3_ID);
 			Assert.assertFalse(exists);
 		}
 		
@@ -149,18 +144,16 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var list1:IList = new ArrayList();
 			list1.add(asset1);
-			
 			service.load(QUEUE1_ID, list1);
 			
 			var list2:IList = new ArrayList();
 			list2.add(asset2);
-			
 			service.load(QUEUE2_ID, list2);
 			
 			var list3:IList = new ArrayList();
 			list3.add(asset3);
-			
 			service.load(QUEUE3_ID, list3);
+			
 			service.cancel(QUEUE3_ID);
 			
 			var monitor:ILoadingMonitor = service.load(QUEUE3_ID, list3);

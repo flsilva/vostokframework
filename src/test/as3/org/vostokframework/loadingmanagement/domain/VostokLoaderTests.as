@@ -32,20 +32,11 @@ package org.vostokframework.loadingmanagement.domain
 	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
-	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.maps.HashMap;
 	import org.flexunit.Assert;
-	import org.flexunit.async.Async;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoadingAlgorithmEvent;
-
-	import flash.events.ProgressEvent;
 
 	/**
 	 * @author Flávio Silva
@@ -89,7 +80,6 @@ package org.vostokframework.loadingmanagement.domain
 		public function getLoader():ILoader
 		{
 			stubState = nice(ILoaderState);
-			stub(stubState).asEventDispatcher();
 			
 			var identification:VostokIdentification = new VostokIdentification("id", VostokFramework.CROSS_LOCALE_ID);
 			return new VostokLoader(identification, stubState, LoadPriority.MEDIUM);
@@ -358,102 +348,10 @@ package org.vostokframework.loadingmanagement.domain
 		{
 			mock(stubState).method("stop").twice();
 			loader.stop();
+			loader.stop();
 			verify(stubState);
 		}
 		
-		/////////////////////////////////////////////////////////
-		// VostokLoader().stop()-load()-cancel() - MIXED TESTS //
-		/////////////////////////////////////////////////////////
-		/*
-		[Test]
-		public function loadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
-		{
-			loader.load();
-			loader.stop();
-			Assert.assertEquals(LoaderStopped.INSTANCE, loader.state);
-		}
-		
-		[Test]
-		public function stopAndLoad_checkIfStateIsTryingToConnect_ReturnsTrue(): void
-		{
-			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
-			
-			loader.stop();
-			loader.load();
-			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
-		}
-		
-		[Test]
-		public function loadAndCancel_checkIfStateIsCanceled_ReturnsTrue(): void
-		{
-			loader.load();
-			loader.cancel();
-			Assert.assertEquals(LoaderCanceled.INSTANCE, loader.state);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function loadAndCancelAndLoad_illegalOperation_ThrowsError(): void
-		{
-			loader.load();
-			loader.cancel();
-			loader.load();
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function cancelAndLoad_illegalOperation_ThrowsError(): void
-		{
-			loader.cancel();
-			loader.load();
-		}
-		
-		[Test]
-		public function loadAndStopAndLoad_checkIfStateIsTryingToConnect_ReturnsTrue(): void
-		{
-			stub(stubLoadingAlgorithm).method("load").dispatches(new LoadingAlgorithmEvent(LoadingAlgorithmEvent.CONNECTING));
-			
-			loader.load();
-			loader.stop();
-			loader.load();
-			Assert.assertEquals(LoaderConnecting.INSTANCE, loader.state);
-		}
-		
-		[Test]
-		public function stopAndLoadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
-		{
-			loader.stop();
-			loader.load();
-			loader.stop();
-			Assert.assertEquals(LoaderStopped.INSTANCE, loader.state);
-		}
-		
-		[Test]
-		public function loadAndStopAndLoadAndStop_checkIfStateIsStopped_ReturnsTrue(): void
-		{
-			loader.load();
-			loader.stop();
-			loader.load();
-			loader.stop();
-			Assert.assertEquals(LoaderStopped.INSTANCE, loader.state);
-		}
-		
-		[Test]
-		public function loadAndStopAndCancel_checkIfStateIsCanceled_ReturnsTrue(): void
-		{
-			loader.load();
-			loader.stop();
-			loader.cancel();
-			Assert.assertEquals(LoaderCanceled.INSTANCE, loader.state);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function loadAndStopAndCancelAndLoad_illegalOperation_ThrowsError(): void
-		{
-			loader.load();
-			loader.stop();
-			loader.cancel();
-			loader.load();
-		}
-		*/
 	}
 
 }

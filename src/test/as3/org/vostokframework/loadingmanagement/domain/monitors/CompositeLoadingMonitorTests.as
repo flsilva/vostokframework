@@ -106,7 +106,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			var mockChild:ILoadingMonitor = getFakeMonitor("loader-1");
 			mock(mockChild).method("addEventListener").args(eventType, eventListener, useCapture, priority, weakReference);
 			
-			monitor.addMonitor(mockChild);
+			monitor.addChild(mockChild);
 			monitor.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
 			
 			verify(mockChild);
@@ -136,7 +136,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			
 			var fakeChild:ILoadingMonitor = getFakeMonitor("loader-1");
 			stub(fakeChild).getter("monitoring").returns(fakeMonitoring);
-			monitor.addMonitor(fakeChild);
+			monitor.addChild(fakeChild);
 			
 			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
 			fakeLoader.load();
@@ -168,9 +168,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
 			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
 			
-			monitor.addMonitor(fakeChild1);
-			monitor.addMonitor(fakeChild2);
-			monitor.addMonitor(fakeChild3);
+			monitor.addChild(fakeChild1);
+			monitor.addChild(fakeChild2);
+			monitor.addChild(fakeChild3);
 			
 			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
 			fakeLoader.load();
@@ -202,9 +202,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
 			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
 			
-			monitor.addMonitor(fakeChild1);
-			monitor.addMonitor(fakeChild2);
-			monitor.addMonitor(fakeChild3);
+			monitor.addChild(fakeChild1);
+			monitor.addChild(fakeChild2);
+			monitor.addChild(fakeChild3);
 			
 			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
 			fakeLoader.load();
@@ -236,9 +236,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			stub(fakeChild2).getter("monitoring").returns(fakeMonitoring2);
 			stub(fakeChild3).getter("monitoring").returns(fakeMonitoring3);
 			
-			monitor.addMonitor(fakeChild1);
-			monitor.addMonitor(fakeChild2);
-			monitor.addMonitor(fakeChild3);
+			monitor.addChild(fakeChild1);
+			monitor.addChild(fakeChild2);
+			monitor.addChild(fakeChild3);
 			
 			stub(fakeLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.OPEN));
 			fakeLoader.load();

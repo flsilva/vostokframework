@@ -74,10 +74,8 @@ package org.vostokframework.loadingmanagement.domain.policies
 			_loaderRepository = loaderRepository;
 		}
 		
-		//public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader
 		public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
 		{
-			//if (hasAvailableConnection(algorithm.openedConnections)) return queue.poll();
 			if (hasAvailableConnection(loadingLoaders.size())) return queue.poll();
 			
 			return null;

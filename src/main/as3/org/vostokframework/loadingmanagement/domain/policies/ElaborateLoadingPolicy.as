@@ -137,7 +137,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 				
 				if (!loaderPriority.equals(LoadPriority.HIGHEST))
 				{
-					state.stopLoader(loader.identification);
+					state.stopChild(loader.identification);
 					it.remove();
 				}
 			}
@@ -158,7 +158,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 				
 				if (loaderPriority.equals(LoadPriority.LOWEST))
 				{
-					state.stopLoader(loader.identification);
+					state.stopChild(loader.identification);
 					it.remove();
 				}
 			}

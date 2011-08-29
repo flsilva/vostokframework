@@ -32,8 +32,12 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
+
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * @author Flávio Silva
@@ -79,20 +83,33 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function exists_callLoad_queueLoadingCompletes_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
 			
-			var exists:Boolean = service.exists(QUEUE_ID);
-			Assert.assertFalse(exists);
+			//var exists:Boolean = service.exists(QUEUE_ID);
+			//Assert.assertFalse(exists);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var exists:Boolean = service.exists(QUEUE_ID);
+					Assert.assertFalse(exists);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
 		//ASSET testing
@@ -109,20 +126,33 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function exists_callLoad_queueLoadingCompletes_checkIfAssetLoaderExists_ReturnsFalse(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
 			
-			var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(exists);
+			//var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
+			//Assert.assertFalse(exists);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var exists:Boolean = service.exists(asset1.identification.id, asset1.identification.locale);
+					Assert.assertFalse(exists);
+				}
+			, 400);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
 	}

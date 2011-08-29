@@ -93,35 +93,35 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		override public function addMonitor(monitor:ILoadingMonitor):void
+		override public function addChild(child:ILoadingMonitor):void
 		{
 			validateDisposal();
 			
-			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
-			if (contains(monitor.loader.identification)) throw new DuplicateLoadingMonitorError("There is already an ILoadingMonitor object stored for a ILoader object with identification:\n<" + monitor.loader.identification + ">");
+			if (!child) throw new ArgumentError("Argument <child> must not be null.");
+			if (containsChild(child.loader.identification)) throw new DuplicateLoadingMonitorError("There is already an ILoadingMonitor object stored for a ILoader object with identification:\n<" + child.loader.identification + ">");
 			
-			_monitors.put(monitor.loader.identification.toString(), monitor);
+			_monitors.put(child.loader.identification.toString(), child);
 			addListenersOnMonitors();
 		}
 		
-		override public function addMonitors(monitors:IList):void
+		override public function addChildren(children:IList):void
 		{
 			validateDisposal();
 			
-			if (!monitors) throw new ArgumentError("Argument <monitors> must not be null.");
-			if (monitors.isEmpty()) return;
+			if (!children) throw new ArgumentError("Argument <children> must not be null.");
+			if (children.isEmpty()) return;
 			
-			var it:IIterator = monitors.iterator();
-			var monitor:ILoadingMonitor;
+			var it:IIterator = children.iterator();
+			var child:ILoadingMonitor;
 			
 			while (it.hasNext())
 			{
-				monitor = it.next();
-				addMonitor(monitor);
+				child = it.next();
+				addChild(child);
 			}
 		}
 		
-		override public function contains(identification:VostokIdentification):Boolean
+		override public function containsChild(identification:VostokIdentification):Boolean
 		{
 			if (_monitors.isEmpty()) return false;
 			
@@ -136,13 +136,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			while (it.hasNext())
 			{
 				child = it.next();
-				if (child.contains(identification)) return true;
+				if (child.containsChild(identification)) return true;
 			}
 			
 			return false;
 		}
 		
-		override public function getMonitor(identification:VostokIdentification):ILoadingMonitor
+		override public function getChild(identification:VostokIdentification):ILoadingMonitor
 		{
 			validateDisposal();
 			
@@ -158,7 +158,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 				while (it.hasNext())
 				{
 					child = it.next();
-					if (child.contains(identification)) return child.getMonitor(identification);
+					if (child.containsChild(identification)) return child.getChild(identification);
 				}
 				
 				var message:String = "There is no ILoadingMonitor object stored with identification:\n";
@@ -192,7 +192,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			super.removeEventListener(type, listener, useCapture);
 		}
 		
-		override public function removeMonitor(identification:VostokIdentification):void
+		override public function removeChild(identification:VostokIdentification):void
 		{
 			validateDisposal();
 			
@@ -211,9 +211,9 @@ package org.vostokframework.loadingmanagement.domain.monitors
 				while (it.hasNext())
 				{
 					child = it.next();
-					if (child.contains(identification))
+					if (child.containsChild(identification))
 					{
-						child.removeMonitor(identification);
+						child.removeChild(identification);
 						return;
 					}
 				}

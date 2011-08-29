@@ -197,7 +197,7 @@ package org.vostokframework.loadingmanagement.domain
 			while (it.hasNext())
 			{
 				parentLoader = it.next();
-				if (parentLoader.containsLoader(childIdentification)) return parentLoader;
+				if (parentLoader.containsChild(childIdentification)) return parentLoader;
 			}
 			
 			return null;

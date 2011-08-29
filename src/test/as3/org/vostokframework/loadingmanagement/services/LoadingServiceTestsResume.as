@@ -65,55 +65,59 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test]
-		public function resume_stoppedQueueLoader_ReturnsTrue(): void
+		public function resume_stoppedQueueLoader_callIsLoading_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
 			service.stop(QUEUE_ID);
+			service.resume(QUEUE_ID);
 			
-			var resumed:Boolean = service.resume(QUEUE_ID);
-			Assert.assertTrue(resumed);
+			var isLoading:Boolean = service.isLoading(QUEUE_ID);
+			Assert.assertTrue(isLoading);
 		}
 		
 		[Test]
-		public function resume_loadingQueueLoader_ReturnsFalse(): void
+		public function resume_loadingQueueLoader_callIsLoading_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
+			service.resume(QUEUE_ID);
 			
-			var resumed:Boolean = service.resume(QUEUE_ID);
-			Assert.assertFalse(resumed);
+			var isLoading:Boolean = service.isLoading(QUEUE_ID);
+			Assert.assertTrue(isLoading);
 		}
 		
 		//ASSET testing
 		
 		[Test]
-		public function resume_stoppedAssetLoader_ReturnsTrue(): void
+		public function resume_stoppedAssetLoader_callIsLoading_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
 			service.stop(asset1.identification.id, asset1.identification.locale);
+			service.resume(asset1.identification.id, asset1.identification.locale);
 			
-			var resumed:Boolean = service.resume(asset1.identification.id, asset1.identification.locale);
-			Assert.assertTrue(resumed);
+			var isLoading:Boolean = service.isLoading(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(isLoading);
 		}
 		
 		[Test]
-		public function resume_loadingAssetLoader_ReturnsFalse(): void
+		public function resume_loadingAssetLoader_callIsLoading_ReturnsTrue(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
+			service.resume(asset1.identification.id, asset1.identification.locale);
 			
-			var resumed:Boolean = service.resume(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(resumed);
+			var isLoading:Boolean = service.isLoading(asset1.identification.id, asset1.identification.locale);
+			Assert.assertTrue(isLoading);
 		}
 		
 	}

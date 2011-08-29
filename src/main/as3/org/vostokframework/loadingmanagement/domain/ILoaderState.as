@@ -30,7 +30,6 @@ package org.vostokframework.loadingmanagement.domain
 {
 	import org.as3collections.IList;
 	import org.as3coreaddendum.system.IDisposable;
-	import org.as3coreaddendum.system.IEquatable;
 	import org.vostokframework.VostokIdentification;
 
 	/**
@@ -38,40 +37,44 @@ package org.vostokframework.loadingmanagement.domain
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderState extends IEquatable, IDisposable
+	public interface ILoaderState extends IDisposable
 	{
+		
+		function get isLoading():Boolean;
+		
+		function get isQueued():Boolean;
+		
+		function get isStopped():Boolean;
 		
 		function get openedConnections():int;
 		
-		function addLoader(loader:ILoader):void;
+		function addChild(child:ILoader):void;
 		
-		function addLoaders(loaders:IList):void;
+		function addChildren(children:IList):void;
 		
 		function cancel():void;
 		
-		function cancelLoader(identification:VostokIdentification):void;
+		function cancelChild(identification:VostokIdentification):void;
 		
-		function containsLoader(identification:VostokIdentification):Boolean;
+		function containsChild(identification:VostokIdentification):Boolean;
 		
-		function equals(other:*):Boolean;
+		function getChild(identification:VostokIdentification):ILoader;
 		
-		function getLoader(identification:VostokIdentification):ILoader;
-		
-		function getLoaderState(identification:VostokIdentification):ILoaderState;
+		//function getLoaderState(identification:VostokIdentification):ILoaderState;
 		
 		function getParent(identification:VostokIdentification):ILoader;
 		
 		function load():void;
 		
-		function removeLoader(identification:VostokIdentification):void;
+		function removeChild(identification:VostokIdentification):void;
 		
-		function resumeLoader(identification:VostokIdentification):void;
+		function resumeChild(identification:VostokIdentification):void;
 		
 		function setLoader(loader:ILoaderStateTransition):void;
 		
 		function stop():void;
 		
-		function stopLoader(identification:VostokIdentification):void;
+		function stopChild(identification:VostokIdentification):void;
 		
 	}
 

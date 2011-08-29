@@ -31,7 +31,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedFileLoader;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
 
 	/**
 	 * description
@@ -43,13 +43,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		private var _openBehaviorSync:Boolean;
 		private var _successBehaviorAsync:Boolean;
-		private var _successBehaviorSync:Boolean;
+		//private var _successBehaviorSync:Boolean;
 		
 		public function set openBehaviorSync(value:Boolean):void { _openBehaviorSync = value; }
 		
 		public function set successBehaviorAsync(value:Boolean):void { _successBehaviorAsync = value; }
 		
-		public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
+		//public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
 		
 		public function StubVostokLoaderFactory ()
 		{
@@ -70,7 +70,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			var algorithm:StubFileLoadingAlgorithm = new StubFileLoadingAlgorithm();
 			algorithm.openBehaviorSync = _openBehaviorSync;
 			algorithm.successBehaviorAsync = _successBehaviorAsync;
-			algorithm.successBehaviorSync = _successBehaviorSync;
+			//algorithm.successBehaviorSync = _successBehaviorSync;
 			
 			return new QueuedFileLoader(algorithm, maxAttempts);
 		}

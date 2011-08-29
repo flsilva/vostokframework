@@ -32,6 +32,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
@@ -42,6 +43,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 
 	import flash.display.MovieClip;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 
 	/**
 	 * @author Flávio Silva
@@ -58,9 +61,9 @@ package org.vostokframework.loadingmanagement.services
 			
 		}
 		
-		//////////////////////////////////
+		/////////////////////////////
 		// LoadingService().load() //
-		//////////////////////////////////
+		/////////////////////////////
 		
 		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
 		public function load_duplicateQueueId_ThrowsError(): void
@@ -165,6 +168,7 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset2);
 			
 			var monitor:ILoadingMonitor = service.load(QUEUE1_ID, list);
+			
 			Assert.assertNotNull(monitor);
 		}
 		
@@ -230,40 +234,64 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(isLoading);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForQueueLoader_ThrowsError(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);
-			service.getMonitor(QUEUE1_ID);
+			//service.getMonitor(QUEUE1_ID);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					service.getMonitor(QUEUE1_ID);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForAssetLoader_ThrowsError(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);
-			service.getMonitor(asset1.identification.id, asset1.identification.locale);
+			//service.getMonitor(asset1.identification.id, asset1.identification.locale);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					service.getMonitor(asset1.identification.id, asset1.identification.locale);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callLoadAgain_ReturnsILoadingMonitor(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -272,16 +300,29 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			var monitor:ILoadingMonitor = service.load(QUEUE1_ID, list);
-			Assert.assertNotNull(monitor);
+			//var monitor:ILoadingMonitor = service.load(QUEUE1_ID, list);
+			//Assert.assertNotNull(monitor);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var monitor:ILoadingMonitor = service.load(QUEUE1_ID, list);
+					Assert.assertNotNull(monitor);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callIsLoaded_ReturnsFalse(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -290,16 +331,29 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(isLoaded);
+			//var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
+			//Assert.assertFalse(isLoaded);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
+					Assert.assertFalse(isLoaded);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callIsLoaded_ReturnsTrue(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			
@@ -308,16 +362,29 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			Assert.assertTrue(isLoaded);
+			//var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
+			//Assert.assertTrue(isLoaded);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
+					Assert.assertTrue(isLoaded);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callGetAssetData_ThrowsError(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = false;
 			
@@ -325,15 +392,31 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);			
-			service.getAssetData(asset1.identification.id, asset1.identification.locale);
+			//service.getAssetData(asset1.identification.id, asset1.identification.locale);
+			
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					service.getAssetData(asset1.identification.id, asset1.identification.locale);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
-		[Test]
+		[Test(async, timeout=1000)]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject(): void
 		{
-			var StubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			StubVostokLoaderFactory.successBehaviorSync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(StubVostokLoaderFactory);
+			trace("#########################################################################");
+			trace("load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject()");
+			
+			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
+			//stubVostokLoaderFactory.successBehaviorSync = true;
+			stubVostokLoaderFactory.successBehaviorAsync = true;
+			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			
 			asset1.settings.cache.allowInternalCache = true;
 			
@@ -342,8 +425,18 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			var assetData:* = service.getAssetData(asset1.identification.id, asset1.identification.locale);
-			Assert.assertNotNull(assetData);
+			var timer:Timer = new Timer(400, 1);
+			
+			var listener:Function = Async.asyncHandler(this, 
+				function():void
+				{
+					var assetData:* = service.getAssetData(asset1.identification.id, asset1.identification.locale);
+					Assert.assertNotNull(assetData);
+				}
+			, 1000);
+			
+			timer.addEventListener(TimerEvent.TIMER_COMPLETE, listener, false, 0, true);
+			timer.start();
 		}
 		
 		[Test]

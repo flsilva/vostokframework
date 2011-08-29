@@ -42,10 +42,10 @@ package org.vostokframework.loadingmanagement.domain.policies
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.LoadingAlgorithm;
 
 	/**
 	 * @author Flávio Silva
@@ -57,7 +57,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		public var mocks:MockolateRule = new MockolateRule();
 		
 		[Mock(inject="false")]
-		public var fakeAlgorithm:LoadingAlgorithm;
+		public var fakeState:ILoaderState;
 		
 		[Mock(inject="false")]
 		public var _fakeLoader1:ILoader;
@@ -79,14 +79,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 		[Before]
 		public function setUp(): void
 		{
-			fakeAlgorithm = nice(LoadingAlgorithm, null, [1]);
-			
-			//_fakeLoader1 = nice(ILoader, null, ["fake-loader-1", fakeAlgorithm, LoadPriority.MEDIUM, 3]);
-			//_fakeLoader2 = nice(ILoader, null, ["fake-loader-2", fakeAlgorithm, LoadPriority.LOW, 3]);
-			
-			//stub(_fakeLoader1).getter("id").returns("fake-loader-1");
-			//stub(_fakeLoader2).getter("id").returns("fake-loader-2");
-			
+			fakeState = nice(ILoaderState);
 			queue = new IndexablePriorityQueue();
 		}
 		
@@ -114,10 +107,10 @@ package org.vostokframework.loadingmanagement.domain.policies
 		
 		public function getLoader(id:String, priority:LoadPriority):ILoader
 		{
-			var loader:ILoader = nice(ILoader, null, [new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID), fakeAlgorithm, priority, 3]);
+			var loader:ILoader = nice(ILoader);
 			stub(loader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
 			stub(loader).getter("priority").returns(priority.ordinal);
-			stub(loader).method("toString").noArgs().returns("[ILoader <" + new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID) + ">]");
+			stub(loader).method("toString").noArgs().returns("[MOCKOLATE ILoader <" + id + "> ]");
 			
 			return loader;
 		}
@@ -145,7 +138,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderHighest, loader);
 		}
 		
@@ -162,7 +155,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderHighest);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertNull(loader);
 		}
 		
@@ -179,26 +172,26 @@ package org.vostokframework.loadingmanagement.domain.policies
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderHigh);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderHighest, loader);
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_highInLoadings_checkIfCalledStopHighLoaderOnAlgorithm(): void
+		public function getNext_onlyOneHighestInQueue_highInLoadings_checkIfCalledStopHighLoaderOnFakeState(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
-			mock(fakeAlgorithm).method("stopLoader").args(loaderHigh.identification);
+			mock(fakeState).method("stopChild").args(loaderHigh.identification);
 			
 			queue.add(loaderHighest);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderHigh);
 			
-			policy.getNext(fakeAlgorithm, queue, loadings);
-			verify(fakeAlgorithm);
+			policy.getNext(fakeState, queue, loadings);
+			verify(fakeState);
 		}
 		
 		[Test]
@@ -216,7 +209,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			loadings.add(loaderHighest1);
 			loadings.add(loaderHigh);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderHighest2, loader);
 		}
 		
@@ -233,7 +226,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderLow, loader);
 		}
 		
@@ -250,7 +243,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLow);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertNull(loader);
 		}
 		
@@ -265,7 +258,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			
 			var loadings:IList = new ArrayList();
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderLowest, loader);
 		}
 		
@@ -282,7 +275,7 @@ package org.vostokframework.loadingmanagement.domain.policies
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLowest1);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderLowest2, loader);
 		}
 		
@@ -299,26 +292,26 @@ package org.vostokframework.loadingmanagement.domain.policies
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLowest);
 			
-			var loader:ILoader = policy.getNext(fakeAlgorithm, queue, loadings);
+			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
 			Assert.assertEquals(loaderLow, loader);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowInQueue_lowestInLoadings_checkIfCalledStopLowestLoaderOnAlgorithm(): void
+		public function getNext_onlyOneLowInQueue_lowestInLoadings_checkIfCalledStopLowestLoaderOnFakeState(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
-			mock(fakeAlgorithm).method("stopLoader").args(loaderLowest.identification);
+			mock(fakeState).method("stopChild").args(loaderLowest.identification);
 			
 			queue.add(loaderLow);
 			
 			var loadings:IList = new ArrayList();
 			loadings.add(loaderLowest);
 			
-			policy.getNext(fakeAlgorithm, queue, loadings);
-			verify(fakeAlgorithm);
+			policy.getNext(fakeState, queue, loadings);
+			verify(fakeState);
 		}
 		
 	}

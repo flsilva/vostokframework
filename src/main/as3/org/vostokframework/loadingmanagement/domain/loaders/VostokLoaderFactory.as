@@ -43,13 +43,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.VostokLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.algorithms.NativeLoaderAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.FileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.QueueLoadingStatus;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedFileLoader;
-	import org.vostokframework.loadingmanagement.domain.loaders.states.QueuedQueueLoader;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.NativeLoaderAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueueLoadingStatus;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoader;
 
 	import flash.display.Loader;
 	import flash.net.URLRequest;

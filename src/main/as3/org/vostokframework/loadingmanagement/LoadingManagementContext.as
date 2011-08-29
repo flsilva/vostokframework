@@ -36,7 +36,6 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
@@ -47,8 +46,6 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorWrapper;
-	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
@@ -265,6 +262,7 @@ package org.vostokframework.loadingmanagement
 		{
 			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
 			_maxConcurrentConnections = value;
+			//TODO:issue aqui e em setMaxConcurrentQueues() - quando client puder chamar esse metodo globalQueueLoader ja estara criado. mudar dinamicamente policy?
 		}
 
 		/**
@@ -283,16 +281,17 @@ package org.vostokframework.loadingmanagement
 		 */
 		private function createGlobalQueueLoader(): void
 		{
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(_loaderRepository);
+			/*var policy:ILoadingPolicy = new ElaborateLoadingPolicy(_loaderRepository);
 			policy.globalMaxConnections = _maxConcurrentConnections;
 			policy.localMaxConnections = _maxConcurrentQueues;
-			
-			//var queue:PriorityLoadQueue = new ElaboratePriorityLoadQueue(policy);
-			//var queueLoader:QueueLoader = new QueueLoader(GLOBAL_QUEUE_LOADER_ID, LoadPriority.MEDIUM, queue);
 			
 			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
 			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
 			var queueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
+			*/
+			
+			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
+			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, _maxConcurrentConnections, _maxConcurrentQueues);
 			
 			setGlobalQueueLoader(queueLoader);
 		}
@@ -315,7 +314,7 @@ package org.vostokframework.loadingmanagement
 			
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
 			
-			globalQueueLoadingMonitor.removeMonitor(identification);
+			globalQueueLoadingMonitor.removeChild(identification);
 			//globalQueueLoader.removeLoader(identification);
 		}
 		
@@ -326,8 +325,8 @@ package org.vostokframework.loadingmanagement
 			
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
 			
-			globalQueueLoadingMonitor.removeMonitor(identification);
-			globalQueueLoader.removeLoader(identification);
+			globalQueueLoadingMonitor.removeChild(identification);
+			globalQueueLoader.removeChild(identification);
 		}
 		
 		private function assetCompleteHandler(event:AssetLoadingEvent):void

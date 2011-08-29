@@ -28,6 +28,10 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
+	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
+
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.ProgressEvent;
@@ -41,6 +45,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	public class StubFileLoadingAlgorithm extends FileLoadingAlgorithm
 	{
 		
+		private var _dispatcher:IEventDispatcher;
 		private var _openBehaviorSync:Boolean;
 		private var _successBehaviorAsync:Boolean;
 		private var _successBehaviorSync:Boolean;
@@ -57,7 +62,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function StubFileLoadingAlgorithm()
 		{
-			
+			_dispatcher = new EventDispatcher();
+			setLoadingDispatcher(_dispatcher);
 		}
 		
 		override public function cancel(): void
@@ -83,17 +89,17 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			else if (_successBehaviorAsync)
 			{
-				setTimeout(dispatchEvent, 25, new Event(Event.OPEN));
-				setTimeout(dispatchEvent, 80, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
-				setTimeout(dispatchEvent, 100, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
-				setTimeout(dispatchEvent, 150, new Event(Event.COMPLETE));
+				setTimeout(_dispatcher.dispatchEvent, 25, new Event(Event.OPEN));
+				setTimeout(_dispatcher.dispatchEvent, 80, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
+				setTimeout(_dispatcher.dispatchEvent, 100, new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
+				setTimeout(_dispatcher.dispatchEvent, 150, new Event(Event.COMPLETE));
 			}
 			else if (_successBehaviorSync)
 			{
-				dispatchEvent(new Event(Event.OPEN));
-				dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
-				dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
-				dispatchEvent(new Event(Event.COMPLETE));
+				_dispatcher.dispatchEvent(new Event(Event.OPEN));
+				_dispatcher.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 500, 750));
+				_dispatcher.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, 750, 750));
+				_dispatcher.dispatchEvent(new Event(Event.COMPLETE));
 			}
 		}
 		

@@ -47,15 +47,15 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		function get monitoring():LoadingMonitoring;
 		
-		function addMonitor(monitor:ILoadingMonitor):void;
+		function addChild(child:ILoadingMonitor):void;
 		
-		function addMonitors(monitors:IList):void;
+		function addChildren(children:IList):void;
 		
-		function contains(identification:VostokIdentification):Boolean;
+		function containsChild(identification:VostokIdentification):Boolean;
 		
-		function getMonitor(identification:VostokIdentification):ILoadingMonitor;
+		function getChild(identification:VostokIdentification):ILoadingMonitor;
 		
-		function removeMonitor(identification:VostokIdentification):void;
+		function removeChild(identification:VostokIdentification):void;
 	}
 
 }

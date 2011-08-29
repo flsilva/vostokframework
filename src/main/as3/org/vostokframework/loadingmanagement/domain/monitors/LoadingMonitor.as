@@ -81,17 +81,17 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		public function addMonitor(monitor:ILoadingMonitor):void
+		public function addChild(child:ILoadingMonitor):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function addMonitors(monitors:IList):void
+		public function addChildren(children:IList):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function contains(identification:VostokIdentification):Boolean
+		public function containsChild(identification:VostokIdentification):Boolean
 		{
 			return false;
 		}
@@ -109,7 +109,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			_disposed = true;
 		}
 		
-		public function getMonitor(identification:VostokIdentification):ILoadingMonitor
+		public function getChild(identification:VostokIdentification):ILoadingMonitor
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
@@ -124,7 +124,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			dispatcher.removeEventListener(type, listener, useCapture);
 		}
 		
-		public function removeMonitor(identification:VostokIdentification):void
+		public function removeChild(identification:VostokIdentification):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
