@@ -99,6 +99,78 @@ package org.vostokframework.loadingmanagement.domain
 		// CONSTRUCTOR TESTS //
 		///////////////////////
 		
+		///////////////////////////////////
+		// VostokLoader().identification //
+		///////////////////////////////////
+		
+		[Test]
+		public function identification_checkIfIdentificationMatches_ReturnsTrue(): void
+		{
+			var identification:VostokIdentification = new VostokIdentification("id", VostokFramework.CROSS_LOCALE_ID);
+			var $loader:ILoader = new VostokLoader(identification, stubState, LoadPriority.MEDIUM);
+			
+			Assert.assertEquals(identification, $loader.identification);
+		}
+		
+		//////////////////////////
+		// VostokLoader().index //
+		//////////////////////////
+		
+		[Test]
+		public function index_setValidIndex_checkIfIndexMatches_ReturnsTrue(): void
+		{
+			loader.index = 3;
+			Assert.assertEquals(3, loader.index);
+		}
+		
+		//////////////////////////////
+		// VostokLoader().isLoading //
+		//////////////////////////////
+		
+		[Test]
+		public function isLoading_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).getter("isLoading").once();
+			loader.isLoading;
+			verify(stubState);
+		}
+		
+		//////////////////////////////
+		// VostokLoader().isQueued //
+		//////////////////////////////
+		
+		[Test]
+		public function isQueued_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).getter("isQueued").once();
+			loader.isQueued;
+			verify(stubState);
+		}
+		
+		//////////////////////////////
+		// VostokLoader().isStopped //
+		//////////////////////////////
+		
+		[Test]
+		public function isStopped_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).getter("isStopped").once();
+			loader.isStopped;
+			verify(stubState);
+		}
+		
+		//////////////////////////////////////
+		// VostokLoader().openedConnections //
+		//////////////////////////////////////
+		
+		[Test]
+		public function openedConnections_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).getter("openedConnections").once();
+			loader.openedConnections;
+			verify(stubState);
+		}
+		
 		/////////////////////////////
 		// VostokLoader().priority //
 		/////////////////////////////
