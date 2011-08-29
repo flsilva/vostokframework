@@ -26,25 +26,42 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers
 {
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.IDataParser;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderFactory
+	public class XMLDataParser implements IDataParser
 	{
 		
-		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader;
+		/**
+		 * description
+		 * 
+		 */
+		public function XMLDataParser()
+		{
+			
+		}
 		
-		function createLeaf(asset:Asset):ILoader;
+		public function equals(other : *): Boolean
+		{
+			if (this == other) return true;
+			return ReflectionUtil.classPathEquals(this, other);
+		}
 		
-		function setDataParserRepository(repository:DataParserRepository): void;
-		
+		/**
+		 * description
+		 */
+		public function parse(data:*): *
+		{
+			return new XML(data);
+		}
+
 	}
 
 }

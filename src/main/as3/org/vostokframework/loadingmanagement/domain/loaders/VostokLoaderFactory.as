@@ -28,6 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers.XMLDataParser;
+	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3utils.URLUtil;
 	import org.vostokframework.VostokFramework;
@@ -38,6 +40,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
+	import org.vostokframework.loadingmanagement.domain.DataParserRepository;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
@@ -48,10 +51,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.NativeLoaderAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.NativeURLLoaderAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueueLoadingStatus;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoader;
 
 	import flash.display.Loader;
+	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
@@ -64,6 +69,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 */
 	public class VostokLoaderFactory implements ILoaderFactory
 	{
+		/**
+		 * @private
+		 */
+		private var _dataParserRepository:DataParserRepository;
+		
+		public function get dataParserRepository(): DataParserRepository { return _dataParserRepository; }
+		
 		//TODO:criar interface ILoaderFactory.as
 		/**
 		 * description
@@ -73,7 +85,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 */
 		public function VostokLoaderFactory()
 		{
-			
+			initDataParserRepository();
 		}
 		
 		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader
@@ -97,6 +109,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.policy.latencyTimeout
 		}
 		
+		public function setDataParserRepository(repository:DataParserRepository): void
+		{
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			_dataParserRepository = repository;//TODO:validate if already exists an loaderRepository and dispose() it
+		}
+		
 		protected function createCompositeLoaderState(policy:ILoadingPolicy):ILoaderState
 		{
 			var queueLoadingStatus:QueueLoadingStatus = new QueueLoadingStatus();
@@ -111,17 +129,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			var baseURL:String = settings.extra.baseURL;
 			
 			url = parseUrl(url, killExternalCache, baseURL);
+			var algorithm:FileLoadingAlgorithm = createFileLoadingAlgorithm(type, url, settings);
 			
-			if (type.equals(AssetType.IMAGE))
-			{
-				var loader:Loader = new Loader();
-				var request:URLRequest = new URLRequest(url);
-				var loaderContext:LoaderContext = createLoaderContext(settings.security);
-				
-				var algorithm:FileLoadingAlgorithm = new NativeLoaderAlgorithm(loader, request, loaderContext);
-				
-				return new QueuedFileLoader(algorithm, maxAttempts);
-			}
+			return new QueuedFileLoader(algorithm, maxAttempts);
 			
 			//TODO:settings.extra.userDataContainer
 			//TODO:settings.extra.userTotalBytes
@@ -133,12 +143,53 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.media.bufferPercent
 			//TODO:settings.media.bufferTime
 			
-			var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received arguments:\n";
-			errorMessage = "<type> :" + type + "\n";
-			errorMessage = "<url> :" + url + "\n";
-			errorMessage = "<settings> :" + settings + "\n";
 			
-			throw new IllegalStateError(errorMessage);
+		}
+		
+		protected function createFileLoadingAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):FileLoadingAlgorithm
+		{
+			var algorithm:FileLoadingAlgorithm;
+			
+			switch(type)
+			{
+				case AssetType.IMAGE:
+				{
+					var loader:Loader = new Loader();
+					var loaderRequest:URLRequest = new URLRequest(url);
+					var loaderContext:LoaderContext = createLoaderContext(settings.security);
+					
+					algorithm = new NativeLoaderAlgorithm(loader, loaderRequest, loaderContext);
+					break;
+				}
+				
+				case AssetType.XML:
+				{
+					var urlLoader:URLLoader = new URLLoader();
+					var urlLoaderRequest:URLRequest = new URLRequest(url);
+					
+					algorithm = new NativeURLLoaderAlgorithm(urlLoader, urlLoaderRequest);
+					break;
+				}
+				
+			}
+			
+			if (!algorithm)
+			{
+				var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received arguments:\n";
+				errorMessage = "<type>: " + type + "\n";
+				errorMessage = "<url>: " + url + "\n";
+				errorMessage = "<settings> :" + settings + "\n";
+				
+				throw new IllegalStateError(errorMessage);
+			}
+			
+			if (_dataParserRepository)
+			{
+				var parsers:IList = _dataParserRepository.find(type);
+				algorithm.addParsers(parsers);
+			}
+			
+			return algorithm;
 		}
 		
 		protected function instanciateComposite(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
@@ -215,6 +266,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			}
 			
 			return securityDomain;
+		}
+		
+		protected function initDataParserRepository():void
+		{
+			_dataParserRepository = new DataParserRepository();
+			
+			_dataParserRepository.add(AssetType.XML, new XMLDataParser());
 		}
 		
 	}

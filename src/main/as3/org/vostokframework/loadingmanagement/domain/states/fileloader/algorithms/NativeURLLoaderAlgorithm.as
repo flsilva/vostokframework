@@ -31,23 +31,21 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
 
-	import flash.display.Loader;
+	import flash.net.URLLoader;
 	import flash.net.URLRequest;
-	import flash.system.LoaderContext;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class NativeLoaderAlgorithm extends FileLoadingAlgorithm
+	public class NativeURLLoaderAlgorithm extends FileLoadingAlgorithm
 	{
 		/**
 		 * @private
  		 */
-		private var _context:LoaderContext;
 		private var _disposed:Boolean;
-		private var _loader:Loader;
+		private var _loader:URLLoader;
 		private var _request:URLRequest;
 		
 		//TODO:pensar sobre deixar logica "dispose" na base class (doCancel(), doLoad(), etc)
@@ -59,16 +57,15 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		 * @param request
 		 * @param context
 		 */
-		public function NativeLoaderAlgorithm(loader:Loader, request:URLRequest, context:LoaderContext = null)
+		public function NativeURLLoaderAlgorithm(loader:URLLoader, request:URLRequest)
 		{
 			if (!loader) throw new ArgumentError("Argument <loader> must not be null.");
 			if (!request) throw new ArgumentError("Argument <request> must not be null.");
 			
 			_loader = loader;
 			_request = request;
-			_context = context;
 			
-			setLoadingDispatcher(_loader.contentLoaderInfo);
+			setLoadingDispatcher(_loader);
 		}
 		
 		/**
@@ -88,13 +85,12 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			
 			_loader = null;
 			_request = null;
-			_context = null;
 		}
 		
 		override public function getData():*
 		{
 			validateDisposal();
-			return parseData(_loader.content);
+			return parseData(_loader.data);
 		}
 		
 		/**
@@ -103,7 +99,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		override public function load(): void
 		{
 			validateDisposal();
-			_loader.load(_request, _context);
+			_loader.load(_request);
 		}
 		
 		/**
@@ -124,10 +120,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			catch (error:Error)
 			{
 				//do nothing
-			}
-			finally
-			{
-				_loader.unload();
 			}
 		}
 		

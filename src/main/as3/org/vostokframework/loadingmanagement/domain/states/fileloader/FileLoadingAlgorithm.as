@@ -28,10 +28,13 @@
  */
 package org.vostokframework.loadingmanagement.domain.states.fileloader
 {
+	import org.as3collections.IIterator;
+	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.IDataParser;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
@@ -46,6 +49,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	{
 		
 		private var _dispatcher:IEventDispatcher;
+		private var _parsers:IList;
 		
 		/**
 		 * description
@@ -60,6 +64,11 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			validateDispatcher();
 			_dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		}
+		
+		public function addParsers(parsers:IList):void
+		{
+			_parsers = parsers;
 		}
 		
 		/**
@@ -124,6 +133,22 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			return _dispatcher.willTrigger(type);
 		}
 		
+		protected function parseData(rawData:*):*
+		{
+			if (!rawData) return null;
+			if (!_parsers) return rawData;
+			
+			var it:IIterator = _parsers.iterator();
+			var parser:IDataParser;
+			var parsedData:* = rawData;
+			
+			while (it.hasNext())
+			{
+				parser = it.next();
+				parsedData = parser.parse(parsedData);
+			}
+		}
+
 		protected function setLoadingDispatcher(dispatcher:IEventDispatcher):void
 		{
 			if (!dispatcher) throw new ArgumentError("Argument <dispatcher> must not be null.");

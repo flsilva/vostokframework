@@ -28,22 +28,17 @@
  */
 package org.vostokframework.loadingmanagement.domain
 {
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.as3coreaddendum.system.IEquatable;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderFactory
+	public interface IDataParser extends IEquatable
 	{
 		
-		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader;
-		
-		function createLeaf(asset:Asset):ILoader;
-		
-		function setDataParserRepository(repository:DataParserRepository): void;
+		function parse(data:*):*;
 		
 	}
 
