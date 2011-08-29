@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -37,6 +37,9 @@ package org.vostokframework.loadingmanagement.domain
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * @author Flávio Silva

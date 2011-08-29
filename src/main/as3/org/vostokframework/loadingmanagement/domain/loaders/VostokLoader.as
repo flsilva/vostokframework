@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -34,6 +34,10 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	import flash.events.EventDispatcher;
 

@@ -38,7 +38,7 @@ package
 	import org.vostokframework.assetmanagement.domain.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
 	import org.vostokframework.assetmanagement.services.AssetServiceTests;
-	import org.vostokframework.loadingmanagement.domain.VostokLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTests;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitorTestsIntegration;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorTests;

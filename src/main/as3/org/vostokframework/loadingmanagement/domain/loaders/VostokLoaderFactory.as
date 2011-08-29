@@ -43,7 +43,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.VostokLoader;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
