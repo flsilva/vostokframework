@@ -35,10 +35,12 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.as3collections.maps.HashMap;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
@@ -119,20 +121,6 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			verify(fakeChildLoader2);
 		}
 		
-		[Test]
-		public function fakePolicyReturnsMockLoader_mockLoaderDispatchesCompleteEvent_verifyIfMockLoaderWasCalled(): void
-		{
-			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
-			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
-			
-			stub(fakePolicy).method("getNext").returns(fakeChildLoader1).once();
-			mock(fakeChildLoader1).method("load").noArgs().once();
-			
-			state = getState();
-			
-			verify(fakeChildLoader1);
-		}
-		
 		[Test(async, timeout=200)]
 		public function fakePolicyReturnsStubChild_stubChildDispatchesOpenEvent_waitForStateToDispatchOpenEventOnItsLoader(): void
 		{
@@ -170,6 +158,36 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			var policy:ILoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
+			policy.globalMaxConnections = 6;
+			policy.localMaxConnections = 3;
+			
+			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy);
+			
+			verify(fakeQueueLoader);
+		}
+		
+		[Test]
+		public function integrationTesting_stateWithTwoChildren_firstStubChildDispatchesCompleteEventAndSecondDispatchesFailedErrorEvent_verifyIfStateTransitionWasCalled(): void
+		{
+			// INTEGRATION TESTING USING REAL LoadingPolicy DEPENDENCY
+			// NOT USING getState() HELPER METHOD
+			
+			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
+			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
+			
+			fakeLoadingStatus.allLoaders.put(fakeChildLoader2.identification.toString(), fakeChildLoader2);
+			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader2);
+			
+			mock(fakeQueueLoader).method("setState").args(instanceOf(CompleteQueueLoader)).once();
+			
+			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
+				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
+				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
+				.dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new HashMap()));
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;

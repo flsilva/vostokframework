@@ -29,6 +29,8 @@
 package org.vostokframework.loadingmanagement.domain.states.fileloader
 {
 	import org.as3collections.IMap;
+	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.maps.TypedMap;
 	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
 	import org.vostokframework.loadingmanagement.domain.LoadError;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
@@ -72,14 +74,15 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			super(algorithm, maxAttempts);
 			
+			_errors = new TypedMap(new ArrayListMap(), LoadError, String);
+			
 			setLoader(loader);
-			addAdapterListeners();
 			_load();
 		}
 		
 		override public function cancel():void
 		{
-			removeAdapterListeners();
+			removeAlgorithmListeners();
 			super.cancel();
 		}
 		
@@ -90,17 +93,20 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		override public function stop():void
 		{
-			removeAdapterListeners();
+			removeAlgorithmListeners();
 			super.stop();
 		}
 		
 		override protected function doDispose():void
 		{
-			removeAdapterListeners();
+			removeAlgorithmListeners();
+			
+			_errors = null;
+			
 			super.doDispose();
 		}
 		
-		private function addAdapterListeners():void
+		private function addAlgorithmListeners():void
 		{
 			algorithm.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
 			algorithm.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
@@ -110,23 +116,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			algorithm.addEventListener(ProgressEvent.PROGRESS, progressHandler, false, 0, true);
 			algorithm.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
 			algorithm.addEventListener(ErrorEvent.ERROR, unknownErrorHandler, false, 0, true);
-		}
-		
-		private function getData():*
-		{
-			try
-			{
-				var data:* = algorithm.getData();
-				return data;
-			}
-			catch (error:SecurityError)
-			{
-				securityError(error.message);
-			}
-			catch (error:Error)
-			{
-				unknownError(error.message);
-			}
 		}
 		
 		private function error(error:LoadError, errorMessage:String):void
@@ -152,7 +141,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		private function failed():void
 		{
 			validateDisposal();
-			removeAdapterListeners();
+			removeAlgorithmListeners();
 			
 			loader.setState(new FailedFileLoader(loader, algorithm, maxAttempts));
 			loader.dispatchEvent(new LoaderErrorEvent(LoaderErrorEvent.FAILED, _errors));
@@ -167,21 +156,43 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		private function loadingComplete():void
 		{
 			validateDisposal();
-			removeAdapterListeners();
+			removeAlgorithmListeners();
 			
-			var data:* = getData();
-			
-			loader.setState(new CompleteFileLoader(loader, algorithm, maxAttempts));
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
-			dispose();
+			try
+			{
+				var data:* = algorithm.getData();
+				
+				loader.setState(new CompleteFileLoader(loader, algorithm, maxAttempts));
+				loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE, data));
+				dispose();
+			}
+			catch (error:SecurityError)
+			{
+				securityError(error.message);
+			}
+			catch (error:Error)
+			{
+				unknownError(error.message);
+			}
 		}
 		
 		private function loadingInit():void
 		{
 			validateDisposal();
 			
-			var data:* = getData();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+			try
+			{
+				var data:* = algorithm.getData();
+				loader.dispatchEvent(new LoaderEvent(LoaderEvent.INIT, data));
+			}
+			catch (error:SecurityError)
+			{
+				securityError(error.message);
+			}
+			catch (error:Error)
+			{
+				unknownError(error.message);
+			}
 		}
 		
 		private function loadingOpen():void
@@ -189,8 +200,20 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			validateDisposal();
 			
 			var latency:int = getTimer() - _timeConnectionStarted;
-			var data:* = getData();
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
+			
+			try
+			{
+				var data:* = algorithm.getData();
+				loader.dispatchEvent(new LoaderEvent(LoaderEvent.OPEN, data, latency));
+			}
+			catch (error:SecurityError)
+			{
+				securityError(error.message);
+			}
+			catch (error:Error)
+			{
+				unknownError(error.message);
+			}
 		}
 		
 		private function ioError(errorMessage:String):void
@@ -211,7 +234,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			error(LoadError.UNKNOWN_ERROR, errorMessage);
 		}
 		
-		private function removeAdapterListeners():void
+		private function removeAlgorithmListeners():void
 		{
 			algorithm.removeEventListener(Event.COMPLETE, completeHandler, false);
 			algorithm.removeEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false);
@@ -233,6 +256,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 				return;
 			}
 			
+			addAlgorithmListeners();
 			_timeConnectionStarted = getTimer();
 			
 			try

@@ -46,6 +46,20 @@ package
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicyTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.CanceledFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.CompleteFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FailedFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTestsInstantiation;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTestsStop;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoaderTestsLoad;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoaderTestsStop;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTestsCancel;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTestsLoad;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsContainsChild;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsGetChild;
@@ -136,6 +150,22 @@ package
 		public var loadingPolicyTests:LoadingPolicyTests;
 		public var elaborateLoadingPolicyTests:ElaborateLoadingPolicyTests;
 		public var elaborateLoadingPolicyTestsHighestLowest:ElaborateLoadingPolicyTestsHighestLowest;
+		
+		//org.vostokframework.loadingmanagement.domain.states.fileloader
+		public var canceledFileLoaderTests:CanceledFileLoaderTests;
+		public var completeFileLoaderTests:CompleteFileLoaderTests;
+		public var failedFileLoaderTests:FailedFileLoaderTests;
+		public var loadingFileLoaderTests:LoadingFileLoaderTests;
+		public var loadingFileLoaderTestsCancel:LoadingFileLoaderTestsCancel;
+		public var loadingFileLoaderTestsInstantiation:LoadingFileLoaderTestsInstantiation;
+		public var loadingFileLoaderTestsStop:LoadingFileLoaderTestsStop;
+		public var queuedFileLoaderTests:QueuedFileLoaderTests;
+		public var queuedFileLoaderTestsCancel:QueuedFileLoaderTestsCancel;
+		public var queuedFileLoaderTestsLoad:QueuedFileLoaderTestsLoad;
+		public var queuedFileLoaderTestsStop:QueuedFileLoaderTestsStop;
+		public var stoppedFileLoaderTests:StoppedFileLoaderTests;
+		public var stoppedFileLoaderTestsCancel:StoppedFileLoaderTestsCancel;
+		public var stoppedFileLoaderTestsLoad:StoppedFileLoaderTestsLoad;
 		
 		//org.vostokframework.loadingmanagement.domain.states.queueloader
 		public var canceledQueueLoaderTests:CanceledQueueLoaderTests;

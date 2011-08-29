@@ -120,16 +120,12 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			if (_disposed) return;
 			
+			doDispose();
 			algorithm.dispose();
 			
 			_disposed = true;
 			_algorithm = null;
 			_loader = null;
-		}
-		
-		public function equals(other:*):Boolean
-		{
-			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));
 		}
 		
 		public function getChild(identification:VostokIdentification): ILoader

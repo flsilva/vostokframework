@@ -43,7 +43,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	/**
 	 * @author Flávio Silva
 	 */
-	[TestCase(order=99999999)]
+	[TestCase]
 	public class LoadingQueueLoaderTestsStop extends QueueLoaderStateTestsStop
 	{
 		
@@ -70,7 +70,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
 		}
 		
-		[Test(order=99999999)]
+		[Test]
 		public function integrationTesting_stateWithOneChild_verifyIfMockChildWasCalled(): void
 		{
 			// INTEGRATION TESTING USING REAL LoadingPolicy DEPENDENCY
