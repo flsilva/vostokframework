@@ -29,8 +29,8 @@
 
 package org.vostokframework.loadingmanagement.domain.states.queueloader
 {
-	import org.as3collections.IList;
-	import org.as3collections.lists.ArrayList;
+	import mockolate.stub;
+
 	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 
@@ -38,24 +38,36 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class CanceledQueueLoaderTests extends QueueLoaderStateTestsSetUp
+	public class LoadingQueueLoaderTests extends QueueLoaderStateTestsSetUp
 	{
 		
-		public function CanceledQueueLoaderTests()
+		//LoadingQueueLoader.as starts its logic as soon as it is instanciated
+		public function LoadingQueueLoaderTests()
 		{
 			
 		}
 		
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
 		override public function getState():ILoaderState
 		{
-			return new CanceledQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
+			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
+			
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);;
 		}
 		
+		///////////
+		// TESTS //
+		///////////
+		
 		[Test]
-		public function isLoading_simpleCall_ReturnsFalse(): void
+		public function isLoading_simpleCall_ReturnsTrue(): void
 		{
 			state = getState();
-			Assert.assertFalse(state.isLoading);
+			Assert.assertTrue(state.isLoading);
 		}
 		
 		[Test]
@@ -79,71 +91,26 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			Assert.assertEquals(0, state.openedConnections);
 		}
 		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function addChild_illegalOperation_ThrowsError(): void
+		[Test]
+		public function openedConnections_fakeChildReturnsOne_ReturnsOne(): void
 		{
-			state = getState();
-			state.addChild(fakeChildLoader1);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function addChildren_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
+			stub(fakeChildLoader1).getter("openedConnections").returns(1);
 			
-			var list:IList = new ArrayList();
-			list.add(fakeChildLoader1);
-			
-			state.addChildren(list);
+			state = getState();
+			Assert.assertEquals(1, state.openedConnections);
 		}
 		
 		[Test]
-		public function cancel_simpleCall_Void(): void
+		public function openedConnections_fakeTwoChildrenReturnsOneEachOne_ReturnsTwo(): void
 		{
+			fakeLoadingStatus.allLoaders.put(fakeChildLoader2.identification.toString(), fakeChildLoader2);
+			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader2);
+			
+			stub(fakeChildLoader1).getter("openedConnections").returns(1);
+			stub(fakeChildLoader2).getter("openedConnections").returns(1);
+			
 			state = getState();
-			state.cancel();
-		}
-		
-		[Test]
-		public function cancelChild_simpleCall_Void(): void
-		{
-			state = getState();
-			state.cancelChild(fakeChildLoader1.identification);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function load_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
-			state.load();
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function removeChild_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
-			state.removeChild(fakeChildLoader1.identification);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function resumeChild_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
-			state.resumeChild(fakeChildLoader1.identification);
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function stop_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
-			state.stop();
-		}
-		
-		[Test(expects="flash.errors.IllegalOperationError")]
-		public function stopChild_illegalOperation_ThrowsError(): void
-		{
-			state = getState();
-			state.stopChild(fakeChildLoader1.identification);
+			Assert.assertEquals(2, state.openedConnections);
 		}
 		
 	}

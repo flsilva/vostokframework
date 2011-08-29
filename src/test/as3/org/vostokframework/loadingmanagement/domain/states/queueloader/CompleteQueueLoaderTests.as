@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
+	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 
 	/**
@@ -48,6 +49,34 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 		override public function getState():ILoaderState
 		{
 			return new CompleteQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+		}
+		
+		[Test]
+		public function isLoading_simpleCall_ReturnsFalse(): void
+		{
+			state = getState();
+			Assert.assertFalse(state.isLoading);
+		}
+		
+		[Test]
+		public function isQueued_simpleCall_ReturnsFalse(): void
+		{
+			state = getState();
+			Assert.assertFalse(state.isQueued);
+		}
+		
+		[Test]
+		public function isStopped_simpleCall_ReturnsFalse(): void
+		{
+			state = getState();
+			Assert.assertFalse(state.isStopped);
+		}
+		
+		[Test]
+		public function openedConnections_simpleCall_ReturnsZero(): void
+		{
+			state = getState();
+			Assert.assertEquals(0, state.openedConnections);
 		}
 		
 		[Test(expects="flash.errors.IllegalOperationError")]

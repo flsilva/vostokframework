@@ -66,6 +66,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTestsContainsChild;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CompleteQueueLoaderTestsGetChild;
+	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsAddChild;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsAddChildren;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.LoadingQueueLoaderTestsCancel;
@@ -176,6 +177,7 @@ package
 		public var completeQueueLoaderTestsContainsChild:CompleteQueueLoaderTestsContainsChild;
 		public var completeQueueLoaderTestsGetChild:CompleteQueueLoaderTestsGetChild;
 		
+		public var loadingQueueLoaderTests:LoadingQueueLoaderTests;
 		public var loadingQueueLoaderTestsAddChild:LoadingQueueLoaderTestsAddChild;
 		public var loadingQueueLoaderTestsAddChildren:LoadingQueueLoaderTestsAddChildren;
 		public var loadingQueueLoaderTestsCancel:LoadingQueueLoaderTestsCancel;

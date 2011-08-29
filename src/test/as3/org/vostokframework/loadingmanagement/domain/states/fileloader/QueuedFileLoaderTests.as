@@ -29,6 +29,7 @@
 
 package org.vostokframework.loadingmanagement.domain.states.fileloader
 {
+	import org.flexunit.Assert;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 
 	/**
@@ -53,6 +54,34 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			state.setLoader(fakeFileLoader);
 			
 			return state;
+		}
+		
+		[Test]
+		public function isLoading_simpleCall_ReturnsFalse(): void
+		{
+			state = getState();
+			Assert.assertFalse(state.isLoading);
+		}
+		
+		[Test]
+		public function isQueued_simpleCall_ReturnsTrue(): void
+		{
+			state = getState();
+			Assert.assertTrue(state.isQueued);
+		}
+		
+		[Test]
+		public function isStopped_simpleCall_ReturnsFalse(): void
+		{
+			state = getState();
+			Assert.assertFalse(state.isStopped);
+		}
+		
+		[Test]
+		public function openedConnections_simpleCall_ReturnsZero(): void
+		{
+			state = getState();
+			Assert.assertEquals(0, state.openedConnections);
 		}
 		
 	}
