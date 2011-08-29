@@ -34,6 +34,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.services.AssetService;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
@@ -68,7 +69,7 @@ package org.vostokframework.loadingmanagement
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
 		private var _loadedAssetRepository:LoadedAssetRepository;
-		private var _loaderFactory:VostokLoaderFactory;
+		private var _loaderFactory:ILoaderFactory;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
 		private var _maxConcurrentConnections:int;
@@ -105,7 +106,7 @@ package org.vostokframework.loadingmanagement
 		 */
 		public function get maxConcurrentQueues(): int { return _maxConcurrentQueues; }
 		
-		public function get loaderFactory(): VostokLoaderFactory { return _loaderFactory; }
+		public function get loaderFactory(): ILoaderFactory { return _loaderFactory; }
 		
 		/**
 		 * description
@@ -142,7 +143,7 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param factory
 		 */
-		public function setAssetLoaderFactory(factory:VostokLoaderFactory): void
+		public function setAssetLoaderFactory(factory:ILoaderFactory): void
 		{
 			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
 			_loaderFactory = factory;

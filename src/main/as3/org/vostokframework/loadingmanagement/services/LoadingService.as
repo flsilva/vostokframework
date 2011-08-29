@@ -43,12 +43,12 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
@@ -82,7 +82,7 @@ package org.vostokframework.loadingmanagement.services
 		
 		//private function get loadingMonitorRepository():LoadingMonitorRepository { return _context.loadingMonitorRepository; }
 		
-		private function get loaderFactory():VostokLoaderFactory { return _context.loaderFactory; }
+		private function get loaderFactory():ILoaderFactory { return _context.loaderFactory; }
 		
 		/**
 		 * description

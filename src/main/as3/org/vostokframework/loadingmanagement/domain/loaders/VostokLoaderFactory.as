@@ -39,6 +39,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
@@ -62,7 +63,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class VostokLoaderFactory
+	public class VostokLoaderFactory implements ILoaderFactory
 	{
 		//TODO:criar interface ILoaderFactory.as
 		/**
