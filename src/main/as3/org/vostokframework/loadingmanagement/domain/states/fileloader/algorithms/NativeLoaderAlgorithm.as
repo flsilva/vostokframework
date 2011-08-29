@@ -34,7 +34,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
-	import flash.utils.getTimer;
 
 	/**
 	 * description
@@ -50,7 +49,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		private var _disposed:Boolean;
 		private var _loader:Loader;
 		private var _request:URLRequest;
-		private var _timeConnectionStarted:int;
 		
 		//TODO:pensar sobre deixar logica "dispose" na base class (doCancel(), doLoad(), etc)
 		
@@ -105,8 +103,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		override public function load(): void
 		{
 			validateDisposal();
-			_timeConnectionStarted = getTimer();
-			
 			_loader.load(_request, _context);
 		}
 		

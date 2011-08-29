@@ -219,6 +219,33 @@ package org.vostokframework.loadingmanagement.domain
 			loader.load();
 		}
 		*/
+		
+		///////////////////////////////
+		// VostokLoader().addChild() //
+		///////////////////////////////
+		
+		[Test]
+		public function addChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("addChild").once();
+			loader.addChild(null);
+			verify(stubState);
+		}
+		
+		//////////////////////////////////
+		// VostokLoader().addChildren() //
+		//////////////////////////////////
+		
+		[Test]
+		public function addChildren_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("addChildren").once();
+			loader.addChildren(null);
+			verify(stubState);
+		}
+		
+		
+		
 		/////////////////////////////
 		// VostokLoader().cancel() //
 		/////////////////////////////
@@ -259,6 +286,104 @@ package org.vostokframework.loadingmanagement.domain
 			mock(stubState).method("cancel").twice();
 			loader.cancel();
 			loader.cancel();
+			verify(stubState);
+		}
+		
+		//////////////////////////////////
+		// VostokLoader().cancelChild() //
+		//////////////////////////////////
+		
+		[Test]
+		public function cancelChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("cancelChild").once();
+			loader.cancelChild(null);
+			verify(stubState);
+		}
+		
+		////////////////////////////////////
+		// VostokLoader().containsChild() //
+		////////////////////////////////////
+		
+		[Test]
+		public function containsChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("containsChild").once();
+			loader.containsChild(null);
+			verify(stubState);
+		}
+		
+		//////////////////////////////
+		// VostokLoader().dispose() //
+		//////////////////////////////
+		
+		[Test]
+		public function dispose_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("dispose").once();
+			loader.dispose();
+			verify(stubState);
+		}
+		
+		[Test(expects="org.as3coreaddendum.errors.ObjectDisposedError")]
+		public function dispose_simpleCall_tryToCallAnotherMethodAfterCallDispose_ThrowsError(): void
+		{
+			loader.dispose();
+			loader.load();
+		}
+		
+		/////////////////////////////
+		// VostokLoader().equals() //
+		/////////////////////////////
+		
+		[Test]
+		public function equals_sameObject_ReturnsTrue(): void
+		{
+			var equals:Boolean = loader.equals(loader);
+			Assert.assertTrue(equals);
+		}
+		
+		[Test]
+		public function equals_differentObjectsWithSameIdentification_ReturnsTrue(): void
+		{
+			var identification:VostokIdentification = new VostokIdentification(loader.identification.id, loader.identification.locale);
+			var otherLoader:ILoader = new VostokLoader(identification, stubState, LoadPriority.MEDIUM);
+			
+			var equals:Boolean = loader.equals(otherLoader);
+			Assert.assertTrue(equals);
+		}
+		
+		[Test]
+		public function equals_differentObjectsWithDifferentIdentification_ReturnsFalse(): void
+		{
+			var identification:VostokIdentification = new VostokIdentification(loader.identification.id, "other-locale");
+			var otherLoader:ILoader = new VostokLoader(identification, stubState, LoadPriority.MEDIUM);
+			
+			var equals:Boolean = loader.equals(otherLoader);
+			Assert.assertFalse(equals);
+		}
+		
+		///////////////////////////////
+		// VostokLoader().getChild() //
+		///////////////////////////////
+		
+		[Test]
+		public function getChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("getChild").once();
+			loader.getChild(null);
+			verify(stubState);
+		}
+		
+		////////////////////////////////
+		// VostokLoader().getParent() //
+		////////////////////////////////
+		
+		[Test]
+		public function getParent_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("getParent").once();
+			loader.getParent(null);
 			verify(stubState);
 		}
 		
@@ -306,6 +431,30 @@ package org.vostokframework.loadingmanagement.domain
 			mock(stubState).method("load").twice();
 			loader.load();
 			loader.load();
+			verify(stubState);
+		}
+		
+		//////////////////////////////////
+		// VostokLoader().removeChild() //
+		//////////////////////////////////
+		
+		[Test]
+		public function removeChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("removeChild").once();
+			loader.removeChild(null);
+			verify(stubState);
+		}
+		
+		//////////////////////////////////
+		// VostokLoader().resumeChild() //
+		//////////////////////////////////
+		
+		[Test]
+		public function resumeChild_simpleCall_verifyIfStubStateWasCalledOnce(): void
+		{
+			mock(stubState).method("resumeChild").once();
+			loader.resumeChild(null);
 			verify(stubState);
 		}
 		
