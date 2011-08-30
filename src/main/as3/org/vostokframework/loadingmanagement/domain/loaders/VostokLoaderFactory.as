@@ -76,7 +76,6 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function get dataParserRepository(): DataParserRepository { return _dataParserRepository; }
 		
-		//TODO:criar interface ILoaderFactory.as
 		/**
 		 * description
 		 * 
@@ -102,9 +101,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			var maxAttempts:int = asset.settings.policy.maxAttempts;
 			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings, maxAttempts);
-			//TODO: depois q VostokIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
-			var identification:VostokIdentification = new VostokIdentification(asset.identification.id, asset.identification.locale);
-			return instanciateLeaf(identification, state, asset.priority);
+			return instanciateLeaf(asset.identification, state, asset.priority);
 			
 			//TODO:settings.policy.latencyTimeout
 		}
@@ -112,7 +109,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public function setDataParserRepository(repository:DataParserRepository): void
 		{
 			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
-			_dataParserRepository = repository;//TODO:validate if already exists an loaderRepository and dispose() it
+			
+			if (_dataParserRepository) _dataParserRepository.clear();
+			_dataParserRepository = repository;
 		}
 		
 		protected function createCompositeLoaderState(policy:ILoadingPolicy):ILoaderState

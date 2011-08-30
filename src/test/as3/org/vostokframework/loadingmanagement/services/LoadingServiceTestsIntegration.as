@@ -41,23 +41,11 @@ package org.vostokframework.loadingmanagement.services
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.HelperTestObject;
-	import org.vostokframework.VostokFramework;
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
-	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	import flash.events.Event;
 	import flash.events.TimerEvent;
@@ -67,17 +55,12 @@ package org.vostokframework.loadingmanagement.services
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class LoadingServiceTestsIntegration
+	public class LoadingServiceTestsIntegration extends LoadingServiceTestsConfiguration
 	{
 		private static const QUEUE_ID:String = "queue-1";
-		private static const ASSET_PACKAGE_ID:String = "asset-package-1";
 		
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
-		
-		public var service:LoadingService;
-		public var asset1:Asset;
-		public var asset2:Asset;
 		
 		[Mock(inject="false")]
 		public var helperTestObject:HelperTestObject;
@@ -92,49 +75,21 @@ package org.vostokframework.loadingmanagement.services
 		/////////////////////////
 		// TESTS CONFIGURATION //
 		/////////////////////////
-		//TODO:eliminar esse setUp e fazer essa classe extender LoadingServiceTestsConfiguration.as
+		
 		[Before]
-		public function setUp(): void
+		override public function setUp(): void
 		{
-			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
-			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
-			
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(new StubVostokLoaderFactory());
-			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
-			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
-			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
-			
-			LoadingManagementContext.getInstance().setMaxConcurrentConnections(6);
-			LoadingManagementContext.getInstance().setMaxConcurrentQueues(3);
-			
-			/*var policy:LoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
-			policy.localMaxConnections = LoadingManagementContext.getInstance().maxConcurrentQueues;
-			
-			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
-			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:ILoader = new ILoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);*/
-			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, LoadingManagementContext.getInstance().loaderRepository, LoadPriority.MEDIUM, LoadingManagementContext.getInstance().maxConcurrentConnections, LoadingManagementContext.getInstance().maxConcurrentQueues);//TODO:refactor this line
-			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
-			
-			service = new LoadingService();
-			
-			var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
-			asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-01.jpg", assetPackage);
-			asset2 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-02.jpg", assetPackage);
-			
-			AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
-			AssetManagementContext.getInstance().assetRepository.add(asset1);
-			AssetManagementContext.getInstance().assetRepository.add(asset2);
+			super.setUp();
 			
 			timer = new Timer(500);
+			
 		}
 		
 		[After]
-		public function tearDown(): void
+		override public function tearDown(): void
 		{
+			super.tearDown();
+			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AggregateQueueLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
@@ -146,7 +101,6 @@ package org.vostokframework.loadingmanagement.services
 			timer.stop();
 			
 			helperTestObject = null;
-			service = null;
 			timer = null;
 		}
 		

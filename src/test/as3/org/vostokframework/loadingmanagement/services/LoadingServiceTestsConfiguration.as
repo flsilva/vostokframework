@@ -81,13 +81,6 @@ package org.vostokframework.loadingmanagement.services
 			LoadingManagementContext.getInstance().setMaxConcurrentConnections(4);
 			LoadingManagementContext.getInstance().setMaxConcurrentQueues(2);
 			
-			/*var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = LoadingManagementContext.getInstance().maxConcurrentConnections;
-			policy.localMaxConnections = LoadingManagementContext.getInstance().maxConcurrentQueues;
-			
-			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
-			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);*/
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
 			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, LoadingManagementContext.getInstance().loaderRepository, LoadPriority.MEDIUM, LoadingManagementContext.getInstance().maxConcurrentConnections, LoadingManagementContext.getInstance().maxConcurrentQueues);//TODO:refactor this line
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);

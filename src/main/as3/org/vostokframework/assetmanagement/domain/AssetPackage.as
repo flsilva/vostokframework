@@ -88,7 +88,6 @@ package org.vostokframework.assetmanagement.domain
 				throw new ArgumentError(errorMessage);
 			}
 			
-			//TODO: pensar sobre encapsular todos os erros (ClassCastError) etc.
 			return _assets.add(asset);
 		}
 
