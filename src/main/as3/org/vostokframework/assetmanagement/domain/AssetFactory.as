@@ -55,6 +55,11 @@ package org.vostokframework.assetmanagement.domain
 		 * description
 		 */
 		private var _defaultSettings:AssetLoadingSettings;
+		
+		/**
+		 * description
+		 */
+		private var _urlAssetParser:UrlAssetParser;
 
 		/**
 		 * description
@@ -73,6 +78,8 @@ package org.vostokframework.assetmanagement.domain
 			
 			if (!defaultPriority) defaultPriority = createDefaultPriority();
 			setDefaultPriority(defaultPriority);
+			
+			_urlAssetParser = createUrlAssetParser();
 		}
 
 		/**
@@ -139,6 +146,18 @@ package org.vostokframework.assetmanagement.domain
 		}
 		
 		/**
+		 * description
+		 * 
+		 * @param settings
+		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
+		 */
+		public function setUrlAssetParser(parser:UrlAssetParser): void
+		{
+			if (!parser) throw new ArgumentError("Argument <parser> must not be null.");
+			_urlAssetParser = parser;
+		}
+		
+		/**
 		 * @private
 		 */
 		protected function instanciate(id:VostokIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
@@ -162,7 +181,7 @@ package org.vostokframework.assetmanagement.domain
 		 */
 		protected function getType(src:String): AssetType
 		{
-			return UrlAssetParser.getInstance().getAssetType(src);//TODO:pensar sobre injetar parser
+			return _urlAssetParser.getAssetType(src);
 		}
 		
 		/**
@@ -202,6 +221,11 @@ package org.vostokframework.assetmanagement.domain
 			settings.security = security;
 			
 			return settings;
+		}
+		
+		private function createUrlAssetParser():UrlAssetParser
+		{
+			return new UrlAssetParser();
 		}
 
 	}

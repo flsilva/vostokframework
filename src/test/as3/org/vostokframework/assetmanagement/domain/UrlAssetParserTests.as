@@ -38,9 +38,27 @@ package org.vostokframework.assetmanagement.domain
 	public class UrlAssetParserTests
 	{
 		
+		public var parser:UrlAssetParser;
+		
 		public function UrlAssetParserTests()
 		{
 			
+		}
+		
+		/////////////////////////
+		// TESTS CONFIGURATION //
+		/////////////////////////
+		
+		[Before]
+		public function setUp(): void
+		{
+			parser = new UrlAssetParser();
+		}
+		
+		[After]
+		public function tearDown(): void
+		{
+			parser = null;
 		}
 		
 		/////////////////////////////////////////
@@ -50,21 +68,21 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function getAssetType_unsupportedExtension_ReturnsNull(): void
 		{
-			var type:AssetType = UrlAssetParser.getInstance().getAssetType("1.xyz");
+			var type:AssetType = parser.getAssetType("1.xyz");
 			Assert.assertNull(type);
 		}
 		
 		[Test]
 		public function getAssetType_validSourceAACExtension_checkIfReturnedTypeMatches_ReturnsTrue(): void
 		{
-			var type:AssetType = UrlAssetParser.getInstance().getAssetType("1.aac");
+			var type:AssetType = parser.getAssetType("1.aac");
 			Assert.assertEquals(AssetType.AAC, type);
 		}
 		
 		[Test]
 		public function getAssetType_validSourceXMLExtension_checkIfReturnedTypeMatches_ReturnsTrue(): void
 		{
-			var type:AssetType = UrlAssetParser.getInstance().getAssetType("http://www.test.com/asset-path/test-asset.XML");
+			var type:AssetType = parser.getAssetType("http://www.test.com/asset-path/test-asset.XML");
 			Assert.assertEquals(AssetType.XML, type);
 		}
 		

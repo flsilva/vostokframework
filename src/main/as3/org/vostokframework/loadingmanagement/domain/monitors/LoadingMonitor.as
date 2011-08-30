@@ -38,7 +38,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
-	import flash.events.EventDispatcher;
+	import flash.events.Event;
 	import flash.events.ProgressEvent;
 
 	/**
@@ -46,7 +46,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	 * @version 1.0
 	 * @created 14-mai-2011 12:02:52
 	 */
-	public class LoadingMonitor extends EventDispatcher implements ILoadingMonitor
+	public class LoadingMonitor implements ILoadingMonitor
 	{
 		/**
 		 * @private
@@ -61,7 +61,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function get monitoring():LoadingMonitoring { return _monitoring; }
 		
 		protected function get dispatcher():LoadingMonitorDispatcher { return _dispatcher; }
-		//TODO:pensar sobre ao invés de extender EventDispatcher.as, implementar IEventDispatcher.as
+		
 		/**
 		 * 
 		 * @param loader
@@ -76,7 +76,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			addLoaderListeners();
 		}
 		
-		override public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
+		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void
 		{
 			dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
@@ -94,6 +94,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public function containsChild(identification:VostokIdentification):Boolean
 		{
 			return false;
+		}
+		
+		public function dispatchEvent(event:Event) : Boolean
+		{
+			return dispatcher.dispatchEvent(event);
 		}
 		
 		public function dispose():void
@@ -114,12 +119,12 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		override public function hasEventListener(type:String):Boolean
+		public function hasEventListener(type:String):Boolean
 		{
 			return dispatcher.hasEventListener(type);
 		}
 		
-		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
+		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void
 		{
 			dispatcher.removeEventListener(type, listener, useCapture);
 		}
@@ -129,7 +134,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		override public function willTrigger(type:String):Boolean
+		public function willTrigger(type:String):Boolean
 		{
 			return dispatcher.willTrigger(type);
 		}

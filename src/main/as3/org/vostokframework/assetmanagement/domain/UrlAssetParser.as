@@ -33,8 +33,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3utils.StringUtil;
 
-	import flash.errors.IllegalOperationError;
-
 	/**
 	 * description
 	 * 
@@ -42,23 +40,10 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class UrlAssetParser
 	{
-		private static var _instance:UrlAssetParser = new UrlAssetParser();
-		
 		private var _typeRegexpMap:IMap;
-		
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
-		
-		{
-			_created = true;
-		}
 		
 		public function UrlAssetParser()
 		{
-			if (_created) throw new IllegalOperationError("<UrlAssetParser> is a singleton class and should be accessed only by its <getInstance> method.");
-			
 			_typeRegexpMap = new HashMap();
 			
 			var aacExt:Array = getAACExtensions();
@@ -68,11 +53,6 @@ package org.vostokframework.assetmanagement.domain
 			_typeRegexpMap.put(AssetType.AAC, getRegexp(aacExt));
 			_typeRegexpMap.put(AssetType.IMAGE, getRegexp(imgExt));
 			_typeRegexpMap.put(AssetType.XML, getRegexp(xmlExt));
-		}
-		
-		public static function getInstance():UrlAssetParser
-		{
-			return _instance;
 		}
 		
 		public function getAssetType(src:String):AssetType
