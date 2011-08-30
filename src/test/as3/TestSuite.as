@@ -101,11 +101,11 @@ package
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsRemoveChild;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.StoppedQueueLoaderTestsResumeChild;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsCancel;
+	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsContainsAssetData;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsExists;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetAssetData;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsGetMonitor;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIntegration;
-	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoaded;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsLoading;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsIsQueued;
 	import org.vostokframework.loadingmanagement.services.LoadingServiceTestsLoad;
@@ -216,10 +216,10 @@ package
 		
 		//org.vostokframework.loadingmanagement.services
 		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
+		public var loadingServiceTestsContainsAssetData:LoadingServiceTestsContainsAssetData;
 		public var loadingServiceTestsExists:LoadingServiceTestsExists;
 		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;
 		public var loadingServiceTestsGetMonitor:LoadingServiceTestsGetMonitor;
-		public var loadingServiceTestsIsLoaded:LoadingServiceTestsIsLoaded;
 		public var loadingServiceTestsIsLoading:LoadingServiceTestsIsLoading;
 		public var loadingServiceTestsIsQueued:LoadingServiceTestsIsQueued;
 		public var loadingServiceTestsLoad:LoadingServiceTestsLoad;

@@ -44,7 +44,6 @@ package org.vostokframework.loadingmanagement.domain
 	 */
 	public interface ILoader extends IEventDispatcher, IEquatable, IDisposable, IPriority, IIndexable
 	{
-		//TODO:mudar nomes para child/children (e.g. addChild(), addChildren())
 		
 		function get identification():VostokIdentification;
 		
@@ -55,10 +54,6 @@ package org.vostokframework.loadingmanagement.domain
 		function get isStopped():Boolean;
 		
 		function get openedConnections():int;
-		
-		//function get state():ILoaderState;//TODO:pensar sobre remover
-		
-		//function get stateHistory():IList;//TODO:teria q remover esse tbm
 		
 		function addChild(child:ILoader):void;
 		
@@ -71,8 +66,6 @@ package org.vostokframework.loadingmanagement.domain
 		function containsChild(identification:VostokIdentification):Boolean;
 		
 		function getChild(identification:VostokIdentification):ILoader;
-		
-		//function getLoaderState(identification:VostokIdentification):ILoaderState;
 		
 		function getParent(identification:VostokIdentification):ILoader;
 		

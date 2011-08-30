@@ -64,6 +64,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		override public function get openedConnections():int { return 1; }
 		
+		//TODO:note: explain that this object starts its logic as soon as it is instanciated
 		/**
 		 * description
 		 * 

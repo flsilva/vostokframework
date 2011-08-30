@@ -43,34 +43,34 @@ package org.vostokframework.loadingmanagement.services
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class LoadingServiceTestsIsLoaded extends LoadingServiceTestsConfiguration
+	public class LoadingServiceTestsContainsAssetData extends LoadingServiceTestsConfiguration
 	{
 		private static const QUEUE_ID:String = "queue-1";
 		
-		public function LoadingServiceTestsIsLoaded()
+		public function LoadingServiceTestsContainsAssetData()
 		{
 			
 		}
 		
-		/////////////////////////////////
-		// LoadingService().isLoaded() //
-		/////////////////////////////////
+		//////////////////////////////////////////
+		// LoadingService().containsAssetData() //
+		//////////////////////////////////////////
 		
 		[Test(expects="ArgumentError")]
 		public function isLoaded_invalidLoaderIdArgument_ThrowsError(): void
 		{
-			service.isLoaded(null);
+			service.containsAssetData(null);
 		}
 		
 		[Test]
-		public function isLoaded_notExistingLoader_ReturnsFalse(): void
+		public function containsAssetData_notExistingLoader_ReturnsFalse(): void
 		{
-			var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(isLoaded);
+			var contains:Boolean = service.containsAssetData(asset1.identification.id, asset1.identification.locale);
+			Assert.assertFalse(contains);
 		}
 		
 		[Test]
-		public function isLoaded_queuedLoader_ReturnsFalse(): void
+		public function containsAssetData_queuedLoader_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -78,24 +78,24 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE_ID, list, null, 1);
 			
-			var isLoaded:Boolean = service.isLoaded(asset2.identification.id, asset2.identification.locale);
-			Assert.assertFalse(isLoaded);
+			var contains:Boolean = service.containsAssetData(asset2.identification.id, asset2.identification.locale);
+			Assert.assertFalse(contains);
 		}
 		
 		[Test]
-		public function isLoaded_loadingLoader_ReturnsFalse(): void
+		public function containsAssetData_loadingLoader_ReturnsFalse(): void
 		{
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
 			service.load(QUEUE_ID, list);
 			
-			var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			Assert.assertFalse(isLoaded);
+			var contains:Boolean = service.containsAssetData(asset1.identification.id, asset1.identification.locale);
+			Assert.assertFalse(contains);
 		}
 		
 		[Test(async, timeout=1000)]
-		public function isLoaded_loadedAndCachedAsset_ReturnsTrue(): void
+		public function containsAssetData_loadedAndCachedAsset_ReturnsTrue(): void
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
@@ -108,16 +108,13 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE_ID, list);
 			
-			//var isLoaded:Boolean = service.getAssetData(asset1.identification.id, asset1.identification.locale);
-			//Assert.assertTrue(isLoaded);
-			
 			var timer:Timer = new Timer(400, 1);
 			
 			var listener:Function = Async.asyncHandler(this, 
 				function():void
 				{
-					var isLoaded:Boolean = service.getAssetData(asset1.identification.id, asset1.identification.locale);
-					Assert.assertTrue(isLoaded);
+					var contains:Boolean = service.containsAssetData(asset1.identification.id, asset1.identification.locale);
+					Assert.assertTrue(contains);
 				}
 			, 1000);
 			

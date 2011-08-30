@@ -36,7 +36,6 @@ package org.vostokframework.loadingmanagement.report
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
-	import org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError;
 
 	/**
 	 * description
@@ -126,30 +125,6 @@ package org.vostokframework.loadingmanagement.report
 			var l:IList = new ReadOnlyArrayList(_reportMap.getValues().toArray());
 			
 			return l;
-		}
-		
-		/**
-		 * description
-		 * 
-		 * @param 	identification    
-		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
-		 * @return
-		 */
-		public function findAssetData(identification:VostokIdentification): *
-		{
-			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			
-			var report:LoadedAssetReport = find(identification);
-			if (!report)
-			{
-				var message:String = "There is no LoadedAssetReport object stored with VostokIdentification:\n";
-				message += "<" + report.identification + ">\n";
-				message += "Use the method <LoadedAssetRepository().exists()> to check if a LoadedAssetReport object already exists.\n";
-				
-				throw new LoadedAssetDataNotFoundError(identification, message);
-			}
-			//TODO:pensar em remover esse método e essa logica ficar dentro da service
-			return report.data;
 		}
 		
 		/**

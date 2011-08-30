@@ -318,7 +318,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test(async, timeout=1000)]
-		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callIsLoaded_ReturnsFalse(): void
+		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callContainsAssetData_ReturnsFalse(): void
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
@@ -331,16 +331,13 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			//var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			//Assert.assertFalse(isLoaded);
-			
 			var timer:Timer = new Timer(400, 1);
 			
 			var listener:Function = Async.asyncHandler(this, 
 				function():void
 				{
-					var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-					Assert.assertFalse(isLoaded);
+					var contains:Boolean = service.containsAssetData(asset1.identification.id, asset1.identification.locale);
+					Assert.assertFalse(contains);
 				}
 			, 1000);
 			
@@ -349,7 +346,7 @@ package org.vostokframework.loadingmanagement.services
 		}
 		
 		[Test(async, timeout=1000)]
-		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callIsLoaded_ReturnsTrue(): void
+		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callContainsAssetData_ReturnsTrue(): void
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
@@ -370,8 +367,8 @@ package org.vostokframework.loadingmanagement.services
 			var listener:Function = Async.asyncHandler(this, 
 				function():void
 				{
-					var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-					Assert.assertTrue(isLoaded);
+					var contains:Boolean = service.containsAssetData(asset1.identification.id, asset1.identification.locale);
+					Assert.assertTrue(contains);
 				}
 			, 1000);
 			

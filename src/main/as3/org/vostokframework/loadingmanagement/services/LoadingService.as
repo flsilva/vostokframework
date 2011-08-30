@@ -46,6 +46,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
 	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
+	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoadingMonitorError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
 	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorDispatcher;
@@ -119,6 +120,22 @@ package org.vostokframework.loadingmanagement.services
 		/**
 		 * description
 		 * 
+		 * @param assetId
+		 * @param locale
+		 * @return
+		 */
+		public function containsAssetData(assetId:String, locale:String = null): Boolean
+		{
+			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
+			return loadedAssetRepository.exists(identification);
+		}
+		
+		/**
+		 * description
+		 * 
 		 * @param queueId
 		 * @return
 		 */
@@ -154,7 +171,8 @@ package org.vostokframework.loadingmanagement.services
 				throw new LoadedAssetDataNotFoundError(identification, message);
 			}
 			
-			return loadedAssetRepository.findAssetData(identification);
+			var report:LoadedAssetReport = loadedAssetRepository.find(identification);
+			return report.data;
 		}
 		
 		/**
@@ -181,23 +199,6 @@ package org.vostokframework.loadingmanagement.services
 			}
 			
 			return globalMonitor.getChild(identification);;
-		}
-
-		/**
-		 * description
-		 * 
-		 * @param assetId
-		 * @param locale
-		 * @return
-		 */
-		public function isLoaded(loaderId:String, locale:String = null): Boolean
-		{
-			//TODO:pensar em renomear para: containsAssetData
-			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
-			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
-			
-			var identification:VostokIdentification = new VostokIdentification(loaderId, locale);
-			return loadedAssetRepository.exists(identification);
 		}
 		
 		/**
@@ -316,10 +317,11 @@ package org.vostokframework.loadingmanagement.services
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
 			var identification:VostokIdentification = new VostokIdentification(loaderId, VostokFramework.CROSS_LOCALE_ID);
+			var errorMessage:String;
 			
 			if (globalQueueLoader.containsChild(identification))
 			{
-				var errorMessage:String = "There is already a ILoader object stored with specified arguments:\n";
+				errorMessage = "There is already a ILoader object stored with specified arguments:\n";
 				errorMessage += "<loaderId>: <" + loaderId + ">\n";
 				errorMessage += "utilized locale: <" + VostokFramework.CROSS_LOCALE_ID + ">\n";
 				errorMessage += "Use method <LoadingService().exists()> to check if a ILoader object already exists.\n";
@@ -328,7 +330,15 @@ package org.vostokframework.loadingmanagement.services
 				throw new DuplicateLoaderError(identification, errorMessage);
 			}
 			
-			//TODO:implementar mesmo erro acima porem para LoadingMonitor
+			if (globalMonitor.containsChild(identification))
+			{
+				errorMessage = "There is already a ILoadingMonitor object stored for a ILoader with identification:\n";
+				errorMessage += "<identification>: <" + identification + ">\n";
+				errorMessage += "Use method <LoadingService().exists()> to check if a ILoadingMonitor object already exists for the specified ILoader.\n";
+				errorMessage += "For further information please read the documentation section about ILoadingMonitor object.";
+				
+				throw new DuplicateLoadingMonitorError(errorMessage);
+			}
 			
 			var globalMaxConnections:int = LoadingManagementContext.getInstance().maxConcurrentConnections;
 			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, priority, globalMaxConnections, concurrentConnections);
@@ -339,7 +349,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
 			//if there is a ILoader object with the identification of any Asset inside <assets>
-			var loaders:IList = createAssetLoaders(assets);
+			var loaders:IList = createLeafLoaders(assets);
 			
 			queueLoader.addChildren(loaders);
 			
@@ -411,7 +421,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
 			//if there is a ILoader object with the identification of any Asset inside <assets>
-			var loaders:IList = createAssetLoaders(assets);
+			var loaders:IList = createLeafLoaders(assets);
 			
 			var assetsAndLoadersMap:IListMap = createAssetsAndLoadersMap(assets, loaders);
 			var assetLoadingMonitors:IList = createAssetLoadingMonitors(assetsAndLoadersMap);
@@ -419,7 +429,6 @@ package org.vostokframework.loadingmanagement.services
 			var queueLoader:ILoader = globalQueueLoader.getChild(identification);
 			queueLoader.addChildren(loaders);
 			
-			//var monitor:IQueueLoadingMonitor = loadingMonitorRepository.find(queueLoader.id) as IQueueLoadingMonitor;//TODO:type coercion issue
 			var monitor:ILoadingMonitor = globalMonitor.getChild(identification);
 			monitor.addChildren(assetLoadingMonitors);
 			
@@ -440,7 +449,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			
-			if (!isLoaded(assetId, locale))
+			if (!containsAssetData(assetId, locale))
 			{
 				var message:String = "There is no data cached for an Asset object with identification:\n";
 				message += "<" + identification + ">\n";
@@ -555,7 +564,29 @@ package org.vostokframework.loadingmanagement.services
 			return map;
 		}
 		
-		private function createAssetLoaders(assets:IList):IList
+		private function createAssetLoadingMonitors(assetsAndLoaders:IListMap):IList
+		{
+			var asset:Asset;
+			var loader:ILoader;
+			var assetLoadingMonitor:ILoadingMonitor;
+			var assetLoadingMonitors:IList = new ArrayList();
+			var loadingMonitorDispatcher:LoadingMonitorDispatcher;
+			var it:IIterator = assetsAndLoaders.iterator();
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				asset = it.pointer();
+				
+				loadingMonitorDispatcher = new AssetLoadingMonitorDispatcher(asset.identification.id, asset.identification.locale, asset.type);
+				assetLoadingMonitor = new LoadingMonitor(loader, loadingMonitorDispatcher);
+				assetLoadingMonitors.add(assetLoadingMonitor);
+			}
+			
+			return assetLoadingMonitors;
+		}
+		
+		private function createLeafLoaders(assets:IList):IList
 		{
 			var asset:Asset;
 			var loader:ILoader;
@@ -582,41 +613,10 @@ package org.vostokframework.loadingmanagement.services
 					throw new DuplicateLoaderError(loader.identification, errorMessage);
 				}
 				
-				//dispatches org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
-				//if <loaderRepository> already contains AssetLoader object with its id
-				//putAssetLoaderInRepository(loader);
-				//TODO:remover codigo comentado
 				loaders.add(loader);
 			}
 			
 			return loaders;
-		}
-		
-		private function createAssetLoadingMonitors(assetsAndLoaders:IListMap):IList
-		{
-			var asset:Asset;
-			var loader:ILoader;
-			var assetLoadingMonitor:ILoadingMonitor;
-			var assetLoadingMonitors:IList = new ArrayList();
-			var loadingMonitorDispatcher:LoadingMonitorDispatcher;
-			var it:IIterator = assetsAndLoaders.iterator();
-			
-			while (it.hasNext())
-			{
-				loader = it.next();
-				asset = it.pointer();
-				
-				//assetLoadingMonitor = new AssetLoadingMonitor(asset.identification, asset.type, loader, asset.settings.cache.allowInternalCache);
-				loadingMonitorDispatcher = new AssetLoadingMonitorDispatcher(asset.identification.id, asset.identification.locale, asset.type);
-				assetLoadingMonitor = new LoadingMonitor(loader, loadingMonitorDispatcher);
-				assetLoadingMonitors.add(assetLoadingMonitor);
-				
-				//may throw DuplicateLoadingMonitorError
-				//loadingMonitorRepository.add(assetLoadingMonitor);
-				//TODO:remover codigo comentado
-			}
-			
-			return assetLoadingMonitors;
 		}
 		
 		private function validateDuplicateAsset(assets:IList):void
