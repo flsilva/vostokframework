@@ -29,6 +29,7 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingCacheSettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingExtraSettings;
@@ -96,7 +97,7 @@ package org.vostokframework.assetmanagement.domain
 			if (!priority) priority = _defaultPriority;
 			if (!settings) settings = _defaultSettings;
 			
-			var identification:AssetIdentification = createIdentification(src, assetPackage, id);
+			var identification:VostokIdentification = createIdentification(src, assetPackage, id);
 			if (!type) type = getType(src);
 			
 			if (!type)
@@ -140,7 +141,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:AssetIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
+		protected function instanciate(id:VostokIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
 		{
 			return new Asset(id, src, type, priority, settings);
 		}
@@ -148,10 +149,10 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function createIdentification(src:String, assetPackage:AssetPackage, id:String = null): AssetIdentification
+		protected function createIdentification(src:String, assetPackage:AssetPackage, id:String = null): VostokIdentification
 		{
 			if (StringUtil.isBlank(id)) id = src;
-			var identification:AssetIdentification = new AssetIdentification(id, assetPackage.identification.locale);
+			var identification:VostokIdentification = new VostokIdentification(id, assetPackage.identification.locale);
 			
 			return identification;
 		}

@@ -29,7 +29,7 @@
 
 package org.vostokframework.assetmanagement.domain.errors
 {
-	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
 
 	/**
@@ -39,16 +39,16 @@ package org.vostokframework.assetmanagement.domain.errors
 	 */
 	public class AssetPackageNotFoundError extends VostokFrameworkError
 	{
-		private var _identification:AssetPackageIdentification;
+		private var _identification:VostokIdentification;
 		
-		public function get identification():AssetPackageIdentification { return _identification; }
+		public function get identification():VostokIdentification { return _identification; }
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AssetPackageNotFoundError(identification:AssetPackageIdentification, message:String = null)
+		public function AssetPackageNotFoundError(identification:VostokIdentification, message:String = null)
 		{
 			super(message);
 			name = "AssetPackageNotFoundError";

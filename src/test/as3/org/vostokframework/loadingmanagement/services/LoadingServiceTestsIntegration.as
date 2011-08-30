@@ -46,7 +46,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
 	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
@@ -121,7 +120,7 @@ package org.vostokframework.loadingmanagement.services
 			
 			service = new LoadingService();
 			
-			var packageIdentification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
 			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
 			asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-01.jpg", assetPackage);
 			asset2 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTests/asset/image-02.jpg", assetPackage);

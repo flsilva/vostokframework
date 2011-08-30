@@ -34,6 +34,7 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 
 	/**
@@ -43,14 +44,14 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class AssetRepository
 	{
-		private var _assetMap:IMap;//key = AssetIdentification | value = Asset 
+		private var _assetMap:IMap;//key = VostokIdentification | value = Asset 
 
 		/**
 		 * description
 		 */
 		public function AssetRepository()
 		{
-			_assetMap = new TypedMap(new HashMap(), AssetIdentification, Asset);
+			_assetMap = new TypedMap(new HashMap(), VostokIdentification, Asset);
 		}
 		
 		/**
@@ -95,7 +96,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function exists(identification:AssetIdentification): Boolean
+		public function exists(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -110,7 +111,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(identification:AssetIdentification): Asset
+		public function find(identification:VostokIdentification): Asset
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -148,7 +149,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(identification:AssetIdentification): Boolean
+		public function remove(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			

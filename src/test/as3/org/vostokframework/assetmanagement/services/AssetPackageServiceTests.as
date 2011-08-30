@@ -31,10 +31,10 @@ package org.vostokframework.assetmanagement.services
 {
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageFactory;
-	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
 
 	/**
@@ -45,7 +45,7 @@ package org.vostokframework.assetmanagement.services
 	{
 		private static const ASSET_PACKAGE_ID:String = "asset-package-id";
 		private static const ASSET_PACKAGE_LOCALE:String = "en-US";
-		private static const IDENTIFICATION:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+		private static const IDENTIFICATION:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 		
 		private var _service:AssetPackageService;
 		
@@ -135,7 +135,7 @@ package org.vostokframework.assetmanagement.services
 		{
 			_service.createAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			var identification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			Assert.assertTrue(AssetManagementContext.getInstance().assetPackageRepository.exists(identification));
 		}
 		
@@ -240,7 +240,7 @@ package org.vostokframework.assetmanagement.services
 			
 			_service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
+			var identification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			var exists:Boolean = AssetManagementContext.getInstance().assetPackageRepository.exists(identification);
 			Assert.assertFalse(exists);
 		}

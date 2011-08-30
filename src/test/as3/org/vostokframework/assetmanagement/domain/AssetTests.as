@@ -30,6 +30,7 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -39,7 +40,7 @@ package org.vostokframework.assetmanagement.domain
 	[TestCase]
 	public class AssetTests
 	{
-		private static const IDENTIFICATION:AssetIdentification = new AssetIdentification("asset-id", "en-US");
+		private static const IDENTIFICATION:VostokIdentification = new VostokIdentification("asset-id", "en-US");
 		private static const ASSET_SRC:String = "asset-path/asset.xml";
 		private static const ASSET_TYPE:AssetType = AssetType.XML;
 		private static const ASSET_PRIORITY:LoadPriority = LoadPriority.HIGH;
@@ -126,7 +127,7 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function equals_compareTwoDifferentAssets_ReturnsFalse(): void
 		{
-			var identification:AssetIdentification = new AssetIdentification("other-asset-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("other-asset-id", "en-US");
 			var otherAsset:Asset = new Asset(identification, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 			Assert.assertFalse(_asset.equals(otherAsset));
 		}

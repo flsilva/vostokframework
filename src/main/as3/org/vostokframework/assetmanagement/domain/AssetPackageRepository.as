@@ -35,6 +35,7 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
 
 	/**
@@ -44,14 +45,14 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class AssetPackageRepository
 	{
-		private var _assetPackageMap:IMap;//key = AssetPackageIdentification | value = AssetPackage 
+		private var _assetPackageMap:IMap;//key = VostokIdentification | value = AssetPackage 
 
 		/**
 		 * description
 		 */
 		public function AssetPackageRepository()
 		{
-			_assetPackageMap = new TypedMap(new HashMap(), AssetPackageIdentification, AssetPackage);
+			_assetPackageMap = new TypedMap(new HashMap(), VostokIdentification, AssetPackage);
 		}
 		
 		/**
@@ -96,7 +97,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function exists(identification:AssetPackageIdentification): Boolean
+		public function exists(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -111,7 +112,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(identification:AssetPackageIdentification): AssetPackage
+		public function find(identification:VostokIdentification): AssetPackage
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -138,7 +139,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function findAssetPackageByAssetId(identification:AssetIdentification): AssetPackage
+		public function findAssetPackageByAssetId(identification:VostokIdentification): AssetPackage
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -183,7 +184,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>assetPackageId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(identification:AssetPackageIdentification): Boolean
+		public function remove(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			

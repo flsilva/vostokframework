@@ -102,7 +102,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			var maxAttempts:int = asset.settings.policy.maxAttempts;
 			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings, maxAttempts);
-			//TODO: depois q AssetIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
+			//TODO: depois q VostokIdentification mudar para VostokIdentification alterar linha e passar o mesmo objeto diretamente(ou clonar), ao inves de instanciar um novo. 
 			var identification:VostokIdentification = new VostokIdentification(asset.identification.id, asset.identification.locale);
 			return instanciateLeaf(identification, state, asset.priority);
 			

@@ -32,11 +32,10 @@ package org.vostokframework.assetmanagement.services
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -48,7 +47,7 @@ package org.vostokframework.assetmanagement.services
 	public class AssetServiceTests
 	{
 		private static const ASSET_ID:String = "asset-id";
-		private static const IDENTIFICATION:AssetIdentification = new AssetIdentification(ASSET_ID, VostokFramework.CROSS_LOCALE_ID);
+		private static const IDENTIFICATION:VostokIdentification = new VostokIdentification(ASSET_ID, VostokFramework.CROSS_LOCALE_ID);
 
 		private var _service:AssetService;
 		
@@ -86,7 +85,7 @@ package org.vostokframework.assetmanagement.services
 		
 		private function getAssetPackage():AssetPackage
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification("asset-package-1", VostokFramework.CROSS_LOCALE_ID);
+			var identification:VostokIdentification = new VostokIdentification("asset-package-1", VostokFramework.CROSS_LOCALE_ID);
 			return new AssetPackage(identification);
 		}
 		

@@ -31,9 +31,9 @@ package org.vostokframework.assetmanagement.services
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.AssetPackageNotFoundError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
 
@@ -71,7 +71,7 @@ package org.vostokframework.assetmanagement.services
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetPackageId, locale);
 			return _context.assetPackageRepository.exists(identification);
 		}
 
@@ -90,7 +90,7 @@ package org.vostokframework.assetmanagement.services
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetPackageId, locale);
 			var assetPackage:AssetPackage = _context.assetPackageFactory.create(identification);
 			
 			try
@@ -137,7 +137,7 @@ package org.vostokframework.assetmanagement.services
 			if (StringUtil.isBlank(assetPackageId)) throw new ArgumentError("Argument <assetPackageId> must not be null nor an empty String.");
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetPackageId, locale);
 			
 			if (!assetPackageExists(assetPackageId, locale))
 			{
@@ -178,7 +178,7 @@ package org.vostokframework.assetmanagement.services
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetPackageIdentification = new AssetPackageIdentification(assetPackageId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetPackageId, locale);
 			return _context.assetPackageRepository.remove(identification);
 		}
 

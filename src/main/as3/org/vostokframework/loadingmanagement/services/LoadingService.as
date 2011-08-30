@@ -40,7 +40,6 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
@@ -145,7 +144,7 @@ package org.vostokframework.loadingmanagement.services
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			if(!loadedAssetRepository.exists(identification))
 			{
 				var message:String = "There is no data cached for an Asset object with identification:\n";
@@ -197,7 +196,7 @@ package org.vostokframework.loadingmanagement.services
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <loaderId> must not be null nor an empty String.");
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetIdentification = new AssetIdentification(loaderId, locale);
+			var identification:VostokIdentification = new VostokIdentification(loaderId, locale);
 			return loadedAssetRepository.exists(identification);
 		}
 		
@@ -439,7 +438,7 @@ package org.vostokframework.loadingmanagement.services
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID; 
 			
-			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			
 			if (!isLoaded(assetId, locale))
 			{

@@ -34,7 +34,7 @@ package org.vostokframework.loadingmanagement.report
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
 	import org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError;
 
@@ -45,14 +45,14 @@ package org.vostokframework.loadingmanagement.report
 	 */
 	public class LoadedAssetRepository
 	{
-		private var _reportMap:IMap;//key = AssetIdentification | value = LoadedAssetReport 
+		private var _reportMap:IMap;//key = VostokIdentification | value = LoadedAssetReport 
 
 		/**
 		 * description
 		 */
 		public function LoadedAssetRepository()
 		{
-			_reportMap = new TypedMap(new HashMap(), AssetIdentification, LoadedAssetReport);
+			_reportMap = new TypedMap(new HashMap(), VostokIdentification, LoadedAssetReport);
 		}
 		
 		/**
@@ -67,7 +67,7 @@ package org.vostokframework.loadingmanagement.report
 			
 			if (_reportMap.containsKey(report.identification))
 			{
-				var message:String = "There is already a LoadedAssetReport object stored with AssetIdentification:\n";
+				var message:String = "There is already a LoadedAssetReport object stored with VostokIdentification:\n";
 				message += "<" + report.identification + ">\n";
 				message += "Use the method <LoadedAssetRepository().exists()> to check if a LoadedAssetReport object already exists.\n";
 				
@@ -94,7 +94,7 @@ package org.vostokframework.loadingmanagement.report
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function exists(identification:AssetIdentification): Boolean
+		public function exists(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -108,7 +108,7 @@ package org.vostokframework.loadingmanagement.report
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function find(identification:AssetIdentification): LoadedAssetReport
+		public function find(identification:VostokIdentification): LoadedAssetReport
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -135,14 +135,14 @@ package org.vostokframework.loadingmanagement.report
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function findAssetData(identification:AssetIdentification): *
+		public function findAssetData(identification:VostokIdentification): *
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
 			var report:LoadedAssetReport = find(identification);
 			if (!report)
 			{
-				var message:String = "There is no LoadedAssetReport object stored with AssetIdentification:\n";
+				var message:String = "There is no LoadedAssetReport object stored with VostokIdentification:\n";
 				message += "<" + report.identification + ">\n";
 				message += "Use the method <LoadedAssetRepository().exists()> to check if a LoadedAssetReport object already exists.\n";
 				
@@ -169,7 +169,7 @@ package org.vostokframework.loadingmanagement.report
 		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function remove(identification:AssetIdentification): Boolean
+		public function remove(identification:VostokIdentification): Boolean
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			

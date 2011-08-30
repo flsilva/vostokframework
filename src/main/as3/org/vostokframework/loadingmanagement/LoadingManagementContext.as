@@ -31,7 +31,6 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.services.AssetService;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
@@ -352,7 +351,7 @@ package org.vostokframework.loadingmanagement
 			
 			var src:String = asset.src;
 			
-			var identification:AssetIdentification = new AssetIdentification(event.assetId, event.assetLocale);
+			var identification:VostokIdentification = new VostokIdentification(event.assetId, event.assetLocale);
 			
 			var queueLoader:ILoader = globalQueueLoader.getParent(new VostokIdentification(identification.id, identification.locale));//TODO:refactor identification
 			if (!queueLoader)

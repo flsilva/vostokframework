@@ -31,9 +31,9 @@ package org.vostokframework.assetmanagement.services
 	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
 	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
@@ -75,7 +75,7 @@ package org.vostokframework.assetmanagement.services
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			return _context.assetRepository.exists(identification);
 		}
 
@@ -171,7 +171,7 @@ package org.vostokframework.assetmanagement.services
 			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
-			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			
 			if (!assetExists(assetId, locale))
 			{
@@ -214,7 +214,7 @@ package org.vostokframework.assetmanagement.services
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
-			var identification:AssetIdentification = new AssetIdentification(assetId, locale);
+			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
 			return _context.assetRepository.remove(identification);
 		}
 

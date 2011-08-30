@@ -28,6 +28,7 @@
  */
 package org.vostokframework.assetmanagement.domain
 {
+	import org.vostokframework.VostokIdentification;
 
 	/**
 	 * description
@@ -50,7 +51,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>id</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function create(identification:AssetPackageIdentification): AssetPackage
+		public function create(identification:VostokIdentification): AssetPackage
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
@@ -60,7 +61,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function instanciate(identification:AssetPackageIdentification): AssetPackage
+		protected function instanciate(identification:VostokIdentification): AssetPackage
 		{
 			return new AssetPackage(identification);
 		}

@@ -30,6 +30,7 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -57,7 +58,7 @@ package org.vostokframework.assetmanagement.domain
 		
 		private function getAssetPackage():AssetPackage
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification("package-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("package-id", "en-US");
 			return new AssetPackage(identification);
 		}
 		
@@ -183,7 +184,7 @@ package org.vostokframework.assetmanagement.domain
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage());
 			
-			var identification:AssetIdentification = new AssetIdentification("a.aac", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("a.aac", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));
 		}
 		
@@ -193,7 +194,7 @@ package org.vostokframework.assetmanagement.domain
 			var factory:AssetFactory = getFactory();
 			var asset:Asset = factory.create("a.aac", getAssetPackage(), null, null, "asset-id");
 			
-			var identification:AssetIdentification = new AssetIdentification("asset-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("asset-id", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));
 		}
 		

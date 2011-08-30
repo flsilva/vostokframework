@@ -31,6 +31,7 @@ package org.vostokframework.assetmanagement.domain
 {
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
@@ -68,7 +69,7 @@ package org.vostokframework.assetmanagement.domain
 		
 		private function getAsset():Asset
 		{
-			var identification:AssetIdentification = new AssetIdentification("asset-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("asset-id", "en-US");
 			return new Asset(identification, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
 		}
 		
@@ -160,7 +161,7 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function exists_notAddedAsset_ReturnsFalse(): void
 		{
-			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("any-not-added-id", "en-US");
 			var exists:Boolean = _repository.exists(identification);
 			Assert.assertFalse(exists);
 		}
@@ -175,7 +176,7 @@ package org.vostokframework.assetmanagement.domain
 			var asset:Asset = getAsset();
 			_repository.add(asset);
 			
-			var identification:AssetIdentification = asset.identification;
+			var identification:VostokIdentification = asset.identification;
 			asset = _repository.find(asset.identification);
 			
 			Assert.assertTrue(asset.identification.equals(identification));
@@ -184,7 +185,7 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function find_notAddedAsset_ReturnsNull(): void
 		{
-			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("any-not-added-id", "en-US");
 			var asset:Asset = _repository.find(identification);
 			Assert.assertNull(asset);
 		}
@@ -246,7 +247,7 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function remove_emptyAssetRepository_ReturnsFalse(): void
 		{
-			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("any-not-added-id", "en-US");
 			var removed:Boolean = _repository.remove(identification);
 			Assert.assertFalse(removed);
 		}
@@ -256,7 +257,7 @@ package org.vostokframework.assetmanagement.domain
 		{
 			_repository.add(getAsset());
 			
-			var identification:AssetIdentification = new AssetIdentification("any-not-added-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("any-not-added-id", "en-US");
 			var removed:Boolean = _repository.remove(identification);
 			Assert.assertFalse(removed);
 		}

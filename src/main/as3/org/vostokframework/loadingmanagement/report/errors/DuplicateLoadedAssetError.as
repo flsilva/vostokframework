@@ -29,7 +29,7 @@
 
 package org.vostokframework.loadingmanagement.report.errors
 {
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
 
 	/**
@@ -39,16 +39,16 @@ package org.vostokframework.loadingmanagement.report.errors
 	 */
 	public class DuplicateLoadedAssetError extends VostokFrameworkError
 	{
-		private var _identification:AssetIdentification;
+		private var _identification:VostokIdentification;
 		
-		public function get identification():AssetIdentification { return _identification; }
+		public function get identification():VostokIdentification { return _identification; }
 		
 		/**
 		 * Constructor, creates a new DuplicateAssetLoaderError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function DuplicateLoadedAssetError(identification:AssetIdentification, message:String = null)
+		public function DuplicateLoadedAssetError(identification:VostokIdentification, message:String = null)
 		{
 			super(message);
 			name = "DuplicateLoadedAssetError";

@@ -30,6 +30,7 @@
 package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
+	import org.vostokframework.VostokIdentification;
 
 	/**
 	 * @author Flávio Silva
@@ -84,7 +85,7 @@ package org.vostokframework.assetmanagement.domain
 		[Test]
 		public function create_validArguments_ReturnsValidObject(): void
 		{
-			var identification:AssetPackageIdentification = new AssetPackageIdentification("package-id", "en-US");
+			var identification:VostokIdentification = new VostokIdentification("package-id", "en-US");
 			var assetPackage:AssetPackage = _factory.create(identification);
 			Assert.assertNotNull(assetPackage);
 		}

@@ -30,7 +30,6 @@ package org.vostokframework.loadingmanagement.report
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 
 	/**
@@ -45,7 +44,7 @@ package org.vostokframework.loadingmanagement.report
 		 */
 		private var _bytesTotal:int;
 		private var _data:*;
-		private var _identification:AssetIdentification;
+		private var _identification:VostokIdentification;
 		private var _latency:int;
 		private var _queueIdentification:VostokIdentification;
 		private var _src:String;
@@ -62,7 +61,7 @@ package org.vostokframework.loadingmanagement.report
 		
 		public function get data():* { return _data; }
 		
-		public function get identification():AssetIdentification { return _identification; }
+		public function get identification():VostokIdentification { return _identification; }
 		
 		public function get latency():int { return _latency; }
 		
@@ -92,7 +91,7 @@ package org.vostokframework.loadingmanagement.report
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoadedAssetReport(identification:AssetIdentification, queueIdentification:VostokIdentification, data:*, type:AssetType, src:String)
+		public function LoadedAssetReport(identification:VostokIdentification, queueIdentification:VostokIdentification, data:*, type:AssetType, src:String)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!queueIdentification) throw new ArgumentError("Argument <queueIdentification> must not be null.");

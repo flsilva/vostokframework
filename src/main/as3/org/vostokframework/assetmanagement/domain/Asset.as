@@ -32,6 +32,7 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.ReflectionUtil;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
@@ -45,7 +46,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		private var _identification:AssetIdentification;
+		private var _identification:VostokIdentification;
 		private var _priority:LoadPriority;
 		private var _settings:AssetLoadingSettings;
 		private var _src:String;
@@ -54,7 +55,7 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * description
 		 */
-		public function get identification(): AssetIdentification { return _identification; }
+		public function get identification(): VostokIdentification { return _identification; }
 
 		/**
 		 * description
@@ -89,7 +90,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	ArgumentError 	if the <code>type</code> argument is <code>null</code>.
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code>.
 		 */
-		public function Asset(identification:AssetIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings = null)
+		public function Asset(identification:VostokIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings = null)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
