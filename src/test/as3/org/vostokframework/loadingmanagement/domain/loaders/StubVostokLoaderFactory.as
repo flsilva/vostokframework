@@ -63,9 +63,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		override protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):ILoaderState
 		{
-			type = null;//just to avoid FDT warnings
-			url = null;//just to avoid FDT warnings
-			settings = null;//just to avoid FDT warnings
+			type = null;//just to avoid compiler warnings
+			url = null;//just to avoid compiler warnings
+			settings = null;//just to avoid compiler warnings
 			
 			var algorithm:StubFileLoadingAlgorithm = new StubFileLoadingAlgorithm();
 			algorithm.openBehaviorSync = _openBehaviorSync;

@@ -50,6 +50,7 @@ package org.vostokframework.loadingmanagement.domain.events
 		 */
 		private var _monitoring:LoadingMonitoring;
 		private var _queueId:String;
+		private var _queueLocale:String;
 		
 		/**
 		 * description
@@ -63,23 +64,29 @@ package org.vostokframework.loadingmanagement.domain.events
 		
 		/**
 		 * description
+		 */
+		public function get queueLocale(): String { return _queueLocale; }
+		
+		/**
+		 * description
 		 * 
 		 * @param assetId
 		 * @param assetType
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function AggregateQueueLoadingEvent(type:String, queueId:String, monitoring:LoadingMonitoring = null)
+		public function AggregateQueueLoadingEvent(type:String, queueId:String, queueLocale:String, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			
 			_queueId = queueId;
+			_queueLocale = queueLocale;
 			_monitoring = monitoring;
 		}
 		
 		override public function clone():Event
 		{
-			return new AggregateQueueLoadingEvent(type, _queueId, _monitoring);
+			return new AggregateQueueLoadingEvent(type, _queueId, _queueLocale, _monitoring);
 		}
 		
 		public static function typeBelongs(type:String):Boolean

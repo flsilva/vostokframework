@@ -138,7 +138,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 		 */
 		override protected function childResumed(child:ILoader): void
 		{
-			child = null;//just to avoid FDT warnings
+			child = null;//just to avoid compiler warnings
 			loadNextLoader();
 		}
 		
@@ -147,7 +147,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 		 */
 		override protected function childStopped(child:ILoader): void
 		{
-			child = null;//just to avoid FDT warnings
+			child = null;//just to avoid compiler warnings
 			loadNextLoader();
 		}
 		

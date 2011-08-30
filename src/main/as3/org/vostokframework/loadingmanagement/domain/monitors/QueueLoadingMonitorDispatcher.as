@@ -65,13 +65,13 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		override public function dispatchCompleteEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
-			data = null;//just to avoid FDT warnings
+			data = null;//just to avoid compiler warnings
 			dispatchEvent(createEvent(QueueLoadingEvent.COMPLETE, monitoring));
 		}
 		
 		override public function dispatchOpenEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
-			data = null;//just to avoid FDT warnings
+			data = null;//just to avoid compiler warnings
 			dispatchEvent(createEvent(QueueLoadingEvent.OPEN, monitoring));
 		}
 		
@@ -92,7 +92,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		protected function createEvent(type:String, monitoring:LoadingMonitoring):Event
 		{
-			return new QueueLoadingEvent(type, _queueId, monitoring);//TODO:enviar locale tbm
+			return new QueueLoadingEvent(type, _queueId, _queueLocale, monitoring);
 		}
 		
 	}

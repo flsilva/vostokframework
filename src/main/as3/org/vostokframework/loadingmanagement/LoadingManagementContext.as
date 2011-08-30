@@ -228,7 +228,9 @@ package org.vostokframework.loadingmanagement
 		public function setLoadedAssetRepository(repository:LoadedAssetRepository): void
 		{
 			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
-			_loadedAssetRepository = repository;//TODO:validate if already exists an queueLoader and if yes stop() and dispose() it
+			
+			if (_loadedAssetRepository) _loadedAssetRepository.clear();
+			_loadedAssetRepository = repository;
 		}
 		
 		/**
@@ -236,10 +238,12 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param loaderRepository
 		 */
-		public function setLoaderRepository(loaderRepository:LoaderRepository): void
+		public function setLoaderRepository(repository:LoaderRepository): void
 		{
-			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
-			_loaderRepository = loaderRepository;//TODO:validate if already exists an loaderRepository and dispose() it
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			
+			if (_loaderRepository) _loaderRepository.clear();
+			_loaderRepository = repository;
 		}
 		
 		/**
@@ -247,10 +251,12 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param loaderRepository
 		 */
-		public function setLoadingMonitorRepository(loadingMonitorRepository:LoadingMonitorRepository): void
+		public function setLoadingMonitorRepository(repository:LoadingMonitorRepository): void
 		{
-			if (!loadingMonitorRepository) throw new ArgumentError("Argument <loadingMonitorRepository> must not be null.");
-			_loadingMonitorRepository = loadingMonitorRepository;//TODO:validate if already exists an loaderRepository and dispose() it
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			
+			if (_loadingMonitorRepository) _loadingMonitorRepository.clear();
+			_loadingMonitorRepository = repository;
 		}
 
 		/**
@@ -281,15 +287,6 @@ package org.vostokframework.loadingmanagement
 		 */
 		private function createGlobalQueueLoader(): void
 		{
-			/*var policy:ILoadingPolicy = new ElaborateLoadingPolicy(_loaderRepository);
-			policy.globalMaxConnections = _maxConcurrentConnections;
-			policy.localMaxConnections = _maxConcurrentQueues;
-			
-			var queueLoadingAlgorithm:LoadingAlgorithm = new QueueLoadingAlgorithm(policy);
-			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:ILoader = new VostokLoader(identification, queueLoadingAlgorithm, LoadPriority.MEDIUM);
-			*/
-			
 			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
 			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, _maxConcurrentConnections, _maxConcurrentQueues);
 			
@@ -312,7 +309,7 @@ package org.vostokframework.loadingmanagement
 			trace("#####################################################");
 			trace("LoadingManagementContext::queueLoaderCanceledHandler() - event.queueId: " + event.queueId);
 			
-			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
+			var identification:VostokIdentification = new VostokIdentification(event.queueId, event.queueLocale);
 			
 			globalQueueLoadingMonitor.removeChild(identification);
 			//globalQueueLoader.removeLoader(identification);
@@ -323,7 +320,7 @@ package org.vostokframework.loadingmanagement
 			trace("#####################################################");
 			trace("LoadingManagementContext::queueLoaderCompleteHandler() - event.queueId: " + event.queueId);
 			
-			var identification:VostokIdentification = new VostokIdentification(event.queueId, VostokFramework.CROSS_LOCALE_ID);//TODO:inserir locale
+			var identification:VostokIdentification = new VostokIdentification(event.queueId, event.queueLocale);
 			
 			globalQueueLoadingMonitor.removeChild(identification);
 			globalQueueLoader.removeChild(identification);
@@ -351,18 +348,16 @@ package org.vostokframework.loadingmanagement
 			
 			var src:String = asset.src;
 			
-			var identification:VostokIdentification = new VostokIdentification(event.assetId, event.assetLocale);
-			
-			var queueLoader:ILoader = globalQueueLoader.getParent(new VostokIdentification(identification.id, identification.locale));//TODO:refactor identification
+			var queueLoader:ILoader = globalQueueLoader.getParent(asset.identification);
 			if (!queueLoader)
 			{
 				errorMessage = "It was expected that the parent ILoader object for the child ILoader object was found.\n";
-				errorMessage += "child ILoader id: " + identification.toString();
+				errorMessage += "child ILoader id: " + asset.identification.toString();
 				
 				throw new IllegalOperationError(errorMessage); 
 			}
 			
-			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(identification, queueLoader.identification, event.assetData, event.assetType, src);
+			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(asset.identification, queueLoader.identification, event.assetData, event.assetType, src);
 			loadedAssetRepository.add(loadedAssetReport); 
 		}
 
