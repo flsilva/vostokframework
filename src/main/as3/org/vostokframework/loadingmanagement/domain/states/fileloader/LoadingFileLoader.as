@@ -81,21 +81,9 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			_load();
 		}
 		
-		override public function cancel():void
-		{
-			removeAlgorithmListeners();
-			super.cancel();
-		}
-		
 		override public function load():void
 		{
 			//do nothing
-		}
-		
-		override public function stop():void
-		{
-			removeAlgorithmListeners();
-			super.stop();
 		}
 		
 		override protected function doDispose():void
@@ -103,8 +91,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			removeAlgorithmListeners();
 			
 			_errors = null;
-			
-			super.doDispose();
 		}
 		
 		private function addAlgorithmListeners():void
@@ -128,6 +114,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			
 			// IF IT'S A SECURITY ERROR
 			// IT DOES NOT USE ATTEMPTS TO TRY AGAIN
+			// IT JUST FAIL
 			if (error.equals(LoadError.SECURITY_ERROR))
 			{
 				failed();
@@ -262,7 +249,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			
 			try
 			{
-				algorithm.load();//TODO:implementar delay inicial e de erro
+				algorithm.load();//TODO:implementar delay (inicial e de erro)
 			}
 			catch (error:SecurityError)
 			{

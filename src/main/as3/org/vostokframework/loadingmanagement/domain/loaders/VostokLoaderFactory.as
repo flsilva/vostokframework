@@ -174,10 +174,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			
 			if (!algorithm)
 			{
-				var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received arguments:\n";
+				var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received type:\n";
 				errorMessage = "<type>: " + type + "\n";
 				errorMessage = "<url>: " + url + "\n";
-				errorMessage = "<settings> :" + settings + "\n";
 				
 				throw new IllegalStateError(errorMessage);
 			}

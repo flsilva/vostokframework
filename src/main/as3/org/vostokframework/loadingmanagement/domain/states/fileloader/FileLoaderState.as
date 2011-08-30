@@ -133,11 +133,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));
 		}
 		
-		/*public function getLoaderState(identification:VostokIdentification): ILoaderState
-		{
-			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));
-		}*/
-		
 		public function getParent(identification:VostokIdentification): ILoader
 		{
 			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));

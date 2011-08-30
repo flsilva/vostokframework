@@ -192,6 +192,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 				parser = it.next();
 				parsedData = parser.parse(parsedData);
 			}
+			
+			return parsedData;
 		}
 
 		protected function setLoadingDispatcher(dispatcher:IEventDispatcher):void
