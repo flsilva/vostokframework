@@ -31,6 +31,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
+	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.as3utils.ReflectionUtil;
@@ -47,8 +48,11 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	 */
 	public class FileLoadingAlgorithm implements IEventDispatcher, IDisposable
 	{
-		
+		/**
+		 * @private
+ 		 */
 		private var _dispatcher:IEventDispatcher;
+		private var _disposed:Boolean;
 		private var _parsers:IList;
 		
 		/**
@@ -78,27 +82,37 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
  		 */
 		public function cancel(): void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			validateDisposal();
+			doCancel();
 		}
 		
 		public function dispatchEvent(event : Event) : Boolean
 		{
+			validateDisposal();
 			validateDispatcher();
 			return _dispatcher.dispatchEvent(event);
 		}
 		
 		public function dispose():void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			if (_disposed) return;
+			
+			doDispose();
+			
+			_disposed = true;
+			_dispatcher = null;
+			_parsers = null;
 		}
 		
 		public function getData():*
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			validateDisposal();
+			return doGetData();
 		}
 		
 		public function hasEventListener(type : String) : Boolean
 		{
+			validateDisposal();
 			validateDispatcher();
 			return _dispatcher.hasEventListener(type);
 		}
@@ -110,11 +124,13 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
  		 */
 		public function load(): void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			validateDisposal();
+			doLoad();
 		}
 		
 		public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
 		{
+			validateDisposal();
 			validateDispatcher();
 			_dispatcher.removeEventListener(type, listener, useCapture);
 		}
@@ -124,17 +140,46 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 */
 		public function stop(): void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			validateDisposal();
+			doStop();
 		}
 		
 		public function willTrigger(type : String) : Boolean
 		{
+			validateDisposal();
 			validateDispatcher();
 			return _dispatcher.willTrigger(type);
 		}
 		
+		protected function doCancel():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doDispose():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doGetData():*
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doLoad():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		protected function doStop():void
+		{
+			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
 		protected function parseData(rawData:*):*
 		{
+			validateDisposal();
+			
 			if (!rawData) return null;
 			if (!_parsers) return rawData;
 			
@@ -158,6 +203,14 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		private function validateDispatcher():void
 		{
 			if (!_dispatcher) throw new IllegalStateError("Method <setLoadingDispatcher> must be called at the startup of the object.");
+		}
+		
+		/**
+		 * @private
+		 */
+		private function validateDisposal():void
+		{
+			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
 		}
 
 	}

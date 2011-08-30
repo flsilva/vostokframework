@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms
 {
-	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
 
 	import flash.net.URLLoader;
@@ -44,11 +43,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		/**
 		 * @private
  		 */
-		private var _disposed:Boolean;
 		private var _loader:URLLoader;
 		private var _request:URLRequest;
-		
-		//TODO:pensar sobre deixar logica "dispose" na base class (doCancel(), doLoad(), etc)
 		
 		/**
 		 * description
@@ -68,46 +64,37 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			setLoadingDispatcher(_loader);
 		}
 		
-		/**
-		 * description
-		 */
-		override public function cancel(): void
+		override protected function doCancel(): void
 		{
-			validateDisposal();
 			close();
 		}
 		
-		override public function dispose():void
+		override protected function doDispose():void
 		{
-			if (_disposed) return;
-			
 			close();
 			
 			_loader = null;
 			_request = null;
 		}
 		
-		override public function getData():*
+		override protected function doGetData():*
 		{
-			validateDisposal();
 			return parseData(_loader.data);
 		}
 		
 		/**
 		 * description
 		 */
-		override public function load(): void
+		override protected function doLoad(): void
 		{
-			validateDisposal();
 			_loader.load(_request);
 		}
 		
 		/**
 		 * description
 		 */
-		override public function stop():void
+		override protected function doStop():void
 		{
-			validateDisposal();
 			close();
 		}
 		
@@ -121,14 +108,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			{
 				//do nothing
 			}
-		}
-		
-		/**
-		 * @private
-		 */
-		private function validateDisposal():void
-		{
-			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
 		}
 
 	}

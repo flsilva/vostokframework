@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms
 {
-	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
 
 	import flash.display.Loader;
@@ -46,11 +45,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		 * @private
  		 */
 		private var _context:LoaderContext;
-		private var _disposed:Boolean;
 		private var _loader:Loader;
 		private var _request:URLRequest;
-		
-		//TODO:pensar sobre deixar logica "dispose" na base class (doCancel(), doLoad(), etc)
 		
 		/**
 		 * description
@@ -74,16 +70,13 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 		/**
 		 * description
 		 */
-		override public function cancel(): void
+		override protected function doCancel(): void
 		{
-			validateDisposal();
 			close();
 		}
 		
-		override public function dispose():void
+		override protected function doDispose():void
 		{
-			if (_disposed) return;
-			
 			close();
 			
 			_loader = null;
@@ -91,27 +84,24 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			_context = null;
 		}
 		
-		override public function getData():*
+		override protected function doGetData():*
 		{
-			validateDisposal();
 			return parseData(_loader.content);
 		}
 		
 		/**
 		 * description
 		 */
-		override public function load(): void
+		override protected function doLoad(): void
 		{
-			validateDisposal();
 			_loader.load(_request, _context);
 		}
 		
 		/**
 		 * description
 		 */
-		override public function stop():void
+		override protected function doStop():void
 		{
-			validateDisposal();
 			close();
 		}
 		
@@ -129,14 +119,6 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithm
 			{
 				_loader.unload();
 			}
-		}
-		
-		/**
-		 * @private
-		 */
-		private function validateDisposal():void
-		{
-			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
 		}
 
 	}
