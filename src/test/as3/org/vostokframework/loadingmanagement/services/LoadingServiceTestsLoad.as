@@ -359,9 +359,6 @@ package org.vostokframework.loadingmanagement.services
 			
 			service.load(QUEUE1_ID, list);
 			
-			//var isLoaded:Boolean = service.isLoaded(asset1.identification.id, asset1.identification.locale);
-			//Assert.assertTrue(isLoaded);
-			
 			var timer:Timer = new Timer(400, 1);
 			
 			var listener:Function = Async.asyncHandler(this, 
@@ -389,7 +386,6 @@ package org.vostokframework.loadingmanagement.services
 			list.add(asset1);
 			
 			service.load(QUEUE1_ID, list);			
-			//service.getAssetData(asset1.identification.id, asset1.identification.locale);
 			
 			var timer:Timer = new Timer(400, 1);
 			
@@ -411,7 +407,6 @@ package org.vostokframework.loadingmanagement.services
 			trace("load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject()");
 			
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			//stubVostokLoaderFactory.successBehaviorSync = true;
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
 			

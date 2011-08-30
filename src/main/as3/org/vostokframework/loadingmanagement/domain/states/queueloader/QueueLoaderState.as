@@ -50,9 +50,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	 */
 	public class QueueLoaderState implements ILoaderState
 	{
-		//TODO:pensar em transformar essa classe em outra classe utilizada pelas subclasses como composition
-		//renomear pra algo como QueueLoaderCommonBehavior.as
-		//issue com metodos "loaderAdded(), loaderRemoved()" etc
+		
 		/**
 		 * @private
 		 */
@@ -185,6 +183,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 				childCanceled(child);
 				
 				removeChild(child.identification);
+				child.dispose();
 			}
 			else
 			{
@@ -265,38 +264,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 				throw new LoaderNotFoundError(identification, message);
 			}
 		}
-		/*
-		public function getLoaderState(identification:VostokIdentification): ILoaderState
-		{
-			validateDisposal();
-			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
-			
-			var child:ILoader;
-			
-			if (loadingStatus.allLoaders.containsKey(identification.toString()))
-			{
-				child = loadingStatus.allLoaders.getValue(identification.toString());
-				return child.state;
-			}
-			else
-			{
-				var it:IIterator = loadingStatus.allLoaders.iterator();
-				
-				while (it.hasNext())
-				{
-					child = it.next();
-					if (child.containsLoader(identification)) return child.getLoaderState(identification);
-				}
-				
-				var message:String = "There is no ILoader object stored with identification:\n";
-				message += "<" + identification + ">";
-				throw new LoaderNotFoundError(identification, message);
-			}
-			//TODO:remover esse metodo
-			
-			return null;
-		}
-		*/
+		
 		public function getParent(identification:VostokIdentification): ILoader
 		{
 			validateDisposal();
@@ -347,7 +315,6 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 				loadingStatus.queuedLoaders.remove(child);
 				loadingStatus.stoppedLoaders.remove(child);
 				
-				child.dispose();//TODO:pensar se tirar a chamada daqui e colocar no client (acho melhor)
 				childRemoved(child);
 			}
 			else

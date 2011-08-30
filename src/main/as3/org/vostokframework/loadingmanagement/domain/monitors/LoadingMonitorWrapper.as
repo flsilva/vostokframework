@@ -88,7 +88,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			if (!monitor) throw new ArgumentError("Argument <monitor> must not be null.");
 			
-			if (_monitor) removeListenersFromMonitor(_monitor);//TODO:repensar se nao deve descomentar
+			if (_monitor) removeListenersFromMonitor(_monitor);
 			
 			_monitor = monitor;
 			

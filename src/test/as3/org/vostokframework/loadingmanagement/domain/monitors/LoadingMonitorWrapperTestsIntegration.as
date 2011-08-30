@@ -68,7 +68,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		public var globalMonitor:ILoadingMonitor;
 		public var queueMonitor:ILoadingMonitor;
 		public var assetMonitor:ILoadingMonitor;
-		//TODO:rename to CompositeLoadingMonitorTestsIntegration
+		
 		public function LoadingMonitorWrapperTestsIntegration()
 		{
 			

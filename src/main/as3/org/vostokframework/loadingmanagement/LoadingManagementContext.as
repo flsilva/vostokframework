@@ -323,7 +323,10 @@ package org.vostokframework.loadingmanagement
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, event.queueLocale);
 			
 			globalQueueLoadingMonitor.removeChild(identification);
+			
+			var loader:ILoader = globalQueueLoader.getChild(identification);
 			globalQueueLoader.removeChild(identification);
+			loader.dispose();
 		}
 		
 		private function assetCompleteHandler(event:AssetLoadingEvent):void

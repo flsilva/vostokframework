@@ -141,7 +141,6 @@ package org.vostokframework.assetmanagement.services
 				throw new DuplicateAssetError(error.identification, message);
 			}
 			
-			//TODO:try-catch here as above
 			assetPackage.addAsset(asset);
 			
 			return asset;

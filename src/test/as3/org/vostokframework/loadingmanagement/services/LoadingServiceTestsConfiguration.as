@@ -82,7 +82,10 @@ package org.vostokframework.loadingmanagement.services
 			LoadingManagementContext.getInstance().setMaxConcurrentQueues(2);
 			
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, LoadingManagementContext.getInstance().loaderRepository, LoadPriority.MEDIUM, LoadingManagementContext.getInstance().maxConcurrentConnections, LoadingManagementContext.getInstance().maxConcurrentQueues);//TODO:refactor this line
+			var loaderRepository:LoaderRepository = LoadingManagementContext.getInstance().loaderRepository;
+			var maxConcurrentConnections:int = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			var maxConcurrentQueues:int = LoadingManagementContext.getInstance().maxConcurrentQueues;
+			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, maxConcurrentConnections, maxConcurrentQueues);
 			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();
