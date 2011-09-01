@@ -166,7 +166,7 @@ package org.vostokframework.loadingmanagement.services
 			{
 				var message:String = "There is no data cached for an Asset object with identification:\n";
 				message += "<" + identification + ">\n";
-				message += "Use method <LoadingService().isLoaded()> to check if an Asset object was loaded and cached.\n";
+				message += "Use method <LoadingService().containsAssetData()> to check if an Asset object was loaded and cached.\n";
 				
 				throw new LoadedAssetDataNotFoundError(identification, message);
 			}
@@ -453,7 +453,7 @@ package org.vostokframework.loadingmanagement.services
 			{
 				var message:String = "There is no data cached for an Asset object with identification:\n";
 				message += "<" + identification + ">\n";
-				message += "Use method <LoadingService().isLoaded()> to check if an Asset object was loaded and cached.\n";
+				message += "Use method <LoadingService().containsAssetData()> to check if an Asset object was loaded and cached.\n";
 				
 				throw new LoadedAssetDataNotFoundError(identification, message);
 			}
@@ -531,7 +531,7 @@ package org.vostokframework.loadingmanagement.services
 					errorMessage += "Is already loaded and cached internally.\n";
 					errorMessage += "It was loaded by a ILoader object with identification:\n";
 					errorMessage += "<" + report.queueIdentification + ">\n";
-					errorMessage += "Use the method <LoadingService().isLoaded()> to find it out.\n";
+					errorMessage += "Use the method <LoadingService().containsAssetData()> to find it out.\n";
 					errorMessage += "Also, cached asset data can be retrieved using <LoadingService().getAssetData()>.";
 					
 					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);

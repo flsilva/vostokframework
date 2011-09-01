@@ -29,7 +29,7 @@
 package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 
 	import flash.events.Event;
 
@@ -60,39 +60,39 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		
 		override public function dispatchCanceledEvent(monitoring:LoadingMonitoring):void
 		{
-			dispatchEvent(createEvent(AggregateQueueLoadingEvent.CANCELED, monitoring));
+			dispatchEvent(createEvent(GlobalLoadingEvent.CANCELED, monitoring));
 		}
 		
 		override public function dispatchCompleteEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
 			data = null;//just to avoid compiler warnings
-			dispatchEvent(createEvent(AggregateQueueLoadingEvent.COMPLETE, monitoring));
+			dispatchEvent(createEvent(GlobalLoadingEvent.COMPLETE, monitoring));
 		}
 		
 		override public function dispatchOpenEvent(monitoring:LoadingMonitoring, data:* = null):void
 		{
 			data = null;//just to avoid compiler warnings
-			dispatchEvent(createEvent(AggregateQueueLoadingEvent.OPEN, monitoring));
+			dispatchEvent(createEvent(GlobalLoadingEvent.OPEN, monitoring));
 		}
 		
 		override public function dispatchProgressEvent(monitoring:LoadingMonitoring):void
 		{
-			dispatchEvent(createEvent(AggregateQueueLoadingEvent.PROGRESS, monitoring));
+			dispatchEvent(createEvent(GlobalLoadingEvent.PROGRESS, monitoring));
 		}
 		
 		override public function dispatchStoppedEvent(monitoring:LoadingMonitoring):void
 		{
-			dispatchEvent(createEvent(AggregateQueueLoadingEvent.STOPPED, monitoring));
+			dispatchEvent(createEvent(GlobalLoadingEvent.STOPPED, monitoring));
 		}
 		
 		override public function typeBelongs(type:String):Boolean
 		{
-			return AggregateQueueLoadingEvent.typeBelongs(type);
+			return GlobalLoadingEvent.typeBelongs(type);
 		}
 		
 		protected function createEvent(type:String, monitoring:LoadingMonitoring):Event
 		{
-			return new AggregateQueueLoadingEvent(type, _loaderId, _loaderLocale, monitoring);
+			return new GlobalLoadingEvent(type, _loaderId, _loaderLocale, monitoring);
 		}
 		
 	}

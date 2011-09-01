@@ -39,7 +39,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
@@ -178,7 +178,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 		{
 			stub(globalLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			Async.proceedOnEvent(this, wrapper, AggregateQueueLoadingEvent.COMPLETE, 200);
+			Async.proceedOnEvent(this, wrapper, GlobalLoadingEvent.COMPLETE, 200);
 			
 			globalLoader.load();
 		}

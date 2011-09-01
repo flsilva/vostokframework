@@ -36,7 +36,7 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
@@ -191,7 +191,7 @@ package org.vostokframework.loadingmanagement
 			var globalQueueLoadingMonitor:ILoadingMonitor = new CompositeLoadingMonitor(_globalQueueLoader, globalQueueLoadingMonitorDispatcher);
 			
 			_globalQueueLoadingMonitorWrapper.changeMonitor(globalQueueLoadingMonitor);
-			_globalQueueLoadingMonitorWrapper.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, int.MIN_VALUE, true);
+			_globalQueueLoadingMonitorWrapper.addEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoaderCompleteHandler, false, int.MIN_VALUE, true);
 			_globalQueueLoadingMonitorWrapper.addEventListener(QueueLoadingEvent.COMPLETE, queueLoaderCompleteHandler, false, int.MIN_VALUE, true);
 			_globalQueueLoadingMonitorWrapper.addEventListener(QueueLoadingEvent.CANCELED, queueLoaderCanceledHandler, false, int.MIN_VALUE, true);
 			_globalQueueLoadingMonitorWrapper.addEventListener(AssetLoadingEvent.COMPLETE, assetCompleteHandler, false, int.MAX_VALUE, true);
@@ -296,7 +296,7 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * @private
 		 */
-		private function globalQueueLoaderCompleteHandler(event:AggregateQueueLoadingEvent):void
+		private function globalQueueLoaderCompleteHandler(event:GlobalLoadingEvent):void
 		{
 			trace("#####################################################");
 			trace("LoadingManagementContext::globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);

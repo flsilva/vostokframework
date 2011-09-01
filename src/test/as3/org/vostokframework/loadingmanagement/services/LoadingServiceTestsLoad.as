@@ -403,9 +403,6 @@ package org.vostokframework.loadingmanagement.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject(): void
 		{
-			trace("#########################################################################");
-			trace("load_validArguments_queueLoadingCompletesAndCacheLoadedAsset_callGetAssetData_ReturnsValidObject()");
-			
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);

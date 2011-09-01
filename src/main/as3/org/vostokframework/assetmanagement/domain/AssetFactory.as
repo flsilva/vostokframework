@@ -210,7 +210,7 @@ package org.vostokframework.assetmanagement.domain
 			media.autoResizeVideo = false;
 			media.autoStopStream = false;
 			
-			policy.latencyTimeout = 10000;
+			policy.latencyTimeout = 12000;
 			policy.maxAttempts = 2;
 			
 			var settings:AssetLoadingSettings = new AssetLoadingSettings();

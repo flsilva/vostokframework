@@ -29,23 +29,18 @@
 
 package org.vostokframework.loadingmanagement.domain.states.fileloader
 {
-	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
-	import mockolate.sequence;
 	import mockolate.stub;
 	import mockolate.verify;
 
+	import org.as3collections.maps.ArrayListMap;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.loadingmanagement.domain.ILoaderState;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
 
-	import flash.events.ErrorEvent;
 	import flash.events.Event;
-	import flash.events.HTTPStatusEvent;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 
 	/**
 	 * @author Flávio Silva
@@ -65,7 +60,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		override public function getState():ILoaderState
 		{
-			return new LoadingFileLoader(fakeFileLoader, fakeAlgorithm, 3);
+			return new LoadingFileLoader(fakeFileLoader, fakeAlgorithm);
 		}
 		
 		[Test]
@@ -80,8 +75,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		[Test]
 		public function stubAlgorithmDispatchesCompleteEvent_verifyIfStateTransitionWasCalled(): void
 		{
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN))
-				.dispatches(new Event(Event.COMPLETE));
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN))
+				.dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.COMPLETE));
 			
 			mock(fakeFileLoader).method("setState").args(instanceOf(CompleteFileLoader)).once();
 			
@@ -91,56 +86,15 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		}
 		
 		[Test]
-		public function stubAlgorithmDispatchesTwoErrorEventsAndOneCompleteEvent_stateWithThreeAttempts_verifyIfStateTransitionWasCalled(): void
+		public function stubAlgorithmDispatchesFailedErrorEvent_verifyIfStateTransitionWasCalled(): void
 		{
-			var seq:Sequence = sequence();
-			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN))
-				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR)).once().ordered(seq);
-			
-			stub(fakeAlgorithm).method("load").dispatches(new ErrorEvent(ErrorEvent.ERROR)).once().ordered(seq);
-				
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.COMPLETE)).once().ordered(seq);
-			
-			mock(fakeFileLoader).method("setState").args(instanceOf(CompleteFileLoader)).once();
-			state = getState();
-			verify(fakeFileLoader);
-		}
-		
-		[Test]
-		public function stubAlgorithmDispatchesThreeErrorEvents_stateWithThreeAttempts_verifyIfStateTransitionWasCalled(): void
-		{
-			var seq:Sequence = sequence();
-			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN))
-				.dispatches(new IOErrorEvent(IOErrorEvent.IO_ERROR)).once().ordered(seq);
-			
-			stub(fakeAlgorithm).method("load").dispatches(new ErrorEvent(ErrorEvent.ERROR)).once().ordered(seq);
-				
-			stub(fakeAlgorithm).method("load").dispatches(new ErrorEvent(ErrorEvent.ERROR)).once().ordered(seq);
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()));
 			
 			fakeFileLoader.addEventListener(LoaderErrorEvent.FAILED, 
 				function(event:LoaderErrorEvent):void
 				{
-					//listener only to not popup flash player error window
-				}
-			, false, 0, true);
-			
-			mock(fakeFileLoader).method("setState").args(instanceOf(FailedFileLoader)).once();
-			state = getState();
-			verify(fakeFileLoader);
-		}
-		
-		[Test]
-		public function stubAlgorithmDispatchesSecurityErrorEvent_verifyIfStateTransitionWasCalled(): void
-		{
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN))
-				.dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR));
-			
-			fakeFileLoader.addEventListener(LoaderErrorEvent.FAILED, 
-				function(event:LoaderErrorEvent):void
-				{
-					//listener only to not popup flash player error window
+					// must catch this error event here
+					// to not popup flash player error window
 				}
 			, false, 0, true);
 			
@@ -156,7 +110,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderEvent.OPEN, 200);
 			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN));
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN));
 			
 			state = getState();
 		}
@@ -166,8 +120,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderEvent.COMPLETE, 200);
 			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN), 50)
-				.dispatches(new Event(Event.COMPLETE), 100);
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN), 50)
+				.dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.COMPLETE), 100);
 			
 			state = getState();
 		}
@@ -177,8 +131,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderEvent.HTTP_STATUS, 200);
 			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN), 50)
-				.dispatches(new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS), 100);
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN), 50)
+				.dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.HTTP_STATUS), 100);
 			
 			state = getState();
 		}
@@ -188,19 +142,19 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderEvent.INIT, 200);
 			
-			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN), 50)
-				.dispatches(new Event(Event.INIT), 100);
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN), 50)
+				.dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.INIT), 100);
 			
 			state = getState();
 		}
 		
 		[Test(async, timeout=200)]
-		public function stubAlgorithmDispatchesSecurityErrorEvent_waitForStateToDispatchFailedErrorEventOnItsLoader(): void
+		public function stubAlgorithmDispatchesFailedErrorEvent_waitForStateToDispatchFailedErrorEventOnItsLoader(): void
 		{
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderErrorEvent.FAILED, 200);
 			
 			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN), 50)
-				.dispatches(new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR), 100);
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()), 100);
 			
 			state = getState();
 		}

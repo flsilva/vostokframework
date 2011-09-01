@@ -49,7 +49,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		override public function getState():ILoaderState
 		{
-			return new LoadingFileLoader(fakeFileLoader, fakeAlgorithm, 1);
+			return new LoadingFileLoader(fakeFileLoader, fakeAlgorithm);
 		}
 		
 	}

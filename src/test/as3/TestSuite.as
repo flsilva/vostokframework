@@ -49,6 +49,7 @@ package
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.CanceledFileLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.CompleteFileLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FailedFileLoaderTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithmTests;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTestsCancel;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.LoadingFileLoaderTestsInstantiation;
@@ -60,6 +61,9 @@ package
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTestsCancel;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.StoppedFileLoaderTestsLoad;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.DelayableFileLoadingAlgorithmTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithmTests;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithmTests;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTests;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsContainsChild;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.CanceledQueueLoaderTestsGetChild;
@@ -135,11 +139,8 @@ package
 		public var assetServiceTests:AssetServiceTests;
 		public var assetPackageServiceTests:AssetPackageServiceTests;
 		
-		//org.vostokframework.loadingmanagement.domain
-		public var vostokLoaderTests:VostokLoaderTests;
-		
 		//org.vostokframework.loadingmanagement.domain.loaders
-		
+		public var vostokLoaderTests:VostokLoaderTests;
 		
 		//org.vostokframework.loadingmanagement.domain.monitors
 		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
@@ -156,6 +157,7 @@ package
 		public var canceledFileLoaderTests:CanceledFileLoaderTests;
 		public var completeFileLoaderTests:CompleteFileLoaderTests;
 		public var failedFileLoaderTests:FailedFileLoaderTests;
+		public var fileLoadingAlgorithmTests:FileLoadingAlgorithmTests;
 		public var loadingFileLoaderTests:LoadingFileLoaderTests;
 		public var loadingFileLoaderTestsCancel:LoadingFileLoaderTestsCancel;
 		public var loadingFileLoaderTestsInstantiation:LoadingFileLoaderTestsInstantiation;
@@ -167,6 +169,11 @@ package
 		public var stoppedFileLoaderTests:StoppedFileLoaderTests;
 		public var stoppedFileLoaderTestsCancel:StoppedFileLoaderTestsCancel;
 		public var stoppedFileLoaderTestsLoad:StoppedFileLoaderTestsLoad;
+		
+		//org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms
+		public var delayableFileLoadingAlgorithmTests:DelayableFileLoadingAlgorithmTests;
+		public var latencyTimeoutFileLoadingAlgorithmTests:LatencyTimeoutFileLoadingAlgorithmTests;
+		public var maxAttemptsFileLoadingAlgorithmTests:MaxAttemptsFileLoadingAlgorithmTests;
 		
 		//org.vostokframework.loadingmanagement.domain.states.queueloader
 		public var canceledQueueLoaderTests:CanceledQueueLoaderTests;

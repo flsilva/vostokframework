@@ -51,16 +51,14 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		/**
 		 * @private
 		 */
-		private var _algorithm:FileLoadingAlgorithm;
+		private var _algorithm:IFileLoadingAlgorithm;
 		private var _disposed:Boolean;
 		private var _loader:ILoaderStateTransition;
-		private var _maxAttempts:int;
 		
-		protected function get algorithm():FileLoadingAlgorithm { return _algorithm; }
+		protected function get algorithm():IFileLoadingAlgorithm { return _algorithm; }
 		
 		protected function get loader():ILoaderStateTransition { return _loader; }
 		
-		protected function get maxAttempts():int { return _maxAttempts; }
 		
 		public function get isLoading():Boolean { return false; }
 		
@@ -76,14 +74,12 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function FileLoaderState(algorithm:FileLoadingAlgorithm, maxAttempts:int)
+		public function FileLoaderState(algorithm:IFileLoadingAlgorithm)
 		{
 			if (ReflectionUtil.classPathEquals(this, FileLoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!algorithm) throw new ArgumentError("Argument <algorithm> must not be null.");
-			if (maxAttempts < 1) throw new ArgumentError("Argument <maxAttempts> must be greater than zero. Received: <" + maxAttempts + ">");
 			
 			_algorithm = algorithm;
-			_maxAttempts = maxAttempts;
 		}
 		
 		public function addChild(child:ILoader): void
@@ -101,7 +97,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			validateDisposal();
 			algorithm.cancel();
 			
-			loader.setState(new CanceledFileLoader(loader, algorithm, maxAttempts));
+			loader.setState(new CanceledFileLoader(loader, algorithm));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
 			dispose();
 		}
@@ -121,7 +117,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			if (_disposed) return;
 			
 			doDispose();
-			algorithm.dispose();
+			//algorithm.dispose();//TODO:pensar como resolver...colocar essa linha apenas no dispose de Complete, Canceled e FailedFileLoaderState?
 			
 			_disposed = true;
 			_algorithm = null;
@@ -142,7 +138,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		{
 			validateDisposal();
 			
-			loader.setState(new LoadingFileLoader(loader, algorithm, maxAttempts));
+			loader.setState(new LoadingFileLoader(loader, algorithm));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
 			dispose();
 		}
@@ -167,7 +163,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			validateDisposal();
 			algorithm.stop();
 			
-			loader.setState(new StoppedFileLoader(loader, algorithm, maxAttempts));
+			loader.setState(new StoppedFileLoader(loader, algorithm));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
 			dispose();
 		}

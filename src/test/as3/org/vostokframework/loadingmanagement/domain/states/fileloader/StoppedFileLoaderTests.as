@@ -50,7 +50,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		override public function getState():ILoaderState
 		{
-			return new StoppedFileLoader(fakeFileLoader, fakeAlgorithm, 1);
+			return new StoppedFileLoader(fakeFileLoader, fakeAlgorithm);
 		}
 		
 		[Test]

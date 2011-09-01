@@ -48,7 +48,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		public var mocks:MockolateRule = new MockolateRule();
 		
 		[Mock(inject="false")]
-		public var fakeAlgorithm:FileLoadingAlgorithm;
+		public var fakeAlgorithm:IFileLoadingAlgorithm;
 		
 		[Mock(inject="false")]
 		public var fakeFileLoader:ILoaderStateTransition;
@@ -67,7 +67,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		[Before]
 		public function setUp(): void
 		{
-			fakeAlgorithm = nice(FileLoadingAlgorithm);
+			fakeAlgorithm = nice(IFileLoadingAlgorithm);
 			stub(fakeAlgorithm).asEventDispatcher();
 			
 			fakeFileLoader = nice(ILoaderStateTransition);

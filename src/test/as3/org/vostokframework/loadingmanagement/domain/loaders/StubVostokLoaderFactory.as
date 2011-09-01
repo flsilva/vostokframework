@@ -30,8 +30,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 {
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.NativeDataLoader;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.StubNativeDataLoader;
 
 	/**
 	 * description
@@ -55,24 +55,18 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			
 		}
-		/*
-		override public function create(asset:Asset):ILoader
-		{
-			return new StubILoader(asset.identification.toString());
-		}*/
 		
-		override protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):ILoaderState
+		override protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):NativeDataLoader
 		{
 			type = null;//just to avoid compiler warnings
 			url = null;//just to avoid compiler warnings
 			settings = null;//just to avoid compiler warnings
 			
-			var algorithm:StubFileLoadingAlgorithm = new StubFileLoadingAlgorithm();
-			algorithm.openBehaviorSync = _openBehaviorSync;
-			algorithm.successBehaviorAsync = _successBehaviorAsync;
-			//algorithm.successBehaviorSync = _successBehaviorSync;
-			
-			return new QueuedFileLoader(algorithm, maxAttempts);
+			var dataLoader:StubNativeDataLoader = new StubNativeDataLoader();
+			//dataLoader.openBehaviorSync = _openBehaviorSync;
+			dataLoader.successBehaviorAsync = _successBehaviorAsync;
+			//dataLoader.successBehaviorSync = _successBehaviorSync;
+			return dataLoader;
 		}
 		
 	}

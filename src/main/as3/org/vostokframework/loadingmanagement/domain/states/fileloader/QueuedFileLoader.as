@@ -45,9 +45,9 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function QueuedFileLoader(algorithm:FileLoadingAlgorithm, maxAttempts:int = 1)
+		public function QueuedFileLoader(algorithm:IFileLoadingAlgorithm)
 		{
-			super(algorithm, maxAttempts);
+			super(algorithm);
 		}
 		
 	}

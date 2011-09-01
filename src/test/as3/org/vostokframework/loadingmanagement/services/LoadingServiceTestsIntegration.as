@@ -42,7 +42,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.flexunit.async.Async;
 	import org.vostokframework.HelperTestObject;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.events.AggregateQueueLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
@@ -92,11 +92,11 @@ package org.vostokframework.loadingmanagement.services
 			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AggregateQueueLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
 			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false);
 			
 			timer.stop();
 			
@@ -118,9 +118,9 @@ package org.vostokframework.loadingmanagement.services
 			helperTestObject.test(QueueLoadingEvent);
 		}
 		
-		private function globalQueueLoadingCompleteHandler(event:AggregateQueueLoadingEvent):void
+		private function globalQueueLoadingCompleteHandler(event:GlobalLoadingEvent):void
 		{
-			helperTestObject.test(AggregateQueueLoadingEvent);
+			helperTestObject.test(GlobalLoadingEvent);
 		}
 		
 		private function asyncTimeoutHandler(passThroughData:Object):void
@@ -143,7 +143,7 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.OPEN, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -192,7 +192,7 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -241,7 +241,7 @@ package org.vostokframework.loadingmanagement.services
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AggregateQueueLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
 			service.load(QUEUE_ID, list);
 		}
 		
@@ -300,11 +300,11 @@ package org.vostokframework.loadingmanagement.services
 			var seq:Sequence = sequence();
 			mock(helperTestObject).method("test").args(AssetLoadingEvent).once().ordered(seq);
 			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);
-			mock(helperTestObject).method("test").args(AggregateQueueLoadingEvent).once().ordered(seq);
+			mock(helperTestObject).method("test").args(GlobalLoadingEvent).once().ordered(seq);
 			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false, 0, true);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false, 0, true);
 			
 			var asyncHandler:Function = Async.asyncHandler(this, verifyHelperTestObject, 1000);
 			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
@@ -330,11 +330,11 @@ package org.vostokframework.loadingmanagement.services
 			var seq:Sequence = sequence();
 			mock(helperTestObject).method("test").args(AssetLoadingEvent).once().ordered(seq);
 			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);
-			mock(helperTestObject).method("test").args(AggregateQueueLoadingEvent).once().ordered(seq);
+			mock(helperTestObject).method("test").args(GlobalLoadingEvent).once().ordered(seq);
 			
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false, 0, true);
 			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AggregateQueueLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
+			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
 			
 			var asyncHandler:Function = Async.asyncHandler(this, verifyHelperTestObject, 1000);
 			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);

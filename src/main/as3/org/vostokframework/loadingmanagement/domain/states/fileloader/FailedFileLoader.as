@@ -47,9 +47,9 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function FailedFileLoader(loader:ILoaderStateTransition, algorithm:FileLoadingAlgorithm, maxAttempts:int)
+		public function FailedFileLoader(loader:ILoaderStateTransition, algorithm:IFileLoadingAlgorithm)
 		{
-			super(algorithm, maxAttempts);
+			super(algorithm);
 			setLoader(loader);
 		}
 		

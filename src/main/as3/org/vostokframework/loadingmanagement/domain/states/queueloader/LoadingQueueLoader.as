@@ -208,7 +208,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 		private function loadNextLoader(): void
 		{
 			validateDisposal();
-			trace("LoadingQueueLoader::loadNextLoader()");
+			
 			if (isLoadingComplete())
 			{
 				loadingComplete();
@@ -220,7 +220,6 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			var loader:ILoader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
 			if (loader)
 			{
-				trace("LoadingQueueLoader::loadNextLoader() - ENTROU! CALL loader.load()");
 				loader.load();
 				//loadingStatus.loadingLoaders.add(loader);
 			}
@@ -276,7 +275,6 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 		
 		private function childConnectingHandler(event:LoaderEvent):void
 		{
-			trace("LoadingQueueLoader::childConnectingHandler() - event.target: " + event.target);
 			loadingStatus.loadingLoaders.add(event.target);
 			
 			loadNextLoader();

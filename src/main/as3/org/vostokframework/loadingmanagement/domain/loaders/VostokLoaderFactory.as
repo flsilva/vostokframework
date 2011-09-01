@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers.XMLDataParser;
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3utils.URLUtil;
@@ -49,9 +48,15 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.NativeDataLoader;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.NativeLoaderAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.NativeURLLoaderAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeLoaderAdapter;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeURLLoaderAdapter;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.DelayableFileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers.XMLDataParser;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueueLoadingStatus;
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoader;
 
@@ -99,11 +104,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		
 		public function createLeaf(asset:Asset):ILoader
 		{
-			var maxAttempts:int = asset.settings.policy.maxAttempts;
-			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings, maxAttempts);
+			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings);
 			return instanciateLeaf(asset.identification, state, asset.priority);
-			
-			//TODO:settings.policy.latencyTimeout
 		}
 		
 		public function setDataParserRepository(repository:DataParserRepository): void
@@ -122,15 +124,30 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			return state;
 		}
 		
-		protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings, maxAttempts:int):ILoaderState
+		protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings):ILoaderState
 		{
 			var killExternalCache:Boolean = settings.cache.killExternalCache;
 			var baseURL:String = settings.extra.baseURL;
 			
 			url = parseUrl(url, killExternalCache, baseURL);
-			var algorithm:FileLoadingAlgorithm = createFileLoadingAlgorithm(type, url, settings);
+			var dataLoader:NativeDataLoader = createNativeDataLoader(type, url, settings);
+			var algorithm:IFileLoadingAlgorithm = createFileLoadingAlgorithm(type, dataLoader, settings);
 			
-			return new QueuedFileLoader(algorithm, maxAttempts);
+			return new QueuedFileLoader(algorithm);
+		}
+		
+		protected function createFileLoadingAlgorithm(type:AssetType, dataLoader:NativeDataLoader, settings:AssetLoadingSettings):IFileLoadingAlgorithm
+		{
+			var algorithm:IFileLoadingAlgorithm = new FileLoadingAlgorithm(dataLoader);
+			algorithm = new LatencyTimeoutFileLoadingAlgorithm(algorithm, settings.policy.latencyTimeout);
+			algorithm = new DelayableFileLoadingAlgorithm(algorithm);
+			algorithm = new MaxAttemptsFileLoadingAlgorithm(algorithm, settings.policy.maxAttempts);
+			
+			if (_dataParserRepository)
+			{
+				var parsers:IList = _dataParserRepository.find(type);
+				algorithm.addParsers(parsers);
+			}
 			
 			//TODO:settings.extra.userDataContainer
 			//TODO:settings.extra.userTotalBytes
@@ -142,12 +159,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.media.bufferPercent
 			//TODO:settings.media.bufferTime
 			
-			
+			return algorithm;
 		}
 		
-		protected function createFileLoadingAlgorithm(type:AssetType, url:String, settings:AssetLoadingSettings):FileLoadingAlgorithm
+		protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):NativeDataLoader
 		{
-			var algorithm:FileLoadingAlgorithm;
+			var dataLoader:NativeDataLoader;
 			
 			switch(type)
 			{
@@ -157,7 +174,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 					var loaderRequest:URLRequest = new URLRequest(url);
 					var loaderContext:LoaderContext = createLoaderContext(settings.security);
 					
-					algorithm = new NativeLoaderAlgorithm(loader, loaderRequest, loaderContext);
+					dataLoader = new NativeLoaderAdapter(loader, loaderRequest, loaderContext);
 					break;
 				}
 				
@@ -166,28 +183,22 @@ package org.vostokframework.loadingmanagement.domain.loaders
 					var urlLoader:URLLoader = new URLLoader();
 					var urlLoaderRequest:URLRequest = new URLRequest(url);
 					
-					algorithm = new NativeURLLoaderAlgorithm(urlLoader, urlLoaderRequest);
+					dataLoader = new NativeURLLoaderAdapter(urlLoader, urlLoaderRequest);
 					break;
 				}
 				
 			}
 			
-			if (!algorithm)
+			if (!dataLoader)
 			{
-				var errorMessage:String = "It was not possible to create a LoadingAlgorithm object for the received type:\n";
+				var errorMessage:String = "It was not possible to create a NativeDataLoader object for the received type:\n";
 				errorMessage = "<type>: " + type + "\n";
 				errorMessage = "<url>: " + url + "\n";
 				
 				throw new IllegalStateError(errorMessage);
 			}
 			
-			if (_dataParserRepository)
-			{
-				var parsers:IList = _dataParserRepository.find(type);
-				algorithm.addParsers(parsers);
-			}
-			
-			return algorithm;
+			return dataLoader;
 		}
 		
 		protected function instanciateComposite(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
