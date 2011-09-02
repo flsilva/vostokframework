@@ -45,8 +45,9 @@ package org.vostokframework.assetmanagement.domain
 		public static const JSON:AssetType = new AssetType("JSON", 3);
 		public static const MP3:AssetType = new AssetType("MP3", 4);
 		public static const SWF:AssetType = new AssetType("SWF", 5);
-		public static const VIDEO:AssetType = new AssetType("VIDEO", 6);
-		public static const XML:AssetType = new AssetType("XML", 7);
+		public static const TXT:AssetType = new AssetType("TXT", 6);
+		public static const VIDEO:AssetType = new AssetType("VIDEO", 7);
+		public static const XML:AssetType = new AssetType("XML", 8);
 		
 		/**
 		 * @private

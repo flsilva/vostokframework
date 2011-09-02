@@ -26,26 +26,30 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
 {
 	import org.as3coreaddendum.errors.ObjectDisposedError;
-	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
 
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
-	import flash.events.IEventDispatcher;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class NativeDataLoader implements IDataLoader
+	public class DataLoaderBehavior implements IDataLoader
 	{
 		/**
 		 * @private
  		 */
 		private var _disposed:Boolean;
+		private var _wrappedDataLoader:IDataLoader;
+		
+		protected function get wrappedDataLoader():IDataLoader { return _wrappedDataLoader; }
 		
 		/**
 		 * description
@@ -54,27 +58,35 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 * @param request
 		 * @param context
 		 */
-		public function NativeDataLoader()
+		public function DataLoaderBehavior(wrappedDataLoader:IDataLoader)
 		{
+			if (ReflectionUtil.classPathEquals(this, FileLoadingAlgorithm))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (!wrappedDataLoader) throw new ArgumentError("Argument <wrappedDataLoader> must not be null.");
 			
+			_wrappedDataLoader = wrappedDataLoader;
 		}
 		
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
 		{
 			validateDisposal();
-			getLoadingDispatcher().addEventListener(type, listener, useCapture, priority, useWeakReference);
+			_wrappedDataLoader.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 		
-		public function cancel():void
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		public function cancel(): void
 		{
 			validateDisposal();
-			doCancel();
+			_wrappedDataLoader.cancel();
 		}
 		
 		public function dispatchEvent(event: Event): Boolean
 		{
 			validateDisposal();
-			return getLoadingDispatcher().dispatchEvent(event);
+			return _wrappedDataLoader.dispatchEvent(event);
 		}
 		
 		public function dispose():void
@@ -83,92 +95,69 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			
 			doDispose();
 			
+			_wrappedDataLoader.dispose();
+			
 			_disposed = true;
+			_wrappedDataLoader = null;
 		}
 		
-		public function getData():*
+		public function getData(): *
 		{
 			validateDisposal();
-			return doGetData();
+			return _wrappedDataLoader.getData();
 		}
 		
-		public function hasEventListener(type: String): Boolean
+		public function hasEventListener(type : String) : Boolean
 		{
 			validateDisposal();
-			return getLoadingDispatcher().hasEventListener(type);
+			return _wrappedDataLoader.hasEventListener(type);
 		}
 		
-		public function load():void
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		public function load(): void
 		{
 			validateDisposal();
-			doLoad();
+			_wrappedDataLoader.load();
 		}
 		
 		public function removeEventListener(type : String, listener : Function, useCapture : Boolean = false) : void
 		{
 			validateDisposal();
-			getLoadingDispatcher().removeEventListener(type, listener, useCapture);
-		}
-		
-		public function stop():void
-		{
-			validateDisposal();
-			doStop();
-		}
-		
-		public function willTrigger(type: String): Boolean
-		{
-			validateDisposal();
-			return getLoadingDispatcher().willTrigger(type);
+			_wrappedDataLoader.removeEventListener(type, listener, useCapture);
 		}
 		
 		/**
 		 * description
 		 */
-		protected function doCancel(): void
+		public function stop(): void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			validateDisposal();
+			_wrappedDataLoader.stop();
+		}
+		
+		public function willTrigger(type : String) : Boolean
+		{
+			validateDisposal();
+			return _wrappedDataLoader.willTrigger(type);
 		}
 		
 		protected function doDispose():void
 		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		protected function doGetData():*
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		/**
-		 * description
-		 */
-		protected function doLoad(): void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		/**
-		 * description
-		 */
-		protected function doStop():void
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
-		}
-		
-		protected function getLoadingDispatcher():IEventDispatcher
-		{
-			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+			
 		}
 		
 		/**
 		 * @private
 		 */
-		private function validateDisposal():void
+		protected function validateDisposal():void
 		{
 			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
 		}
-
+		
 	}
 
 }

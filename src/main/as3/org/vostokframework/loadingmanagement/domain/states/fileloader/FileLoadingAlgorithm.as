@@ -39,11 +39,13 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	import org.vostokframework.loadingmanagement.domain.LoadError;
 
 	import flash.errors.IOError;
+	import flash.events.AsyncErrorEvent;
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.HTTPStatusEvent;
 	import flash.events.IOErrorEvent;
+	import flash.events.NetStatusEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.utils.getTimer;
@@ -58,10 +60,9 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		/**
 		 * @private
  		 */
-		//private var _dispatcher:IEventDispatcher;
 		private var _disposed:Boolean;
 		private var _errors:IListMap;//<LoadError, String> - where String is the original Flash Player error message
-		private var _dataLoader:NativeDataLoader;
+		private var _dataLoader:IDataLoader;
 		private var _parsers:IList;
 		private var _timeConnectionStarted:int;
 		
@@ -69,7 +70,7 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		 * description
 		 * 
 		 */
-		public function FileLoadingAlgorithm(dataLoader:NativeDataLoader)
+		public function FileLoadingAlgorithm(dataLoader:IDataLoader)
 		{
 			if (!dataLoader) throw new ArgumentError("Argument <dataLoader> must not be null.");
 			
@@ -249,10 +250,14 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		*/
 		private function addDataLoaderListeners():void
 		{
+			_dataLoader.addEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler, false, 0, true);
 			_dataLoader.addEventListener(Event.COMPLETE, completeHandler, false, 0, true);
+			_dataLoader.addEventListener(FileLoadingAlgorithmMediaEvent.CUE_POINT, cuePointHandler, false, 0, true);
 			_dataLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false, 0, true);
 			_dataLoader.addEventListener(Event.INIT, initHandler, false, 0, true);
 			_dataLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false, 0, true);
+			_dataLoader.addEventListener(FileLoadingAlgorithmMediaEvent.META_DATA, metadataHandler, false, 0, true);
+			_dataLoader.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler, false, 0, true);
 			_dataLoader.addEventListener(Event.OPEN, openHandler, false, 0, true);
 			_dataLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false, 0, true);
 			_dataLoader.addEventListener(ErrorEvent.ERROR, unknownErrorHandler, false, 0, true);
@@ -333,6 +338,12 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 			}
 		}
 		
+		private function asyncError(errorMessage:String):void
+		{
+			validateDisposal();
+			failed(LoadError.ASYNC_ERROR, errorMessage);
+		}
+		
 		private function ioError(errorMessage:String):void
 		{
 			validateDisposal();
@@ -353,10 +364,14 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		
 		private function removeDataLoaderListeners():void
 		{
+			_dataLoader.removeEventListener(AsyncErrorEvent.ASYNC_ERROR, asyncErrorHandler, false);
 			_dataLoader.removeEventListener(Event.COMPLETE, completeHandler, false);
+			_dataLoader.removeEventListener(FileLoadingAlgorithmMediaEvent.CUE_POINT, cuePointHandler, false);
 			_dataLoader.removeEventListener(HTTPStatusEvent.HTTP_STATUS, httpStatusHandler, false);
 			_dataLoader.removeEventListener(Event.INIT, initHandler, false);
 			_dataLoader.removeEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler, false);
+			_dataLoader.removeEventListener(FileLoadingAlgorithmMediaEvent.META_DATA, metadataHandler, false);
+			_dataLoader.removeEventListener(NetStatusEvent.NET_STATUS, netStatusHandler, false);
 			_dataLoader.removeEventListener(Event.OPEN, openHandler, false);
 			_dataLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler, false);
 			_dataLoader.removeEventListener(ErrorEvent.ERROR, unknownErrorHandler, false);
@@ -374,9 +389,19 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		///////////////////////// DISPATCHER LISTENERS /////////////////////////
 		////////////////////////////////////////////////////////////////////////
 		
+		private function asyncErrorHandler(event:AsyncErrorEvent):void
+		{
+			asyncError(event.text);
+		}
+		
 		private function completeHandler(event:Event):void
 		{
 			loadingComplete();
+		}
+		
+		private function cuePointHandler(event:FileLoadingAlgorithmMediaEvent):void
+		{
+			dispatchEvent(event);
 		}
 		
 		private function httpStatusHandler(event:HTTPStatusEvent):void
@@ -396,6 +421,19 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 		private function ioErrorHandler(event:IOErrorEvent):void
 		{
 			ioError(event.text);
+		}
+		
+		private function metadataHandler(event:FileLoadingAlgorithmMediaEvent):void
+		{
+			dispatchEvent(event);
+		}
+		
+		private function netStatusHandler(event:NetStatusEvent):void
+		{
+			var $event:FileLoadingAlgorithmMediaEvent = new FileLoadingAlgorithmMediaEvent(FileLoadingAlgorithmMediaEvent.NET_STATUS);
+			$event.netStatusInfo = event.info;
+			
+			dispatchEvent($event);
 		}
 		
 		private function openHandler(event:Event):void

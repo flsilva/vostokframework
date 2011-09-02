@@ -209,6 +209,8 @@ package org.vostokframework.assetmanagement.domain
 			media.autoCreateVideo = false;
 			media.autoResizeVideo = false;
 			media.autoStopStream = false;
+			media.bufferPercent = .1;
+			media.bufferPercent = 0;
 			
 			policy.latencyTimeout = 12000;
 			policy.maxAttempts = 2;

@@ -26,47 +26,67 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders
+package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithmMediaEvent;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.StubNativeDataLoader;
+
+	import flash.media.Video;
+	import flash.net.NetStream;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubVostokLoaderFactory extends VostokLoaderFactory
+	public class AutoResizeNetStreamVideo extends DataLoaderBehavior
 	{
 		
-		private var _openBehaviorSync:Boolean;
-		private var _successBehaviorAsync:Boolean;
-		//private var _successBehaviorSync:Boolean;
-		
-		public function set openBehaviorSync(value:Boolean):void { _openBehaviorSync = value; }
-		
-		public function set successBehaviorAsync(value:Boolean):void { _successBehaviorAsync = value; }
-		
-		//public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
-		
-		public function StubVostokLoaderFactory ()
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 * @param request
+		 * @param context
+		 */
+		public function AutoResizeNetStreamVideo(wrappedDataLoader:IDataLoader, netStream:NetStream)
 		{
+			super(wrappedDataLoader);
 			
+			if (!netStream) throw new ArgumentError("Argument <netStream> must not be null.");
+			
+			addDataLoaderListener();
 		}
 		
-		override protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):IDataLoader
+		override protected function doDispose():void
 		{
-			type = null;//just to avoid compiler warnings
-			url = null;//just to avoid compiler warnings
-			settings = null;//just to avoid compiler warnings
+			removeDataLoaderListener();
+		}
+		
+		private function addDataLoaderListener():void
+		{
+			wrappedDataLoader.addEventListener(FileLoadingAlgorithmMediaEvent.META_DATA, metadataHandler, false, int.MAX_VALUE, true);
+		}
+		
+		private function metadataHandler(event:FileLoadingAlgorithmMediaEvent):void
+		{
+			var width:Number = event.metadata["width"];
+			var height:Number = event.metadata["height"];
 			
-			var dataLoader:StubNativeDataLoader = new StubNativeDataLoader();
-			//dataLoader.openBehaviorSync = _openBehaviorSync;
-			dataLoader.successBehaviorAsync = _successBehaviorAsync;
-			//dataLoader.successBehaviorSync = _successBehaviorSync;
-			return dataLoader;
+			if (width > 0 && height > 0)
+			{
+				var video:Video = getData();
+				
+				video.width = width;
+				video.height = height;
+			}
+			
+			removeDataLoaderListener();
+		}
+		
+		private function removeDataLoaderListener():void
+		{
+			wrappedDataLoader.removeEventListener(FileLoadingAlgorithmMediaEvent.META_DATA, metadataHandler, false);
 		}
 		
 	}

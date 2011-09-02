@@ -26,30 +26,55 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
 {
-	import org.as3collections.IList;
-	import org.as3coreaddendum.system.IDisposable;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
 
-	import flash.events.IEventDispatcher;
+	import flash.media.Video;
+	import flash.net.NetStream;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IFileLoadingAlgorithm extends IEventDispatcher, IDisposable
+	public class AutoCreateNetStreamVideo extends DataLoaderBehavior
 	{
+		/**
+		 * @private
+ 		 */
+		private var _netStream:NetStream;
+		private var _video:Video;
 		
-		function addParsers(parsers:IList):void;
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 * @param request
+		 * @param context
+		 */
+		public function AutoCreateNetStreamVideo(wrappedDataLoader:IDataLoader, netStream:NetStream)
+		{
+			super(wrappedDataLoader);
+			
+			if (!netStream) throw new ArgumentError("Argument <netStream> must not be null.");
+			
+			_netStream = netStream;
+			_video = new Video();
+			_video.attachNetStream(_netStream);
+		}
 		
-		function cancel(): void;
+		override public function getData(): *
+		{
+			validateDisposal();
+			return _video;
+		}
 		
-		//function getData():*;
-		
-		function load(): void;
-		
-		function stop(): void;
+		override protected function doDispose():void
+		{
+			_netStream = null;
+			_video = null;
+		}
 		
 	}
 

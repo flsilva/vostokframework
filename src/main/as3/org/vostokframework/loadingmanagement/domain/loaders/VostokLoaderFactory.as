@@ -48,11 +48,16 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.IFileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.NativeDataLoader;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoCreateNetStreamVideo;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoResizeNetStreamVideo;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoStopNetStream;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeLoaderAdapter;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeNetStreamAdapter;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeURLLoaderAdapter;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.ProgressNetStream;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.DelayableFileLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithm;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithm;
@@ -61,7 +66,10 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoader;
 
 	import flash.display.Loader;
+	import flash.net.NetConnection;
+	import flash.net.NetStream;
 	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
@@ -130,13 +138,13 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			var baseURL:String = settings.extra.baseURL;
 			
 			url = parseUrl(url, killExternalCache, baseURL);
-			var dataLoader:NativeDataLoader = createNativeDataLoader(type, url, settings);
+			var dataLoader:IDataLoader = createNativeDataLoader(type, url, settings);
 			var algorithm:IFileLoadingAlgorithm = createFileLoadingAlgorithm(type, dataLoader, settings);
 			
 			return new QueuedFileLoader(algorithm);
 		}
 		
-		protected function createFileLoadingAlgorithm(type:AssetType, dataLoader:NativeDataLoader, settings:AssetLoadingSettings):IFileLoadingAlgorithm
+		protected function createFileLoadingAlgorithm(type:AssetType, dataLoader:IDataLoader, settings:AssetLoadingSettings):IFileLoadingAlgorithm
 		{
 			var algorithm:IFileLoadingAlgorithm = new FileLoadingAlgorithm(dataLoader);
 			algorithm = new LatencyTimeoutFileLoadingAlgorithm(algorithm, settings.policy.latencyTimeout);
@@ -152,38 +160,61 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			//TODO:settings.extra.userDataContainer
 			//TODO:settings.extra.userTotalBytes
 			
-			//TODO:settings.media.audioLinkage
-			//TODO:settings.media.autoCreateVideo
-			//TODO:settings.media.autoResizeVideo
-			//TODO:settings.media.autoStopStream
-			//TODO:settings.media.bufferPercent
-			//TODO:settings.media.bufferTime
-			
 			return algorithm;
 		}
 		
-		protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):NativeDataLoader
+		protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):IDataLoader
 		{
-			var dataLoader:NativeDataLoader;
+			var dataLoader:IDataLoader;
+			var urlRequest:URLRequest = new URLRequest(url);
 			
 			switch(type)
 			{
 				case AssetType.IMAGE:
 				{
 					var loader:Loader = new Loader();
-					var loaderRequest:URLRequest = new URLRequest(url);
 					var loaderContext:LoaderContext = createLoaderContext(settings.security);
 					
-					dataLoader = new NativeLoaderAdapter(loader, loaderRequest, loaderContext);
+					dataLoader = new NativeLoaderAdapter(loader, urlRequest, loaderContext);
 					break;
 				}
 				
+				case AssetType.CSS:
+				case AssetType.JSON:
+				case AssetType.TXT:
 				case AssetType.XML:
 				{
 					var urlLoader:URLLoader = new URLLoader();
-					var urlLoaderRequest:URLRequest = new URLRequest(url);
+					urlLoader.dataFormat = URLLoaderDataFormat.TEXT;
 					
-					dataLoader = new NativeURLLoaderAdapter(urlLoader, urlLoaderRequest);
+					dataLoader = new NativeURLLoaderAdapter(urlLoader, urlRequest);
+					break;
+				}
+				
+				case AssetType.AAC:
+				case AssetType.VIDEO:
+				{
+					var netConnection:NetConnection = new NetConnection();
+					netConnection.connect(null);
+					
+					var netStream:NetStream = new NetStream(netConnection);
+					netStream.bufferTime = settings.media.bufferTime;
+					netStream.checkPolicyFile = settings.security.checkPolicyFile;
+					
+					dataLoader = new NativeNetStreamAdapter(netStream, netConnection, urlRequest);
+					dataLoader = new ProgressNetStream(dataLoader, netStream, settings.media.bufferPercent);
+					
+					if (settings.media.autoStopStream) dataLoader = new AutoStopNetStream(dataLoader, netStream);
+					
+					if (settings.media.autoCreateVideo)
+					{
+						dataLoader = new AutoCreateNetStreamVideo(dataLoader, netStream);
+						if (settings.media.autoResizeVideo)
+						{
+							dataLoader = new AutoResizeNetStreamVideo(dataLoader, netStream);
+						}
+					}
+					
 					break;
 				}
 				
@@ -197,6 +228,8 @@ package org.vostokframework.loadingmanagement.domain.loaders
 				
 				throw new IllegalStateError(errorMessage);
 			}
+			
+			//TODO:settings.media.audioLinkage
 			
 			return dataLoader;
 		}

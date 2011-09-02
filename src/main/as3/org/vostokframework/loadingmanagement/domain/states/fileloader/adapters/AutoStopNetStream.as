@@ -26,30 +26,66 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
 {
-	import org.as3collections.IList;
-	import org.as3coreaddendum.system.IDisposable;
+	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
 
-	import flash.events.IEventDispatcher;
+	import flash.events.NetStatusEvent;
+	import flash.net.NetStream;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IFileLoadingAlgorithm extends IEventDispatcher, IDisposable
+	public class AutoStopNetStream extends DataLoaderBehavior
 	{
+		/**
+		 * @private
+ 		 */
+		private var _netStream:NetStream;
 		
-		function addParsers(parsers:IList):void;
+		/**
+		 * description
+		 * 
+		 * @param loader
+		 * @param request
+		 * @param context
+		 */
+		public function AutoStopNetStream(wrappedDataLoader:IDataLoader, netStream:NetStream)
+		{
+			super(wrappedDataLoader);
+			
+			if (!netStream) throw new ArgumentError("Argument <netStream> must not be null.");
+			
+			_netStream = netStream;
+			addNetStreamListener();
+		}
 		
-		function cancel(): void;
+		override protected function doDispose():void
+		{
+			removeNetStreamListener();
+			_netStream = null;
+		}
 		
-		//function getData():*;
+		private function addNetStreamListener():void
+		{
+			_netStream.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler, false, int.MAX_VALUE, true);
+		}
 		
-		function load(): void;
+		private function netStatusHandler(event:NetStatusEvent):void
+		{
+			if (event.info["code"] == "NetStream.Play.Start")
+			{
+				_netStream.pause();
+				removeNetStreamListener();
+			}
+		}
 		
-		function stop(): void;
+		private function removeNetStreamListener():void
+		{
+			_netStream.removeEventListener(NetStatusEvent.NET_STATUS, netStatusHandler, false);
+		}
 		
 	}
 

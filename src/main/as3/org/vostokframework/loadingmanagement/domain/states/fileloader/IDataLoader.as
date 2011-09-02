@@ -28,7 +28,6 @@
  */
 package org.vostokframework.loadingmanagement.domain.states.fileloader
 {
-	import org.as3collections.IList;
 	import org.as3coreaddendum.system.IDisposable;
 
 	import flash.events.IEventDispatcher;
@@ -38,14 +37,12 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface IFileLoadingAlgorithm extends IEventDispatcher, IDisposable
+	public interface IDataLoader extends IEventDispatcher, IDisposable
 	{
-		
-		function addParsers(parsers:IList):void;
 		
 		function cancel(): void;
 		
-		//function getData():*;
+		function getData():*;
 		
 		function load(): void;
 		
