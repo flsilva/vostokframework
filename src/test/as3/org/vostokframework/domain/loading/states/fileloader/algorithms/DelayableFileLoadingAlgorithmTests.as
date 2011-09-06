@@ -141,8 +141,8 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			timer.start();
 		}
 		
-		[Test(async, timeout=700)]
-		public function load_initialDelayOf400Milliseconds_stubWrappedAlgorithmDispatchFailedErrorEvent_delayAfterError100Milliseconds_callLoadAgain_stopTestWith600Milliseconds_verifyMockWrappedAlgorithmWasCalledTwice(): void
+		[Test(async, timeout=800)]
+		public function load_initialDelayOf400Milliseconds_stubWrappedAlgorithmDispatchFailedErrorEvent_delayAfterError100Milliseconds_callLoadAgain_stopTestWith700Milliseconds_verifyMockWrappedAlgorithmWasCalledTwice(): void
 		{
 			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()), 50).once();
 			
@@ -166,9 +166,9 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 				{
 					verify(fakeWrappedAlgorithm);
 				}
-			, 700);
+			, 800);
 			
-			var timer:Timer = new Timer(600, 1);
+			var timer:Timer = new Timer(700, 1);
 			timer.addEventListener(TimerEvent.TIMER_COMPLETE, asyncHandler, false, 0, true);
 			timer.start();
 		}
