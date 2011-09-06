@@ -33,12 +33,12 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
-	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.assets.AssetPackage;
+	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.assets.errors.AssetNotFoundError;
+	import org.vostokframework.domain.assets.errors.DuplicateAssetError;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 
 	/**

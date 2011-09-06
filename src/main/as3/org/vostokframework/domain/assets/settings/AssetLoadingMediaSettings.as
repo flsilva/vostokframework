@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.domain.settings
+package org.vostokframework.domain.assets.settings
 {
 	import org.as3collections.IList;
 

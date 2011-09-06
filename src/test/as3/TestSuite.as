@@ -29,13 +29,13 @@
 
 package 
 {
-	import org.vostokframework.assetmanagement.domain.AssetFactoryTests;
-	import org.vostokframework.assetmanagement.domain.AssetPackageFactoryTests;
-	import org.vostokframework.assetmanagement.domain.AssetPackageRepositoryTests;
-	import org.vostokframework.assetmanagement.domain.AssetPackageTests;
-	import org.vostokframework.assetmanagement.domain.AssetRepositoryTests;
-	import org.vostokframework.assetmanagement.domain.AssetTests;
-	import org.vostokframework.assetmanagement.domain.UrlAssetParserTests;
+	import org.vostokframework.domain.assets.AssetFactoryTests;
+	import org.vostokframework.domain.assets.AssetPackageFactoryTests;
+	import org.vostokframework.domain.assets.AssetPackageRepositoryTests;
+	import org.vostokframework.domain.assets.AssetPackageTests;
+	import org.vostokframework.domain.assets.AssetRepositoryTests;
+	import org.vostokframework.domain.assets.AssetTests;
+	import org.vostokframework.domain.assets.UrlAssetParserTests;
 	import org.vostokframework.assetmanagement.services.AssetPackageServiceTests;
 	import org.vostokframework.assetmanagement.services.AssetServiceTests;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderTests;
@@ -126,7 +126,7 @@ package
 	public class TestSuite
 	{
 		
-		//org.vostokframework.assetmanagement.domain
+		//org.vostokframework.domain.assets
 		public var assetTests:AssetTests;
 		public var assetFactoryTests:AssetFactoryTests;
 		public var assetPackageTests:AssetPackageTests;

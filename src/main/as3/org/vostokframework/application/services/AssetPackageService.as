@@ -33,9 +33,9 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.errors.AssetPackageNotFoundError;
-	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetPackageError;
+	import org.vostokframework.domain.assets.AssetPackage;
+	import org.vostokframework.domain.assets.errors.AssetPackageNotFoundError;
+	import org.vostokframework.domain.assets.errors.DuplicateAssetPackageError;
 
 	/**
 	 * description

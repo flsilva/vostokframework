@@ -39,8 +39,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;

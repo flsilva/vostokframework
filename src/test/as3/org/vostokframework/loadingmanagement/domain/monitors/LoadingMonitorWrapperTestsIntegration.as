@@ -37,7 +37,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.flexunit.async.Async;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;

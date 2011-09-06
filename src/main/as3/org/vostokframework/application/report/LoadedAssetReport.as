@@ -30,7 +30,7 @@ package org.vostokframework.loadingmanagement.report
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.AssetType;
 
 	/**
 	 * description

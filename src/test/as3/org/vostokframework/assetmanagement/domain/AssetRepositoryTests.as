@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.assetmanagement.domain
+package org.vostokframework.domain.assets
 {
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
@@ -97,7 +97,7 @@ package org.vostokframework.assetmanagement.domain
 			Assert.assertTrue(exists);
 		}
 		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError")]
+		[Test(expects="org.vostokframework.domain.assets.errors.DuplicateAssetError")]
 		public function add_dupplicateAsset_ThrowsError(): void
 		{
 			_repository.add(getAsset());

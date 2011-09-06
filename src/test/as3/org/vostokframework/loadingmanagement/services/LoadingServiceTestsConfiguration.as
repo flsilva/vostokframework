@@ -32,10 +32,10 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
-	import org.vostokframework.assetmanagement.domain.AssetRepository;
+	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.assets.AssetPackage;
+	import org.vostokframework.domain.assets.AssetPackageRepository;
+	import org.vostokframework.domain.assets.AssetRepository;
 	import org.vostokframework.assetmanagement.services.AssetPackageService;
 	import org.vostokframework.assetmanagement.services.AssetService;
 	import org.vostokframework.loadingmanagement.AssetLoadingSettingsRepository;

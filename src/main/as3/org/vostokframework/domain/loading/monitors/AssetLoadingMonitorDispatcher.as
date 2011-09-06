@@ -30,7 +30,7 @@ package org.vostokframework.loadingmanagement.domain.monitors
 {
 	import org.as3collections.IMap;
 	import org.as3utils.StringUtil;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingErrorEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
 

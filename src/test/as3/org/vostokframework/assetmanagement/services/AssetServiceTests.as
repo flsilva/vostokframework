@@ -34,10 +34,10 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.Asset;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetRepository;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.assets.AssetPackage;
+	import org.vostokframework.domain.assets.AssetRepository;
+	import org.vostokframework.domain.assets.AssetType;
 
 	/**
 	 * @author Flávio Silva
@@ -154,7 +154,7 @@ package org.vostokframework.assetmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError")]
+		[Test(expects="org.vostokframework.domain.assets.errors.UnsupportedAssetTypeError")]
 		public function createAsset_srcWithoutExtensionAndWithoutSendType_ThrowsError(): void
 		{
 			_service.createAsset("http://domain.com/dynamic-asset", getAssetPackage());
@@ -207,7 +207,7 @@ package org.vostokframework.assetmanagement.services
 			_service.getAsset(null);
 		}
 		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError")]
+		[Test(expects="org.vostokframework.domain.assets.errors.AssetNotFoundError")]
 		public function getAsset_notAddedAsset_ThrowsError(): void
 		{
 			_service.getAsset("any-not-added-id");

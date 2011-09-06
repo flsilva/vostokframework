@@ -28,8 +28,8 @@
  */
 package org.vostokframework.loadingmanagement.domain.loaders
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
 	import org.vostokframework.loadingmanagement.domain.states.fileloader.StubNativeDataLoader;
 

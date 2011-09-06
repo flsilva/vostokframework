@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.maps.TypedMap;
 	import org.as3collections.utils.ListUtil;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.AssetType;
 
 	/**
 	 * description

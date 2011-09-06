@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.domain
+package org.vostokframework.domain.assets
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IMap;

@@ -28,10 +28,10 @@
  */
 package org.vostokframework.assetmanagement
 {
-	import org.vostokframework.assetmanagement.domain.AssetFactory;
-	import org.vostokframework.assetmanagement.domain.AssetPackageFactory;
-	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
-	import org.vostokframework.assetmanagement.domain.AssetRepository;
+	import org.vostokframework.domain.assets.AssetFactory;
+	import org.vostokframework.domain.assets.AssetPackageFactory;
+	import org.vostokframework.domain.assets.AssetPackageRepository;
+	import org.vostokframework.domain.assets.AssetRepository;
 
 	import flash.errors.IllegalOperationError;
 

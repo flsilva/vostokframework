@@ -35,8 +35,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.flexunit.async.Async;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;

@@ -33,9 +33,9 @@ package org.vostokframework.assetmanagement.services
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.AssetManagementContext;
-	import org.vostokframework.assetmanagement.domain.AssetPackage;
-	import org.vostokframework.assetmanagement.domain.AssetPackageFactory;
-	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
+	import org.vostokframework.domain.assets.AssetPackage;
+	import org.vostokframework.domain.assets.AssetPackageFactory;
+	import org.vostokframework.domain.assets.AssetPackageRepository;
 
 	/**
 	 * @author Flávio Silva
@@ -169,7 +169,7 @@ package org.vostokframework.assetmanagement.services
 			_service.getAssetPackage(null);
 		}
 		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.AssetPackageNotFoundError")]
+		[Test(expects="org.vostokframework.domain.assets.errors.AssetPackageNotFoundError")]
 		public function getAssetPackage_notAddedAssetPackage_ThrowsError(): void
 		{
 			_service.getAssetPackage("any-not-added-id");

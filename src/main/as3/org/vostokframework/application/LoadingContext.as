@@ -28,10 +28,10 @@
  */
 package org.vostokframework.loadingmanagement
 {
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.assetmanagement.services.AssetService;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;

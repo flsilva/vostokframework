@@ -29,8 +29,8 @@
 package org.vostokframework.loadingmanagement.domain
 {
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 
 	/**
 	 * description

@@ -29,7 +29,7 @@
 
 package org.vostokframework.loadingmanagement.services
 {
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;

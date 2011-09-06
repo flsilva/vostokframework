@@ -28,7 +28,7 @@
  */
 package org.vostokframework.loadingmanagement.domain.events
 {
-	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitoring;
 
 	import flash.events.Event;

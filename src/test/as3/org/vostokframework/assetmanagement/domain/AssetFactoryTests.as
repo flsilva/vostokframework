@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.assetmanagement.domain
+package org.vostokframework.domain.assets
 {
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokIdentification;
@@ -118,7 +118,7 @@ package org.vostokframework.assetmanagement.domain
 		// AssetFactory().create() TESTS //
 		///////////////////////////////////
 		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError")]
+		[Test(expects="org.vostokframework.domain.assets.errors.UnsupportedAssetTypeError")]
 		public function create_unsupportedAssetType_ThrowsError(): void
 		{
 			var factory:AssetFactory = getFactory();

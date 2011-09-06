@@ -33,7 +33,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 

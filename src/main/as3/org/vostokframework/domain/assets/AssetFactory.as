@@ -26,11 +26,11 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement.domain
+package org.vostokframework.domain.assets
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError;
+	import org.vostokframework.domain.assets.errors.UnsupportedAssetTypeError;
 
 	/**
 	 * description
@@ -60,7 +60,7 @@ package org.vostokframework.assetmanagement.domain
 		 * @param type
 		 * @throws 	ArgumentError 	if the <code>src</code> argument is <code>null</code> or <code>empty</code>.
 		 * @throws 	ArgumentError 	if the <code>assetPackage</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
+		 * @throws 	org.vostokframework.domain.assets.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
 		 * @return
 		 */
 		public function create(src:String, assetPackage:AssetPackage, id:String = null, type:AssetType = null): Asset
