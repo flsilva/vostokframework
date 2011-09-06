@@ -26,11 +26,11 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.ILoaderStateTransition;
+	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 
 	/**
 	 * description

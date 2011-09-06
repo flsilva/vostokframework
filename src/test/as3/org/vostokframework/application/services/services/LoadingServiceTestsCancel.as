@@ -27,12 +27,12 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
 
 	/**
 	 * @author Flávio Silva
@@ -61,7 +61,7 @@ package org.vostokframework.loadingmanagement.services
 			service.cancel(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function cancel_notExistingLoader_ThrowsError(): void
 		{
 			service.cancel(QUEUE1_ID);
@@ -128,7 +128,7 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertFalse(exists);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function cancel_callTwice_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -202,7 +202,7 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertFalse(exists);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function cancel_notUniqueAssetLoaderInQueueLoader_callsTwiceForSameAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();

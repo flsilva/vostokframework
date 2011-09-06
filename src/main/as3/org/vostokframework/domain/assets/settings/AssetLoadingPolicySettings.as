@@ -28,7 +28,7 @@
  */
 package org.vostokframework.domain.assets.settings
 {
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.domain.loading.LoadPriority;
 
 	/**
 	 * description

@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader
 {
 	import mockolate.mock;
 	import mockolate.stub;
@@ -36,9 +36,9 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 	import org.as3collections.maps.ArrayListMap;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
 
 	import flash.events.Event;
 

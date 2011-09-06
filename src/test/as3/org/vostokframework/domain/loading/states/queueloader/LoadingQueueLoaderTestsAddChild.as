@@ -27,14 +27,14 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import mockolate.mock;
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderState;
 
 	/**
 	 * @author Flávio Silva

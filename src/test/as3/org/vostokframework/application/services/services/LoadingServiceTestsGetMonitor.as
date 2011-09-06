@@ -27,12 +27,12 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
 
 	/**
 	 * @author Flávio Silva
@@ -59,7 +59,7 @@ package org.vostokframework.loadingmanagement.services
 			service.getMonitor(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError")]
 		public function getMonitor_notExistingMonitor_ThrowsError(): void
 		{
 			service.getMonitor(QUEUE_ID);

@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import mockolate.mock;
 	import mockolate.verify;
@@ -53,7 +53,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			state.stopChild(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function stopChild_notAddedChild_ThrowsError(): void
 		{
 			state = getState();

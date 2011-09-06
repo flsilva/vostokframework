@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.events
+package org.vostokframework.domain.loading.events
 {
 	import org.as3collections.IMap;
 

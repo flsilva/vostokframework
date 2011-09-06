@@ -27,10 +27,10 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.domain.loading.ILoader;
 
 	/**
 	 * @author Flávio Silva
@@ -51,7 +51,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			state.getChild(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function getChild_notAddedChild_ThrowsError(): void
 		{
 			state = getState();

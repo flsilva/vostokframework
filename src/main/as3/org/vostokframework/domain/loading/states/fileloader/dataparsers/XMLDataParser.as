@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers
+package org.vostokframework.domain.loading.states.fileloader.dataparsers
 {
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.loadingmanagement.domain.IDataParser;
+	import org.vostokframework.domain.loading.IDataParser;
 
 	/**
 	 * description

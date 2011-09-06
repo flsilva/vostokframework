@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader
 {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -35,8 +35,8 @@ package org.vostokframework.loadingmanagement.domain.states.fileloader
 
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.ILoaderStateTransition;
 
 	/**
 	 * @author Flávio Silva

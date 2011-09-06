@@ -26,14 +26,14 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import org.as3collections.IIterator;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderStateTransition;
+	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
+	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 
 	/**
 	 * description

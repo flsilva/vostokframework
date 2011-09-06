@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.policies
+package org.vostokframework.domain.loading.policies
 {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -39,10 +39,10 @@ package org.vostokframework.loadingmanagement.domain.policies
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.StubLoaderRepository;
 
 	/**
 	 * @author Flávio Silva

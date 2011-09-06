@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import org.flexunit.Assert;
 
@@ -50,7 +50,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 			state.addChild(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.DuplicateLoaderError")]
 		public function addChild_callTwiceForSameChild_ThrowsError(): void
 		{
 			state = getState();

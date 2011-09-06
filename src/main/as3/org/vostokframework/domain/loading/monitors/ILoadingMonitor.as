@@ -27,12 +27,12 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.domain.loading.monitors
 {
 	import org.as3collections.IList;
 	import org.as3coreaddendum.system.IDisposable;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.domain.loading.ILoader;
 
 	import flash.events.IEventDispatcher;
 

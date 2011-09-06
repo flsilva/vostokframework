@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.domain.loading.monitors
 {
 	import org.as3utils.StringUtil;
-	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
+	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
 
 	import flash.events.Event;
 

@@ -27,13 +27,13 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.policies
+package org.vostokframework.domain.loading.policies
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IQueue;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.ILoader;
 
 	/**
 	 * description

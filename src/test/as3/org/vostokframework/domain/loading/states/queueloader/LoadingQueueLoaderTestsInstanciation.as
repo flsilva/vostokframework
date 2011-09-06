@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
@@ -39,11 +39,11 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
-	import org.vostokframework.loadingmanagement.domain.policies.LoadingPolicy;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
+	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.policies.LoadingPolicy;
 
 	/**
 	 * @author Flávio Silva

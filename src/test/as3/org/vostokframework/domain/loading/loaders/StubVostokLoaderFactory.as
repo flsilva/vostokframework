@@ -26,12 +26,12 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders
+package org.vostokframework.domain.loading.loaders
 {
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.StubNativeDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.StubNativeDataLoader;
 
 	/**
 	 * description

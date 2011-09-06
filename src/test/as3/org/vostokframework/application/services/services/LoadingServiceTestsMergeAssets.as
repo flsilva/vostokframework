@@ -27,12 +27,12 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
 
 	/**
 	 * @author Flávio Silva
@@ -63,7 +63,7 @@ package org.vostokframework.loadingmanagement.services
 			service.mergeAssets(QUEUE_ID, null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function mergeAssets_notExistingLoader_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -72,7 +72,7 @@ package org.vostokframework.loadingmanagement.services
 			service.mergeAssets(QUEUE_ID, list);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.DuplicateLoaderError")]
 		public function mergeAssets_dupplicateAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();

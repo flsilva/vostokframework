@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.domain.loading.monitors
 {
 	import mockolate.mock;
 	import mockolate.stub;
@@ -35,8 +35,8 @@ package org.vostokframework.loadingmanagement.domain.monitors
 
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
 
 	import flash.events.Event;
 	import flash.events.TimerEvent;

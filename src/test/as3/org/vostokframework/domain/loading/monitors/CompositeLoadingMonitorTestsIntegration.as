@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.domain.loading.monitors
 {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -38,11 +38,11 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
-	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.events.GlobalLoadingEvent;
+	import org.vostokframework.domain.loading.events.AssetLoadingEvent;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
+	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
 
 	import flash.events.Event;
 

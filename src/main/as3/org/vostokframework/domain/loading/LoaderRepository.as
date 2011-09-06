@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.domain.loading
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -37,7 +37,7 @@ package org.vostokframework.loadingmanagement.domain
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
+	import org.vostokframework.domain.loading.errors.DuplicateLoaderError;
 
 	/**
 	 * description

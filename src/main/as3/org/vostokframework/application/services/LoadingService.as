@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
@@ -42,20 +42,20 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError;
-	import org.vostokframework.loadingmanagement.domain.errors.DuplicateLoadingMonitorError;
-	import org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError;
-	import org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.loadingmanagement.domain.monitors.AssetLoadingMonitorDispatcher;
-	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitor;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorDispatcher;
-	import org.vostokframework.loadingmanagement.domain.monitors.QueueLoadingMonitorDispatcher;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderFactory;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.errors.DuplicateLoaderError;
+	import org.vostokframework.domain.loading.errors.DuplicateLoadingMonitorError;
+	import org.vostokframework.domain.loading.errors.LoaderNotFoundError;
+	import org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError;
+	import org.vostokframework.domain.loading.monitors.AssetLoadingMonitorDispatcher;
+	import org.vostokframework.domain.loading.monitors.CompositeLoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.LoadingMonitor;
+	import org.vostokframework.domain.loading.monitors.LoadingMonitorDispatcher;
+	import org.vostokframework.domain.loading.monitors.QueueLoadingMonitorDispatcher;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
@@ -381,7 +381,7 @@ package org.vostokframework.loadingmanagement.services
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
-			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//throws org.vostokframework.domain.loading.errors.DuplicateLoaderError
 			//if there is a ILoader object with the identification of any Asset inside <assets>
 			var loaders:IList = createLeafLoaders(assets);
 			
@@ -453,7 +453,7 @@ package org.vostokframework.loadingmanagement.services
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
-			//throws org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError
+			//throws org.vostokframework.domain.loading.errors.DuplicateLoaderError
 			//if there is a ILoader object with the identification of any Asset inside <assets>
 			var loaders:IList = createLeafLoaders(assets);
 			

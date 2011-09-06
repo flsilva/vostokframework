@@ -26,9 +26,9 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
+package org.vostokframework.domain.loading.states.fileloader.adapters
 {
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.NativeDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.NativeDataLoader;
 
 	import flash.display.Loader;
 	import flash.events.IEventDispatcher;

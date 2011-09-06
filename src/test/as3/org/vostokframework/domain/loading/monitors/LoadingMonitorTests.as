@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.monitors
+package org.vostokframework.domain.loading.monitors
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -42,10 +42,10 @@ package org.vostokframework.loadingmanagement.domain.monitors
 	import org.hamcrest.core.anything;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.LoadError;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
 
 	import flash.events.ProgressEvent;
 

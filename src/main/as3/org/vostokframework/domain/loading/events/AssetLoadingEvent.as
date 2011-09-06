@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.events
+package org.vostokframework.domain.loading.events
 {
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitoring;
+	import org.vostokframework.domain.loading.monitors.LoadingMonitoring;
 
 	import flash.events.Event;
 

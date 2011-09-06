@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.loaders
+package org.vostokframework.domain.loading.loaders
 {
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
@@ -42,31 +42,31 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.vostokframework.domain.assets.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.domain.assets.settings.SecurityDomainSetting;
-	import org.vostokframework.loadingmanagement.domain.DataParserRepository;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.loadingmanagement.domain.policies.ILoadingPolicy;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.IFileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.QueuedFileLoader;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoCreateNetStreamVideo;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoResizeNetStreamVideo;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.AutoStopNetStream;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeLoaderAdapter;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeNetStreamAdapter;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.NativeURLLoaderAdapter;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.adapters.ProgressNetStream;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.DelayableFileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithm;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.dataparsers.XMLDataParser;
-	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueueLoadingStatus;
-	import org.vostokframework.loadingmanagement.domain.states.queueloader.QueuedQueueLoader;
+	import org.vostokframework.domain.loading.DataParserRepository;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderFactory;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
+	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.QueuedFileLoader;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.AutoCreateNetStreamVideo;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.AutoResizeNetStreamVideo;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.AutoStopNetStream;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.NativeLoaderAdapter;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.NativeNetStreamAdapter;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.NativeURLLoaderAdapter;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.ProgressNetStream;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.DelayableFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.dataparsers.XMLDataParser;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
+	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoader;
 
 	import flash.display.Loader;
 	import flash.net.NetConnection;

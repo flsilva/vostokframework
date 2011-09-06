@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -38,9 +38,9 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.monitors.ILoadingMonitor;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
+	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
 
 	import flash.display.MovieClip;
@@ -66,7 +66,7 @@ package org.vostokframework.loadingmanagement.services
 		// LoadingService().load() //
 		/////////////////////////////
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.DuplicateLoaderError")]
 		public function load_duplicateQueueId_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -86,7 +86,7 @@ package org.vostokframework.loadingmanagement.services
 			service.load(QUEUE1_ID, list);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.DuplicateLoaderError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.DuplicateLoaderError")]
 		public function load_duplicateAssetInDifferentQueues_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -235,7 +235,7 @@ package org.vostokframework.loadingmanagement.services
 			Assert.assertTrue(isLoading);
 		}
 		
-		[Test(async, timeout=1000, expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForQueueLoader_ThrowsError(): void
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
@@ -261,7 +261,7 @@ package org.vostokframework.loadingmanagement.services
 			timer.start();
 		}
 		
-		[Test(async, timeout=1000, expects="org.vostokframework.loadingmanagement.domain.errors.LoadingMonitorNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError")]
 		public function load_validArguments_queueLoadingCompletes_callGetMonitorForAssetLoader_ThrowsError(): void
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();

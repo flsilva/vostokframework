@@ -26,12 +26,12 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader.algorithms
+package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import org.as3collections.IListMap;
-	import org.vostokframework.loadingmanagement.domain.LoadError;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithmErrorEvent;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmErrorEvent;
+	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 
 	import flash.events.Event;
 	import flash.events.EventDispatcher;

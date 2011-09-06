@@ -27,9 +27,9 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.domain.policies
+package org.vostokframework.domain.loading.policies
 {
-	import org.vostokframework.loadingmanagement.domain.StubLoaderRepository;
+	import org.vostokframework.domain.loading.StubLoaderRepository;
 
 	/**
 	 * @author Flávio Silva

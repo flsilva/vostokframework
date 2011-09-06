@@ -27,14 +27,14 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
+	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;

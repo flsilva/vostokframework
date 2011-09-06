@@ -26,17 +26,17 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader
 {
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.ILoaderState;
-	import org.vostokframework.loadingmanagement.domain.ILoaderStateTransition;
-	import org.vostokframework.loadingmanagement.domain.events.LoaderEvent;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.ILoaderStateTransition;
+	import org.vostokframework.domain.loading.events.LoaderEvent;
 
 	import flash.errors.IllegalOperationError;
 

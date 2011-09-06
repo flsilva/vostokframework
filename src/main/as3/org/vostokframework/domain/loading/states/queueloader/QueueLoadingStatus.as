@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.queueloader
+package org.vostokframework.domain.loading.states.queueloader
 {
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
@@ -37,7 +37,7 @@ package org.vostokframework.loadingmanagement.domain.states.queueloader
 	import org.as3collections.queues.IndexablePriorityQueue;
 	import org.as3collections.utils.ListUtil;
 	import org.as3collections.utils.QueueUtil;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
+	import org.vostokframework.domain.loading.ILoader;
 
 	/**
 	 * description

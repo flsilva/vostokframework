@@ -26,10 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain.states.fileloader.adapters
+package org.vostokframework.domain.loading.states.fileloader.adapters
 {
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.FileLoadingAlgorithmMediaEvent;
-	import org.vostokframework.loadingmanagement.domain.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmMediaEvent;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 
 	import flash.events.Event;
 	import flash.events.ProgressEvent;

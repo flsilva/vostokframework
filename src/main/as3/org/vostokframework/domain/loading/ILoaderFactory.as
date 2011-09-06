@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.domain
+package org.vostokframework.domain.loading
 {
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;

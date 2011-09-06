@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
@@ -36,8 +36,8 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -72,7 +72,7 @@ package org.vostokframework.loadingmanagement.services
 			service.changePriority(QUEUE1_ID, null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.domain.errors.LoaderNotFoundError")]
+		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
 		public function changePriority_notExistingLoader_ThrowsError(): void
 		{
 			service.changePriority(QUEUE1_ID, LoadPriority.HIGH);

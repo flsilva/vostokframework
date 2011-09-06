@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.services
+package org.vostokframework.application.services
 {
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
@@ -36,15 +36,15 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetPackageRepository;
 	import org.vostokframework.domain.assets.AssetRepository;
-	import org.vostokframework.assetmanagement.services.AssetPackageService;
-	import org.vostokframework.assetmanagement.services.AssetService;
+	import org.vostokframework.application.services.AssetPackageService;
+	import org.vostokframework.application.services.AssetService;
 	import org.vostokframework.loadingmanagement.AssetLoadingSettingsRepository;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
-	import org.vostokframework.loadingmanagement.domain.ILoader;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
-	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.loadingmanagement.domain.monitors.LoadingMonitorRepository;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
+	import org.vostokframework.domain.loading.monitors.LoadingMonitorRepository;
 	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
 
 	/**
