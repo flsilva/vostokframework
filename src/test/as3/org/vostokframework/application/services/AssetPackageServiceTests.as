@@ -32,7 +32,7 @@ package org.vostokframework.application.services
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.AssetManagementContext;
+	import org.vostokframework.application.AssetsContext;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetPackageFactory;
 	import org.vostokframework.domain.assets.AssetPackageRepository;
@@ -61,7 +61,7 @@ package org.vostokframework.application.services
 		[Before]
 		public function setUp(): void
 		{
-			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
+			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			
 			_service = new AssetPackageService();
 		}
@@ -113,7 +113,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function assetPackageExists_addedAssetPackage_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			
 			var exists:Boolean = _service.assetPackageExists(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			Assert.assertTrue(exists);
@@ -136,7 +136,7 @@ package org.vostokframework.application.services
 			_service.createAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
 			var identification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
-			Assert.assertTrue(AssetManagementContext.getInstance().assetPackageRepository.exists(identification));
+			Assert.assertTrue(AssetsContext.getInstance().assetPackageRepository.exists(identification));
 		}
 		
 		///////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function getAllAssetPackages_notEmptyAssetPackageRepository_ReturnsIList(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			
 			var list:IList = _service.getAllAssetPackages();
 			Assert.assertNotNull(list);
@@ -178,7 +178,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function getAssetPackage_addedAssetPackage_ReturnsValidObject(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			
 			var assetPackage:AssetPackage = _service.getAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			Assert.assertNotNull(assetPackage);
@@ -193,17 +193,17 @@ package org.vostokframework.application.services
 		{
 			_service.removeAllAssetPackages();
 			
-			var empty:Boolean = AssetManagementContext.getInstance().assetPackageRepository.isEmpty();
+			var empty:Boolean = AssetsContext.getInstance().assetPackageRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function removeAllAssetPackages_notEmptyAssetPackageRepository_checkIfAssetPackageRepositoryIsEmpty_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			_service.removeAllAssetPackages();
 			
-			var empty:Boolean = AssetManagementContext.getInstance().assetPackageRepository.isEmpty();
+			var empty:Boolean = AssetsContext.getInstance().assetPackageRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
@@ -227,7 +227,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function removeAssetPackage_addedAssetPackage_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			
 			var removed:Boolean = _service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			Assert.assertTrue(removed);
@@ -236,12 +236,12 @@ package org.vostokframework.application.services
 		[Test]
 		public function removeAssetPackage_addedAssetPackage_checkIfAssetPackageRepositoryDoNotContainTheObjectRemoved_ReturnsFalse(): void
 		{
-			AssetManagementContext.getInstance().assetPackageRepository.add(getAssetPackage());
+			AssetsContext.getInstance().assetPackageRepository.add(getAssetPackage());
 			
 			_service.removeAssetPackage(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
 			
 			var identification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, ASSET_PACKAGE_LOCALE);
-			var exists:Boolean = AssetManagementContext.getInstance().assetPackageRepository.exists(identification);
+			var exists:Boolean = AssetsContext.getInstance().assetPackageRepository.exists(identification);
 			Assert.assertFalse(exists);
 		}
 		

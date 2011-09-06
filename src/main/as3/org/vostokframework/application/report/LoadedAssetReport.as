@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.report
+package org.vostokframework.application.report
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;

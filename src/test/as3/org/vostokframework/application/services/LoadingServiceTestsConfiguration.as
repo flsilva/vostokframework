@@ -31,21 +31,21 @@ package org.vostokframework.application.services
 {
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.AssetManagementContext;
+	import org.vostokframework.application.AssetsContext;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetPackageRepository;
 	import org.vostokframework.domain.assets.AssetRepository;
 	import org.vostokframework.application.services.AssetPackageService;
 	import org.vostokframework.application.services.AssetService;
-	import org.vostokframework.loadingmanagement.AssetLoadingSettingsRepository;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.AssetLoadingSettingsRepository;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 	import org.vostokframework.domain.loading.monitors.LoadingMonitorRepository;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
+	import org.vostokframework.application.report.LoadedAssetRepository;
 
 	/**
 	 * @author Flávio Silva
@@ -73,35 +73,35 @@ package org.vostokframework.application.services
 		[Before]
 		public function setUp(): void
 		{
-			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
-			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
+			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
+			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			LoadingManagementContext.getInstance().setAssetLoadingSettingsRepository(new AssetLoadingSettingsRepository());
-			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
-			LoadingManagementContext.getInstance().setLoaderFactory(new StubVostokLoaderFactory());
-			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
-			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
+			LoadingContext.getInstance().setAssetLoadingSettingsRepository(new AssetLoadingSettingsRepository());
+			LoadingContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
+			LoadingContext.getInstance().setLoaderFactory(new StubVostokLoaderFactory());
+			LoadingContext.getInstance().setLoaderRepository(new LoaderRepository());
+			LoadingContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			
-			LoadingManagementContext.getInstance().setMaxConcurrentConnections(4);
-			LoadingManagementContext.getInstance().setMaxConcurrentQueues(2);
+			LoadingContext.getInstance().setMaxConcurrentConnections(4);
+			LoadingContext.getInstance().setMaxConcurrentQueues(2);
 			
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
-			var loaderRepository:LoaderRepository = LoadingManagementContext.getInstance().loaderRepository;
-			var maxConcurrentConnections:int = LoadingManagementContext.getInstance().maxConcurrentConnections;
-			var maxConcurrentQueues:int = LoadingManagementContext.getInstance().maxConcurrentQueues;
-			var globalQueueLoader:ILoader = LoadingManagementContext.getInstance().loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, maxConcurrentConnections, maxConcurrentQueues);
-			LoadingManagementContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
+			var loaderRepository:LoaderRepository = LoadingContext.getInstance().loaderRepository;
+			var maxConcurrentConnections:int = LoadingContext.getInstance().maxConcurrentConnections;
+			var maxConcurrentQueues:int = LoadingContext.getInstance().maxConcurrentQueues;
+			var globalQueueLoader:ILoader = LoadingContext.getInstance().loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, maxConcurrentConnections, maxConcurrentQueues);
+			LoadingContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();
 			
 			//var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			//var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
+			//var assetPackage:AssetPackage = AssetsContext.getInstance().assetPackageFactory.create(packageIdentification);
 			var assetPackageService:AssetPackageService = new AssetPackageService();
 			var assetPackage:AssetPackage = assetPackageService.createAssetPackage(ASSET_PACKAGE_ID);
-			/*asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
-			asset2 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
-			asset3 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
-			asset4 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);*/
+			/*asset1 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
+			asset2 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
+			asset3 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
+			asset4 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);*/
 			
 			var assetService:AssetService = new AssetService();
 			asset1 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
@@ -109,11 +109,11 @@ package org.vostokframework.application.services
 			asset3 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
 			asset4 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);
 			
-			/*AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
-			AssetManagementContext.getInstance().assetRepository.add(asset1);
-			AssetManagementContext.getInstance().assetRepository.add(asset2);
-			AssetManagementContext.getInstance().assetRepository.add(asset3);
-			AssetManagementContext.getInstance().assetRepository.add(asset4);*/
+			/*AssetsContext.getInstance().assetPackageRepository.add(assetPackage);
+			AssetsContext.getInstance().assetRepository.add(asset1);
+			AssetsContext.getInstance().assetRepository.add(asset2);
+			AssetsContext.getInstance().assetRepository.add(asset3);
+			AssetsContext.getInstance().assetRepository.add(asset4);*/
 		}
 		
 		[After]

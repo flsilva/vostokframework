@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.application
 {
 	import org.as3collections.IMap;
 	import org.as3collections.maps.HashMap;

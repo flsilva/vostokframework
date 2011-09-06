@@ -32,7 +32,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import mockolate.mock;
 	import mockolate.verify;
 
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
@@ -91,7 +91,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.allLoaders.put(fakeChildLoader2.identification.toString(), fakeChildLoader2);
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader2);
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingManagementContext.getInstance().loaderRepository);
+			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;
 			policy.localMaxConnections = 1;
 			

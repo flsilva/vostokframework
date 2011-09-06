@@ -33,7 +33,7 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.AssetManagementContext;
+	import org.vostokframework.application.AssetsContext;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetRepository;
@@ -62,7 +62,7 @@ package org.vostokframework.application.services
 		[Before]
 		public function setUp(): void
 		{
-			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
+			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
 			_service = new AssetService();
 		}
@@ -119,7 +119,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function assetExists_addedAsset_callSendingLocale_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var exists:Boolean = _service.assetExists(ASSET_ID, VostokFramework.CROSS_LOCALE_ID);
 			Assert.assertTrue(exists);
@@ -128,7 +128,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function assetExists_addedAsset_callNotSendingLocale_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var exists:Boolean = _service.assetExists(ASSET_ID);
 			Assert.assertTrue(exists);
@@ -150,7 +150,7 @@ package org.vostokframework.application.services
 		{
 			var asset:Asset = _service.createAsset("http://domain.com/a.aac", getAssetPackage());
 			
-			var exists:Boolean = AssetManagementContext.getInstance().assetRepository.exists(asset.identification);
+			var exists:Boolean = AssetsContext.getInstance().assetRepository.exists(asset.identification);
 			Assert.assertTrue(exists);
 		}
 		
@@ -191,7 +191,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function getAllAssets_notEmptyAssetRepository_ReturnsIList(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var list:IList = _service.getAllAssets();
 			Assert.assertNotNull(list);
@@ -216,7 +216,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function getAsset_addedAsset_callSendingLocale_ReturnsAsset(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var asset:Asset = _service.getAsset(ASSET_ID, VostokFramework.CROSS_LOCALE_ID);
 			Assert.assertNotNull(asset);
@@ -227,7 +227,7 @@ package org.vostokframework.application.services
 		{
 			//testing asset without locale
 			
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var asset:Asset = _service.getAsset(ASSET_ID);
 			Assert.assertNotNull(asset);
@@ -242,17 +242,17 @@ package org.vostokframework.application.services
 		{
 			_service.removeAllAssets();
 			
-			var empty:Boolean = AssetManagementContext.getInstance().assetRepository.isEmpty();
+			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
 		[Test]
 		public function removeAllAssets_notEmptyAssetRepository_checkIfAssetRepositoryIsEmpty_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			_service.removeAllAssets();
 			
-			var empty:Boolean = AssetManagementContext.getInstance().assetRepository.isEmpty();
+			var empty:Boolean = AssetsContext.getInstance().assetRepository.isEmpty();
 			Assert.assertTrue(empty);
 		}
 		
@@ -276,7 +276,7 @@ package org.vostokframework.application.services
 		[Test]
 		public function removeAsset_addedAsset_ReturnsTrue(): void
 		{
-			AssetManagementContext.getInstance().assetRepository.add(getAsset());
+			AssetsContext.getInstance().assetRepository.add(getAsset());
 			
 			var removed:Boolean = _service.removeAsset(ASSET_ID);
 			Assert.assertTrue(removed);

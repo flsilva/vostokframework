@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.assetmanagement
+package org.vostokframework.application
 {
 	import org.vostokframework.domain.assets.AssetFactory;
 	import org.vostokframework.domain.assets.AssetPackageFactory;
@@ -40,12 +40,12 @@ package org.vostokframework.assetmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetManagementContext
+	public class AssetsContext
 	{
 		/**
 		 * @private
 		 */
-		private static var _instance:AssetManagementContext = new AssetManagementContext();
+		private static var _instance:AssetsContext = new AssetsContext();
 		
 		/**
 		 * @private
@@ -87,9 +87,9 @@ package org.vostokframework.assetmanagement
 		/**
 		 * description
 		 */
-		public function AssetManagementContext()
+		public function AssetsContext()
 		{
-			if (_created) throw new IllegalOperationError("<AssetManagementContext> is a singleton class and should be accessed only by its <getInstance> method.");
+			if (_created) throw new IllegalOperationError("<AssetsContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
 			_assetFactory = new AssetFactory();
 			_assetPackageFactory = new AssetPackageFactory();
@@ -102,7 +102,7 @@ package org.vostokframework.assetmanagement
 		 * 
 		 * @return
  		 */
-		public static function getInstance(): AssetManagementContext
+		public static function getInstance(): AssetsContext
 		{
 			return _instance;
 		}

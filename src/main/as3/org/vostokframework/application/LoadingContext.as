@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement
+package org.vostokframework.application
 {
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
 	import org.vostokframework.VostokFramework;
@@ -47,8 +47,8 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.domain.loading.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.domain.loading.monitors.LoadingMonitorRepository;
 	import org.vostokframework.domain.loading.monitors.LoadingMonitorWrapper;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
+	import org.vostokframework.application.report.LoadedAssetReport;
+	import org.vostokframework.application.report.LoadedAssetRepository;
 
 	import flash.errors.IllegalOperationError;
 
@@ -57,13 +57,13 @@ package org.vostokframework.loadingmanagement
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingManagementContext
+	public class LoadingContext
 	{
 		/**
 		 * @private
 		 */
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
-		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
+		private static var _instance:LoadingContext = new LoadingContext();
 		
 		private var _assetLoadingSettingsRepository:AssetLoadingSettingsRepository;
 		private var _globalQueueLoader:ILoader;
@@ -118,9 +118,9 @@ package org.vostokframework.loadingmanagement
 		/**
 		 * description
 		 */
-		public function LoadingManagementContext()
+		public function LoadingContext()
 		{
-			if (_created) throw new IllegalOperationError("<LoadingManagementContext> is a singleton class and should be accessed only by its <getInstance> method.");
+			if (_created) throw new IllegalOperationError("<LoadingContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
@@ -141,7 +141,7 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @return
  		 */
-		public static function getInstance(): LoadingManagementContext
+		public static function getInstance(): LoadingContext
 		{
 			return _instance;
 		}
@@ -321,7 +321,7 @@ package org.vostokframework.loadingmanagement
 		private function globalQueueLoaderCompleteHandler(event:GlobalLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("LoadingManagementContext::globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
+			trace("LoadingContext::globalQueueLoaderCompleteHandler() - event.queueId: " + event.queueId);
 			
 			createGlobalQueueLoader();
 		}
@@ -329,7 +329,7 @@ package org.vostokframework.loadingmanagement
 		private function queueLoaderCanceledHandler(event:QueueLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("LoadingManagementContext::queueLoaderCanceledHandler() - event.queueId: " + event.queueId);
+			trace("LoadingContext::queueLoaderCanceledHandler() - event.queueId: " + event.queueId);
 			
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, event.queueLocale);
 			
@@ -340,7 +340,7 @@ package org.vostokframework.loadingmanagement
 		private function queueLoaderCompleteHandler(event:QueueLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("LoadingManagementContext::queueLoaderCompleteHandler() - event.queueId: " + event.queueId);
+			trace("LoadingContext::queueLoaderCompleteHandler() - event.queueId: " + event.queueId);
 			
 			var identification:VostokIdentification = new VostokIdentification(event.queueId, event.queueLocale);
 			
@@ -354,7 +354,7 @@ package org.vostokframework.loadingmanagement
 		private function assetCompleteHandler(event:AssetLoadingEvent):void
 		{
 			trace("#####################################################");
-			trace("LoadingManagementContext::assetCompleteHandler() - event.assetId: " + event.assetId);
+			trace("LoadingContext::assetCompleteHandler() - event.assetId: " + event.assetId);
 			
 			var errorMessage:String;
 			

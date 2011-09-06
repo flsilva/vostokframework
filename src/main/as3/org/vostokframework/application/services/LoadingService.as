@@ -41,7 +41,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -56,10 +56,10 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.loading.monitors.LoadingMonitor;
 	import org.vostokframework.domain.loading.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.domain.loading.monitors.QueueLoadingMonitorDispatcher;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetReport;
-	import org.vostokframework.loadingmanagement.report.LoadedAssetRepository;
-	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
-	import org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError;
+	import org.vostokframework.application.report.LoadedAssetReport;
+	import org.vostokframework.application.report.LoadedAssetRepository;
+	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
+	import org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError;
 
 	/**
 	 * description
@@ -71,7 +71,7 @@ package org.vostokframework.application.services
 		/**
 		 * @private
 		 */
-		private var _context:LoadingManagementContext;
+		private var _context:LoadingContext;
 		
 		private function get globalMonitor():ILoadingMonitor { return _context.globalQueueLoadingMonitor; }
 		
@@ -90,7 +90,7 @@ package org.vostokframework.application.services
 		 */
 		public function LoadingService()
 		{
-			_context = LoadingManagementContext.getInstance();
+			_context = LoadingContext.getInstance();
 		}
 		
 		/**
@@ -374,10 +374,10 @@ package org.vostokframework.application.services
 				throw new DuplicateLoadingMonitorError(errorMessage);
 			}
 			
-			var globalMaxConnections:int = LoadingManagementContext.getInstance().maxConcurrentConnections;
+			var globalMaxConnections:int = LoadingContext.getInstance().maxConcurrentConnections;
 			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, priority, globalMaxConnections, concurrentConnections);
 			
-			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
+			//throws org.vostokframework.application.report.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
@@ -449,7 +449,7 @@ package org.vostokframework.application.services
 			//if there's any duplicate Asset object
 			validateDuplicateAsset(assets);
 			
-			//throws org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError
+			//throws org.vostokframework.application.report.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			

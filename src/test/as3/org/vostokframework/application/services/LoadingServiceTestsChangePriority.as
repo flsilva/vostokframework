@@ -35,7 +35,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 
@@ -88,7 +88,7 @@ package org.vostokframework.application.services
 			service.changePriority(QUEUE1_ID, LoadPriority.LOWEST);
 			
 			var identification:VostokIdentification = new VostokIdentification(QUEUE1_ID, VostokFramework.CROSS_LOCALE_ID);
-			var loader:ILoader = LoadingManagementContext.getInstance().globalQueueLoader.getChild(identification);
+			var loader:ILoader = LoadingContext.getInstance().globalQueueLoader.getChild(identification);
 			Assert.assertEquals(0, loader.priority);
 		}
 		
@@ -124,7 +124,7 @@ package org.vostokframework.application.services
 			
 			service.changePriority(asset1.identification.id, LoadPriority.LOWEST);
 			
-			var loader:ILoader = LoadingManagementContext.getInstance().globalQueueLoader.getChild(asset1.identification);
+			var loader:ILoader = LoadingContext.getInstance().globalQueueLoader.getChild(asset1.identification);
 			Assert.assertEquals(0, loader.priority);
 		}
 		
@@ -136,7 +136,7 @@ package org.vostokframework.application.services
 			list1.add(asset2);
 			list1.add(asset3);
 			
-			var settings:AssetLoadingSettings = LoadingManagementContext.getInstance().assetLoadingSettingsRepository.find(asset3);
+			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset3);
 			settings.policy.priority = LoadPriority.LOWEST;
 			
 			service.load(QUEUE1_ID, list1);

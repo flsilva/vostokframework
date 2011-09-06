@@ -41,7 +41,7 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.HelperTestObject;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.events.GlobalLoadingEvent;
 	import org.vostokframework.domain.loading.events.AssetLoadingEvent;
 	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
@@ -90,13 +90,13 @@ package org.vostokframework.application.services
 		{
 			super.tearDown();
 			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false);
 			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.removeEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false);
 			
 			timer.stop();
 			
@@ -138,12 +138,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.OPEN, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -153,12 +153,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.OPEN, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -168,12 +168,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.OPEN, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.OPEN, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -187,12 +187,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -202,12 +202,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.PROGRESS, 1000, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -217,12 +217,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.PROGRESS, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.PROGRESS, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -236,12 +236,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, GlobalLoadingEvent.COMPLETE, 1000, asyncTimeoutHandler);
 			service.load(QUEUE_ID, list);
 		}
 		
@@ -250,12 +250,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, QueueLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -265,12 +265,12 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
 			
-			Async.proceedOnEvent(this, LoadingManagementContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
+			Async.proceedOnEvent(this, LoadingContext.getInstance().globalQueueLoadingMonitor, AssetLoadingEvent.COMPLETE, 500, asyncTimeoutHandler);
 			
 			service.load(QUEUE_ID, list);
 		}
@@ -290,7 +290,7 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -302,9 +302,9 @@ package org.vostokframework.application.services
 			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);
 			mock(helperTestObject).method("test").args(GlobalLoadingEvent).once().ordered(seq);
 			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.OPEN, assetLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.OPEN, queueLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.OPEN, globalQueueLoadingCompleteHandler, false, 0, true);
 			
 			var asyncHandler:Function = Async.asyncHandler(this, verifyHelperTestObject, 1000);
 			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);
@@ -320,7 +320,7 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -332,9 +332,9 @@ package org.vostokframework.application.services
 			mock(helperTestObject).method("test").args(QueueLoadingEvent).once().ordered(seq);
 			mock(helperTestObject).method("test").args(GlobalLoadingEvent).once().ordered(seq);
 			
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false, 0, true);
-			LoadingManagementContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(AssetLoadingEvent.COMPLETE, assetLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(QueueLoadingEvent.COMPLETE, queueLoadingCompleteHandler, false, 0, true);
+			LoadingContext.getInstance().globalQueueLoadingMonitor.addEventListener(GlobalLoadingEvent.COMPLETE, globalQueueLoadingCompleteHandler, false, 0, true);
 			
 			var asyncHandler:Function = Async.asyncHandler(this, verifyHelperTestObject, 1000);
 			timer.addEventListener(TimerEvent.TIMER, asyncHandler, false, 0, true);

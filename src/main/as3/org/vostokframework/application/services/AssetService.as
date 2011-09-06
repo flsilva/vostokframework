@@ -32,14 +32,14 @@ package org.vostokframework.application.services
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.AssetManagementContext;
+	import org.vostokframework.application.AssetsContext;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.assets.errors.AssetNotFoundError;
 	import org.vostokframework.domain.assets.errors.DuplicateAssetError;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 
 	/**
 	 * description
@@ -51,16 +51,16 @@ package org.vostokframework.application.services
 		/**
 		 * @private
 		 */
-		private var _context: AssetManagementContext;
-		private var _loadingContext: LoadingManagementContext;
+		private var _context: AssetsContext;
+		private var _loadingContext: LoadingContext;
 		
 		/**
 		 * description
 		 */
 		public function AssetService()
 		{
-			_context = AssetManagementContext.getInstance();
-			_loadingContext = LoadingManagementContext.getInstance();
+			_context = AssetsContext.getInstance();
+			_loadingContext = LoadingContext.getInstance();
 		}
 		
 		/**

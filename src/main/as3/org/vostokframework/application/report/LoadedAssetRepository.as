@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.loadingmanagement.report
+package org.vostokframework.application.report
 {
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
@@ -35,7 +35,7 @@ package org.vostokframework.loadingmanagement.report
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.report.errors.DuplicateLoadedAssetError;
+	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
 
 	/**
 	 * description

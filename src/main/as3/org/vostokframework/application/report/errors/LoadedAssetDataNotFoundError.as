@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.loadingmanagement.report.errors
+package org.vostokframework.application.report.errors
 {
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;

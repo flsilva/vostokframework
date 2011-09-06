@@ -34,7 +34,7 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.LoadingManagementContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 
 	import flash.events.TimerEvent;
@@ -63,13 +63,13 @@ package org.vostokframework.application.services
 			service.getAssetData(null);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
 		public function getAssetData_notExistingAsset_ThrowsError(): void
 		{
 			service.getAssetData(asset1.identification.id);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
 		public function getAssetData_notLoadedAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -80,7 +80,7 @@ package org.vostokframework.application.services
 			service.getAssetData(asset2.identification.id, asset2.identification.locale);
 		}
 		
-		[Test(expects="org.vostokframework.loadingmanagement.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
 		public function getAssetData_loadingAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -95,9 +95,9 @@ package org.vostokframework.application.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingManagementContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = true;
 			
 			var list:IList = new ArrayList();
