@@ -31,13 +31,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetTypeError;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingCacheSettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingExtraSettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingMediaSettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * description
@@ -47,38 +40,12 @@ package org.vostokframework.assetmanagement.domain
 	public class AssetFactory
 	{
 		/**
-		 * description
-		 */
-		private var _defaultPriority:LoadPriority;
-		
-		/**
-		 * description
-		 */
-		private var _defaultSettings:AssetLoadingSettings;
-		
-		/**
-		 * description
+		 * @private
 		 */
 		private var _urlAssetParser:UrlAssetParser;
 
-		/**
-		 * description
-		 */
-		public function get defaultPriority(): LoadPriority { return _defaultPriority; }
-		
-		/**
-		 * description
-		 */
-		public function get defaultSettings(): AssetLoadingSettings { return _defaultSettings; }
-
-		public function AssetFactory(defaultSettings:AssetLoadingSettings = null, defaultPriority:LoadPriority = null)
+		public function AssetFactory()
 		{
-			if (!defaultSettings) defaultSettings = createDefaultSettings();
-			setDefaultSettings(defaultSettings);
-			
-			if (!defaultPriority) defaultPriority = createDefaultPriority();
-			setDefaultPriority(defaultPriority);
-			
 			_urlAssetParser = createUrlAssetParser();
 		}
 
@@ -96,13 +63,10 @@ package org.vostokframework.assetmanagement.domain
 		 * @throws 	org.vostokframework.assetmanagement.domain.errors.UnsupportedAssetType 	if the <code>type</code> argument is <code>null</code> and the framework cannot get the Asset Type over its <code>src</code> argument or the file extension in the <code>src</code> argument is not supported.
 		 * @return
 		 */
-		public function create(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:AssetLoadingSettings = null, id:String = null, type:AssetType = null): Asset
+		public function create(src:String, assetPackage:AssetPackage, id:String = null, type:AssetType = null): Asset
 		{
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String.");
 			if (!assetPackage) throw new ArgumentError("Argument <assetPackage> must not be null.");
-			
-			if (!priority) priority = _defaultPriority;
-			if (!settings) settings = _defaultSettings;
 			
 			var identification:VostokIdentification = createIdentification(src, assetPackage, id);
 			if (!type) type = getType(src);
@@ -118,31 +82,7 @@ package org.vostokframework.assetmanagement.domain
 				throw new UnsupportedAssetTypeError(identification, message);
 			}
 			
-			return instanciate(identification, src, type, priority, settings);
-		}
-
-		/**
-		 * description
-		 * 
-		 * @param settings
-		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
-		 */
-		public function setDefaultPriority(priority:LoadPriority): void
-		{
-			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
-			_defaultPriority = priority;
-		}
-
-		/**
-		 * description
-		 * 
-		 * @param settings
-		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
-		 */
-		public function setDefaultSettings(settings:AssetLoadingSettings): void
-		{
-			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
-			_defaultSettings = settings;
+			return instanciate(identification, src, type);
 		}
 		
 		/**
@@ -160,9 +100,9 @@ package org.vostokframework.assetmanagement.domain
 		/**
 		 * @private
 		 */
-		protected function instanciate(id:VostokIdentification, src:String, type:AssetType, priority:LoadPriority, settings:AssetLoadingSettings): Asset
+		protected function instanciate(id:VostokIdentification, src:String, type:AssetType): Asset
 		{
-			return new Asset(id, src, type, priority, settings);
+			return new Asset(id, src, type);
 		}
 		
 		/**
@@ -182,47 +122,6 @@ package org.vostokframework.assetmanagement.domain
 		protected function getType(src:String): AssetType
 		{
 			return _urlAssetParser.getAssetType(src);
-		}
-		
-		/**
-		 * @private
-		 */
-		private function createDefaultPriority(): LoadPriority
-		{
-			return LoadPriority.MEDIUM;
-		}
-		
-		/**
-		 * @private
-		 */
-		private function createDefaultSettings(): AssetLoadingSettings
-		{
-			var cache:AssetLoadingCacheSettings = new AssetLoadingCacheSettings();
-			var extra:AssetLoadingExtraSettings = new AssetLoadingExtraSettings();
-			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
-			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
-			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
-			
-			cache.allowInternalCache = true;
-			cache.killExternalCache = false;
-			
-			media.autoCreateVideo = false;
-			media.autoResizeVideo = false;
-			media.autoStopStream = false;
-			media.bufferPercent = .1;
-			media.bufferPercent = 0;
-			
-			policy.latencyTimeout = 12000;
-			policy.maxAttempts = 2;
-			
-			var settings:AssetLoadingSettings = new AssetLoadingSettings();
-			settings.cache = cache;
-			settings.extra = extra;
-			settings.media = media;
-			settings.policy = policy;
-			settings.security = security;
-			
-			return settings;
 		}
 		
 		private function createUrlAssetParser():UrlAssetParser

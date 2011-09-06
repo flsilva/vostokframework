@@ -33,9 +33,12 @@ package org.vostokframework.loadingmanagement.domain.loaders
 	import org.as3utils.URLUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
 	import org.vostokframework.assetmanagement.domain.AssetType;
 	import org.vostokframework.assetmanagement.domain.settings.ApplicationDomainSetting;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingCacheSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingExtraSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingMediaSettings;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSecuritySettings;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.assetmanagement.domain.settings.SecurityDomainSetting;
@@ -86,8 +89,11 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		 * @private
 		 */
 		private var _dataParserRepository:DataParserRepository;
+		private var _defaultLoadingSettings:AssetLoadingSettings;
 		
 		public function get dataParserRepository(): DataParserRepository { return _dataParserRepository; }
+		
+		public function get defaultLoadingSettings(): AssetLoadingSettings { return _defaultLoadingSettings; }
 		
 		/**
 		 * description
@@ -98,6 +104,9 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public function VostokLoaderFactory()
 		{
 			initDataParserRepository();
+			
+			var defaultLoadingSettings:AssetLoadingSettings = createDefaultLoadingSettings();
+			setDefaultLoadingSettings(defaultLoadingSettings);
 		}
 		
 		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader
@@ -110,10 +119,14 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			return instanciateComposite(identification, state, priority);
 		}
 		
-		public function createLeaf(asset:Asset):ILoader
+		public function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:AssetLoadingSettings = null):ILoader
 		{
-			var state:ILoaderState = createLeafLoaderState(asset.type, asset.src, asset.settings);
-			return instanciateLeaf(asset.identification, state, asset.priority);
+			//TODO:validar argumentos
+			
+			if (!settings) settings = _defaultLoadingSettings;
+			
+			var state:ILoaderState = createLeafLoaderState(type, src, settings);
+			return instanciateLeaf(identification, state, settings.policy.priority);
 		}
 		
 		public function setDataParserRepository(repository:DataParserRepository): void
@@ -124,12 +137,58 @@ package org.vostokframework.loadingmanagement.domain.loaders
 			_dataParserRepository = repository;
 		}
 		
+		/**
+		 * description
+		 * 
+		 * @param settings
+		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
+		 */
+		public function setDefaultLoadingSettings(settings:AssetLoadingSettings): void
+		{
+			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
+			_defaultLoadingSettings = settings;
+		}
+		
 		protected function createCompositeLoaderState(policy:ILoadingPolicy):ILoaderState
 		{
 			var queueLoadingStatus:QueueLoadingStatus = new QueueLoadingStatus();
 			var state:ILoaderState = new QueuedQueueLoader(queueLoadingStatus, policy);
 			
 			return state;
+		}
+		
+		/**
+		 * @private
+		 */
+		protected function createDefaultLoadingSettings():AssetLoadingSettings
+		{
+			var cache:AssetLoadingCacheSettings = new AssetLoadingCacheSettings();
+			var extra:AssetLoadingExtraSettings = new AssetLoadingExtraSettings();
+			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
+			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
+			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
+			
+			cache.allowInternalCache = true;
+			cache.killExternalCache = false;
+			
+			media.autoCreateVideo = false;
+			media.autoResizeVideo = false;
+			media.autoStopStream = false;
+			media.bufferPercent = .1;
+			media.bufferPercent = 0;
+			
+			policy.latencyTimeout = 12000;
+			policy.maxAttempts = 2;
+			policy.priority = LoadPriority.MEDIUM;
+			
+			var settings:AssetLoadingSettings = new AssetLoadingSettings();
+			settings.cache = cache;
+			settings.extra = extra;
+			settings.media = media;
+			settings.policy = policy;
+			settings.security = security;
+			
+			return settings;
 		}
 		
 		protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings):ILoaderState

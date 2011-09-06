@@ -29,7 +29,8 @@
 package org.vostokframework.loadingmanagement.domain
 {
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.AssetType;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 
 	/**
 	 * description
@@ -39,11 +40,17 @@ package org.vostokframework.loadingmanagement.domain
 	public interface ILoaderFactory
 	{
 		
+		function get dataParserRepository(): DataParserRepository;
+		
+		function get defaultLoadingSettings(): AssetLoadingSettings;
+		
 		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader;
 		
-		function createLeaf(asset:Asset):ILoader;
+		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:AssetLoadingSettings = null):ILoader;
 		
 		function setDataParserRepository(repository:DataParserRepository): void;
+		
+		function setDefaultLoadingSettings(settings:AssetLoadingSettings): void;
 		
 	}
 

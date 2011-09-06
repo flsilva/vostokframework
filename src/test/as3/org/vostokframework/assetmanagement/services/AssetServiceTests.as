@@ -38,7 +38,6 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetRepository;
 	import org.vostokframework.assetmanagement.domain.AssetType;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -80,7 +79,7 @@ package org.vostokframework.assetmanagement.services
 		
 		private function getAsset():Asset
 		{
-			return new Asset(IDENTIFICATION, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
+			return new Asset(IDENTIFICATION, "asset-path/asset.xml", AssetType.XML);
 		}
 		
 		private function getAssetPackage():AssetPackage
@@ -135,38 +134,6 @@ package org.vostokframework.assetmanagement.services
 			Assert.assertTrue(exists);
 		}
 		
-		////////////////////////////////////////////////
-		// AssetService().changeAssetPriority() TESTS //
-		////////////////////////////////////////////////
-		
-		[Test(expects="ArgumentError")]
-		public function changeAssetPriority_invalidAssetId_ThrowsError(): void
-		{
-			_service.changeAssetPriority(null, LoadPriority.HIGH);
-		}
-		
-		[Test(expects="ArgumentError")]
-		public function changeAssetPriority_invalidAssetPriority_ThrowsError(): void
-		{
-			_service.changeAssetPriority("any-not-added-id", null);
-		}
-		
-		[Test(expects="org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError")]
-		public function changeAssetPriority_notAddedAsset_ThrowsError(): void
-		{
-			_service.changeAssetPriority("any-not-added-id", LoadPriority.HIGH);
-		}
-		
-		[Test]
-		public function changeAssetPriority_addedAsset_checkIfPriorityMatches_ReturnsTrue(): void
-		{
-			var asset:Asset = getAsset();
-			AssetManagementContext.getInstance().assetRepository.add(asset);
-			
-			_service.changeAssetPriority(ASSET_ID, LoadPriority.HIGH);
-			Assert.assertEquals(LoadPriority.HIGH, asset.priority);
-		}
-		
 		////////////////////////////////////////
 		// AssetService().createAsset() TESTS //
 		////////////////////////////////////////
@@ -196,7 +163,7 @@ package org.vostokframework.assetmanagement.services
 		[Test]
 		public function createAsset_srcWithoutExtensionAndSendType_ReturnsValidObject(): void
 		{
-			var asset:Asset = _service.createAsset("http://domain.com/dynamic-asset", getAssetPackage(), null, null, null, AssetType.SWF);
+			var asset:Asset = _service.createAsset("http://domain.com/dynamic-asset", getAssetPackage(), null, null, AssetType.SWF);
 			Assert.assertNotNull(asset);
 		}
 		

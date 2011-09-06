@@ -31,9 +31,6 @@ package org.vostokframework.assetmanagement.domain
 {
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingPolicySettings;
-	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -72,11 +69,11 @@ package org.vostokframework.assetmanagement.domain
 			var factory:AssetFactory = new AssetFactory();
 			Assert.assertNotNull(factory);
 		}
-		
+		/*
 		//////////////////////////////////////////
 		// AssetFactory().defaultSettings TESTS //
 		//////////////////////////////////////////
-		
+		//TODO:transferir testes para VostokLoaderFactoryTests.as
 		[Test]
 		public function defaultSettings_instanciateWithoutArgument_ReturnsValidObject(): void
 		{
@@ -98,41 +95,6 @@ package org.vostokframework.assetmanagement.domain
 			Assert.assertEquals(settings, factory.defaultSettings);
 		}
 		
-		//////////////////////////////////////////
-		// AssetFactory().defaultPriority TESTS //
-		//////////////////////////////////////////
-		
-		[Test]
-		public function defaultPriority_instanciateWithoutPriority_ReturnsValidObject(): void
-		{
-			var factory:AssetFactory = new AssetFactory();
-			Assert.assertNotNull(factory.defaultPriority);
-		}
-		
-		[Test]
-		public function defaultPriority_instanciateWithPriority_checkIfObjectsMatch_ReturnsTrue(): void
-		{
-			var priority:LoadPriority = LoadPriority.LOW;
-			var factory:AssetFactory = new AssetFactory(null, priority);
-			Assert.assertEquals(priority, factory.defaultPriority);
-		}
-		
-		///////////////////////////////////////////////
-		// AssetFactory().setDefaultPriority() TESTS //
-		///////////////////////////////////////////////
-		
-		[Test]
-		public function setDefaultPriority_validArgument_checkIfObjectsMatch_ReturnTrue(): void
-		{
-			var priority:LoadPriority = LoadPriority.LOW;
-			var factory:AssetFactory = new AssetFactory(null, priority);
-			
-			var priority2:LoadPriority = LoadPriority.HIGH;
-			factory.setDefaultPriority(priority2);
-			
-			Assert.assertEquals(priority2, factory.defaultPriority);
-		}
-		
 		///////////////////////////////////////////////
 		// AssetFactory().setDefaultSettings() TESTS //
 		///////////////////////////////////////////////
@@ -151,7 +113,7 @@ package org.vostokframework.assetmanagement.domain
 			
 			Assert.assertEquals(settings2, factory.defaultSettings);
 		}
-		
+		*/
 		///////////////////////////////////
 		// AssetFactory().create() TESTS //
 		///////////////////////////////////
@@ -187,12 +149,13 @@ package org.vostokframework.assetmanagement.domain
 			var identification:VostokIdentification = new VostokIdentification("a.aac", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));
 		}
-		
+		//TODO:criar teste enviando TYPE porem o src enviado corresponde a outro TYPE
+		//validar se TYPE utilizado foi o enviado e nao o obtido automaticamente
 		[Test]
 		public function create_validArgumentsWithAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
 			var factory:AssetFactory = getFactory();
-			var asset:Asset = factory.create("a.aac", getAssetPackage(), null, null, "asset-id");
+			var asset:Asset = factory.create("a.aac", getAssetPackage(), "asset-id");
 			
 			var identification:VostokIdentification = new VostokIdentification("asset-id", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));

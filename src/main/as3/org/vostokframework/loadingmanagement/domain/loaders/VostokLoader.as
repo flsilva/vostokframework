@@ -110,7 +110,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		public function set priority(value:int): void
 		{
 			validateDisposal();
-			
+			//TODO:disparar evento
 			try
 			{
 				_priority = LoadPriority.getByOrdinal(value);

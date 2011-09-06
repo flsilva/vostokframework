@@ -36,6 +36,9 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.assetmanagement.domain.AssetPackage;
 	import org.vostokframework.assetmanagement.domain.AssetPackageRepository;
 	import org.vostokframework.assetmanagement.domain.AssetRepository;
+	import org.vostokframework.assetmanagement.services.AssetPackageService;
+	import org.vostokframework.assetmanagement.services.AssetService;
+	import org.vostokframework.loadingmanagement.AssetLoadingSettingsRepository;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
@@ -73,9 +76,10 @@ package org.vostokframework.loadingmanagement.services
 			AssetManagementContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			AssetManagementContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(new StubVostokLoaderFactory());
-			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
+			LoadingManagementContext.getInstance().setAssetLoadingSettingsRepository(new AssetLoadingSettingsRepository());
 			LoadingManagementContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
+			LoadingManagementContext.getInstance().setLoaderFactory(new StubVostokLoaderFactory());
+			LoadingManagementContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingManagementContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			
 			LoadingManagementContext.getInstance().setMaxConcurrentConnections(4);
@@ -90,18 +94,26 @@ package org.vostokframework.loadingmanagement.services
 			
 			service = new LoadingService();
 			
-			var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
-			asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
+			//var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
+			//var assetPackage:AssetPackage = AssetManagementContext.getInstance().assetPackageFactory.create(packageIdentification);
+			var assetPackageService:AssetPackageService = new AssetPackageService();
+			var assetPackage:AssetPackage = assetPackageService.createAssetPackage(ASSET_PACKAGE_ID);
+			/*asset1 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
 			asset2 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
 			asset3 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
-			asset4 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);
+			asset4 = AssetManagementContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);*/
 			
-			AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
+			var assetService:AssetService = new AssetService();
+			asset1 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
+			asset2 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
+			asset3 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
+			asset4 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);
+			
+			/*AssetManagementContext.getInstance().assetPackageRepository.add(assetPackage);
 			AssetManagementContext.getInstance().assetRepository.add(asset1);
 			AssetManagementContext.getInstance().assetRepository.add(asset2);
 			AssetManagementContext.getInstance().assetRepository.add(asset3);
-			AssetManagementContext.getInstance().assetRepository.add(asset4);
+			AssetManagementContext.getInstance().assetRepository.add(asset4);*/
 		}
 		
 		[After]

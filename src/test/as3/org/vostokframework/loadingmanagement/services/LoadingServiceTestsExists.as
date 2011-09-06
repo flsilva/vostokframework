@@ -88,7 +88,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -131,7 +131,7 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

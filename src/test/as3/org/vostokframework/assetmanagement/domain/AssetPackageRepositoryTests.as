@@ -32,7 +32,6 @@ package org.vostokframework.assetmanagement.domain
 	import org.as3collections.IList;
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 
 	/**
 	 * @author Flávio Silva
@@ -76,7 +75,7 @@ package org.vostokframework.assetmanagement.domain
 		private function getAsset():Asset
 		{
 			var identification:VostokIdentification = new VostokIdentification("asset-id", "en-US");
-			return new Asset(identification, "asset-path/asset.xml", AssetType.XML, LoadPriority.HIGH);
+			return new Asset(identification, "asset-path/asset.xml", AssetType.XML);
 		}
 		
 		///////////////////////

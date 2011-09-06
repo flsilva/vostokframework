@@ -39,7 +39,7 @@ package org.vostokframework.assetmanagement.services
 	import org.vostokframework.assetmanagement.domain.errors.AssetNotFoundError;
 	import org.vostokframework.assetmanagement.domain.errors.DuplicateAssetError;
 	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
-	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 
 	/**
 	 * description
@@ -52,6 +52,7 @@ package org.vostokframework.assetmanagement.services
 		 * @private
 		 */
 		private var _context: AssetManagementContext;
+		private var _loadingContext: LoadingManagementContext;
 		
 		/**
 		 * description
@@ -59,6 +60,7 @@ package org.vostokframework.assetmanagement.services
 		public function AssetService()
 		{
 			_context = AssetManagementContext.getInstance();
+			_loadingContext = LoadingManagementContext.getInstance();
 		}
 		
 		/**
@@ -82,24 +84,6 @@ package org.vostokframework.assetmanagement.services
 		/**
 		 * description
 		 * 
-		 * @param assetId
-		 * @param priority
-		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
-		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
-		 * @throws 	org.vostokframework.assetmanagement.errors.AssetNotFoundError 	if do not exist an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>locale</code>.
-		 */
-		public function changeAssetPriority(assetId:String, priority:LoadPriority, locale:String = null): void
-		{
-			if (StringUtil.isBlank(assetId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
-			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
-			
-			var asset:Asset = getAsset(assetId, locale);
-			asset.setPriority(priority);
-		}
-
-		/**
-		 * description
-		 * 
 		 * @param src
 		 * @param assetPackage
 		 * @param configuration
@@ -110,9 +94,9 @@ package org.vostokframework.assetmanagement.services
 		 * @throws 	org.vostokframework.assetmanagement.errors.DuplicateAssetError 	if already exists an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>assetPackage.locale</code>.
 		 * @return
 		 */
-		public function createAsset(src:String, assetPackage:AssetPackage, priority:LoadPriority = null, settings:AssetLoadingSettings = null, assetId:String = null, type:AssetType = null): Asset
+		public function createAsset(src:String, assetPackage:AssetPackage, settings:AssetLoadingSettings = null, assetId:String = null, type:AssetType = null): Asset
 		{
-			var asset:Asset = _context.assetFactory.create(src, assetPackage, priority, settings, assetId, type);
+			var asset:Asset = _context.assetFactory.create(src, assetPackage, assetId, type);
 			
 			try
 			{
@@ -142,6 +126,9 @@ package org.vostokframework.assetmanagement.services
 			}
 			
 			assetPackage.addAsset(asset);
+			
+			if (!settings) settings = _loadingContext.loaderFactory.defaultLoadingSettings;
+			_loadingContext.assetLoadingSettingsRepository.add(asset, settings);//TODO:create test case for this line
 			
 			return asset;
 		}

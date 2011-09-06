@@ -40,6 +40,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.ILoader;
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
@@ -115,6 +116,39 @@ package org.vostokframework.loadingmanagement.services
 			}
 			
 			globalQueueLoader.cancelChild(identification);
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param loaderId
+		 * @param priority
+		 * @param locale
+		 * @throws 	ArgumentError 	if the <code>assetId</code> argument is <code>null</code> or <code>empty</code>.
+		 * @throws 	ArgumentError 	if the <code>priority</code> argument is <code>null</code>.
+		 * @throws 	org.vostokframework.assetmanagement.errors.AssetNotFoundError 	if do not exist an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>locale</code>.
+		 */
+		public function changePriority(loaderId:String, priority:LoadPriority, locale:String = null): void
+		{
+			//TODO:create test cases for this method
+			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
+			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
+			
+			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
+			var identification:VostokIdentification = new VostokIdentification(loaderId, locale);
+			
+			if (!exists(loaderId, locale))
+			{
+				var message:String = "There is no ILoader object stored with specified arguments:\n";
+				message += "<loaderId>: <" + loaderId + ">\n";
+				message += "<locale>: <" + locale + ">\n";
+				message += "Use method <LoadingService().exists()> to check if a ILoader object exists.\n";
+				
+				throw new LoaderNotFoundError(identification, message);
+			}
+			
+			var loader:ILoader = globalQueueLoader.getChild(identification);
+			loader.priority = priority.ordinal;
 		}
 		
 		/**
@@ -589,6 +623,7 @@ package org.vostokframework.loadingmanagement.services
 		private function createLeafLoaders(assets:IList):IList
 		{
 			var asset:Asset;
+			var loadingSettings:AssetLoadingSettings;
 			var loader:ILoader;
 			var loaders:IList = new ArrayList();
 			var it:IIterator = assets.iterator();
@@ -596,7 +631,8 @@ package org.vostokframework.loadingmanagement.services
 			while (it.hasNext())
 			{
 				asset = it.next();
-				loader = loaderFactory.createLeaf(asset);
+				loadingSettings = _context.assetLoadingSettingsRepository.find(asset);
+				loader = loaderFactory.createLeaf(asset.identification, asset.src, asset.type, loadingSettings);
 				
 				if (globalQueueLoader.containsChild(loader.identification))
 				{

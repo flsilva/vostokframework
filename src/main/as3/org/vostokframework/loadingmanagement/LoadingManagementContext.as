@@ -28,6 +28,7 @@
  */
 package org.vostokframework.loadingmanagement
 {
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.assetmanagement.domain.Asset;
@@ -36,8 +37,8 @@ package org.vostokframework.loadingmanagement
 	import org.vostokframework.loadingmanagement.domain.ILoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.LoadPriority;
 	import org.vostokframework.loadingmanagement.domain.LoaderRepository;
-	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.AssetLoadingEvent;
+	import org.vostokframework.loadingmanagement.domain.events.GlobalLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.events.QueueLoadingEvent;
 	import org.vostokframework.loadingmanagement.domain.loaders.VostokLoaderFactory;
 	import org.vostokframework.loadingmanagement.domain.monitors.CompositeLoadingMonitor;
@@ -64,6 +65,7 @@ package org.vostokframework.loadingmanagement
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingManagementContext = new LoadingManagementContext();
 		
+		private var _assetLoadingSettingsRepository:AssetLoadingSettingsRepository;
 		private var _globalQueueLoader:ILoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
@@ -82,6 +84,12 @@ package org.vostokframework.loadingmanagement
 		{
 			_created = true;
 		}
+		
+		public function get assetLoadingSettingsRepository(): AssetLoadingSettingsRepository { return _assetLoadingSettingsRepository; }
+		
+		/**
+		 * description
+		 */
 		
 		public function get globalQueueLoader(): ILoader { return _globalQueueLoader; }
 		
@@ -117,6 +125,7 @@ package org.vostokframework.loadingmanagement
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
 			
+			_assetLoadingSettingsRepository = new AssetLoadingSettingsRepository();
 			_loaderFactory = new VostokLoaderFactory();
 			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
@@ -142,12 +151,14 @@ package org.vostokframework.loadingmanagement
 		 * 
 		 * @param factory
 		 */
-		public function setAssetLoaderFactory(factory:ILoaderFactory): void
+		public function setAssetLoadingSettingsRepository(repository:AssetLoadingSettingsRepository): void
 		{
-			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
-			_loaderFactory = factory;
+			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
+			
+			if (_assetLoadingSettingsRepository) _assetLoadingSettingsRepository.clear();
+			_assetLoadingSettingsRepository = repository;
 		}
-
+		
 		/**
 		 * description
 		 * 
@@ -231,6 +242,17 @@ package org.vostokframework.loadingmanagement
 			
 			if (_loadedAssetRepository) _loadedAssetRepository.clear();
 			_loadedAssetRepository = repository;
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param factory
+		 */
+		public function setLoaderFactory(factory:ILoaderFactory): void
+		{
+			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
+			_loaderFactory = factory;
 		}
 		
 		/**
@@ -342,12 +364,14 @@ package org.vostokframework.loadingmanagement
 				errorMessage = "It was expected that the Asset object was found:\n";
 				errorMessage += "<assetId>: " + event.assetId + "\n";
 				errorMessage += "<assetLocale>: " + event.assetLocale;
-				
+				//TODO:trocar erro para InvalidStateError
 				throw new IllegalOperationError(errorMessage); 
 			}
 			
 			var asset:Asset = assetService.getAsset(event.assetId, event.assetLocale);
-			if (!asset.settings.cache.allowInternalCache) return;
+			
+			var settings:AssetLoadingSettings = _assetLoadingSettingsRepository.find(asset);
+			if (!settings.cache.allowInternalCache) return;
 			
 			var src:String = asset.src;
 			

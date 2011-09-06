@@ -33,6 +33,7 @@ package org.vostokframework.loadingmanagement.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
+	import org.vostokframework.assetmanagement.domain.settings.AssetLoadingSettings;
 	import org.vostokframework.loadingmanagement.LoadingManagementContext;
 	import org.vostokframework.loadingmanagement.domain.loaders.StubVostokLoaderFactory;
 
@@ -73,9 +74,10 @@ package org.vostokframework.loadingmanagement.services
 		{
 			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
 			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingManagementContext.getInstance().setAssetLoaderFactory(stubVostokLoaderFactory);
+			LoadingManagementContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			asset1.settings.cache.allowInternalCache = true;
+			var settings:AssetLoadingSettings = LoadingManagementContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			settings.cache.allowInternalCache = true;
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

@@ -179,10 +179,17 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		/////////////////////////////
 		
 		[Test]
-		public function priority_setValidPriority_checkIfPriorityMatches_ReturnsTrue(): void
+		public function priority_setValidPriorityOne_checkIfPriorityMatches_ReturnsTrue(): void
 		{
 			loader.priority = 1;
 			Assert.assertEquals(1, loader.priority);
+		}
+		
+		[Test]
+		public function priority_setValidPriorityFour_checkIfPriorityMatches_ReturnsTrue(): void
+		{
+			loader.priority = 4;
+			Assert.assertEquals(4, loader.priority);
 		}
 		
 		[Test(expects="ArgumentError")]
@@ -196,7 +203,7 @@ package org.vostokframework.loadingmanagement.domain.loaders
 		{
 			loader.priority = 5;
 		}
-		
+		//TODO: teste do evento disparado pelo loader
 		//////////////////////////
 		// VostokLoader().state //
 		//////////////////////////

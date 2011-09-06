@@ -44,6 +44,7 @@ package org.vostokframework.assetmanagement.domain
 	 */
 	public class AssetRepository
 	{
+		//TODO:alterar key para VostokIdentification().toString() para melhorar performance
 		private var _assetMap:IMap;//key = VostokIdentification | value = Asset 
 
 		/**

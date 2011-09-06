@@ -28,6 +28,8 @@
  */
 package org.vostokframework.assetmanagement.domain.settings
 {
+	import org.vostokframework.loadingmanagement.domain.LoadPriority;
+
 	/**
 	 * description
 	 * 
@@ -40,6 +42,7 @@ package org.vostokframework.assetmanagement.domain.settings
 		 */
 		private var _latencyTimeout:Number;
 		private var _maxAttempts:int;
+		private var _priority:LoadPriority;
 
 		/**
 		 * description
@@ -54,6 +57,13 @@ package org.vostokframework.assetmanagement.domain.settings
 		public function get maxAttempts(): int { return _maxAttempts; }
 		
 		public function set maxAttempts(value:int): void { _maxAttempts = value; }
+		
+		/**
+		 * description
+		 */
+		public function get priority(): LoadPriority { return _priority; }
+		
+		public function set priority(value:LoadPriority): void { _priority = value; }
 
 		/**
 		 * description
