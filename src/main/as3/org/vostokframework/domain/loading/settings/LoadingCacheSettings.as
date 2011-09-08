@@ -28,68 +28,37 @@
  */
 package org.vostokframework.domain.loading.settings
 {
-	import org.as3collections.IList;
-
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingMediaSettings
+	public class LoadingCacheSettings
 	{
 		/**
 		 * description
 		 */
-		private var _audioLinkage:IList;
-		private var _autoCreateVideo:Boolean;
-		private var _autoResizeVideo:Boolean;
-		private var _autoStopStream:Boolean;
-		private var _bufferPercent:int;
-		private var _bufferTime:Number;
+		private var _allowInternalCache:Boolean;
+		private var _killExternalCache:Boolean;
 
-		public function get audioLinkage(): IList { return _audioLinkage; }
+		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
 		
-		public function set audioLinkage(value:IList): void { _audioLinkage = value; }
-
+		public function set allowInternalCache(value:Boolean): void { _allowInternalCache = value; }
+		
 		/**
 		 * description
 		 */
-		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
+		public function get killExternalCache(): Boolean { return _killExternalCache; }
 		
-		public function set autoCreateVideo(value:Boolean): void { _autoCreateVideo = value; }
+		public function set killExternalCache(value:Boolean): void { _killExternalCache = value; }
 
 		/**
 		 * description
+		 * 
+		 * @param killExternalCache
+		 * @param allowInternalCache
 		 */
-		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
-		
-		public function set autoResizeVideo(value:Boolean): void { _autoResizeVideo = value; }
-
-		/**
-		 * description
-		 */
-		public function get autoStopStream(): Boolean { return _autoStopStream; }
-		
-		public function set autoStopStream(value:Boolean): void { _autoStopStream = value; }
-
-		/**
-		 * description
-		 */
-		public function get bufferPercent(): int { return _bufferPercent; }
-		
-		public function set bufferPercent(value:int): void { _bufferPercent = value; }
-
-		/**
-		 * description
-		 */
-		public function get bufferTime(): Number { return _bufferTime; }
-		
-		public function set bufferTime(value:Number): void { _bufferTime = value; }
-
-		/**
-		 * description
-		 */
-		public function AssetLoadingMediaSettings()
+		public function LoadingCacheSettings()
 		{
 			
 		}

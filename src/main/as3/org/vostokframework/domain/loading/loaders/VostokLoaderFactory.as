@@ -35,12 +35,12 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.loading.settings.ApplicationDomainSetting;
-	import org.vostokframework.domain.loading.settings.AssetLoadingCacheSettings;
-	import org.vostokframework.domain.loading.settings.AssetLoadingExtraSettings;
-	import org.vostokframework.domain.loading.settings.AssetLoadingMediaSettings;
-	import org.vostokframework.domain.loading.settings.AssetLoadingPolicySettings;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSecuritySettings;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingCacheSettings;
+	import org.vostokframework.domain.loading.settings.LoadingExtraSettings;
+	import org.vostokframework.domain.loading.settings.LoadingMediaSettings;
+	import org.vostokframework.domain.loading.settings.LoadingPolicySettings;
+	import org.vostokframework.domain.loading.settings.LoadingSecuritySettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
 	import org.vostokframework.domain.loading.DataParserRepository;
 	import org.vostokframework.domain.loading.ILoader;
@@ -89,11 +89,11 @@ package org.vostokframework.domain.loading.loaders
 		 * @private
 		 */
 		private var _dataParserRepository:DataParserRepository;
-		private var _defaultLoadingSettings:AssetLoadingSettings;
+		private var _defaultLoadingSettings:LoadingSettings;
 		
 		public function get dataParserRepository(): DataParserRepository { return _dataParserRepository; }
 		
-		public function get defaultLoadingSettings(): AssetLoadingSettings { return _defaultLoadingSettings; }
+		public function get defaultLoadingSettings(): LoadingSettings { return _defaultLoadingSettings; }
 		
 		/**
 		 * description
@@ -105,7 +105,7 @@ package org.vostokframework.domain.loading.loaders
 		{
 			initDataParserRepository();
 			
-			var defaultLoadingSettings:AssetLoadingSettings = createDefaultLoadingSettings();
+			var defaultLoadingSettings:LoadingSettings = createDefaultLoadingSettings();
 			setDefaultLoadingSettings(defaultLoadingSettings);
 		}
 		
@@ -119,7 +119,7 @@ package org.vostokframework.domain.loading.loaders
 			return instanciateComposite(identification, state, priority);
 		}
 		
-		public function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:AssetLoadingSettings = null):ILoader
+		public function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader
 		{
 			//TODO:validar argumentos
 			
@@ -143,7 +143,7 @@ package org.vostokframework.domain.loading.loaders
 		 * @param settings
 		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
 		 */
-		public function setDefaultLoadingSettings(settings:AssetLoadingSettings): void
+		public function setDefaultLoadingSettings(settings:LoadingSettings): void
 		{
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			_defaultLoadingSettings = settings;
@@ -160,13 +160,13 @@ package org.vostokframework.domain.loading.loaders
 		/**
 		 * @private
 		 */
-		protected function createDefaultLoadingSettings():AssetLoadingSettings
+		protected function createDefaultLoadingSettings():LoadingSettings
 		{
-			var cache:AssetLoadingCacheSettings = new AssetLoadingCacheSettings();
-			var extra:AssetLoadingExtraSettings = new AssetLoadingExtraSettings();
-			var media:AssetLoadingMediaSettings = new AssetLoadingMediaSettings();
-			var policy:AssetLoadingPolicySettings = new AssetLoadingPolicySettings();
-			var security:AssetLoadingSecuritySettings = new AssetLoadingSecuritySettings();
+			var cache:LoadingCacheSettings = new LoadingCacheSettings();
+			var extra:LoadingExtraSettings = new LoadingExtraSettings();
+			var media:LoadingMediaSettings = new LoadingMediaSettings();
+			var policy:LoadingPolicySettings = new LoadingPolicySettings();
+			var security:LoadingSecuritySettings = new LoadingSecuritySettings();
 			
 			cache.allowInternalCache = true;
 			cache.killExternalCache = false;
@@ -181,7 +181,7 @@ package org.vostokframework.domain.loading.loaders
 			policy.maxAttempts = 2;
 			policy.priority = LoadPriority.MEDIUM;
 			
-			var settings:AssetLoadingSettings = new AssetLoadingSettings();
+			var settings:LoadingSettings = new LoadingSettings();
 			settings.cache = cache;
 			settings.extra = extra;
 			settings.media = media;
@@ -191,7 +191,7 @@ package org.vostokframework.domain.loading.loaders
 			return settings;
 		}
 		
-		protected function createLeafLoaderState(type:AssetType, url:String, settings:AssetLoadingSettings):ILoaderState
+		protected function createLeafLoaderState(type:AssetType, url:String, settings:LoadingSettings):ILoaderState
 		{
 			var killExternalCache:Boolean = settings.cache.killExternalCache;
 			var baseURL:String = settings.extra.baseURL;
@@ -203,7 +203,7 @@ package org.vostokframework.domain.loading.loaders
 			return new QueuedFileLoader(algorithm);
 		}
 		
-		protected function createFileLoadingAlgorithm(type:AssetType, dataLoader:IDataLoader, settings:AssetLoadingSettings):IFileLoadingAlgorithm
+		protected function createFileLoadingAlgorithm(type:AssetType, dataLoader:IDataLoader, settings:LoadingSettings):IFileLoadingAlgorithm
 		{
 			var algorithm:IFileLoadingAlgorithm = new FileLoadingAlgorithm(dataLoader);
 			algorithm = new LatencyTimeoutFileLoadingAlgorithm(algorithm, settings.policy.latencyTimeout);
@@ -222,7 +222,7 @@ package org.vostokframework.domain.loading.loaders
 			return algorithm;
 		}
 		
-		protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):IDataLoader
+		protected function createNativeDataLoader(type:AssetType, url:String, settings:LoadingSettings):IDataLoader
 		{
 			var dataLoader:IDataLoader;
 			var urlRequest:URLRequest = new URLRequest(url);
@@ -311,7 +311,7 @@ package org.vostokframework.domain.loading.loaders
 			return url;
 		}
 		
-		protected function createLoaderContext(security:AssetLoadingSecuritySettings):LoaderContext
+		protected function createLoaderContext(security:LoadingSecuritySettings):LoaderContext
 		{
 			var checkPolicyFile:Boolean = security.checkPolicyFile;
 			var ignoreLocalSecurityDomain:Boolean = security.ignoreLocalSecurityDomain;

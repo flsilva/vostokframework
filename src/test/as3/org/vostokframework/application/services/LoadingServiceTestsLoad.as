@@ -36,7 +36,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
@@ -294,7 +294,7 @@ package org.vostokframework.application.services
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = false;
 			
 			var list:IList = new ArrayList();
@@ -326,7 +326,7 @@ package org.vostokframework.application.services
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = false;
 			
 			var list:IList = new ArrayList();
@@ -355,7 +355,7 @@ package org.vostokframework.application.services
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = true;
 			
 			var list:IList = new ArrayList();
@@ -384,7 +384,7 @@ package org.vostokframework.application.services
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = false;
 			
 			var list:IList = new ArrayList();
@@ -412,7 +412,7 @@ package org.vostokframework.application.services
 			stubVostokLoaderFactory.successBehaviorAsync = true;
 			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset1);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = true;
 			
 			var list:IList = new ArrayList();

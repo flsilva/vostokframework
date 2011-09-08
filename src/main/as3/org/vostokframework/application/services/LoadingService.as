@@ -40,7 +40,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.Asset;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
@@ -623,7 +623,7 @@ package org.vostokframework.application.services
 		private function createLeafLoaders(assets:IList):IList
 		{
 			var asset:Asset;
-			var loadingSettings:AssetLoadingSettings;
+			var loadingSettings:LoadingSettings;
 			var loader:ILoader;
 			var loaders:IList = new ArrayList();
 			var it:IIterator = assets.iterator();
@@ -631,7 +631,7 @@ package org.vostokframework.application.services
 			while (it.hasNext())
 			{
 				asset = it.next();
-				loadingSettings = _context.assetLoadingSettingsRepository.find(asset);
+				loadingSettings = _context.loadingSettingsRepository.find(asset);
 				loader = loaderFactory.createLeaf(asset.identification, asset.src, asset.type, loadingSettings);
 				
 				if (globalQueueLoader.containsChild(loader.identification))

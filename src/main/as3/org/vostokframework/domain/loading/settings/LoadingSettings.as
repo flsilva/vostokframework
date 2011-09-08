@@ -34,23 +34,23 @@ package org.vostokframework.domain.loading.settings
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingSettings
+	public class LoadingSettings
 	{
 		/**
 		 * description
 		 */
-		private var _cache:AssetLoadingCacheSettings;
-		private var _extra:AssetLoadingExtraSettings;
-		private var _media:AssetLoadingMediaSettings;
-		private var _policy:AssetLoadingPolicySettings;
-		private var _security:AssetLoadingSecuritySettings;
+		private var _cache:LoadingCacheSettings;
+		private var _extra:LoadingExtraSettings;
+		private var _media:LoadingMediaSettings;
+		private var _policy:LoadingPolicySettings;
+		private var _security:LoadingSecuritySettings;
 		
 		/**
 		 * description
 		 */
-		public function get cache(): AssetLoadingCacheSettings { return _cache; }
+		public function get cache(): LoadingCacheSettings { return _cache; }
 		
-		public function set cache(value:AssetLoadingCacheSettings): void
+		public function set cache(value:LoadingCacheSettings): void
 		{
 			if (!value) throw new ArgumentError("Value must not be null.");
 			_cache = value;
@@ -59,9 +59,9 @@ package org.vostokframework.domain.loading.settings
 		/**
 		 * description
 		 */
-		public function get extra(): AssetLoadingExtraSettings { return _extra; }
+		public function get extra(): LoadingExtraSettings { return _extra; }
 		
-		public function set extra(value:AssetLoadingExtraSettings): void
+		public function set extra(value:LoadingExtraSettings): void
 		{
 			if (!value) throw new ArgumentError("Value must not be null.");
 			_extra = value;
@@ -70,9 +70,9 @@ package org.vostokframework.domain.loading.settings
 		/**
 		 * description
 		 */
-		public function get media(): AssetLoadingMediaSettings { return _media; }
+		public function get media(): LoadingMediaSettings { return _media; }
 		
-		public function set media(value:AssetLoadingMediaSettings): void
+		public function set media(value:LoadingMediaSettings): void
 		{
 			if (!value) throw new ArgumentError("Value must not be null.");
 			_media = value;
@@ -81,9 +81,9 @@ package org.vostokframework.domain.loading.settings
 		/**
 		 * description
 		 */
-		public function get policy(): AssetLoadingPolicySettings { return _policy; }
+		public function get policy(): LoadingPolicySettings { return _policy; }
 		
-		public function set policy(value:AssetLoadingPolicySettings): void
+		public function set policy(value:LoadingPolicySettings): void
 		{
 			if (!value) throw new ArgumentError("Value must not be null.");
 			_policy = value;
@@ -92,9 +92,9 @@ package org.vostokframework.domain.loading.settings
 		/**
 		 * description
 		 */
-		public function get security(): AssetLoadingSecuritySettings { return _security; }
+		public function get security(): LoadingSecuritySettings { return _security; }
 		
-		public function set security(value:AssetLoadingSecuritySettings): void
+		public function set security(value:LoadingSecuritySettings): void
 		{
 			if (!value) throw new ArgumentError("Value must not be null.");
 			_security = value;
@@ -109,7 +109,7 @@ package org.vostokframework.domain.loading.settings
 		 * @param media
 		 * @param extra
 		 */
-		public function AssetLoadingSettings()
+		public function LoadingSettings()
 		{
 			
 		}

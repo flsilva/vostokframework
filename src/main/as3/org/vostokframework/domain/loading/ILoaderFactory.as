@@ -30,7 +30,7 @@ package org.vostokframework.domain.loading
 {
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	/**
 	 * description
@@ -42,15 +42,15 @@ package org.vostokframework.domain.loading
 		
 		function get dataParserRepository(): DataParserRepository;
 		
-		function get defaultLoadingSettings(): AssetLoadingSettings;
+		function get defaultLoadingSettings(): LoadingSettings;
 		
 		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader;
 		
-		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:AssetLoadingSettings = null):ILoader;
+		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader;
 		
 		function setDataParserRepository(repository:DataParserRepository): void;
 		
-		function setDefaultLoadingSettings(settings:AssetLoadingSettings): void;
+		function setDefaultLoadingSettings(settings:LoadingSettings): void;
 		
 	}
 

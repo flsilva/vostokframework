@@ -33,25 +33,25 @@ package org.vostokframework.application
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.domain.assets.Asset;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingSettingsRepository
+	public class LoadingSettingsRepository
 	{
-		private var _assetLoadingSettingsMap:IMap; 
+		private var _loadingSettingsMap:IMap; 
 
 		/**
 		 * description
 		 */
-		public function AssetLoadingSettingsRepository()
+		public function LoadingSettingsRepository()
 		{
 			// IMap<String, LoadingSettings>
 			// Asset().identification.toString() used for performance optimization
-			_assetLoadingSettingsMap = new TypedMap(new HashMap(), String, AssetLoadingSettings);
+			_loadingSettingsMap = new TypedMap(new HashMap(), String, LoadingSettings);
 		}
 		
 		/**
@@ -62,12 +62,12 @@ package org.vostokframework.application
 		 * @throws 	org.vostokframework.loadermanagement.errors.DuplicateLoaderError 	if already exists an <code>ILoader</code> object stored with the same <code>id</code> of the provided <code>loader</code> argument.
 		 * @return
 		 */
-		public function add(asset:Asset, settings:AssetLoadingSettings): void
+		public function add(asset:Asset, settings:LoadingSettings): void
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
 			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
 			
-			_assetLoadingSettingsMap.put(asset.identification.toString(), settings);
+			_loadingSettingsMap.put(asset.identification.toString(), settings);
 		}
 		
 		/**
@@ -77,7 +77,7 @@ package org.vostokframework.application
  		 */
 		public function clear(): void
 		{
-			_assetLoadingSettingsMap.clear();
+			_loadingSettingsMap.clear();
 		}
 
 		/**
@@ -91,7 +91,7 @@ package org.vostokframework.application
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
 			
-			return _assetLoadingSettingsMap.containsKey(asset.identification.toString());
+			return _loadingSettingsMap.containsKey(asset.identification.toString());
 		}
 
 		/**
@@ -101,11 +101,11 @@ package org.vostokframework.application
 		 * @throws 	ArgumentError 	if the <code>loaderId</code> argument is <code>null</code> or <code>empty</code>.
 		 * @return
 		 */
-		public function find(asset:Asset): AssetLoadingSettings
+		public function find(asset:Asset): LoadingSettings
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
 			
-			return _assetLoadingSettingsMap.getValue(asset.identification.toString());
+			return _loadingSettingsMap.getValue(asset.identification.toString());
 		}
 		
 		/**
@@ -115,7 +115,7 @@ package org.vostokframework.application
 		 */
 		public function isEmpty(): Boolean
 		{
-			return _assetLoadingSettingsMap.isEmpty();
+			return _loadingSettingsMap.isEmpty();
 		}
 
 		/**
@@ -131,7 +131,7 @@ package org.vostokframework.application
 			
 			if (!exists(asset)) return false;
 			
-			return _assetLoadingSettingsMap.remove(asset.identification.toString());
+			return _loadingSettingsMap.remove(asset.identification.toString());
 		}
 		
 		/**
@@ -141,7 +141,7 @@ package org.vostokframework.application
 		 */
 		public function size(): int
 		{
-			return _assetLoadingSettingsMap.size();
+			return _loadingSettingsMap.size();
 		}
 		
 		/**
@@ -151,7 +151,7 @@ package org.vostokframework.application
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + "] <" + _assetLoadingSettingsMap.getValues() + ">";
+			return "[" + ReflectionUtil.getClassName(this) + "] <" + _loadingSettingsMap.getValues() + ">";
 		}
 		
 	}

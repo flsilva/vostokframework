@@ -34,7 +34,7 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -136,7 +136,7 @@ package org.vostokframework.application.services
 			list1.add(asset2);
 			list1.add(asset3);
 			
-			var settings:AssetLoadingSettings = LoadingContext.getInstance().assetLoadingSettingsRepository.find(asset3);
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset3);
 			settings.policy.priority = LoadPriority.LOWEST;
 			
 			service.load(QUEUE1_ID, list1);

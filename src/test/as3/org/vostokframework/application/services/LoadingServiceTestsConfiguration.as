@@ -38,7 +38,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.assets.AssetRepository;
 	import org.vostokframework.application.services.AssetPackageService;
 	import org.vostokframework.application.services.AssetService;
-	import org.vostokframework.application.AssetLoadingSettingsRepository;
+	import org.vostokframework.application.LoadingSettingsRepository;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -76,7 +76,7 @@ package org.vostokframework.application.services
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
-			LoadingContext.getInstance().setAssetLoadingSettingsRepository(new AssetLoadingSettingsRepository());
+			LoadingContext.getInstance().setLoadingSettingsRepository(new LoadingSettingsRepository());
 			LoadingContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
 			LoadingContext.getInstance().setLoaderFactory(new StubVostokLoaderFactory());
 			LoadingContext.getInstance().setLoaderRepository(new LoaderRepository());

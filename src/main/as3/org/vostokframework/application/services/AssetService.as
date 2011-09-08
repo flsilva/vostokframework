@@ -38,7 +38,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.assets.errors.AssetNotFoundError;
 	import org.vostokframework.domain.assets.errors.DuplicateAssetError;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 
 	/**
@@ -94,7 +94,7 @@ package org.vostokframework.application.services
 		 * @throws 	org.vostokframework.assetmanagement.errors.DuplicateAssetError 	if already exists an <code>Asset</code> object stored with the provided <code>assetId</code> and <code>assetPackage.locale</code>.
 		 * @return
 		 */
-		public function createAsset(src:String, assetPackage:AssetPackage, settings:AssetLoadingSettings = null, assetId:String = null, type:AssetType = null): Asset
+		public function createAsset(src:String, assetPackage:AssetPackage, settings:LoadingSettings = null, assetId:String = null, type:AssetType = null): Asset
 		{
 			var asset:Asset = _context.assetFactory.create(src, assetPackage, assetId, type);
 			
@@ -128,7 +128,7 @@ package org.vostokframework.application.services
 			assetPackage.addAsset(asset);
 			
 			if (!settings) settings = _loadingContext.loaderFactory.defaultLoadingSettings;
-			_loadingContext.assetLoadingSettingsRepository.add(asset, settings);//TODO:create test case for this line
+			_loadingContext.loadingSettingsRepository.add(asset, settings);//TODO:create test case for this line
 			
 			return asset;
 		}

@@ -28,7 +28,7 @@
  */
 package org.vostokframework.application
 {
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.Asset;
@@ -65,7 +65,7 @@ package org.vostokframework.application
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingContext = new LoadingContext();
 		
-		private var _assetLoadingSettingsRepository:AssetLoadingSettingsRepository;
+		private var _loadingSettingsRepository:LoadingSettingsRepository;
 		private var _globalQueueLoader:ILoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
@@ -85,7 +85,7 @@ package org.vostokframework.application
 			_created = true;
 		}
 		
-		public function get assetLoadingSettingsRepository(): AssetLoadingSettingsRepository { return _assetLoadingSettingsRepository; }
+		public function get loadingSettingsRepository(): LoadingSettingsRepository { return _loadingSettingsRepository; }
 		
 		/**
 		 * description
@@ -125,7 +125,7 @@ package org.vostokframework.application
 			_maxConcurrentConnections = 6;
 			_maxConcurrentQueues = 3;
 			
-			_assetLoadingSettingsRepository = new AssetLoadingSettingsRepository();
+			_loadingSettingsRepository = new LoadingSettingsRepository();
 			_loaderFactory = new VostokLoaderFactory();
 			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
@@ -151,12 +151,12 @@ package org.vostokframework.application
 		 * 
 		 * @param factory
 		 */
-		public function setAssetLoadingSettingsRepository(repository:AssetLoadingSettingsRepository): void
+		public function setLoadingSettingsRepository(repository:LoadingSettingsRepository): void
 		{
 			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
 			
-			if (_assetLoadingSettingsRepository) _assetLoadingSettingsRepository.clear();
-			_assetLoadingSettingsRepository = repository;
+			if (_loadingSettingsRepository) _loadingSettingsRepository.clear();
+			_loadingSettingsRepository = repository;
 		}
 		
 		/**
@@ -370,7 +370,7 @@ package org.vostokframework.application
 			
 			var asset:Asset = assetService.getAsset(event.assetId, event.assetLocale);
 			
-			var settings:AssetLoadingSettings = _assetLoadingSettingsRepository.find(asset);
+			var settings:LoadingSettings = _loadingSettingsRepository.find(asset);
 			if (!settings.cache.allowInternalCache) return;
 			
 			var src:String = asset.src;

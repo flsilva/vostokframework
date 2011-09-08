@@ -29,7 +29,7 @@
 package org.vostokframework.domain.loading.loaders
 {
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.StubNativeDataLoader;
 
@@ -56,7 +56,7 @@ package org.vostokframework.domain.loading.loaders
 			
 		}
 		
-		override protected function createNativeDataLoader(type:AssetType, url:String, settings:AssetLoadingSettings):IDataLoader
+		override protected function createNativeDataLoader(type:AssetType, url:String, settings:LoadingSettings):IDataLoader
 		{
 			type = null;//just to avoid compiler warnings
 			url = null;//just to avoid compiler warnings

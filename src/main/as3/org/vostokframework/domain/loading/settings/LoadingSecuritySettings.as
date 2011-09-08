@@ -28,52 +28,58 @@
  */
 package org.vostokframework.domain.loading.settings
 {
-	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.settings.ApplicationDomainSetting;
+	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingPolicySettings
+	public class LoadingSecuritySettings
 	{
 		/**
 		 * description
 		 */
-		private var _latencyTimeout:Number;
-		private var _maxAttempts:int;
-		private var _priority:LoadPriority;
+		private var _applicationDomain:ApplicationDomainSetting;
+		private var _checkPolicyFile:Boolean;
+		private var _ignoreLocalSecurityDomain:Boolean;
+		private var _securityDomain:SecurityDomainSetting;
+
+		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
+		
+		public function set applicationDomain(value:ApplicationDomainSetting): void { _applicationDomain = value; }
 
 		/**
 		 * description
 		 */
-		public function get latencyTimeout(): Number { return _latencyTimeout; }
+		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
 		
-		public function set latencyTimeout(value:Number): void { _latencyTimeout = value; }
+		public function set checkPolicyFile(value:Boolean): void { _checkPolicyFile = value; }
+
+		/**
+		 * description
+		 */
+		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
+		
+		public function set ignoreLocalSecurityDomain(value:Boolean): void { _ignoreLocalSecurityDomain = value; }
 		
 		/**
 		 * description
 		 */
-		public function get maxAttempts(): int { return _maxAttempts; }
+		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
 		
-		public function set maxAttempts(value:int): void { _maxAttempts = value; }
-		
-		/**
-		 * description
-		 */
-		public function get priority(): LoadPriority { return _priority; }
-		
-		public function set priority(value:LoadPriority): void { _priority = value; }
+		public function set securityDomain(value:SecurityDomainSetting): void { _securityDomain = value; }
 
 		/**
 		 * description
 		 * 
-		 * @param baseURL
-		 * @param ignoreErrors
-		 * @param maxAttempts
-		 * @param latencyTimeout
+		 * @param checkPolicyFile
+		 * @param applicationDomain
+		 * @param securityDomain
+		 * @param ignoreLocalSecurityDomain
 		 */
-		public function AssetLoadingPolicySettings()
+		public function LoadingSecuritySettings()
 		{
 			
 		}
