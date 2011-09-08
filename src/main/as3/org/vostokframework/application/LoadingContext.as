@@ -28,7 +28,7 @@
  */
 package org.vostokframework.application
 {
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.Asset;

@@ -34,7 +34,7 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;

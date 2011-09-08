@@ -33,7 +33,7 @@ package org.vostokframework.application
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.domain.assets.Asset;
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 
 	/**
 	 * description

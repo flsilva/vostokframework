@@ -26,60 +26,70 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings
+package org.vostokframework.domain.loading.settings
 {
-	import org.vostokframework.domain.assets.settings.ApplicationDomainSetting;
-	import org.vostokframework.domain.assets.settings.SecurityDomainSetting;
+	import org.as3collections.IList;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingSecuritySettings
+	public class AssetLoadingMediaSettings
 	{
 		/**
 		 * description
 		 */
-		private var _applicationDomain:ApplicationDomainSetting;
-		private var _checkPolicyFile:Boolean;
-		private var _ignoreLocalSecurityDomain:Boolean;
-		private var _securityDomain:SecurityDomainSetting;
+		private var _audioLinkage:IList;
+		private var _autoCreateVideo:Boolean;
+		private var _autoResizeVideo:Boolean;
+		private var _autoStopStream:Boolean;
+		private var _bufferPercent:int;
+		private var _bufferTime:Number;
 
-		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
+		public function get audioLinkage(): IList { return _audioLinkage; }
 		
-		public function set applicationDomain(value:ApplicationDomainSetting): void { _applicationDomain = value; }
-
-		/**
-		 * description
-		 */
-		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
-		
-		public function set checkPolicyFile(value:Boolean): void { _checkPolicyFile = value; }
+		public function set audioLinkage(value:IList): void { _audioLinkage = value; }
 
 		/**
 		 * description
 		 */
-		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
+		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
 		
-		public function set ignoreLocalSecurityDomain(value:Boolean): void { _ignoreLocalSecurityDomain = value; }
-		
-		/**
-		 * description
-		 */
-		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
-		
-		public function set securityDomain(value:SecurityDomainSetting): void { _securityDomain = value; }
+		public function set autoCreateVideo(value:Boolean): void { _autoCreateVideo = value; }
 
 		/**
 		 * description
-		 * 
-		 * @param checkPolicyFile
-		 * @param applicationDomain
-		 * @param securityDomain
-		 * @param ignoreLocalSecurityDomain
 		 */
-		public function AssetLoadingSecuritySettings()
+		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
+		
+		public function set autoResizeVideo(value:Boolean): void { _autoResizeVideo = value; }
+
+		/**
+		 * description
+		 */
+		public function get autoStopStream(): Boolean { return _autoStopStream; }
+		
+		public function set autoStopStream(value:Boolean): void { _autoStopStream = value; }
+
+		/**
+		 * description
+		 */
+		public function get bufferPercent(): int { return _bufferPercent; }
+		
+		public function set bufferPercent(value:int): void { _bufferPercent = value; }
+
+		/**
+		 * description
+		 */
+		public function get bufferTime(): Number { return _bufferTime; }
+		
+		public function set bufferTime(value:Number): void { _bufferTime = value; }
+
+		/**
+		 * description
+		 */
+		public function AssetLoadingMediaSettings()
 		{
 			
 		}

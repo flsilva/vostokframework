@@ -30,7 +30,7 @@ package org.vostokframework.domain.loading
 {
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 
 	/**
 	 * description

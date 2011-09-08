@@ -26,70 +26,60 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings
+package org.vostokframework.domain.loading.settings
 {
-	import org.as3collections.IList;
+	import org.vostokframework.domain.loading.settings.ApplicationDomainSetting;
+	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingMediaSettings
+	public class AssetLoadingSecuritySettings
 	{
 		/**
 		 * description
 		 */
-		private var _audioLinkage:IList;
-		private var _autoCreateVideo:Boolean;
-		private var _autoResizeVideo:Boolean;
-		private var _autoStopStream:Boolean;
-		private var _bufferPercent:int;
-		private var _bufferTime:Number;
+		private var _applicationDomain:ApplicationDomainSetting;
+		private var _checkPolicyFile:Boolean;
+		private var _ignoreLocalSecurityDomain:Boolean;
+		private var _securityDomain:SecurityDomainSetting;
 
-		public function get audioLinkage(): IList { return _audioLinkage; }
+		public function get applicationDomain(): ApplicationDomainSetting { return _applicationDomain; }
 		
-		public function set audioLinkage(value:IList): void { _audioLinkage = value; }
+		public function set applicationDomain(value:ApplicationDomainSetting): void { _applicationDomain = value; }
 
 		/**
 		 * description
 		 */
-		public function get autoCreateVideo(): Boolean { return _autoCreateVideo; }
+		public function get checkPolicyFile(): Boolean { return _checkPolicyFile; }
 		
-		public function set autoCreateVideo(value:Boolean): void { _autoCreateVideo = value; }
+		public function set checkPolicyFile(value:Boolean): void { _checkPolicyFile = value; }
 
 		/**
 		 * description
 		 */
-		public function get autoResizeVideo(): Boolean { return _autoResizeVideo; }
+		public function get ignoreLocalSecurityDomain(): Boolean { return _ignoreLocalSecurityDomain; }
 		
-		public function set autoResizeVideo(value:Boolean): void { _autoResizeVideo = value; }
-
+		public function set ignoreLocalSecurityDomain(value:Boolean): void { _ignoreLocalSecurityDomain = value; }
+		
 		/**
 		 * description
 		 */
-		public function get autoStopStream(): Boolean { return _autoStopStream; }
+		public function get securityDomain(): SecurityDomainSetting { return _securityDomain; }
 		
-		public function set autoStopStream(value:Boolean): void { _autoStopStream = value; }
+		public function set securityDomain(value:SecurityDomainSetting): void { _securityDomain = value; }
 
 		/**
 		 * description
+		 * 
+		 * @param checkPolicyFile
+		 * @param applicationDomain
+		 * @param securityDomain
+		 * @param ignoreLocalSecurityDomain
 		 */
-		public function get bufferPercent(): int { return _bufferPercent; }
-		
-		public function set bufferPercent(value:int): void { _bufferPercent = value; }
-
-		/**
-		 * description
-		 */
-		public function get bufferTime(): Number { return _bufferTime; }
-		
-		public function set bufferTime(value:Number): void { _bufferTime = value; }
-
-		/**
-		 * description
-		 */
-		public function AssetLoadingMediaSettings()
+		public function AssetLoadingSecuritySettings()
 		{
 			
 		}

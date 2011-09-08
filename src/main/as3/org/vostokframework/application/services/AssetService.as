@@ -38,7 +38,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.assets.errors.AssetNotFoundError;
 	import org.vostokframework.domain.assets.errors.DuplicateAssetError;
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 
 	/**

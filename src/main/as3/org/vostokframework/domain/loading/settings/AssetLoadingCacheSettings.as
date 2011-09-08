@@ -26,50 +26,42 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings
+package org.vostokframework.domain.loading.settings
 {
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingExtraSettings
+	public class AssetLoadingCacheSettings
 	{
-		private var _baseURL:String;
-		private var _userDataContainer:*;
-		private var _userTotalBytes:int;
+		/**
+		 * description
+		 */
+		private var _allowInternalCache:Boolean;
+		private var _killExternalCache:Boolean;
+
+		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
+		
+		public function set allowInternalCache(value:Boolean): void { _allowInternalCache = value; }
+		
+		/**
+		 * description
+		 */
+		public function get killExternalCache(): Boolean { return _killExternalCache; }
+		
+		public function set killExternalCache(value:Boolean): void { _killExternalCache = value; }
 
 		/**
 		 * description
 		 * 
-		 * @param userTotalBytes
-		 * @param userDataContainer
+		 * @param killExternalCache
+		 * @param allowInternalCache
 		 */
-		public function AssetLoadingExtraSettings()
+		public function AssetLoadingCacheSettings()
 		{
 			
 		}
-		
-		/**
-		 * description
-		 */
-		public function get baseURL(): String { return _baseURL; }
-		
-		public function set baseURL(value:String): void { _baseURL = value; }
-		
-		/**
-		 * description
-		 */
-		public function get userDataContainer(): * { return _userDataContainer; }
-		
-		public function set userDataContainer(value:*): void { _userDataContainer = value; }
-
-		/**
-		 * description
-		 */
-		public function get userTotalBytes(): int { return _userTotalBytes; }
-		
-		public function set userTotalBytes(value:int): void { _userTotalBytes = value; }
 
 	}
 

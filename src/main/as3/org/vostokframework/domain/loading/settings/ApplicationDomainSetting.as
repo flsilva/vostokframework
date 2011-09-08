@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings {
+package org.vostokframework.domain.loading.settings {
 	import org.as3coreaddendum.system.Enum;
 
 	import flash.errors.IllegalOperationError;

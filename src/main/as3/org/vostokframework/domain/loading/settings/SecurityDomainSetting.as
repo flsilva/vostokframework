@@ -26,41 +26,39 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings
-{
+package org.vostokframework.domain.loading.settings {
+	import org.as3coreaddendum.system.Enum;
+
+	import flash.errors.IllegalOperationError;
+
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingCacheSettings
+	public class SecurityDomainSetting extends Enum
 	{
-		/**
-		 * description
-		 */
-		private var _allowInternalCache:Boolean;
-		private var _killExternalCache:Boolean;
+		public static const CURRENT:SecurityDomainSetting = new SecurityDomainSetting("CURRENT", 0);
 
-		public function get allowInternalCache(): Boolean { return _allowInternalCache; }
-		
-		public function set allowInternalCache(value:Boolean): void { _allowInternalCache = value; }
-		
 		/**
-		 * description
+		 * @private
 		 */
-		public function get killExternalCache(): Boolean { return _killExternalCache; }
+		private static var _created :Boolean = false;
 		
-		public function set killExternalCache(value:Boolean): void { _killExternalCache = value; }
+		{
+			_created = true;
+		}
 
 		/**
 		 * description
 		 * 
-		 * @param killExternalCache
-		 * @param allowInternalCache
+		 * @param name
+		 * @param ordinal
 		 */
-		public function AssetLoadingCacheSettings()
+		public function SecurityDomainSetting(name:String, ordinal:int)
 		{
-			
+			super(name, ordinal);
+			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
 		}
 
 	}

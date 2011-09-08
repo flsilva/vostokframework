@@ -26,57 +26,50 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings
+package org.vostokframework.domain.loading.settings
 {
-	import org.vostokframework.domain.loading.LoadPriority;
-
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingPolicySettings
+	public class AssetLoadingExtraSettings
 	{
-		/**
-		 * description
-		 */
-		private var _latencyTimeout:Number;
-		private var _maxAttempts:int;
-		private var _priority:LoadPriority;
-
-		/**
-		 * description
-		 */
-		public function get latencyTimeout(): Number { return _latencyTimeout; }
-		
-		public function set latencyTimeout(value:Number): void { _latencyTimeout = value; }
-		
-		/**
-		 * description
-		 */
-		public function get maxAttempts(): int { return _maxAttempts; }
-		
-		public function set maxAttempts(value:int): void { _maxAttempts = value; }
-		
-		/**
-		 * description
-		 */
-		public function get priority(): LoadPriority { return _priority; }
-		
-		public function set priority(value:LoadPriority): void { _priority = value; }
+		private var _baseURL:String;
+		private var _userDataContainer:*;
+		private var _userTotalBytes:int;
 
 		/**
 		 * description
 		 * 
-		 * @param baseURL
-		 * @param ignoreErrors
-		 * @param maxAttempts
-		 * @param latencyTimeout
+		 * @param userTotalBytes
+		 * @param userDataContainer
 		 */
-		public function AssetLoadingPolicySettings()
+		public function AssetLoadingExtraSettings()
 		{
 			
 		}
+		
+		/**
+		 * description
+		 */
+		public function get baseURL(): String { return _baseURL; }
+		
+		public function set baseURL(value:String): void { _baseURL = value; }
+		
+		/**
+		 * description
+		 */
+		public function get userDataContainer(): * { return _userDataContainer; }
+		
+		public function set userDataContainer(value:*): void { _userDataContainer = value; }
+
+		/**
+		 * description
+		 */
+		public function get userTotalBytes(): int { return _userTotalBytes; }
+		
+		public function set userTotalBytes(value:int): void { _userTotalBytes = value; }
 
 	}
 

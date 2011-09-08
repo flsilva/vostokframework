@@ -26,39 +26,56 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.assets.settings {
-	import org.as3coreaddendum.system.Enum;
-
-	import flash.errors.IllegalOperationError;
+package org.vostokframework.domain.loading.settings
+{
+	import org.vostokframework.domain.loading.LoadPriority;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class SecurityDomainSetting extends Enum
+	public class AssetLoadingPolicySettings
 	{
-		public static const CURRENT:SecurityDomainSetting = new SecurityDomainSetting("CURRENT", 0);
+		/**
+		 * description
+		 */
+		private var _latencyTimeout:Number;
+		private var _maxAttempts:int;
+		private var _priority:LoadPriority;
 
 		/**
-		 * @private
+		 * description
 		 */
-		private static var _created :Boolean = false;
+		public function get latencyTimeout(): Number { return _latencyTimeout; }
 		
-		{
-			_created = true;
-		}
+		public function set latencyTimeout(value:Number): void { _latencyTimeout = value; }
+		
+		/**
+		 * description
+		 */
+		public function get maxAttempts(): int { return _maxAttempts; }
+		
+		public function set maxAttempts(value:int): void { _maxAttempts = value; }
+		
+		/**
+		 * description
+		 */
+		public function get priority(): LoadPriority { return _priority; }
+		
+		public function set priority(value:LoadPriority): void { _priority = value; }
 
 		/**
 		 * description
 		 * 
-		 * @param name
-		 * @param ordinal
+		 * @param baseURL
+		 * @param ignoreErrors
+		 * @param maxAttempts
+		 * @param latencyTimeout
 		 */
-		public function SecurityDomainSetting(name:String, ordinal:int)
+		public function AssetLoadingPolicySettings()
 		{
-			super(name, ordinal);
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			
 		}
 
 	}

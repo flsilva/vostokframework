@@ -29,7 +29,7 @@
 package org.vostokframework.domain.loading.loaders
 {
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.assets.settings.AssetLoadingSettings;
+	import org.vostokframework.domain.loading.settings.AssetLoadingSettings;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.StubNativeDataLoader;
 
