@@ -39,9 +39,18 @@ package org.vostokframework.application.services
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.assets.Asset;
-	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.monitors.CompositeLoadingMonitor;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitor;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.monitors.dispatchers.AssetLoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.monitors.dispatchers.QueueLoadingMonitorDispatcher;
+	import org.vostokframework.application.report.LoadedAssetReport;
+	import org.vostokframework.application.report.LoadedAssetRepository;
+	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
+	import org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError;
+	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -50,16 +59,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.loading.errors.DuplicateLoadingMonitorError;
 	import org.vostokframework.domain.loading.errors.LoaderNotFoundError;
 	import org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.application.monitoring.AssetLoadingMonitorDispatcher;
-	import org.vostokframework.application.monitoring.CompositeLoadingMonitor;
-	import org.vostokframework.application.monitoring.ILoadingMonitor;
-	import org.vostokframework.application.monitoring.LoadingMonitor;
-	import org.vostokframework.application.monitoring.LoadingMonitorDispatcher;
-	import org.vostokframework.application.monitoring.QueueLoadingMonitorDispatcher;
-	import org.vostokframework.application.report.LoadedAssetReport;
-	import org.vostokframework.application.report.LoadedAssetRepository;
-	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
-	import org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	/**
 	 * description

@@ -26,8 +26,9 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.events
+package org.vostokframework.application.events
 {
+	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
 	import flash.events.Event;
@@ -37,35 +38,57 @@ package org.vostokframework.domain.loading.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class GlobalLoadingEvent extends Event
+	public class AssetLoadingEvent extends Event
 	{
-		public static const CANCELED:String = "VostokFramework.GlobalLoadingEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.GlobalLoadingEvent.COMPLETE";
-		public static const OPEN:String = "VostokFramework.GlobalLoadingEvent.OPEN";
-		public static const PROGRESS:String = "VostokFramework.GlobalLoadingEvent.PROGRESS";
-		public static const STOPPED:String = "VostokFramework.GlobalLoadingEvent.STOPPED";
+		public static const CANCELED:String = "VostokFramework.AssetLoadingEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.AssetLoadingEvent.COMPLETE";
+		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingEvent.HTTP_STATUS";
+		public static const INIT:String = "VostokFramework.AssetLoadingEvent.INIT";
+		public static const OPEN:String = "VostokFramework.AssetLoadingEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.AssetLoadingEvent.PROGRESS";
+		public static const STOPPED:String = "VostokFramework.AssetLoadingEvent.STOPPED";
 		
 		/**
 		 * description
 		 */
+		private var _assetData:*;
+		private var _assetId:String;
+		private var _assetLocale:String;
+		private var _assetType:AssetType;
+		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
-		private var _queueId:String;
-		private var _queueLocale:String;
+		
+		/**
+		 * description
+		 */
+		public function get assetData(): * { return _assetData; }
+
+		/**
+		 * description
+		 */
+		public function get assetId(): String { return _assetId; }
+		
+		/**
+		 * description
+		 */
+		public function get assetLocale(): String { return _assetLocale; }
+		
+		/**
+		 * description
+		 */
+		public function get assetType(): AssetType { return _assetType; }
+		
+		/**
+		 * description
+		 */
+		public function get httpStatus(): int { return _httpStatus; }
+		
+		public function set httpStatus(value:int): void { _httpStatus = value; }
 		
 		/**
 		 * description
 		 */
 		public function get monitoring(): LoadingMonitoring { return _monitoring; }
-		
-		/**
-		 * description
-		 */
-		public function get queueId(): String { return _queueId; }
-		
-		/**
-		 * description
-		 */
-		public function get queueLocale(): String { return _queueLocale; }
 		
 		/**
 		 * description
@@ -75,24 +98,28 @@ package org.vostokframework.domain.loading.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function GlobalLoadingEvent(type:String, queueId:String, queueLocale:String, monitoring:LoadingMonitoring = null)
+		public function AssetLoadingEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
 		{
 			super(type);
 			
-			_queueId = queueId;
-			_queueLocale = queueLocale;
+			_assetId = assetId;
+			_assetLocale = assetLocale;
+			_assetType = assetType;
 			_monitoring = monitoring;
+			_assetData = assetData;
 		}
 		
 		override public function clone():Event
 		{
-			return new GlobalLoadingEvent(type, _queueId, _queueLocale, _monitoring);
+			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, _monitoring, _assetData);
 		}
 		
 		public static function typeBelongs(type:String):Boolean
 		{
 			return type == CANCELED ||
 			       type == COMPLETE ||
+			       type == HTTP_STATUS ||
+			       type == INIT ||
 			       type == OPEN ||
 			       type == PROGRESS ||
 			       type == STOPPED;

@@ -29,6 +29,25 @@
 
 package 
 {
+	import org.vostokframework.application.monitoring.monitors.CompositeLoadingMonitorTests;
+	import org.vostokframework.application.monitoring.monitors.CompositeLoadingMonitorTestsIntegration;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorTests;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorWrapperTestsIntegration;
+	import org.vostokframework.application.services.AssetPackageServiceTests;
+	import org.vostokframework.application.services.AssetServiceTests;
+	import org.vostokframework.application.services.LoadingServiceTestsCancel;
+	import org.vostokframework.application.services.LoadingServiceTestsContainsAssetData;
+	import org.vostokframework.application.services.LoadingServiceTestsExists;
+	import org.vostokframework.application.services.LoadingServiceTestsGetAssetData;
+	import org.vostokframework.application.services.LoadingServiceTestsGetMonitor;
+	import org.vostokframework.application.services.LoadingServiceTestsIntegration;
+	import org.vostokframework.application.services.LoadingServiceTestsIsLoading;
+	import org.vostokframework.application.services.LoadingServiceTestsIsQueued;
+	import org.vostokframework.application.services.LoadingServiceTestsLoad;
+	import org.vostokframework.application.services.LoadingServiceTestsMergeAssets;
+	import org.vostokframework.application.services.LoadingServiceTestsRemoveAssetData;
+	import org.vostokframework.application.services.LoadingServiceTestsResume;
+	import org.vostokframework.application.services.LoadingServiceTestsStop;
 	import org.vostokframework.domain.assets.AssetFactoryTests;
 	import org.vostokframework.domain.assets.AssetPackageFactoryTests;
 	import org.vostokframework.domain.assets.AssetPackageRepositoryTests;
@@ -36,13 +55,7 @@ package
 	import org.vostokframework.domain.assets.AssetRepositoryTests;
 	import org.vostokframework.domain.assets.AssetTests;
 	import org.vostokframework.domain.assets.UrlAssetParserTests;
-	import org.vostokframework.application.services.AssetPackageServiceTests;
-	import org.vostokframework.application.services.AssetServiceTests;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderTests;
-	import org.vostokframework.application.monitoring.CompositeLoadingMonitorTests;
-	import org.vostokframework.application.monitoring.CompositeLoadingMonitorTestsIntegration;
-	import org.vostokframework.application.monitoring.LoadingMonitorTests;
-	import org.vostokframework.application.monitoring.LoadingMonitorWrapperTestsIntegration;
 	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.domain.loading.policies.LoadingPolicyTests;
@@ -104,19 +117,6 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsLoad;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsRemoveChild;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsResumeChild;
-	import org.vostokframework.application.services.LoadingServiceTestsCancel;
-	import org.vostokframework.application.services.LoadingServiceTestsContainsAssetData;
-	import org.vostokframework.application.services.LoadingServiceTestsExists;
-	import org.vostokframework.application.services.LoadingServiceTestsGetAssetData;
-	import org.vostokframework.application.services.LoadingServiceTestsGetMonitor;
-	import org.vostokframework.application.services.LoadingServiceTestsIntegration;
-	import org.vostokframework.application.services.LoadingServiceTestsIsLoading;
-	import org.vostokframework.application.services.LoadingServiceTestsIsQueued;
-	import org.vostokframework.application.services.LoadingServiceTestsLoad;
-	import org.vostokframework.application.services.LoadingServiceTestsMergeAssets;
-	import org.vostokframework.application.services.LoadingServiceTestsRemoveAssetData;
-	import org.vostokframework.application.services.LoadingServiceTestsResume;
-	import org.vostokframework.application.services.LoadingServiceTestsStop;
 
 	/**
 	 * @author Flávio Silva

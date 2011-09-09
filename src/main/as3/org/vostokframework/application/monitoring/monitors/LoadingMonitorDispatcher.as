@@ -26,11 +26,12 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import org.as3collections.IMap;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
 	import flash.errors.IllegalOperationError;
 	import flash.events.EventDispatcher;

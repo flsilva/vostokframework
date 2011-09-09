@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import org.as3coreaddendum.system.IEquatable;
 	import org.as3utils.StringUtil;

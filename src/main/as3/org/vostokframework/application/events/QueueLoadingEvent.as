@@ -26,13 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.events
+package org.vostokframework.application.events
 {
-	import org.as3collections.IMap;
-	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
-	import flash.events.ErrorEvent;
 	import flash.events.Event;
 
 	/**
@@ -40,46 +37,20 @@ package org.vostokframework.domain.loading.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingErrorEvent extends ErrorEvent
+	public class QueueLoadingEvent extends Event
 	{
-		public static const FAILED:String = "VostokFramework.AssetLoadingErrorEvent.FAILED";
+		public static const CANCELED:String = "VostokFramework.QueueLoadingEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.QueueLoadingEvent.COMPLETE";
+		public static const OPEN:String = "VostokFramework.QueueLoadingEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.QueueLoadingEvent.PROGRESS";
+		public static const STOPPED:String = "VostokFramework.QueueLoadingEvent.STOPPED";
 		
 		/**
 		 * description
 		 */
-		private var _assetId:String;
-		private var _assetLocale:String;
-		private var _assetType:AssetType;
-		private var _errors:IMap;
-		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
-		
-		/**
-		 * description
-		 */
-		public function get assetId(): String { return _assetId; }
-		
-		/**
-		 * description
-		 */
-		public function get assetLocale(): String { return _assetLocale; }
-		
-		/**
-		 * description
-		 */
-		public function get assetType(): AssetType { return _assetType; }
-		
-		/**
-		 * description
-		 */
-		public function get errors(): IMap { return _errors; }
-		
-		/**
-		 * description
-		 */
-		public function get httpStatus(): int { return _httpStatus; }
-		
-		public function set httpStatus(value:int): void { _httpStatus = value; }
+		private var _queueId:String;
+		private var _queueLocale:String;
 		
 		/**
 		 * description
@@ -88,26 +59,43 @@ package org.vostokframework.domain.loading.events
 		
 		/**
 		 * description
+		 */
+		public function get queueId(): String { return _queueId; }
+		
+		/**
+		 * description
+		 */
+		public function get queueLocale(): String { return _queueLocale; }
+		
+		/**
+		 * description
 		 * 
 		 * @param assetId
 		 * @param assetType
 		 * @param monitoring
-		 * @param message
+		 * @param assetData
 		 */
-		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, errors:IMap, monitoring:LoadingMonitoring = null)
+		public function QueueLoadingEvent(type:String, queueId:String, queueLocale:String, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			
-			_assetId = assetId;
-			_assetLocale = assetLocale;
-			_assetType = assetType;
-			_errors = errors;
+			_queueId = queueId;
+			_queueLocale = queueLocale;
 			_monitoring = monitoring;
 		}
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, _errors, _monitoring);
+			return new QueueLoadingEvent(type, _queueId, _queueLocale, _monitoring);
+		}
+		
+		public static function typeBelongs(type:String):Boolean
+		{
+			return type == CANCELED ||
+			       type == COMPLETE ||
+			       type == OPEN ||
+			       type == PROGRESS ||
+			       type == STOPPED;
 		}
 		
 	}

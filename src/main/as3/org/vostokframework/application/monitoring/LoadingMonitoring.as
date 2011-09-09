@@ -116,7 +116,7 @@ package org.vostokframework.application.monitoring
 		/**
 		 * description
 		 */
-		internal function reset(): void
+		public function reset(): void
 		{
 			
 		}
@@ -126,7 +126,7 @@ package org.vostokframework.application.monitoring
 		 * 
 		 * @param bytesLoaded
 		 */
-		internal function update(bytesTotal:int, bytesLoaded:int): void
+		public function update(bytesTotal:int, bytesLoaded:int): void
 		{
 			_bytesTotal = bytesTotal;
 			_bytesLoaded = bytesLoaded;

@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import mockolate.mock;
 	import mockolate.stub;
@@ -35,6 +35,8 @@ package org.vostokframework.application.monitoring
 
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitoring;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
 

@@ -42,9 +42,9 @@ package org.vostokframework.application.services
 	import org.flexunit.async.Async;
 	import org.vostokframework.HelperTestObject;
 	import org.vostokframework.application.LoadingContext;
-	import org.vostokframework.domain.loading.events.GlobalLoadingEvent;
-	import org.vostokframework.domain.loading.events.AssetLoadingEvent;
-	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
+	import org.vostokframework.application.events.AssetLoadingEvent;
+	import org.vostokframework.application.events.GlobalLoadingEvent;
+	import org.vostokframework.application.events.QueueLoadingEvent;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 
 	import flash.events.Event;

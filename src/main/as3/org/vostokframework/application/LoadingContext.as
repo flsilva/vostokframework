@@ -28,27 +28,27 @@
  */
 package org.vostokframework.application
 {
-	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.application.events.AssetLoadingEvent;
+	import org.vostokframework.application.events.GlobalLoadingEvent;
+	import org.vostokframework.application.events.QueueLoadingEvent;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
+	import org.vostokframework.application.monitoring.monitors.CompositeLoadingMonitor;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorWrapper;
+	import org.vostokframework.application.monitoring.monitors.dispatchers.GlobalLoadingMonitorDispatcher;
+	import org.vostokframework.application.report.LoadedAssetReport;
+	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.application.services.AssetService;
+	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
-	import org.vostokframework.domain.loading.events.AssetLoadingEvent;
-	import org.vostokframework.domain.loading.events.GlobalLoadingEvent;
-	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderFactory;
-	import org.vostokframework.application.monitoring.CompositeLoadingMonitor;
-	import org.vostokframework.application.monitoring.GlobalLoadingMonitorDispatcher;
-	import org.vostokframework.application.monitoring.ILoadingMonitor;
-	import org.vostokframework.application.monitoring.LoadingMonitorDispatcher;
-	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
-	import org.vostokframework.application.monitoring.LoadingMonitorWrapper;
-	import org.vostokframework.application.report.LoadedAssetReport;
-	import org.vostokframework.application.report.LoadedAssetRepository;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	import flash.errors.IllegalOperationError;
 

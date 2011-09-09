@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.events
+package org.vostokframework.application.events
 {
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
@@ -37,13 +37,13 @@ package org.vostokframework.domain.loading.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class QueueLoadingEvent extends Event
+	public class GlobalLoadingEvent extends Event
 	{
-		public static const CANCELED:String = "VostokFramework.QueueLoadingEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.QueueLoadingEvent.COMPLETE";
-		public static const OPEN:String = "VostokFramework.QueueLoadingEvent.OPEN";
-		public static const PROGRESS:String = "VostokFramework.QueueLoadingEvent.PROGRESS";
-		public static const STOPPED:String = "VostokFramework.QueueLoadingEvent.STOPPED";
+		public static const CANCELED:String = "VostokFramework.GlobalLoadingEvent.CANCELED";
+		public static const COMPLETE:String = "VostokFramework.GlobalLoadingEvent.COMPLETE";
+		public static const OPEN:String = "VostokFramework.GlobalLoadingEvent.OPEN";
+		public static const PROGRESS:String = "VostokFramework.GlobalLoadingEvent.PROGRESS";
+		public static const STOPPED:String = "VostokFramework.GlobalLoadingEvent.STOPPED";
 		
 		/**
 		 * description
@@ -75,7 +75,7 @@ package org.vostokframework.domain.loading.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function QueueLoadingEvent(type:String, queueId:String, queueLocale:String, monitoring:LoadingMonitoring = null)
+		public function GlobalLoadingEvent(type:String, queueId:String, queueLocale:String, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			
@@ -86,7 +86,7 @@ package org.vostokframework.domain.loading.events
 		
 		override public function clone():Event
 		{
-			return new QueueLoadingEvent(type, _queueId, _queueLocale, _monitoring);
+			return new GlobalLoadingEvent(type, _queueId, _queueLocale, _monitoring);
 		}
 		
 		public static function typeBelongs(type:String):Boolean

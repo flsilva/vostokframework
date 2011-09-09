@@ -26,13 +26,15 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors.dispatchers
 {
 	import org.as3collections.IMap;
 	import org.as3utils.StringUtil;
+	import org.vostokframework.application.events.AssetLoadingErrorEvent;
+	import org.vostokframework.application.events.AssetLoadingEvent;
+	import org.vostokframework.application.monitoring.LoadingMonitoring;
+	import org.vostokframework.application.monitoring.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.events.AssetLoadingErrorEvent;
-	import org.vostokframework.domain.loading.events.AssetLoadingEvent;
 
 	/**
 	 * @author Flavio

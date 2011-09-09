@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
@@ -34,6 +34,8 @@ package org.vostokframework.application.monitoring
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitoring;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;

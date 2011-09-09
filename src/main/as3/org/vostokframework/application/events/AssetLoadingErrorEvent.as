@@ -26,11 +26,13 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.events
+package org.vostokframework.application.events
 {
+	import org.as3collections.IMap;
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
+	import flash.events.ErrorEvent;
 	import flash.events.Event;
 
 	/**
@@ -38,31 +40,20 @@ package org.vostokframework.domain.loading.events
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AssetLoadingEvent extends Event
+	public class AssetLoadingErrorEvent extends ErrorEvent
 	{
-		public static const CANCELED:String = "VostokFramework.AssetLoadingEvent.CANCELED";
-		public static const COMPLETE:String = "VostokFramework.AssetLoadingEvent.COMPLETE";
-		public static const HTTP_STATUS:String = "VostokFramework.AssetLoadingEvent.HTTP_STATUS";
-		public static const INIT:String = "VostokFramework.AssetLoadingEvent.INIT";
-		public static const OPEN:String = "VostokFramework.AssetLoadingEvent.OPEN";
-		public static const PROGRESS:String = "VostokFramework.AssetLoadingEvent.PROGRESS";
-		public static const STOPPED:String = "VostokFramework.AssetLoadingEvent.STOPPED";
+		public static const FAILED:String = "VostokFramework.AssetLoadingErrorEvent.FAILED";
 		
 		/**
 		 * description
 		 */
-		private var _assetData:*;
 		private var _assetId:String;
 		private var _assetLocale:String;
 		private var _assetType:AssetType;
+		private var _errors:IMap;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
 		
-		/**
-		 * description
-		 */
-		public function get assetData(): * { return _assetData; }
-
 		/**
 		 * description
 		 */
@@ -77,6 +68,11 @@ package org.vostokframework.domain.loading.events
 		 * description
 		 */
 		public function get assetType(): AssetType { return _assetType; }
+		
+		/**
+		 * description
+		 */
+		public function get errors(): IMap { return _errors; }
 		
 		/**
 		 * description
@@ -96,33 +92,22 @@ package org.vostokframework.domain.loading.events
 		 * @param assetId
 		 * @param assetType
 		 * @param monitoring
-		 * @param assetData
+		 * @param message
 		 */
-		public function AssetLoadingEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, monitoring:LoadingMonitoring = null, assetData:* = null)
+		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, errors:IMap, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			
 			_assetId = assetId;
 			_assetLocale = assetLocale;
 			_assetType = assetType;
+			_errors = errors;
 			_monitoring = monitoring;
-			_assetData = assetData;
 		}
 		
 		override public function clone():Event
 		{
-			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, _monitoring, _assetData);
-		}
-		
-		public static function typeBelongs(type:String):Boolean
-		{
-			return type == CANCELED ||
-			       type == COMPLETE ||
-			       type == HTTP_STATUS ||
-			       type == INIT ||
-			       type == OPEN ||
-			       type == PROGRESS ||
-			       type == STOPPED;
+			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, _errors, _monitoring);
 		}
 		
 	}

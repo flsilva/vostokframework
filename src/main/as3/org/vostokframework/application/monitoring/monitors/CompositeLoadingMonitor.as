@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -36,6 +36,7 @@ package org.vostokframework.application.monitoring
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.errors.DuplicateLoadingMonitorError;
 	import org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError;

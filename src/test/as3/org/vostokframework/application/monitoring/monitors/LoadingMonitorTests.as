@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.application.monitoring
+package org.vostokframework.application.monitoring.monitors
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -42,6 +42,7 @@ package org.vostokframework.application.monitoring
 	import org.hamcrest.core.anything;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadError;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
