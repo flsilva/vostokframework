@@ -44,7 +44,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorRepository;
+	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
 	import org.vostokframework.application.report.LoadedAssetRepository;
 
 	/**

@@ -29,7 +29,7 @@
 package org.vostokframework.domain.loading.events
 {
 	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitoring;
+	import org.vostokframework.application.monitoring.LoadingMonitoring;
 
 	import flash.events.Event;
 

@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.monitors
+package org.vostokframework.application.monitoring
 {
 	import mockolate.mock;
 	import mockolate.nice;

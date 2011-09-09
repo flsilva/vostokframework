@@ -50,12 +50,12 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.loading.errors.DuplicateLoadingMonitorError;
 	import org.vostokframework.domain.loading.errors.LoaderNotFoundError;
 	import org.vostokframework.domain.loading.errors.LoadingMonitorNotFoundError;
-	import org.vostokframework.domain.loading.monitors.AssetLoadingMonitorDispatcher;
-	import org.vostokframework.domain.loading.monitors.CompositeLoadingMonitor;
-	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitor;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorDispatcher;
-	import org.vostokframework.domain.loading.monitors.QueueLoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.AssetLoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.CompositeLoadingMonitor;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.QueueLoadingMonitorDispatcher;
 	import org.vostokframework.application.report.LoadedAssetReport;
 	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;

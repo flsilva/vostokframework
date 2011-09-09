@@ -41,12 +41,12 @@ package org.vostokframework.application
 	import org.vostokframework.domain.loading.events.GlobalLoadingEvent;
 	import org.vostokframework.domain.loading.events.QueueLoadingEvent;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderFactory;
-	import org.vostokframework.domain.loading.monitors.CompositeLoadingMonitor;
-	import org.vostokframework.domain.loading.monitors.GlobalLoadingMonitorDispatcher;
-	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorDispatcher;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorRepository;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorWrapper;
+	import org.vostokframework.application.monitoring.CompositeLoadingMonitor;
+	import org.vostokframework.application.monitoring.GlobalLoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.LoadingMonitorDispatcher;
+	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
+	import org.vostokframework.application.monitoring.LoadingMonitorWrapper;
 	import org.vostokframework.application.report.LoadedAssetReport;
 	import org.vostokframework.application.report.LoadedAssetRepository;
 

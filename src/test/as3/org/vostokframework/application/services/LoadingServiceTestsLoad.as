@@ -40,7 +40,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
 	import org.vostokframework.application.report.LoadedAssetReport;
 
 	import flash.display.MovieClip;

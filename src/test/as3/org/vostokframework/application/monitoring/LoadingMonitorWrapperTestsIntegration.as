@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.monitors
+package org.vostokframework.application.monitoring
 {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
@@ -50,7 +50,7 @@ package org.vostokframework.domain.loading.monitors
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class CompositeLoadingMonitorTestsIntegration
+	public class LoadingMonitorWrapperTestsIntegration
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -64,11 +64,12 @@ package org.vostokframework.domain.loading.monitors
 		[Mock(inject="false")]
 		public var assetLoader:ILoader;
 		
+		public var wrapper:ILoadingMonitor;
 		public var globalMonitor:ILoadingMonitor;
 		public var queueMonitor:ILoadingMonitor;
 		public var assetMonitor:ILoadingMonitor;
 		
-		public function CompositeLoadingMonitorTestsIntegration()
+		public function LoadingMonitorWrapperTestsIntegration()
 		{
 			
 		}
@@ -81,7 +82,8 @@ package org.vostokframework.domain.loading.monitors
 		[Before]
 		public function setUp(): void
 		{
-			globalMonitor = getGlobalMonitor("global-loader");
+			globalMonitor = getGlobalMonitor("global-loader-1");
+			wrapper = new LoadingMonitorWrapper(globalMonitor);
 		}
 		
 		[After]
@@ -107,8 +109,6 @@ package org.vostokframework.domain.loading.monitors
 		
 		protected function getGlobalMonitor(loaderId:String):ILoadingMonitor
 		{
-			//return new CompositeLoadingMonitor(getFakeLoader(loaderId), getFakeDispatcher());
-			
 			globalLoader = getFakeLoader(loaderId);
 			queueLoader = getFakeLoader("queue-id");
 			assetLoader = getFakeLoader("asset-id");
@@ -158,7 +158,7 @@ package org.vostokframework.domain.loading.monitors
 		{
 			stub(assetLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			Async.proceedOnEvent(this, globalMonitor, AssetLoadingEvent.COMPLETE, 200);
+			Async.proceedOnEvent(this, wrapper, AssetLoadingEvent.COMPLETE, 200);
 			
 			assetLoader.load();
 		}
@@ -168,7 +168,7 @@ package org.vostokframework.domain.loading.monitors
 		{
 			stub(queueLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			Async.proceedOnEvent(this, globalMonitor, QueueLoadingEvent.COMPLETE, 200);
+			Async.proceedOnEvent(this, wrapper, QueueLoadingEvent.COMPLETE, 200);
 			
 			queueLoader.load();
 		}
@@ -178,9 +178,50 @@ package org.vostokframework.domain.loading.monitors
 		{
 			stub(globalLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			Async.proceedOnEvent(this, globalMonitor, GlobalLoadingEvent.COMPLETE, 200);
+			Async.proceedOnEvent(this, wrapper, GlobalLoadingEvent.COMPLETE, 200);
 			
 			globalLoader.load();
+		}
+		
+		///////////////////////////////////////////////
+		// LoadingMonitor().changeMonitor() TESTS //
+		///////////////////////////////////////////////
+		
+		[Test]
+		public function changeMonitor_callsAddEventListenerThenChangesMonitorThenCallsHasEventListener_ReturnsTrue(): void
+		{
+			var eventType:String = AssetLoadingEvent.COMPLETE;
+			var eventListener:Function = helperListener;
+			var useCapture:Boolean = false;
+			var priority:int = 0;
+			var weakReference:Boolean = true;
+			
+			wrapper.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
+			
+			var globalMonitor2:ILoadingMonitor = getGlobalMonitor("global-loader-2");
+			(wrapper as LoadingMonitorWrapper).changeMonitor(globalMonitor2);
+			
+			var hasEventListener:Boolean = wrapper.hasEventListener(eventType);
+			Assert.assertTrue(hasEventListener);
+		}
+		
+		[Test]
+		public function changeMonitor_callsAddEventListenerThenCallRemoveEventListenerThenChangesMonitorThenCallsHasEventListener_ReturnsFalse(): void
+		{
+			var eventType:String = AssetLoadingEvent.COMPLETE;
+			var eventListener:Function = helperListener;
+			var useCapture:Boolean = false;
+			var priority:int = 0;
+			var weakReference:Boolean = true;
+			
+			wrapper.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
+			wrapper.removeEventListener(eventType, eventListener, useCapture);
+			
+			var globalMonitor2:ILoadingMonitor = getGlobalMonitor("global-loader-2");
+			(wrapper as LoadingMonitorWrapper).changeMonitor(globalMonitor2);
+			
+			var hasEventListener:Boolean = wrapper.hasEventListener(eventType);
+			Assert.assertFalse(hasEventListener);
 		}
 		
 		///////////////////////////////////////////////
@@ -190,7 +231,7 @@ package org.vostokframework.domain.loading.monitors
 		[Test]
 		public function hasEventListener_notAddedListener_ReturnsFalse(): void
 		{
-			var hasEventListener:Boolean = globalMonitor.hasEventListener(AssetLoadingEvent.COMPLETE);
+			var hasEventListener:Boolean = wrapper.hasEventListener(AssetLoadingEvent.COMPLETE);
 			Assert.assertFalse(hasEventListener);
 		}
 		
@@ -203,9 +244,9 @@ package org.vostokframework.domain.loading.monitors
 			var priority:int = 0;
 			var weakReference:Boolean = true;
 			
-			globalMonitor.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
+			wrapper.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
 			
-			var hasEventListener:Boolean = globalMonitor.hasEventListener(eventType);
+			var hasEventListener:Boolean = wrapper.hasEventListener(eventType);
 			Assert.assertTrue(hasEventListener);
 		}
 		
@@ -218,10 +259,10 @@ package org.vostokframework.domain.loading.monitors
 			var priority:int = 0;
 			var weakReference:Boolean = true;
 			
-			globalMonitor.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
-			globalMonitor.removeEventListener(eventType, eventListener, useCapture);
+			wrapper.addEventListener(eventType, eventListener, useCapture, priority, weakReference);
+			wrapper.removeEventListener(eventType, eventListener, useCapture);
 			
-			var hasEventListener:Boolean = globalMonitor.hasEventListener(eventType);
+			var hasEventListener:Boolean = wrapper.hasEventListener(eventType);
 			Assert.assertFalse(hasEventListener);
 		}
 

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.monitors
+package org.vostokframework.application.monitoring
 {
 	import org.as3collections.IMap;
 	import org.as3utils.StringUtil;

@@ -39,10 +39,10 @@ package
 	import org.vostokframework.application.services.AssetPackageServiceTests;
 	import org.vostokframework.application.services.AssetServiceTests;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderTests;
-	import org.vostokframework.domain.loading.monitors.CompositeLoadingMonitorTests;
-	import org.vostokframework.domain.loading.monitors.CompositeLoadingMonitorTestsIntegration;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorTests;
-	import org.vostokframework.domain.loading.monitors.LoadingMonitorWrapperTestsIntegration;
+	import org.vostokframework.application.monitoring.CompositeLoadingMonitorTests;
+	import org.vostokframework.application.monitoring.CompositeLoadingMonitorTestsIntegration;
+	import org.vostokframework.application.monitoring.LoadingMonitorTests;
+	import org.vostokframework.application.monitoring.LoadingMonitorWrapperTestsIntegration;
 	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTests;
 	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTestsHighestLowest;
 	import org.vostokframework.domain.loading.policies.LoadingPolicyTests;
@@ -142,7 +142,7 @@ package
 		//org.vostokframework.domain.loading.loaders
 		public var vostokLoaderTests:VostokLoaderTests;
 		
-		//org.vostokframework.domain.loading.monitors
+		//org.vostokframework.application.monitoring
 		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
 		public var compositeLoadingMonitorTestsIntegration:CompositeLoadingMonitorTestsIntegration;
 		public var loadingMonitorTests:LoadingMonitorTests;

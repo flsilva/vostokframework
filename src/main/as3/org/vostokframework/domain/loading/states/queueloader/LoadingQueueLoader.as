@@ -188,18 +188,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			return loadingStatus.loadingLoaders.isEmpty() &&
 				loadingStatus.queuedLoaders.isEmpty() &&
 				loadingStatus.stoppedLoaders.isEmpty();
-			
-			/*
-			return _queuedLoaders.isEmpty() &&
-				_stoppedLoaders.isEmpty() &&
-				getLoadingLoaders().size() == 0;
-			*/
-			/*
-			return !_allLoaders.isEmpty() &&
-				_queuedLoaders.isEmpty() &&
-				_stoppedLoaders.isEmpty() &&
-				getLoadingLoaders().size() == 0;
-			*/
 		}
 		
 		/**

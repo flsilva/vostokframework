@@ -32,7 +32,7 @@ package org.vostokframework.application.services
 	import org.as3collections.IList;
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
-	import org.vostokframework.domain.loading.monitors.ILoadingMonitor;
+	import org.vostokframework.application.monitoring.ILoadingMonitor;
 
 	/**
 	 * @author Flávio Silva
