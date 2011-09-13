@@ -34,6 +34,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.application.AssetsContext;
+	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetRepository;
@@ -174,6 +175,16 @@ package org.vostokframework.application.services
 			var asset:Asset = _service.createAsset("http://domain.com/a.aac", assetPackage);
 			
 			var contains:Boolean = assetPackage.containsAsset(asset.identification);
+			Assert.assertTrue(contains);
+		}
+		
+		[Test]
+		public function createAsset_checkIfLoadingSettingsRepositoryContainsSettingsForCreatedAsset_ReturnsTrue(): void
+		{
+			var assetPackage:AssetPackage = getAssetPackage();
+			var asset:Asset = _service.createAsset("http://domain.com/a.aac", assetPackage);
+			
+			var contains:Boolean = LoadingContext.getInstance().loadingSettingsRepository.exists(asset);
 			Assert.assertTrue(contains);
 		}
 		

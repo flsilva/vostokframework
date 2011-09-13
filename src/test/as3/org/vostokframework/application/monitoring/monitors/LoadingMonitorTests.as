@@ -127,10 +127,6 @@ package org.vostokframework.application.monitoring.monitors
 			return new LoadingMonitor(loader, dispatcher);
 		}
 		
-		///////////////////////
-		// CONSTRUCTOR TESTS //
-		///////////////////////
-		//TODO:constructor tests
 		///////////////////////////////////////////////
 		// LoadingMonitor().addEventListener() TESTS //
 		///////////////////////////////////////////////
