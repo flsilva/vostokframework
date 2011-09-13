@@ -54,13 +54,12 @@ package org.vostokframework.application.monitoring.monitors
 		/**
 		 * @private
 		 */
-		private static const TIMER_DELAY:int = 50;//TODO:repensar constante
-		
 		private var _isFirstProgressDispatch:Boolean;
 		private var _lastPercent:int;
 		private var _monitors:IMap;
 		private var _monitorsListeners:IList;
 		private var _progressTimer:Timer;
+		private var _progressTimerDelay:int;
 		
 		/**
 		 * 
@@ -72,7 +71,8 @@ package org.vostokframework.application.monitoring.monitors
 			
 			_monitors = new TypedMap(new HashMap(), String, ILoadingMonitor);
 			_monitorsListeners = new TypedList(new ArrayList(), EventListener);
-			_progressTimer = new Timer(TIMER_DELAY);
+			_progressTimerDelay = 50;
+			_progressTimer = new Timer(_progressTimerDelay);
 			_isFirstProgressDispatch = true;
 			
 			addTimerListener();
