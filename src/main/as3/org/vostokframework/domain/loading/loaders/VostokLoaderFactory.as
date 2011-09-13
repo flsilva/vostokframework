@@ -28,6 +28,7 @@
  */
 package org.vostokframework.domain.loading.loaders
 {
+	import org.as3utils.StringUtil;
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.as3utils.URLUtil;
@@ -111,6 +112,9 @@ package org.vostokframework.domain.loading.loaders
 		
 		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader
 		{
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
+			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
+			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
 			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalMaxConnections, localMaxConnections);
@@ -121,7 +125,9 @@ package org.vostokframework.domain.loading.loaders
 		
 		public function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader
 		{
-			//TODO:validar argumentos
+			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
+			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String..");
+			if (!type) throw new ArgumentError("Argument <type> must not be null.");
 			
 			if (!settings) settings = _defaultLoadingSettings;
 			
