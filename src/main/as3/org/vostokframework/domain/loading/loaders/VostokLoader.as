@@ -57,7 +57,7 @@ package org.vostokframework.domain.loading.loaders
 		private var _index:int;
 		private var _priority:LoadPriority;
 		private var _state:ILoaderState;
-		private var _stateHistory:IList;
+		private var _stateHistory:IList;//TODO:pensar sobre remover propriedade
 		
 		/**
 		 * description

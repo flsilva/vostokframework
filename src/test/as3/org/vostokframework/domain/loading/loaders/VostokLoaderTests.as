@@ -34,7 +34,9 @@ package org.vostokframework.domain.loading.loaders
 	import mockolate.runner.MockolateRule;
 	import mockolate.verify;
 
+	import org.as3coreaddendum.events.PriorityEvent;
 	import org.flexunit.Assert;
+	import org.flexunit.async.Async;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.loading.ILoader;
@@ -192,6 +194,13 @@ package org.vostokframework.domain.loading.loaders
 			Assert.assertEquals(4, loader.priority);
 		}
 		
+		[Test(async, timeout=100)]
+		public function priority_setValidPriorityFour_waitForPriorityEvent(): void
+		{
+			Async.proceedOnEvent(this, loader, PriorityEvent.CHANGED, 100);
+			loader.priority = 4;
+		}
+		
 		[Test(expects="ArgumentError")]
 		public function priority_setInvalidLessPriority_ThrowsError(): void
 		{
@@ -203,7 +212,7 @@ package org.vostokframework.domain.loading.loaders
 		{
 			loader.priority = 5;
 		}
-		//TODO: teste do evento disparado pelo loader
+		
 		//////////////////////////
 		// VostokLoader().state //
 		//////////////////////////
