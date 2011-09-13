@@ -38,7 +38,7 @@ package org.vostokframework.domain.loading.policies
 	import org.as3collections.IList;
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
-	import org.as3collections.queues.IndexablePriorityQueue;
+	import org.as3collections.queues.PriorityIndexQueue;
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
@@ -80,7 +80,7 @@ package org.vostokframework.domain.loading.policies
 		public function setUp(): void
 		{
 			fakeState = nice(ILoaderState);
-			queue = new IndexablePriorityQueue();
+			queue = new PriorityIndexQueue();
 		}
 		
 		[After]

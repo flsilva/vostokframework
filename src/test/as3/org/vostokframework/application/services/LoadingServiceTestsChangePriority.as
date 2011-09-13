@@ -34,10 +34,10 @@ package org.vostokframework.application.services
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	/**
 	 * @author Flávio Silva
@@ -73,13 +73,13 @@ package org.vostokframework.application.services
 		}
 		
 		[Test(expects="org.vostokframework.domain.loading.errors.LoaderNotFoundError")]
-		public function changePriority_notExistingLoader_ThrowsError(): void
+		public function changePriority_notExistingLoaderAndAsset_ThrowsError(): void
 		{
 			service.changePriority(QUEUE1_ID, LoadPriority.HIGH);
 		}
 		
 		[Test]
-		public function changePriority_queuedQueueLoader_changePriority_checkIfPriorityMatches_ReturnsTrue(): void
+		public function changePriority_queuedQueueLoader_checkIfPriorityMatches_ReturnsTrue(): void
 		{
 			var list1:IList = new ArrayList();
 			list1.add(asset1);
@@ -116,7 +116,7 @@ package org.vostokframework.application.services
 		//ASSET testing
 		
 		[Test]
-		public function changePriority_queuedAssetLoader_changePriority_checkIfPriorityMatches_ReturnsTrue(): void
+		public function changePriority_queuedAssetLoader_checkIfPriorityMatches_ReturnsTrue(): void
 		{
 			var list1:IList = new ArrayList();
 			list1.add(asset1);
@@ -126,6 +126,15 @@ package org.vostokframework.application.services
 			
 			var loader:ILoader = LoadingContext.getInstance().globalQueueLoader.getChild(asset1.identification);
 			Assert.assertEquals(0, loader.priority);
+		}
+		
+		[Test]
+		public function changePriority_notExistingLoaderButExistingAsset_checkIfPriorityOfLoadingSettingsMatches_ReturnsTrue(): void
+		{
+			service.changePriority(asset1.identification.id, LoadPriority.LOWEST);
+			
+			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
+			Assert.assertEquals(LoadPriority.LOWEST, settings.policy.priority);
 		}
 		
 		[Test]

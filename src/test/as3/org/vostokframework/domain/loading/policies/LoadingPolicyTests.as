@@ -35,7 +35,7 @@ package org.vostokframework.domain.loading.policies
 
 	import org.as3collections.IQueue;
 	import org.as3collections.lists.ArrayList;
-	import org.as3collections.queues.IndexablePriorityQueue;
+	import org.as3collections.queues.PriorityIndexQueue;
 	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
@@ -99,7 +99,7 @@ package org.vostokframework.domain.loading.policies
 			stub(_fakeLoader2).method("toString").noArgs().returns("[MOCKOLATE ILoader <fake-loader-2> ]");
 			stub(_fakeLoader3).method("toString").noArgs().returns("[MOCKOLATE ILoader <fake-loader-3> ]");
 			
-			queue = new IndexablePriorityQueue();
+			queue = new PriorityIndexQueue();
 			queue.add(_fakeLoader2);
 			queue.add(_fakeLoader1);
 		}

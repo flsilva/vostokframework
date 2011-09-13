@@ -31,6 +31,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
+	import org.as3coreaddendum.events.PriorityEvent;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.loading.ILoader;
@@ -90,6 +91,8 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			_loadingStatus = loadingStatus;
 			_policy = policy;
+			
+			addPriorityListenerToLoaders();
 		}
 		
 		public function addChild(child:ILoader): void
@@ -111,6 +114,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			loadingStatus.allLoaders.put(child.identification.toString(), child);
 			loadingStatus.queuedLoaders.add(child); 
 			
+			addPriorityListenerToLoader(child);
 			childAdded(child);
 		}
 		
@@ -230,6 +234,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			if (_disposed) return;
 			
 			doDispose();
+			removePriorityListenerFromLoaders();
 			
 			//_loadingStatus.dispose();
 			
@@ -315,6 +320,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				loadingStatus.queuedLoaders.remove(child);
 				loadingStatus.stoppedLoaders.remove(child);
 				
+				removePriorityListenerFromLoader(child);
 				childRemoved(child);
 			}
 			else
@@ -529,9 +535,60 @@ package org.vostokframework.domain.loading.states.queueloader
 		/**
 		 * @private
 		 */
+		protected function priorityChildChanged(child:ILoader): void
+		{
+			
+		}
+		
+		/**
+		 * @private
+		 */
 		protected function validateDisposal():void
 		{
 			if (_disposed) throw new ObjectDisposedError("This object was disposed, therefore no more operations can be performed.");
+		}
+		
+		private function addPriorityListenerToLoaders():void
+		{
+			if (_loadingStatus.allLoaders.isEmpty()) return;
+			
+			var it:IIterator = _loadingStatus.allLoaders.iterator();
+			var loader:ILoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				addPriorityListenerToLoader(loader);
+			}
+		}
+		
+		private function addPriorityListenerToLoader(loader:ILoader):void
+		{
+			loader.addEventListener(PriorityEvent.CHANGED, loaderPriorityChanged, false, 0, true);
+		}
+		
+		private function removePriorityListenerFromLoaders():void
+		{
+			if (_loadingStatus.allLoaders.isEmpty()) return;
+			
+			var it:IIterator = _loadingStatus.allLoaders.iterator();
+			var loader:ILoader;
+			
+			while (it.hasNext())
+			{
+				loader = it.next();
+				removePriorityListenerFromLoader(loader);
+			}
+		}
+		
+		private function loaderPriorityChanged(event:PriorityEvent):void
+		{
+			priorityChildChanged(event.target as ILoader);
+		}
+
+		private function removePriorityListenerFromLoader(loader:ILoader):void
+		{
+			loader.removeEventListener(PriorityEvent.CHANGED, loaderPriorityChanged, false);
 		}
 		
 	}

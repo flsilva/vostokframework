@@ -130,13 +130,40 @@ package org.vostokframework.application.services
 		 */
 		public function changePriority(loaderId:String, priority:LoadPriority, locale:String = null): void
 		{
-			//TODO:create test cases for this method
 			if (StringUtil.isBlank(loaderId)) throw new ArgumentError("Argument <assetId> must not be null nor an empty String.");
 			if (!priority) throw new ArgumentError("Argument <priority> must not be null.");
 			
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			var identification:VostokIdentification = new VostokIdentification(loaderId, locale);
 			
+			var assetService:AssetService = new AssetService();
+			
+			if (!exists(loaderId, locale) && !assetService.assetExists(loaderId, locale))
+			{
+				var message:String = "There is no ILoader object NOR Asset object stored with specified arguments:\n";
+				message += "<loaderId>: <" + loaderId + ">\n";
+				message += "<locale>: <" + locale + ">\n";
+				message += "If you are trying to change the priority of an ongoing loading, is a queue or an asset, use method <LoadingService().exists()> to check if a ILoader object exists.\n";
+				message += "But if you are trying to change the priority of a previously created Asset object that is not loading, use method <AssetService().assetExists()> to check if an Asset object exists.\n";
+				
+				throw new LoaderNotFoundError(identification, message);
+			}
+			
+			if (exists(loaderId, locale))
+			{
+				var loader:ILoader = globalQueueLoader.getChild(identification);
+				loader.priority = priority.ordinal;
+			}
+			
+			if (assetService.assetExists(loaderId, locale))
+			{
+				var asset:Asset = assetService.getAsset(loaderId, locale);
+				
+				var settings:LoadingSettings = _context.loadingSettingsRepository.find(asset);
+				settings.policy.priority = priority;
+			}
+			
+			/*
 			if (!exists(loaderId, locale))
 			{
 				var message:String = "There is no ILoader object stored with specified arguments:\n";
@@ -146,9 +173,7 @@ package org.vostokframework.application.services
 				
 				throw new LoaderNotFoundError(identification, message);
 			}
-			
-			var loader:ILoader = globalQueueLoader.getChild(identification);
-			loader.priority = priority.ordinal;
+			*/
 		}
 		
 		/**

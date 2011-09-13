@@ -36,6 +36,7 @@ package
 	import org.vostokframework.application.services.AssetPackageServiceTests;
 	import org.vostokframework.application.services.AssetServiceTests;
 	import org.vostokframework.application.services.LoadingServiceTestsCancel;
+	import org.vostokframework.application.services.LoadingServiceTestsChangePriority;
 	import org.vostokframework.application.services.LoadingServiceTestsContainsAssetData;
 	import org.vostokframework.application.services.LoadingServiceTestsExists;
 	import org.vostokframework.application.services.LoadingServiceTestsGetAssetData;
@@ -223,6 +224,7 @@ package
 		
 		//org.vostokframework.application.services
 		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
+		public var loadingServiceTestsChangePriority:LoadingServiceTestsChangePriority;
 		public var loadingServiceTestsContainsAssetData:LoadingServiceTestsContainsAssetData;
 		public var loadingServiceTestsExists:LoadingServiceTestsExists;
 		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;

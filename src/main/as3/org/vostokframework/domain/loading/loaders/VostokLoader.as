@@ -32,6 +32,7 @@ package org.vostokframework.domain.loading.loaders
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.lists.TypedList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
+	import org.as3coreaddendum.events.PriorityEvent;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.loading.ILoader;
@@ -110,7 +111,7 @@ package org.vostokframework.domain.loading.loaders
 		public function set priority(value:int): void
 		{
 			validateDisposal();
-			//TODO:disparar evento
+			
 			try
 			{
 				_priority = LoadPriority.getByOrdinal(value);
@@ -122,6 +123,8 @@ package org.vostokframework.domain.loading.loaders
 				errorMessage += ReflectionUtil.getClassPath(LoadPriority);
 				throw new ArgumentError(errorMessage);
 			}
+			
+			dispatchEvent(new PriorityEvent(PriorityEvent.CHANGED, _priority.ordinal));
 		}
 		
 		/**

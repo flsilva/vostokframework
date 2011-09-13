@@ -34,7 +34,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.as3collections.lists.ArrayList;
 	import org.as3collections.maps.HashMap;
 	import org.as3collections.maps.TypedMap;
-	import org.as3collections.queues.IndexablePriorityQueue;
+	import org.as3collections.queues.PriorityIndexQueue;
 	import org.as3collections.utils.ListUtil;
 	import org.as3collections.utils.QueueUtil;
 	import org.vostokframework.domain.loading.ILoader;
@@ -85,7 +85,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			_completeLoaders = ListUtil.getUniqueTypedList(new ArrayList(), ILoader);
 			_failedLoaders = ListUtil.getUniqueTypedList(new ArrayList(), ILoader);
 			_loadingLoaders = ListUtil.getUniqueTypedList(new ArrayList(), ILoader);
-			_queuedLoaders = QueueUtil.getUniqueTypedQueue(new IndexablePriorityQueue(), ILoader);
+			_queuedLoaders = QueueUtil.getUniqueTypedQueue(new PriorityIndexQueue(), ILoader);
 			_stoppedLoaders = ListUtil.getUniqueTypedList(new ArrayList(), ILoader);
 		}
 		/*

@@ -154,6 +154,15 @@ package org.vostokframework.domain.loading.states.queueloader
 		/**
 		 * @private
 		 */
+		override protected function priorityChildChanged(child:ILoader): void
+		{
+			child = null;//just to avoid compiler warnings
+			loadNextLoader();
+		}
+		
+		/**
+		 * @private
+		 */
 		private function addChildrenListeners():void
 		{
 			if (loadingStatus.allLoaders.isEmpty()) return;
