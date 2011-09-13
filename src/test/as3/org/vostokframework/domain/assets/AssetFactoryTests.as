@@ -149,8 +149,7 @@ package org.vostokframework.domain.assets
 			var identification:VostokIdentification = new VostokIdentification("a.aac", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));
 		}
-		//TODO:criar teste enviando TYPE porem o src enviado corresponde a outro TYPE
-		//validar se TYPE utilizado foi o enviado e nao o obtido automaticamente
+		
 		[Test]
 		public function create_validArgumentsWithAssetId_checkIfAssetIdMatches_ReturnsTrue(): void
 		{
@@ -159,6 +158,15 @@ package org.vostokframework.domain.assets
 			
 			var identification:VostokIdentification = new VostokIdentification("asset-id", "en-US");
 			Assert.assertTrue(asset.identification.equals(identification));
+		}
+		
+		[Test]
+		public function create_validArguments_sendingDifferentTypeThanObtainedBySrcArgument_checkIfTypeMatches_ReturnsTrue(): void
+		{
+			var factory:AssetFactory = getFactory();
+			var asset:Asset = factory.create("a.aac", getAssetPackage(), "asset-id", AssetType.IMAGE);
+			
+			Assert.assertEquals(AssetType.IMAGE, asset.type);
 		}
 		
 	}

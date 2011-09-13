@@ -128,7 +128,7 @@ package org.vostokframework.application.services
 			assetPackage.addAsset(asset);
 			
 			if (!settings) settings = _loadingContext.loaderFactory.defaultLoadingSettings;
-			_loadingContext.loadingSettingsRepository.add(asset, settings);//TODO:create test case for this line
+			_loadingContext.loadingSettingsRepository.add(asset, settings);
 			
 			return asset;
 		}
