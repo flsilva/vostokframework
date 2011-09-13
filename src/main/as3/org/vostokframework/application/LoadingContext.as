@@ -28,6 +28,7 @@
  */
 package org.vostokframework.application
 {
+	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.application.events.AssetLoadingEvent;
@@ -364,8 +365,8 @@ package org.vostokframework.application
 				errorMessage = "It was expected that the Asset object was found:\n";
 				errorMessage += "<assetId>: " + event.assetId + "\n";
 				errorMessage += "<assetLocale>: " + event.assetLocale;
-				//TODO:trocar erro para InvalidStateError
-				throw new IllegalOperationError(errorMessage); 
+				
+				throw new IllegalStateError(errorMessage); 
 			}
 			
 			var asset:Asset = assetService.getAsset(event.assetId, event.assetLocale);
