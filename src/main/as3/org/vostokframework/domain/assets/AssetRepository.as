@@ -44,15 +44,14 @@ package org.vostokframework.domain.assets
 	 */
 	public class AssetRepository
 	{
-		//TODO:alterar key para VostokIdentification().toString() para melhorar performance
-		private var _assetMap:IMap;//key = VostokIdentification | value = Asset 
+		private var _assetMap:IMap;//key = String (Asset().identification().toString()) | value = Asset 
 
 		/**
 		 * description
 		 */
 		public function AssetRepository()
 		{
-			_assetMap = new TypedMap(new HashMap(), VostokIdentification, Asset);
+			_assetMap = new TypedMap(new HashMap(), String, Asset);
 		}
 		
 		/**
@@ -67,7 +66,7 @@ package org.vostokframework.domain.assets
 		{
 			if (!asset) throw new ArgumentError("Argument <asset> must not be null.");
 			
-			if (_assetMap.containsKey(asset.identification))
+			if (_assetMap.containsKey(asset.identification.toString()))
 			{
 				var message:String = "There is already an Asset object stored with identification:\n";
 				message += "<" + asset.identification + ">\n";
@@ -77,7 +76,7 @@ package org.vostokframework.domain.assets
 				throw new DuplicateAssetError(asset.identification, message);
 			}
 			
-			_assetMap.put(asset.identification, asset);
+			_assetMap.put(asset.identification.toString(), asset);
 		}
 		
 		/**
@@ -101,7 +100,7 @@ package org.vostokframework.domain.assets
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.containsKey(identification);
+			return _assetMap.containsKey(identification.toString());
 		}
 
 		/**
@@ -116,7 +115,7 @@ package org.vostokframework.domain.assets
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.getValue(identification);
+			return _assetMap.getValue(identification.toString());
 		}
 
 		/**
@@ -154,7 +153,7 @@ package org.vostokframework.domain.assets
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _assetMap.remove(identification) != null;
+			return _assetMap.remove(identification.toString()) != null;
 		}
 		
 		/**
