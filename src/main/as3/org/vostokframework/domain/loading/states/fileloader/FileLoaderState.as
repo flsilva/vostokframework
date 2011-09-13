@@ -117,7 +117,6 @@ package org.vostokframework.domain.loading.states.fileloader
 			if (_disposed) return;
 			
 			doDispose();
-			//algorithm.dispose();//TODO:pensar como resolver...colocar essa linha apenas no dispose de Complete, Canceled e FailedFileLoaderState?
 			
 			_disposed = true;
 			_algorithm = null;

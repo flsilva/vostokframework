@@ -44,7 +44,7 @@ package org.vostokframework.domain.loading
 	 */
 	public interface ILoader extends IEventDispatcher, IEquatable, IDisposable, IPriority, IIndexable
 	{
-		//TODO:escrever observacao sobre setter priority ter que disparar evento
+		//TODO:escrever observacao ASDOC sobre setter priority ter que disparar evento
 		function get identification():VostokIdentification;
 		
 		function get isLoading():Boolean;

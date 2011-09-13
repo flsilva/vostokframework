@@ -68,6 +68,11 @@ package org.vostokframework.domain.loading.states.fileloader
 			throw new IllegalOperationError("The current state is <"+ReflectionUtil.getClassName(this)+">, therefore it is no longer allowed to stop.");
 		}
 		
+		override protected function doDispose():void
+		{
+			algorithm.dispose();
+		}
+		
 	}
 
 }
