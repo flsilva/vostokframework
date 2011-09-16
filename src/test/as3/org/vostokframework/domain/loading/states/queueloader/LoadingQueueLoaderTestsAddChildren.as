@@ -30,7 +30,6 @@
 package org.vostokframework.domain.loading.states.queueloader
 {
 	import mockolate.mock;
-	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.as3collections.IList;
@@ -65,13 +64,13 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader3);
 			//
 			
-			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		[Test]
 		public function addChildren_validArgument_checkIfMockPolicyWasCalled(): void
 		{
-			mock(fakePolicy).method("getNext").anyArgs().once();
+			mock(fakePolicy).method("process").anyArgs().once();
 			
 			state = getState();
 			
@@ -81,22 +80,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			state.addChildren(list);
 			
 			verify(fakePolicy);
-		}
-		
-		[Test]
-		public function addChildren_validArgument_checkIfMockChildWasCalled(): void
-		{
-			stub(fakePolicy).method("getNext").anyArgs().returns(fakeChildLoader1);
-			mock(fakeChildLoader1).method("load").once();
-			
-			state = getState();
-			
-			var list:IList = new ArrayList();
-			list.add(fakeChildLoader1);
-			
-			state.addChildren(list);
-			
-			verify(fakeChildLoader1);
 		}
 		
 	}

@@ -29,9 +29,7 @@
 
 package org.vostokframework.domain.loading.states.queueloader
 {
-	import mockolate.ingredients.Sequence;
 	import mockolate.mock;
-	import mockolate.sequence;
 	import mockolate.stub;
 	import mockolate.verify;
 
@@ -39,9 +37,12 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
+	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 	import org.vostokframework.domain.loading.policies.LoadingPolicy;
 
@@ -64,7 +65,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		override public function getState():ILoaderState
 		{
-			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);;
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		///////////
@@ -83,58 +84,30 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
 			
-			mock(fakePolicy).method("getNext").anyArgs().once();
+			mock(fakePolicy).method("process").anyArgs().once();
 			
 			state = getState();
 			verify(fakePolicy);
 		}
 		
-		[Test]
-		public function fakePolicyReturnsMockChild_verifyIfMockChildWasCalled(): void
-		{
-			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
-			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
-			
-			stub(fakePolicy).method("getNext").returns(fakeChildLoader1).once();
-			mock(fakeChildLoader1).method("load").noArgs().once();
-			
-			state = getState();
-			
-			verify(fakeChildLoader1);
-		}
-		
-		[Test]
-		public function fakePolicyReturnsTwoMockChildren_firstMockChildDispatchesConnectingEvent_verifyIfLoadMethodWasCalledOnSecondMockChild(): void
-		{
-			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
-			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
-			
-			var seq:Sequence = sequence();
-			stub(fakePolicy).method("getNext").returns(fakeChildLoader1).once().ordered(seq);
-			stub(fakePolicy).method("getNext").returns(fakeChildLoader2).once().ordered(seq);
-			
-			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
-			mock(fakeChildLoader2).method("load");
-			
-			state = getState();
-			
-			verify(fakeChildLoader2);
-		}
-		
 		[Test(async, timeout=200)]
-		public function fakePolicyReturnsStubChild_stubChildDispatchesOpenEvent_waitForStateToDispatchOpenEventOnItsLoader(): void
+		public function integrationTesting_stubChildDispatchesOpenEvent_waitForStateToDispatchOpenEventOnItsLoader(): void
 		{
+			// INTEGRATION TESTING USING REAL LoadingPolicy DEPENDENCY
+			// NOT USING getState() HELPER METHOD
+			
 			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
 			
 			Async.proceedOnEvent(this, fakeQueueLoader, LoaderEvent.OPEN, 200);
 			
-			stub(fakePolicy).method("getNext").returns(fakeChildLoader1).once();
-			
 			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			
-			state = getState();
+			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
+			policy.globalMaxConnections = 6;
+			
+			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 		}
 		
 		[Test]
@@ -161,9 +134,8 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;
-			policy.localMaxConnections = 3;
 			
-			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy);
+			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
 			verify(fakeQueueLoader);
 		}
@@ -191,9 +163,8 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;
-			policy.localMaxConnections = 3;
 			
-			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy);
+			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
 			verify(fakeQueueLoader);
 		}
@@ -216,11 +187,70 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;
-			policy.localMaxConnections = 3;
 			
-			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy);
+			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
 			verify(fakeChildLoader2);
+		}
+		
+		[Test]
+		public function integrationTesting_usingRealElaborateLoadingPolicy_stateWithOneHighPriorityChild_addHighestPriorityLoader_shouldStopHighPriorityLoader_highestPriorityLoaderDispatchesCompleteEvent_verifyIfHighPriorityLoaderWasCalled(): void
+		{
+			// INTEGRATION TESTING USING REAL ElaborateLoadingPolicy DEPENDENCY
+			// NOT USING getState() HELPER METHOD
+			
+			var highLoader:ILoader = getFakeLoader("high-loader", 1, LoadPriority.HIGH);
+			
+			fakeLoadingStatus.allLoaders.put(highLoader.identification.toString(), highLoader);
+			fakeLoadingStatus.queuedLoaders.add(highLoader);
+			
+			stub(highLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
+			
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository);
+			policy.globalMaxConnections = 6;
+			
+			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
+			
+			var highestLoader:ILoader = getFakeLoader("highest-loader", 1, LoadPriority.HIGHEST);
+			stub(highestLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
+				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
+				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			mock(highLoader).method("load").once();
+			
+			state.addChild(highestLoader);
+			
+			verify(highLoader);
+		}
+		
+		[Test]
+		public function integrationTesting_usingRealElaborateLoadingPolicy_stateWithOneLowestPriorityChild_addLowPriorityLoader_shouldStopLowestPriorityLoader_lowPriorityLoaderDispatchesCompleteEvent_verifyIfLowestPriorityLoaderWasCalled(): void
+		{
+			// INTEGRATION TESTING USING REAL ElaborateLoadingPolicy DEPENDENCY
+			// NOT USING getState() HELPER METHOD
+			
+			var lowestLoader:ILoader = getFakeLoader("lowest-loader", 1, LoadPriority.LOWEST);
+			
+			fakeLoadingStatus.allLoaders.put(lowestLoader.identification.toString(), lowestLoader);
+			fakeLoadingStatus.queuedLoaders.add(lowestLoader);
+			
+			stub(lowestLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
+			
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository);
+			policy.globalMaxConnections = 6;
+			
+			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
+			
+			var lowLoader:ILoader = getFakeLoader("low-loader", 1, LoadPriority.LOW);
+			stub(lowLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
+				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
+				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
+			
+			mock(lowestLoader).method("load").once();
+			
+			state.addChild(lowLoader);
+			
+			verify(lowestLoader);
 		}
 		
 	}

@@ -29,20 +29,18 @@
 
 package org.vostokframework.domain.loading.policies
 {
+	import mockolate.mock;
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
+	import mockolate.verify;
 
-	import org.as3collections.IQueue;
-	import org.as3collections.lists.ArrayList;
-	import org.as3collections.queues.PriorityIndexQueue;
-	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.loading.ILoader;
-	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * @author Flávio Silva
@@ -55,8 +53,8 @@ package org.vostokframework.domain.loading.policies
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
-		[Mock(inject="false")]
-		public var fakeState:ILoaderState;
+		//[Mock(inject="false")]
+		//public var fakeState:ILoaderState;
 		
 		[Mock(inject="false")]
 		public var _fakeLoader1:ILoader;
@@ -67,7 +65,7 @@ package org.vostokframework.domain.loading.policies
 		[Mock(inject="false")]
 		public var _fakeLoader3:ILoader;
 		
-		public var queue:IQueue;
+		public var queueLoadingStatus:QueueLoadingStatus;
 		
 		public function LoadingPolicyTests()
 		{
@@ -81,7 +79,7 @@ package org.vostokframework.domain.loading.policies
 		[Before]
 		public function setUp(): void
 		{
-			fakeState = nice(ILoaderState);
+			//fakeState = nice(ILoaderState);
 			
 			_fakeLoader1 = nice(ILoader);
 			_fakeLoader2 = nice(ILoader);
@@ -99,15 +97,15 @@ package org.vostokframework.domain.loading.policies
 			stub(_fakeLoader2).method("toString").noArgs().returns("[MOCKOLATE ILoader <fake-loader-2> ]");
 			stub(_fakeLoader3).method("toString").noArgs().returns("[MOCKOLATE ILoader <fake-loader-3> ]");
 			
-			queue = new PriorityIndexQueue();
-			queue.add(_fakeLoader2);
-			queue.add(_fakeLoader1);
+			queueLoadingStatus = new QueueLoadingStatus();
+			queueLoadingStatus.queuedLoaders.add(_fakeLoader2);
+			queueLoadingStatus.queuedLoaders.add(_fakeLoader1);
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
-			queue = null;
+			queueLoadingStatus = null;
 		}
 		
 		////////////////////
@@ -120,7 +118,7 @@ package org.vostokframework.domain.loading.policies
 			repository.$openedConnections = totalGlobalConnections;
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(repository);
-			policy.localMaxConnections = 3;
+			//policy.localMaxConnections = 3;
 			policy.globalMaxConnections = 6;
 			
 			return policy;
@@ -135,13 +133,13 @@ package org.vostokframework.domain.loading.policies
 		/////////////////////////////////////
 		// LoadingPolicy().getNext() TESTS //
 		/////////////////////////////////////
-		
+		/*
 		[Test]
 		public function getNext_withinLocalAndGlobalMaxConnections_ReturnsValidLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertNotNull(loader);
 		}
 		
@@ -150,16 +148,83 @@ package org.vostokframework.domain.loading.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertEquals(_fakeLoader1, loader);
 		}
+		*/
 		
 		[Test]
-		public function getNext_withinLocalAndGlobalMaxConnections_maxLocalConnectionsBoundaryTesting_ReturnsValidLoader(): void
+		public function getNext_oneMaxLocalConnection_twoQueuedLoaders_checkIfCalledLoadOnFirstLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList([_fakeLoader1, _fakeLoader2]));
+			mock(_fakeLoader1).method("load").once();
+			policy.process(queueLoadingStatus, 1);
+			verify(_fakeLoader1);
+		}
+		
+		[Test]
+		public function getNext_oneMaxLocalConnection_twoQueuedLoaders_verifyNotCalledLoadOnSecondLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			mock(_fakeLoader2).method("load").never();
+			policy.process(queueLoadingStatus, 1);
+			verify(_fakeLoader2);
+		}
+		
+		[Test]
+		public function getNext_twoMaxLocalConnections_twoQueuedLoaders_checkIfCalledLoadOnSecondLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			mock(_fakeLoader2).method("load").once();
+			policy.process(queueLoadingStatus, 2);
+			verify(_fakeLoader2);
+		}
+		
+		[Test]
+		public function getNext_twoMaxLocalConnections_threeQueuedLoaders_verifyThirdLoaderWasNotCalled(): void
+		{
+			queueLoadingStatus.queuedLoaders.add(_fakeLoader3);
+			
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			mock(_fakeLoader3).method("load").never();
+			policy.process(queueLoadingStatus, 2);
+			verify(_fakeLoader3);
+		}
+		
+		[Test]
+		public function getNext_sixMaxGlobalConnections_fiveTotalGlobalConnections_twoQueuedLoaders_checkIfCalledLoadOnFirstLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(5);
+			
+			mock(_fakeLoader1).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(_fakeLoader1);
+		}
+		
+		[Test]
+		public function getNext_sixMaxGlobalConnections_sixTotalGlobalConnections_twoQueuedLoaders_verifyNotCalledLoadOnFirstLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(6);
+			
+			mock(_fakeLoader1).method("load").never();
+			policy.process(queueLoadingStatus, 3);
+			verify(_fakeLoader1);
+		}
+		
+		/*
+		[Test]
+		public function getNext_threeMaxLocalConnections_oneQueuedLoaderAndTwoLoadingLoaders_boundaryTesting_checkIfCalledLoadOnThirdLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
+			
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertNotNull(loader);
 		}
 		
@@ -168,7 +233,11 @@ package org.vostokframework.domain.loading.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList([_fakeLoader1, _fakeLoader2, _fakeLoader3]));
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
+			
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertNull(loader);
 		}
 		
@@ -177,7 +246,7 @@ package org.vostokframework.domain.loading.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(5);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertNotNull(loader);
 		}
 		
@@ -186,10 +255,10 @@ package org.vostokframework.domain.loading.policies
 		{
 			var policy:ILoadingPolicy = getPolicy(6);
 			
-			var loader:ILoader = policy.getNext(fakeState, queue, new ArrayList());
+			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
 			Assert.assertNull(loader);
 		}
-		
+		*/
 	}
 
 }

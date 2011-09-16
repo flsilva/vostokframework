@@ -66,6 +66,11 @@ package org.vostokframework.domain.loading.states.fileloader
 		
 		public function get isStopped():Boolean { return false; }
 		
+		public function get maxConcurrentConnections():int
+		{
+			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));
+		}
+		
 		public function get openedConnections():int { return 0; }
 		
 		/**
@@ -155,6 +160,11 @@ package org.vostokframework.domain.loading.states.fileloader
 		public function setLoader(loader:ILoaderStateTransition):void
 		{
 			_loader = loader;
+		}
+		
+		public function setMaxConcurrentConnections(value:int):void
+		{
+			throw new UnsupportedOperationError("This is a Leaf implementation of the ILoaderState interface and does not support this operation. " + ReflectionUtil.getClassPath(this));
 		}
 		
 		public function stop():void

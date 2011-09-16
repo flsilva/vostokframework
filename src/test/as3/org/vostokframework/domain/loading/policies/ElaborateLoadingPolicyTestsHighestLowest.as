@@ -35,17 +35,12 @@ package org.vostokframework.domain.loading.policies
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.IList;
-	import org.as3collections.IQueue;
-	import org.as3collections.lists.ArrayList;
-	import org.as3collections.queues.PriorityIndexQueue;
-	import org.flexunit.Assert;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.loading.ILoader;
-	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * @author Flávio Silva
@@ -56,8 +51,8 @@ package org.vostokframework.domain.loading.policies
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
-		[Mock(inject="false")]
-		public var fakeState:ILoaderState;
+		//[Mock(inject="false")]
+		//public var fakeState:ILoaderState;
 		
 		[Mock(inject="false")]
 		public var _fakeLoader1:ILoader;
@@ -65,7 +60,7 @@ package org.vostokframework.domain.loading.policies
 		[Mock(inject="false")]
 		public var _fakeLoader2:ILoader;
 		
-		public var queue:IQueue;
+		public var queueLoadingStatus:QueueLoadingStatus;
 		
 		public function ElaborateLoadingPolicyTestsHighestLowest()
 		{
@@ -79,14 +74,14 @@ package org.vostokframework.domain.loading.policies
 		[Before]
 		public function setUp(): void
 		{
-			fakeState = nice(ILoaderState);
-			queue = new PriorityIndexQueue();
+			//fakeState = nice(ILoaderState);
+			queueLoadingStatus = new QueueLoadingStatus();
 		}
 		
 		[After]
 		public function tearDown(): void
 		{
-			queue = null;
+			queueLoadingStatus = null;
 		}
 		
 		////////////////////
@@ -99,7 +94,7 @@ package org.vostokframework.domain.loading.policies
 			repository.$openedConnections = totalGlobalConnections;
 			
 			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository);
-			policy.localMaxConnections = 2;
+			//policy.localMaxConnections = 2;
 			policy.globalMaxConnections = 6;
 			
 			return policy;
@@ -126,192 +121,161 @@ package org.vostokframework.domain.loading.policies
 		//////////////////////////////////////////////
 		
 		[Test]
-		public function getNext_highAndHighestInQueue_ReturnsHighest(): void
+		public function getNext_highAndHighestInQueue_verifyLoadWasCalledOnHighestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
-			queue.add(loaderHigh);
-			queue.add(loaderHighest);
+			queueLoadingStatus.queuedLoaders.add(loaderHigh);
+			queueLoadingStatus.queuedLoaders.add(loaderHighest);
 			
-			var loadings:IList = new ArrayList();
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderHighest, loader);
+			mock(loaderHighest).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderHighest);
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighInQueue_highestInLoadings_ReturnsNull(): void
+		public function getNext_onlyOneHighInQueue_highestInLoadings_verifyLoadWasNotCalledOnHighLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
-			queue.add(loaderHigh);
+			queueLoadingStatus.queuedLoaders.add(loaderHigh);
+			queueLoadingStatus.loadingLoaders.add(loaderHighest);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderHighest);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertNull(loader);
+			mock(loaderHigh).method("load").never();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderHigh);
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_highInLoadings_ReturnsHighestLoader(): void
+		public function getNext_onlyOneHighestInQueue_highInLoadings_verifyLoadWasCalledOnHighestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
 			
-			queue.add(loaderHighest);
+			queueLoadingStatus.queuedLoaders.add(loaderHighest);
+			queueLoadingStatus.loadingLoaders.add(loaderHigh);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderHigh);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderHighest, loader);
+			mock(loaderHighest).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderHighest);
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_highInLoadings_checkIfCalledStopHighLoaderOnFakeState(): void
+		public function getNext_onlyOneHighestInQueue_highInLoadings_verifyStopWasCalledOnHighLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
-			mock(fakeState).method("stopChild").args(loaderHigh.identification);
 			
-			queue.add(loaderHighest);
+			queueLoadingStatus.queuedLoaders.add(loaderHighest);
+			queueLoadingStatus.loadingLoaders.add(loaderHigh);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderHigh);
-			
-			policy.getNext(fakeState, queue, loadings);
-			verify(fakeState);
+			mock(loaderHigh).method("stop").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderHigh);
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_oneHighestAndOneHighInLoadings_ReturnsHighestLoader(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(0);
-			
-			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
-			var loaderHighest1:ILoader = getLoader("loader-highest-1", LoadPriority.HIGHEST);
-			var loaderHighest2:ILoader = getLoader("loader-highest-2", LoadPriority.HIGHEST);
-			
-			queue.add(loaderHighest2);
-			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderHighest1);
-			loadings.add(loaderHigh);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderHighest2, loader);
-		}
-		
-		[Test]
-		public function getNext_lowAndLowestInQueue_ReturnsLow(): void
+		public function getNext_lowAndLowestInQueue_verifyLoadWasCalledOnLowLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
-			queue.add(loaderLow);
-			queue.add(loaderLowest);
+			queueLoadingStatus.queuedLoaders.add(loaderLow);
+			queueLoadingStatus.queuedLoaders.add(loaderLowest);
 			
-			var loadings:IList = new ArrayList();
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderLow, loader);
+			mock(loaderLow).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLow);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_lowInLoadings_ReturnsNull(): void
+		public function getNext_onlyOneLowestInQueue_lowInLoadings_verifyLoadWasNotCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
-			queue.add(loaderLowest);
+			queueLoadingStatus.queuedLoaders.add(loaderLowest);
+			queueLoadingStatus.loadingLoaders.add(loaderLow);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderLow);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertNull(loader);
+			mock(loaderLowest).method("load").never();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLowest);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_noneLoading_ReturnsLowest(): void
+		public function getNext_onlyOneLowestInQueue_noneLoading_verifyLoadWasCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
-			queue.add(loaderLowest);
+			queueLoadingStatus.queuedLoaders.add(loaderLowest);
 			
-			var loadings:IList = new ArrayList();
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderLowest, loader);
+			mock(loaderLowest).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLowest);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_anotherLowestInLoadings_ReturnsOtherLowest(): void
+		public function getNext_onlyOneLowestInQueue_anotherLowestInLoadings_verifyLoadWasCalledOnQueuedLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLowest1:ILoader = getLoader("loader-lowest-1", LoadPriority.LOWEST);
 			var loaderLowest2:ILoader = getLoader("loader-lowest-2", LoadPriority.LOWEST);
 			
-			queue.add(loaderLowest2);
+			queueLoadingStatus.queuedLoaders.add(loaderLowest2);
+			queueLoadingStatus.loadingLoaders.add(loaderLowest1);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderLowest1);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderLowest2, loader);
+			mock(loaderLowest2).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLowest2);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowInQueue_lowestInLoadings_ReturnsLowLoader(): void
+		public function getNext_onlyOneLowInQueue_lowestInLoadings_verifyLoadWasCalledOnLowLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
-			queue.add(loaderLow);
+			queueLoadingStatus.queuedLoaders.add(loaderLow);
+			queueLoadingStatus.loadingLoaders.add(loaderLowest);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderLowest);
-			
-			var loader:ILoader = policy.getNext(fakeState, queue, loadings);
-			Assert.assertEquals(loaderLow, loader);
+			mock(loaderLow).method("load").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLow);
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowInQueue_lowestInLoadings_checkIfCalledStopLowestLoaderOnFakeState(): void
+		public function getNext_onlyOneLowInQueue_lowestInLoadings_verifyStopWasCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
-			mock(fakeState).method("stopChild").args(loaderLowest.identification);
 			
-			queue.add(loaderLow);
+			queueLoadingStatus.queuedLoaders.add(loaderLow);
+			queueLoadingStatus.loadingLoaders.add(loaderLowest);
 			
-			var loadings:IList = new ArrayList();
-			loadings.add(loaderLowest);
-			
-			policy.getNext(fakeState, queue, loadings);
-			verify(fakeState);
+			mock(loaderLowest).method("stop").once();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLowest);
 		}
 		
 	}

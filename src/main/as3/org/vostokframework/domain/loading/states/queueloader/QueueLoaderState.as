@@ -58,6 +58,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		private var _disposed:Boolean;
 		private var _loader:ILoaderStateTransition;
 		private var _loadingStatus:QueueLoadingStatus;
+		private var _maxConcurrentConnections:int;
 		private var _policy:ILoadingPolicy;
 		
 		/**
@@ -75,6 +76,8 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		public function get isStopped():Boolean { return false; }
 		
+		public function get maxConcurrentConnections():int { return _maxConcurrentConnections; }
+		
 		public function get openedConnections():int { return 0; }
 		
 		/**
@@ -83,14 +86,16 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function QueueLoaderState(loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy)
+		public function QueueLoaderState(loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy, maxConcurrentConnections:int)
 		{
 			if (ReflectionUtil.classPathEquals(this, QueueLoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!loadingStatus) throw new ArgumentError("Argument <loadingStatus> must not be null.");
 			if (!policy) throw new ArgumentError("Argument <policy> must not be null.");
+			if (maxConcurrentConnections < 1) throw new ArgumentError("Argument <maxConcurrentConnections> must be greater than zero. Received: <" + maxConcurrentConnections + ">");
 			
 			_loadingStatus = loadingStatus;
 			_policy = policy;
+			_maxConcurrentConnections = maxConcurrentConnections;
 			
 			addPriorityListenerToLoaders();
 		}
@@ -162,7 +167,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				child.dispose();
 			}
 			
-			loader.setState(new CanceledQueueLoader(loader, loadingStatus, policy));
+			loader.setState(new CanceledQueueLoader(loader, loadingStatus, policy, _maxConcurrentConnections));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CANCELED));
 			dispose();
 		}
@@ -297,7 +302,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		public function load():void
 		{
 			//TODO:pensar sobre criar factory para states e chamar método daqui
-			loader.setState(new LoadingQueueLoader(loader, loadingStatus, policy));
+			loader.setState(new LoadingQueueLoader(loader, loadingStatus, policy, _maxConcurrentConnections));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.CONNECTING));
 			dispose();
 		}
@@ -381,9 +386,6 @@ package org.vostokframework.domain.loading.states.queueloader
 				loadingStatus.stoppedLoaders.remove(child);
 				
 				childResumed(child);
-				
-				//isLoading = true;//IMPORTANT: if queue is stopped, it will resume its loading
-				//loadNext();
 			}
 			else
 			{
@@ -410,12 +412,15 @@ package org.vostokframework.domain.loading.states.queueloader
 			_loader = loader;
 		}
 		
+		public function setMaxConcurrentConnections(value:int):void
+		{
+			_maxConcurrentConnections = value;
+			maxConcurrentConnectionsChanged();
+		}
+		
 		public function stop():void
 		{
 			validateDisposal();
-			
-			//_isLoading = false;
-			//_openEventDispatched = false;
 			
 			//var it:IIterator = loadingStatus.allLoaders.iterator();
 			var it:IIterator = loadingStatus.loadingLoaders.iterator();
@@ -430,9 +435,6 @@ package org.vostokframework.domain.loading.states.queueloader
 				//VIA childStopped()
 				//OTHERWISE AFTER STOP FIRST CHILD LoadingQueueLoader CLASS
 				//WILL CALL load() IN NEXT CHILD, WHICH MUST BE STOPPED TOO
-				/*loadingStatus.loadingLoaders.remove(child);
-				loadingStatus.queuedLoaders.remove(child);
-				loadingStatus.stoppedLoaders.add(child);*/
 				
 				loadingStatus.queuedLoaders.add(child);
 				it.remove();
@@ -440,7 +442,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				child.stop();
 			}
 			
-			loader.setState(new StoppedQueueLoader(loader, loadingStatus, policy));
+			loader.setState(new StoppedQueueLoader(loader, loadingStatus, policy, _maxConcurrentConnections));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.STOPPED));
 			dispose();
 		}
@@ -461,7 +463,6 @@ package org.vostokframework.domain.loading.states.queueloader
 				loadingStatus.stoppedLoaders.add(child);
 				
 				child.stop();
-				//loadNext();
 				childStopped(child);
 			}
 			else
@@ -528,6 +529,14 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @private
 		 */
 		protected function childStopped(child:ILoader): void
+		{
+			
+		}
+		
+		/**
+		 * @private
+		 */
+		protected function maxConcurrentConnectionsChanged(): void
 		{
 			
 		}

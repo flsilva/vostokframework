@@ -29,10 +29,7 @@
 
 package org.vostokframework.domain.loading.policies
 {
-	import org.vostokframework.domain.loading.ILoaderState;
-	import org.as3collections.ICollection;
-	import org.as3collections.IQueue;
-	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * Description
@@ -41,14 +38,16 @@ package org.vostokframework.domain.loading.policies
 	 */
 	public interface ILoadingPolicy
 	{
-		function get localMaxConnections():int;
-		function set localMaxConnections(value:int):void;
+		//function get localMaxConnections():int;
+		//function set localMaxConnections(value:int):void;
 		
 		function get globalMaxConnections():int;
 		function set globalMaxConnections(value:int):void;
 		
 		//function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader;
-		function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;
+		//function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;
+		//function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader;
+		function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void;
 	}
 
 }

@@ -65,13 +65,13 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader3);
 			//
 			
-			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		[Test]
 		public function cancelChild_addedChild_verifyIfMockPolicyWasCalled(): void
 		{
-			mock(fakePolicy).method("getNext").anyArgs().once();
+			mock(fakePolicy).method("process").anyArgs().once();
 			
 			state = getState();
 			state.cancelChild(fakeChildLoader3.identification);
@@ -93,9 +93,8 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
 			policy.globalMaxConnections = 6;
-			policy.localMaxConnections = 1;
 			
-			state = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy);
+			state = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 1);
 			
 			mock(fakeChildLoader2).method("load").once();
 			state.cancelChild(fakeChildLoader1.identification);

@@ -53,6 +53,8 @@ package org.vostokframework.domain.loading
 		
 		function get isStopped():Boolean;
 		
+		function get maxConcurrentConnections():int;
+		
 		function get openedConnections():int;
 		
 		function addChild(child:ILoader):void;
@@ -74,6 +76,8 @@ package org.vostokframework.domain.loading
 		function removeChild(identification:VostokIdentification):void;
 		
 		function resumeChild(identification:VostokIdentification):void;
+		
+		function setMaxConcurrentConnections(value:int): void;
 		
 		function stop():void;
 		

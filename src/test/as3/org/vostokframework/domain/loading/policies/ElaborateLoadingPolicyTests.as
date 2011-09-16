@@ -53,7 +53,7 @@ package org.vostokframework.domain.loading.policies
 			repository.$openedConnections = totalGlobalConnections;
 			
 			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository);
-			policy.localMaxConnections = 3;
+			//policy.localMaxConnections = 3;
 			policy.globalMaxConnections = 6;
 			
 			return policy;

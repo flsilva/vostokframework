@@ -46,7 +46,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		override public function getState():ILoaderState
 		{
-			return new StoppedQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+			return new StoppedQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		[Test]

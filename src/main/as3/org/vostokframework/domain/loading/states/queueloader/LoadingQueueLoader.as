@@ -79,9 +79,9 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoadingQueueLoader(loader:ILoaderStateTransition, loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy)
+		public function LoadingQueueLoader(loader:ILoaderStateTransition, loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy, maxConcurrentConnections:int)
 		{
-			super(loadingStatus, policy);
+			super(loadingStatus, policy, maxConcurrentConnections);
 			
 			if (loadingStatus.queuedLoaders.isEmpty())
 			{
@@ -154,6 +154,14 @@ package org.vostokframework.domain.loading.states.queueloader
 		/**
 		 * @private
 		 */
+		override protected function maxConcurrentConnectionsChanged(): void
+		{
+			loadNextLoader();
+		}
+		
+		/**
+		 * @private
+		 */
 		override protected function priorityChildChanged(child:ILoader): void
 		{
 			child = null;//just to avoid compiler warnings
@@ -214,12 +222,34 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			if (loadingStatus.queuedLoaders.isEmpty()) return;
 			
-			var loader:ILoader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
+			//var loader:ILoader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
+			/*
+			var loader:ILoader = policy.getNext(this, loadingStatus);
 			if (loader)
 			{
 				loader.load();
 				//loadingStatus.loadingLoaders.add(loader);
 			}
+			*/
+			
+			policy.process(loadingStatus, maxConcurrentConnections);
+			
+			/*
+			var loader:ILoader;
+			var firstTime:Boolean = true;
+			
+			while (loader || firstTime)
+			{
+				firstTime = false;
+				
+				loader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
+				if (loader)
+				{
+					loader.load();
+					loadingStatus.loadingLoaders.add(loader);
+				}
+			}
+			*/
 		}
 		
 		/**
@@ -229,7 +259,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		{
 			removeChildrenListeners();
 			//TODO:pensar se vai disparar FAILED se todos os loaders falharem
-			loader.setState(new CompleteQueueLoader(loader, loadingStatus, policy));
+			loader.setState(new CompleteQueueLoader(loader, loadingStatus, policy, maxConcurrentConnections));
 			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
 			dispose();
 		}
@@ -272,9 +302,9 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		private function childConnectingHandler(event:LoaderEvent):void
 		{
-			loadingStatus.loadingLoaders.add(event.target);
+			//loadingStatus.loadingLoaders.add(event.target);
 			
-			loadNextLoader();
+			//loadNextLoader();
 		}
 		
 		private function childFailedHandler(event:LoaderErrorEvent):void

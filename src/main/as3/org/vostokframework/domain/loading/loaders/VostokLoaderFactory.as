@@ -117,8 +117,8 @@ package org.vostokframework.domain.loading.loaders
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalMaxConnections, localMaxConnections);
-			var state:ILoaderState = createCompositeLoaderState(policy);
+			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalMaxConnections);
+			var state:ILoaderState = createCompositeLoaderState(policy, localMaxConnections);
 			
 			return instanciateComposite(identification, state, priority);
 		}
@@ -155,10 +155,10 @@ package org.vostokframework.domain.loading.loaders
 			_defaultLoadingSettings = settings;
 		}
 		
-		protected function createCompositeLoaderState(policy:ILoadingPolicy):ILoaderState
+		protected function createCompositeLoaderState(policy:ILoadingPolicy, localMaxConnections:int):ILoaderState
 		{
 			var queueLoadingStatus:QueueLoadingStatus = new QueueLoadingStatus();
-			var state:ILoaderState = new QueuedQueueLoader(queueLoadingStatus, policy);
+			var state:ILoaderState = new QueuedQueueLoader(queueLoadingStatus, policy, localMaxConnections);
 			
 			return state;
 		}
@@ -330,11 +330,12 @@ package org.vostokframework.domain.loading.loaders
 			return new LoaderContext(checkPolicyFile, applicationDomain, securityDomain);
 		}
 		
-		protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int, localMaxConnections:int):ILoadingPolicy
+		//protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int, localMaxConnections:int):ILoadingPolicy
+		protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int):ILoadingPolicy
 		{
 			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository);
 			policy.globalMaxConnections = globalMaxConnections;
-			policy.localMaxConnections = localMaxConnections;
+			//policy.localMaxConnections = localMaxConnections;
 			
 			return policy;
 		}

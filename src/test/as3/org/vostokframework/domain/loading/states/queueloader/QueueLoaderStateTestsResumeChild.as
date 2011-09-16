@@ -29,8 +29,6 @@
 
 package org.vostokframework.domain.loading.states.queueloader
 {
-	import mockolate.verify;
-
 	import org.vostokframework.VostokIdentification;
 
 	/**
@@ -65,8 +63,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			state = getState();
 			state.addChild(fakeChildLoader1);
 			state.resumeChild(fakeChildLoader1.identification);
-			
-			verify(fakeChildLoader1);
 		}
 		
 	}

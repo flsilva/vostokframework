@@ -46,9 +46,9 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function QueuedQueueLoader(loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy)
+		public function QueuedQueueLoader(loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy, maxConcurrentConnections:int)
 		{
-			super(loadingStatus, policy);
+			super(loadingStatus, policy, maxConcurrentConnections);
 		}
 		
 	}

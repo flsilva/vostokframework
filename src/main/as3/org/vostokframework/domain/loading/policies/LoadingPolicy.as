@@ -29,11 +29,9 @@
 
 package org.vostokframework.domain.loading.policies
 {
-	import org.as3collections.ICollection;
-	import org.as3collections.IQueue;
-	import org.vostokframework.domain.loading.ILoaderState;
-	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * description
@@ -44,9 +42,9 @@ package org.vostokframework.domain.loading.policies
 	{
 		private var _loaderRepository:LoaderRepository;
 		private var _globalMaxConnections:int;
-		private var _localMaxConnections:int;
+		//private var _localMaxConnections:int;
 		
-		private function get totalGlobalConnections():int { return _loaderRepository.openedConnections; }
+		private function get activeGlobalConnections():int { return _loaderRepository.openedConnections; }
 		
 		public function get globalMaxConnections():int { return _globalMaxConnections; }
 		public function set globalMaxConnections(value:int):void
@@ -54,14 +52,14 @@ package org.vostokframework.domain.loading.policies
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
 			_globalMaxConnections = value;
 		}
-		
+		/*
 		public function get localMaxConnections():int { return _localMaxConnections; }
 		public function set localMaxConnections(value:int):void
 		{
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
 			_localMaxConnections = value;
 		}
-		
+		*/
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
@@ -74,17 +72,36 @@ package org.vostokframework.domain.loading.policies
 			_loaderRepository = loaderRepository;
 		}
 		
-		public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
+		//public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
+		//public function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader
+		public function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
 		{
-			if (hasAvailableConnection(loadingLoaders.size())) return queue.poll();
+			//if (hasAvailableConnection(loadingStatus.loadingLoaders.size())) return loadingStatus.queuedLoaders.poll();
 			
-			return null;
+			var loader:ILoader;
+			
+			while (hasAvailableConnection(localMaxConnections, loadingStatus.loadingLoaders.size()) && !loadingStatus.queuedLoaders.isEmpty())
+			{
+				loader = loadingStatus.queuedLoaders.poll();
+				
+				loadingStatus.loadingLoaders.add(loader);
+				loader.load();
+			}
+			
+			/*
+			if (hasAvailableConnection(localMaxConnections, loadingStatus.loadingLoaders.size()))
+			{
+				var loader:ILoader = loadingStatus.queuedLoaders.poll();
+				loader.load();
+			}
+			*/
+			//return null;
 		}
 		
-		private function hasAvailableConnection(activeLocalConnections:int):Boolean
+		private function hasAvailableConnection(localMaxConnections:int, activeLocalConnections:int):Boolean
 		{
 			if (activeLocalConnections < 0) throw new ArgumentError("Argument <activeLocalConnections> must not be a negative integer. Received: <" + activeLocalConnections + ">");
-			return activeLocalConnections < _localMaxConnections && totalGlobalConnections < _globalMaxConnections;
+			return activeLocalConnections < localMaxConnections && activeGlobalConnections < _globalMaxConnections;
 		}
 
 	}

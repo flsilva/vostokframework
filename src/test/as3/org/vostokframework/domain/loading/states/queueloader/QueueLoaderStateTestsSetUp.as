@@ -40,6 +40,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.ILoaderStateTransition;
+	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 
 	/**
@@ -104,14 +105,16 @@ package org.vostokframework.domain.loading.states.queueloader
 		// HELPER METHODS //
 		////////////////////
 		
-		public function getFakeLoader(id:String, index:int):ILoader
+		public function getFakeLoader(id:String, index:int, priority:LoadPriority = null):ILoader
 		{
+			if (!priority) priority = LoadPriority.MEDIUM;
+			
 			var fakeLoader:ILoader = nice(ILoader);
 			
 			stub(fakeLoader).asEventDispatcher();
 			stub(fakeLoader).getter("identification").returns(new VostokIdentification(id, VostokFramework.CROSS_LOCALE_ID));
 			stub(fakeLoader).getter("index").returns(index);
-			stub(fakeLoader).getter("priority").returns(2);//LoadPriority.MEDIUM
+			stub(fakeLoader).getter("priority").returns(priority.ordinal);//LoadPriority.MEDIUM
 			
 			stub(fakeLoader).method("equals").callsWithArguments(
 				function(other:*):Boolean

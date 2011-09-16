@@ -100,6 +100,12 @@ package org.vostokframework.domain.loading.loaders
 			return _state.isStopped;
 		}
 		
+		public function get maxConcurrentConnections():int
+		{
+			validateDisposal();
+			return _state.maxConcurrentConnections;
+		}
+		
 		/**
 		 * description
 		 */
@@ -310,6 +316,15 @@ package org.vostokframework.domain.loading.loaders
 		{
 			validateDisposal();
 			_state.resumeChild(identification);
+		}
+		
+		/**
+		 * description
+		 */
+		public function setMaxConcurrentConnections(value:int):void
+		{
+			validateDisposal();
+			_state.setMaxConcurrentConnections(value);
 		}
 		
 		/**

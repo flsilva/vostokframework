@@ -56,7 +56,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.allLoaders.put(fakeChildLoader1.identification.toString(), fakeChildLoader1);
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader1);
 			
-			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);;
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		///////////

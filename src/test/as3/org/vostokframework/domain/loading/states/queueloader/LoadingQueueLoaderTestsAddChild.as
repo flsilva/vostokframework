@@ -30,7 +30,6 @@
 package org.vostokframework.domain.loading.states.queueloader
 {
 	import mockolate.mock;
-	import mockolate.stub;
 	import mockolate.verify;
 
 	import org.vostokframework.domain.loading.ILoader;
@@ -63,13 +62,13 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeLoadingStatus.queuedLoaders.add(fakeChildLoader3);
 			//
 			
-			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy);
+			return new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, fakePolicy, 3);
 		}
 		
 		[Test]
 		public function addChild_validArgument_checkIfMockPolicyWasCalled(): void
 		{
-			mock(fakePolicy).method("getNext").anyArgs().once();
+			mock(fakePolicy).method("process").anyArgs().once();
 			
 			state = getState();
 			state.addChild(fakeChildLoader1);
@@ -77,17 +76,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			verify(fakePolicy);
 		}
 		
-		[Test]
-		public function addChild_validArgument_checkIfMockChildWasCalled(): void
-		{
-			stub(fakePolicy).method("getNext").anyArgs().returns(fakeChildLoader1);
-			mock(fakeChildLoader1).method("load").once();
-			
-			state = getState();
-			state.addChild(fakeChildLoader1);
-			
-			verify(fakeChildLoader1);
-		}
 		
 	}
 
