@@ -81,9 +81,11 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.CanceledQueueLoaderTests;
 	import org.vostokframework.domain.loading.states.queueloader.CanceledQueueLoaderTestsContainsChild;
 	import org.vostokframework.domain.loading.states.queueloader.CanceledQueueLoaderTestsGetChild;
+	import org.vostokframework.domain.loading.states.queueloader.CanceledQueueLoaderTestsSetMaxConcurrentConnections;
 	import org.vostokframework.domain.loading.states.queueloader.CompleteQueueLoaderTests;
 	import org.vostokframework.domain.loading.states.queueloader.CompleteQueueLoaderTestsContainsChild;
 	import org.vostokframework.domain.loading.states.queueloader.CompleteQueueLoaderTestsGetChild;
+	import org.vostokframework.domain.loading.states.queueloader.CompleteQueueLoaderTestsSetMaxConcurrentConnections;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTests;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsAddChild;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsAddChildren;
@@ -95,6 +97,7 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsLoad;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsRemoveChild;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsResumeChild;
+	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsSetMaxConcurrentConnections;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsStop;
 	import org.vostokframework.domain.loading.states.queueloader.LoadingQueueLoaderTestsStopChild;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsAddChild;
@@ -106,6 +109,7 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsLoad;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsRemoveChild;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsResumeChild;
+	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsSetMaxConcurrentConnections;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsStop;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoaderTestsStopChild;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTests;
@@ -118,6 +122,7 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsLoad;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsRemoveChild;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsResumeChild;
+	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsSetMaxConcurrentConnections;
 
 	/**
 	 * @author Flávio Silva
@@ -180,10 +185,12 @@ package
 		public var canceledQueueLoaderTests:CanceledQueueLoaderTests;
 		public var canceledQueueLoaderTestsContainsChild:CanceledQueueLoaderTestsContainsChild;
 		public var canceledQueueLoaderTestsGetChild:CanceledQueueLoaderTestsGetChild;
+		public var canceledQueueLoaderTestsSetMaxConcurrentConnections:CanceledQueueLoaderTestsSetMaxConcurrentConnections;
 		
 		public var completeQueueLoaderTests:CompleteQueueLoaderTests;
 		public var completeQueueLoaderTestsContainsChild:CompleteQueueLoaderTestsContainsChild;
 		public var completeQueueLoaderTestsGetChild:CompleteQueueLoaderTestsGetChild;
+		public var completeQueueLoaderTestsSetMaxConcurrentConnections:CompleteQueueLoaderTestsSetMaxConcurrentConnections;
 		
 		public var loadingQueueLoaderTests:LoadingQueueLoaderTests;
 		public var loadingQueueLoaderTestsAddChild:LoadingQueueLoaderTestsAddChild;
@@ -196,6 +203,7 @@ package
 		public var loadingQueueLoaderTestsLoad:LoadingQueueLoaderTestsLoad;
 		public var loadingQueueLoaderTestsRemoveChild:LoadingQueueLoaderTestsRemoveChild;
 		public var loadingQueueLoaderTestsResumeChild:LoadingQueueLoaderTestsResumeChild;
+		public var loadingQueueLoaderTestsSetMaxConcurrentConnections:LoadingQueueLoaderTestsSetMaxConcurrentConnections;
 		public var loadingQueueLoaderTestsStop:LoadingQueueLoaderTestsStop;
 		public var loadingQueueLoaderTestsStopChild:LoadingQueueLoaderTestsStopChild;
 		
@@ -208,6 +216,7 @@ package
 		public var queuedQueueLoaderTestsLoad:QueuedQueueLoaderTestsLoad;
 		public var queuedQueueLoaderTestsRemoveChild:QueuedQueueLoaderTestsRemoveChild;
 		public var queuedQueueLoaderTestsResumeChild:QueuedQueueLoaderTestsResumeChild;
+		public var queuedQueueLoaderTestsSetMaxConcurrentConnections:QueuedQueueLoaderTestsSetMaxConcurrentConnections;
 		public var queuedQueueLoaderTestsStop:QueuedQueueLoaderTestsStop;
 		public var queuedQueueLoaderTestsStopChild:QueuedQueueLoaderTestsStopChild;
 		
@@ -221,6 +230,7 @@ package
 		public var stoppedQueueLoaderTestsLoad:StoppedQueueLoaderTestsLoad;
 		public var stoppedQueueLoaderTestsRemoveChild:StoppedQueueLoaderTestsRemoveChild;
 		public var stoppedQueueLoaderTestsResumeChild:StoppedQueueLoaderTestsResumeChild;
+		public var stoppedQueueLoaderTestsSetMaxConcurrentConnections:StoppedQueueLoaderTestsSetMaxConcurrentConnections;
 		
 		//org.vostokframework.application.services
 		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;

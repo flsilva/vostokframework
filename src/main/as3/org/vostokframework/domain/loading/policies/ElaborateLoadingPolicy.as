@@ -60,7 +60,11 @@ package org.vostokframework.domain.loading.policies
 		override public function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
 		{
 			//if (loadingStatus.queuedLoaders.isEmpty()) return null;
-			if (loadingStatus.queuedLoaders.isEmpty()) return;
+			if (loadingStatus.queuedLoaders.isEmpty())
+			{
+				super.process(loadingStatus, localMaxConnections);
+				return;
+			}
 			
 			var nextLoader:ILoader = loadingStatus.queuedLoaders.peek();
 			var nextLoaderPriority:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);

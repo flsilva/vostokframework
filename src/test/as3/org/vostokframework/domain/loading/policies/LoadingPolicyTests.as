@@ -196,6 +196,59 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
+		public function getNext_twoMaxLocalConnections_twoLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
+		{
+			queueLoadingStatus.queuedLoaders.clear();
+			
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
+			
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			policy.process(queueLoadingStatus, 2);
+			
+			mock(_fakeLoader2).method("stop").once();
+			policy.process(queueLoadingStatus, 1);
+			verify(_fakeLoader3);
+		}
+		
+		[Test]
+		public function getNext_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
+		{
+			queueLoadingStatus.queuedLoaders.clear();
+			
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
+			
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			policy.process(queueLoadingStatus, 3);
+			
+			mock(_fakeLoader2).method("stop").once();
+			policy.process(queueLoadingStatus, 1);
+			verify(_fakeLoader2);
+		}
+		
+		[Test]
+		public function getNext_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnThirdLoader(): void
+		{
+			queueLoadingStatus.queuedLoaders.clear();
+			
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
+			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
+			
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			policy.process(queueLoadingStatus, 3);
+			
+			mock(_fakeLoader3).method("stop").once();
+			policy.process(queueLoadingStatus, 1);
+			verify(_fakeLoader3);
+		}
+		
+		[Test]
 		public function getNext_sixMaxGlobalConnections_fiveTotalGlobalConnections_twoQueuedLoaders_checkIfCalledLoadOnFirstLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(5);

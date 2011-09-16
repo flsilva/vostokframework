@@ -414,6 +414,8 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		public function setMaxConcurrentConnections(value:int):void
 		{
+			if (value < 1) throw new ArgumentError("Value must be greater than zero. Received: <" + value + ">");
+			
 			_maxConcurrentConnections = value;
 			maxConcurrentConnectionsChanged();
 		}

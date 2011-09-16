@@ -42,7 +42,6 @@ package org.vostokframework.domain.loading.policies
 	{
 		private var _loaderRepository:LoaderRepository;
 		private var _globalMaxConnections:int;
-		//private var _localMaxConnections:int;
 		
 		private function get activeGlobalConnections():int { return _loaderRepository.openedConnections; }
 		
@@ -52,14 +51,7 @@ package org.vostokframework.domain.loading.policies
 			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
 			_globalMaxConnections = value;
 		}
-		/*
-		public function get localMaxConnections():int { return _localMaxConnections; }
-		public function set localMaxConnections(value:int):void
-		{
-			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
-			_localMaxConnections = value;
-		}
-		*/
+		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
@@ -72,11 +64,11 @@ package org.vostokframework.domain.loading.policies
 			_loaderRepository = loaderRepository;
 		}
 		
-		//public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
-		//public function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader
 		public function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
 		{
 			//if (hasAvailableConnection(loadingStatus.loadingLoaders.size())) return loadingStatus.queuedLoaders.poll();
+			
+			stopExceedingConnections(loadingStatus, localMaxConnections);
 			
 			var loader:ILoader;
 			
@@ -102,6 +94,22 @@ package org.vostokframework.domain.loading.policies
 		{
 			if (activeLocalConnections < 0) throw new ArgumentError("Argument <activeLocalConnections> must not be a negative integer. Received: <" + activeLocalConnections + ">");
 			return activeLocalConnections < localMaxConnections && activeGlobalConnections < _globalMaxConnections;
+		}
+		
+		private function stopExceedingConnections(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
+		{
+			var activeLocalConnections:int = loadingStatus.loadingLoaders.size();
+			var loader:ILoader;
+			
+			while (activeLocalConnections > 0 && (activeLocalConnections > localMaxConnections || activeGlobalConnections > _globalMaxConnections))
+			{
+				//stop LAST loading ILoader object
+				loader = loadingStatus.loadingLoaders.removeAt(activeLocalConnections - 1);
+				loadingStatus.queuedLoaders.add(loader);
+				loader.stop();
+				
+				activeLocalConnections = loadingStatus.loadingLoaders.size();
+			}
 		}
 
 	}

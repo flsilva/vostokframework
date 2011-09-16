@@ -93,7 +93,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			setLoader(loader);
 			addChildrenListeners();
-			loadNextLoader();
+			processLoading();
 		}
 		
 		override public function load():void
@@ -121,7 +121,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		override protected function childAdded(child:ILoader): void
 		{
 			addChildListeners(child);
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -130,7 +130,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		override protected function childRemoved(child:ILoader): void
 		{
 			removeChildListeners(child);
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -139,7 +139,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		override protected function childResumed(child:ILoader): void
 		{
 			child = null;//just to avoid compiler warnings
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -148,7 +148,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		override protected function childStopped(child:ILoader): void
 		{
 			child = null;//just to avoid compiler warnings
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -156,7 +156,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		 */
 		override protected function maxConcurrentConnectionsChanged(): void
 		{
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -165,7 +165,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		override protected function priorityChildChanged(child:ILoader): void
 		{
 			child = null;//just to avoid compiler warnings
-			loadNextLoader();
+			processLoading();
 		}
 		
 		/**
@@ -190,7 +190,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			validateDisposal();
 			
 			child.addEventListener(LoaderEvent.COMPLETE, childCompleteHandler, false, 0, true);
-			child.addEventListener(LoaderEvent.CONNECTING, childConnectingHandler, false, 0, true);
 			child.addEventListener(LoaderErrorEvent.FAILED, childFailedHandler, false, 0, true);
 			child.addEventListener(LoaderEvent.OPEN, childOpenHandler, false, 0, true);
 		}
@@ -210,7 +209,19 @@ package org.vostokframework.domain.loading.states.queueloader
 		/**
 		 * @private
 		 */
-		private function loadNextLoader(): void
+		private function loadingComplete(): void
+		{
+			removeChildrenListeners();
+			
+			loader.setState(new CompleteQueueLoader(loader, loadingStatus, policy, maxConcurrentConnections));
+			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
+			dispose();
+		}
+		
+		/**
+		 * @private
+		 */
+		private function processLoading(): void
 		{
 			validateDisposal();
 			
@@ -222,46 +233,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			if (loadingStatus.queuedLoaders.isEmpty()) return;
 			
-			//var loader:ILoader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
-			/*
-			var loader:ILoader = policy.getNext(this, loadingStatus);
-			if (loader)
-			{
-				loader.load();
-				//loadingStatus.loadingLoaders.add(loader);
-			}
-			*/
-			
 			policy.process(loadingStatus, maxConcurrentConnections);
-			
-			/*
-			var loader:ILoader;
-			var firstTime:Boolean = true;
-			
-			while (loader || firstTime)
-			{
-				firstTime = false;
-				
-				loader = policy.getNext(this, loadingStatus.queuedLoaders, loadingStatus.loadingLoaders);
-				if (loader)
-				{
-					loader.load();
-					loadingStatus.loadingLoaders.add(loader);
-				}
-			}
-			*/
-		}
-		
-		/**
-		 * @private
-		 */
-		private function loadingComplete(): void
-		{
-			removeChildrenListeners();
-			//TODO:pensar se vai disparar FAILED se todos os loaders falharem
-			loader.setState(new CompleteQueueLoader(loader, loadingStatus, policy, maxConcurrentConnections));
-			loader.dispatchEvent(new LoaderEvent(LoaderEvent.COMPLETE));
-			dispose();
 		}
 		
 		private function removeChildrenListeners():void
@@ -283,7 +255,6 @@ package org.vostokframework.domain.loading.states.queueloader
 			validateDisposal();
 			
 			child.removeEventListener(LoaderEvent.COMPLETE, childCompleteHandler, false);
-			child.removeEventListener(LoaderEvent.CONNECTING, childConnectingHandler, false);
 			child.removeEventListener(LoaderErrorEvent.FAILED, childFailedHandler, false);
 			child.removeEventListener(LoaderEvent.OPEN, childOpenHandler, false);
 		}
@@ -297,14 +268,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			loadingStatus.completeLoaders.add(event.target);
 			loadingStatus.loadingLoaders.remove(event.target);
 			
-			loadNextLoader();
-		}
-		
-		private function childConnectingHandler(event:LoaderEvent):void
-		{
-			//loadingStatus.loadingLoaders.add(event.target);
-			
-			//loadNextLoader();
+			processLoading();
 		}
 		
 		private function childFailedHandler(event:LoaderErrorEvent):void
@@ -312,7 +276,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			loadingStatus.failedLoaders.add(event.target);
 			loadingStatus.loadingLoaders.remove(event.target);
 			
-			loadNextLoader();
+			processLoading();
 		}
 		
 		private function childOpenHandler(event:LoaderEvent):void
