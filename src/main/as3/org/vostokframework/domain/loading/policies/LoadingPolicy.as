@@ -29,7 +29,6 @@
 
 package org.vostokframework.domain.loading.policies
 {
-	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
@@ -38,19 +37,8 @@ package org.vostokframework.domain.loading.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingPolicy implements ILoadingPolicy
+	public class LoadingPolicy extends AbstractLoadingPolicy
 	{
-		private var _loaderRepository:LoaderRepository;
-		private var _globalMaxConnections:int;
-		
-		private function get activeGlobalConnections():int { return _loaderRepository.openedConnections; }
-		
-		public function get globalMaxConnections():int { return _globalMaxConnections; }
-		public function set globalMaxConnections(value:int):void
-		{
-			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
-			_globalMaxConnections = value;
-		}
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
@@ -59,57 +47,12 @@ package org.vostokframework.domain.loading.policies
 		 */
 		public function LoadingPolicy(loaderRepository:LoaderRepository)
 		{
-			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
-			
-			_loaderRepository = loaderRepository;
+			super(loaderRepository);
 		}
 		
-		public function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
+		override protected function isNextLoaderEligible(loadingStatus:QueueLoadingStatus):Boolean
 		{
-			//if (hasAvailableConnection(loadingStatus.loadingLoaders.size())) return loadingStatus.queuedLoaders.poll();
-			
-			stopExceedingConnections(loadingStatus, localMaxConnections);
-			
-			var loader:ILoader;
-			
-			while (hasAvailableConnection(localMaxConnections, loadingStatus.loadingLoaders.size()) && !loadingStatus.queuedLoaders.isEmpty())
-			{
-				loader = loadingStatus.queuedLoaders.poll();
-				
-				loadingStatus.loadingLoaders.add(loader);
-				loader.load();
-			}
-			
-			/*
-			if (hasAvailableConnection(localMaxConnections, loadingStatus.loadingLoaders.size()))
-			{
-				var loader:ILoader = loadingStatus.queuedLoaders.poll();
-				loader.load();
-			}
-			*/
-			//return null;
-		}
-		
-		private function hasAvailableConnection(localMaxConnections:int, activeLocalConnections:int):Boolean
-		{
-			if (activeLocalConnections < 0) throw new ArgumentError("Argument <activeLocalConnections> must not be a negative integer. Received: <" + activeLocalConnections + ">");
-			return activeLocalConnections < localMaxConnections && activeGlobalConnections < _globalMaxConnections;
-		}
-		
-		private function stopExceedingConnections(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
-		{
-			var activeLocalConnections:int = loadingStatus.loadingLoaders.size();
-			var loader:ILoader;
-			
-			while (activeLocalConnections > 0 && (activeLocalConnections > localMaxConnections || activeGlobalConnections > _globalMaxConnections))
-			{
-				//stop LAST loading ILoader object
-				loader = loadingStatus.loadingLoaders.removeAt(activeLocalConnections - 1);
-				loadingStatus.queuedLoaders.add(loader);
-				loader.stop();
-				
-				activeLocalConnections = loadingStatus.loadingLoaders.size();
-			}
+			return true;
 		}
 
 	}

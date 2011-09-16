@@ -41,7 +41,7 @@ package org.vostokframework.domain.loading.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class ElaborateLoadingPolicy extends LoadingPolicy
+	public class ElaborateLoadingPolicy extends AbstractLoadingPolicy
 	{
 		
 		/**
@@ -54,52 +54,31 @@ package org.vostokframework.domain.loading.policies
 			super(loaderRepository);
 		}
 		
-		//override public function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader
-		//override public function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader
-		//override public function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader
-		override public function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void
+		override protected function isNextLoaderEligible(loadingStatus:QueueLoadingStatus):Boolean
 		{
-			//if (loadingStatus.queuedLoaders.isEmpty()) return null;
-			if (loadingStatus.queuedLoaders.isEmpty())
-			{
-				super.process(loadingStatus, localMaxConnections);
-				return;
-			}
-			
 			var nextLoader:ILoader = loadingStatus.queuedLoaders.peek();
-			var nextLoaderPriority:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);
+			var priorityNextLoader:LoadPriority = LoadPriority.getByOrdinal(nextLoader.priority);
 			
-			if (nextLoaderPriority.equals(LoadPriority.HIGHEST))
+			if (priorityNextLoader.equals(LoadPriority.HIGHEST))
 			{
-				//stopAnyNotHighest(state, loadingStatus);
-				//return super.getNext(state, loadingStatus);
-				
 				stopAnyNotHighest(loadingStatus);
-				super.process(loadingStatus, localMaxConnections);
-				return;
+				return true;
 			}
 			
-			if (nextLoaderPriority.equals(LoadPriority.LOWEST))
+			if (priorityNextLoader.equals(LoadPriority.LOWEST))
 			{
-				//if (isOnlyLowestLoading(loadingStatus.loadingLoaders)) return super.getNext(state, loadingStatus);
-				//return null;
-				
-				if (isOnlyLowestLoading(loadingStatus.loadingLoaders)) super.process(loadingStatus, localMaxConnections);
-				return; 
+				if (containsOnlyLowest(loadingStatus.loadingLoaders)) return true;
+				return false;
 			}
 			
-			//nextLoaderPriority is not LoadPriority.HIGHEST nor LoadPriority.LOWEST
-			//if it contains any HIGHEST it's denied
-			//otherwise all LOWEST loaders are stopped and
-			//the permission is delegated to super.getNext()
-			//if (containsSomeHighest(loadingStatus.loadingLoaders)) return null;
-			if (containsSomeHighest(loadingStatus.loadingLoaders)) return;
+			//priorityNextLoader is not LoadPriority.HIGHEST nor LoadPriority.LOWEST
+			//if it contains any HIGHEST loader loading, permission is denied
+			if (containsSomeHighest(loadingStatus.loadingLoaders)) return false;
 			
-			//stopAnyLowest(state, loadingStatus); 
+			//otherwise all LOWEST loading loaders are stopped
+			//and permission is accepted
 			stopAnyLowest(loadingStatus);
-			
-			//return super.getNext(state, loadingStatus);
-			super.process(loadingStatus, localMaxConnections);
+			return true;
 		}
 		
 		private function containsSomeHighest(loadingLoaders:ICollection):Boolean
@@ -120,7 +99,7 @@ package org.vostokframework.domain.loading.policies
 			return false;
 		}
 		
-		private function isOnlyLowestLoading(loadingLoaders:ICollection):Boolean
+		private function containsOnlyLowest(loadingLoaders:ICollection):Boolean
 		{
 			if (loadingLoaders.isEmpty()) return true;
 			
@@ -153,8 +132,6 @@ package org.vostokframework.domain.loading.policies
 				
 				if (!loaderPriority.equals(LoadPriority.HIGHEST))
 				{
-					//state.stopChild(loader.identification);
-					
 					loadingStatus.queuedLoaders.add(loader);
 					it.remove();
 					
@@ -178,8 +155,6 @@ package org.vostokframework.domain.loading.policies
 				
 				if (loaderPriority.equals(LoadPriority.LOWEST))
 				{
-					//state.stopChild(loader.identification);
-					
 					loadingStatus.queuedLoaders.add(loader);
 					it.remove();
 					

@@ -117,11 +117,11 @@ package org.vostokframework.domain.loading.policies
 		
 		
 		//////////////////////////////////////////////
-		// ElaborateLoadingPolicy().getNext() TESTS //
+		// ElaborateLoadingPolicy().process() TESTS //
 		//////////////////////////////////////////////
 		
 		[Test]
-		public function getNext_highAndHighestInQueue_verifyLoadWasCalledOnHighestLoader(): void
+		public function process_highAndHighestInQueue_verifyLoadWasCalledOnHighestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -137,7 +137,23 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighInQueue_highestInLoadings_verifyLoadWasNotCalledOnHighLoader(): void
+		public function process_highAndHighestInQueue_verifyLoadWasNotCalledOnHighLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
+			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
+			
+			queueLoadingStatus.queuedLoaders.add(loaderHigh);
+			queueLoadingStatus.queuedLoaders.add(loaderHighest);
+			
+			mock(loaderHigh).method("load").never();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderHigh);
+		}
+		
+		[Test]
+		public function process_onlyOneHighInQueue_highestInLoadings_verifyLoadWasNotCalledOnHighLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -153,7 +169,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_highInLoadings_verifyLoadWasCalledOnHighestLoader(): void
+		public function process_onlyOneHighestInQueue_highInLoadings_verifyLoadWasCalledOnHighestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -169,7 +185,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneHighestInQueue_highInLoadings_verifyStopWasCalledOnHighLoader(): void
+		public function process_onlyOneHighestInQueue_highInLoadings_verifyStopWasCalledOnHighLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -185,7 +201,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_lowAndLowestInQueue_verifyLoadWasCalledOnLowLoader(): void
+		public function process_lowAndLowestInQueue_verifyLoadWasCalledOnLowLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -201,7 +217,23 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_lowInLoadings_verifyLoadWasNotCalledOnLowestLoader(): void
+		public function process_lowAndLowestInQueue_verifyLoadWasNotCalledOnLowestLoader(): void
+		{
+			var policy:ILoadingPolicy = getPolicy(0);
+			
+			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
+			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
+			
+			queueLoadingStatus.queuedLoaders.add(loaderLow);
+			queueLoadingStatus.queuedLoaders.add(loaderLowest);
+			
+			mock(loaderLowest).method("load").never();
+			policy.process(queueLoadingStatus, 3);
+			verify(loaderLowest);
+		}
+		
+		[Test]
+		public function process_onlyOneLowestInQueue_lowInLoadings_verifyLoadWasNotCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -217,7 +249,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_noneLoading_verifyLoadWasCalledOnLowestLoader(): void
+		public function process_onlyOneLowestInQueue_noneLoading_verifyLoadWasCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -231,7 +263,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowestInQueue_anotherLowestInLoadings_verifyLoadWasCalledOnQueuedLowestLoader(): void
+		public function process_onlyOneLowestInQueue_anotherLowestInLoadings_verifyLoadWasCalledOnQueuedLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -247,7 +279,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowInQueue_lowestInLoadings_verifyLoadWasCalledOnLowLoader(): void
+		public function process_onlyOneLowInQueue_lowestInLoadings_verifyLoadWasCalledOnLowLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -263,7 +295,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_onlyOneLowInQueue_lowestInLoadings_verifyStopWasCalledOnLowestLoader(): void
+		public function process_onlyOneLowInQueue_lowestInLoadings_verifyStopWasCalledOnLowestLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			

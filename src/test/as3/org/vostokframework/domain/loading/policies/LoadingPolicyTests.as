@@ -53,9 +53,6 @@ package org.vostokframework.domain.loading.policies
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
 		
-		//[Mock(inject="false")]
-		//public var fakeState:ILoaderState;
-		
 		[Mock(inject="false")]
 		public var _fakeLoader1:ILoader;
 		
@@ -79,8 +76,6 @@ package org.vostokframework.domain.loading.policies
 		[Before]
 		public function setUp(): void
 		{
-			//fakeState = nice(ILoaderState);
-			
 			_fakeLoader1 = nice(ILoader);
 			_fakeLoader2 = nice(ILoader);
 			_fakeLoader3 = nice(ILoader);
@@ -118,7 +113,6 @@ package org.vostokframework.domain.loading.policies
 			repository.$openedConnections = totalGlobalConnections;
 			
 			var policy:ILoadingPolicy = new LoadingPolicy(repository);
-			//policy.localMaxConnections = 3;
 			policy.globalMaxConnections = 6;
 			
 			return policy;
@@ -131,30 +125,11 @@ package org.vostokframework.domain.loading.policies
 		
 		
 		/////////////////////////////////////
-		// LoadingPolicy().getNext() TESTS //
+		// LoadingPolicy().process() TESTS //
 		/////////////////////////////////////
-		/*
-		[Test]
-		public function getNext_withinLocalAndGlobalMaxConnections_ReturnsValidLoader(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(0);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertNotNull(loader);
-		}
 		
 		[Test]
-		public function getNext_withinLocalAndGlobalMaxConnections_checkIfReturnedCorrectLoader(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(0);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertEquals(_fakeLoader1, loader);
-		}
-		*/
-		
-		[Test]
-		public function getNext_oneMaxLocalConnection_twoQueuedLoaders_checkIfCalledLoadOnFirstLoader(): void
+		public function process_oneMaxLocalConnection_twoQueuedLoaders_verifyLoadWasCalledOnFirstLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -164,7 +139,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_oneMaxLocalConnection_twoQueuedLoaders_verifyNotCalledLoadOnSecondLoader(): void
+		public function process_oneMaxLocalConnection_twoQueuedLoaders_verifyLoadWasNotCalledOnSecondLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -174,7 +149,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_twoMaxLocalConnections_twoQueuedLoaders_checkIfCalledLoadOnSecondLoader(): void
+		public function process_twoMaxLocalConnections_twoQueuedLoaders_verifyLoadWasCalledOnSecondLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(0);
 			
@@ -184,7 +159,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_twoMaxLocalConnections_threeQueuedLoaders_verifyThirdLoaderWasNotCalled(): void
+		public function process_twoMaxLocalConnections_threeQueuedLoaders_verifyLoadWasNotCalledOnThirdLoader(): void
 		{
 			queueLoadingStatus.queuedLoaders.add(_fakeLoader3);
 			
@@ -196,7 +171,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_twoMaxLocalConnections_twoLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
+		public function process_twoMaxLocalConnections_twoLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
 		{
 			queueLoadingStatus.queuedLoaders.clear();
 			
@@ -213,7 +188,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
+		public function process_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnSecondLoader(): void
 		{
 			queueLoadingStatus.queuedLoaders.clear();
 			
@@ -231,7 +206,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnThirdLoader(): void
+		public function process_threeMaxLocalConnections_threeLoadingLoaders_noQueuedLoaders_changeMaxLocalConnectionsToOne_verifyStopWasCalledOnThirdLoader(): void
 		{
 			queueLoadingStatus.queuedLoaders.clear();
 			
@@ -249,7 +224,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_sixMaxGlobalConnections_fiveTotalGlobalConnections_twoQueuedLoaders_checkIfCalledLoadOnFirstLoader(): void
+		public function process_sixMaxGlobalConnections_fiveTotalGlobalConnections_twoQueuedLoaders_verifyLoadWasCalledOnFirstLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(5);
 			
@@ -259,7 +234,7 @@ package org.vostokframework.domain.loading.policies
 		}
 		
 		[Test]
-		public function getNext_sixMaxGlobalConnections_sixTotalGlobalConnections_twoQueuedLoaders_verifyNotCalledLoadOnFirstLoader(): void
+		public function process_sixMaxGlobalConnections_sixTotalGlobalConnections_twoQueuedLoaders_verifyLoadWasNotCalledOnFirstLoader(): void
 		{
 			var policy:ILoadingPolicy = getPolicy(6);
 			
@@ -268,50 +243,6 @@ package org.vostokframework.domain.loading.policies
 			verify(_fakeLoader1);
 		}
 		
-		/*
-		[Test]
-		public function getNext_threeMaxLocalConnections_oneQueuedLoaderAndTwoLoadingLoaders_boundaryTesting_checkIfCalledLoadOnThirdLoader(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(0);
-			
-			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
-			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertNotNull(loader);
-		}
-		
-		[Test]
-		public function getNext_exceedsLocalMaxConnections_ReturnsNull(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(0);
-			
-			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
-			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
-			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertNull(loader);
-		}
-		
-		[Test]
-		public function getNext_withinLocalAndGlobalMaxConnections_maxGlobalConnectionsBoundaryTesting_ReturnsValidLoader(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(5);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertNotNull(loader);
-		}
-		
-		[Test]
-		public function getNext_exceedsGlobalMaxConnections_ReturnsNull(): void
-		{
-			var policy:ILoadingPolicy = getPolicy(6);
-			
-			var loader:ILoader = policy.getNext(fakeState, queueLoadingStatus);
-			Assert.assertNull(loader);
-		}
-		*/
 	}
 
 }
