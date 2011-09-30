@@ -33,9 +33,8 @@ package org.vostokframework.application.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.application.LoadingContext;
-	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
+	import org.vostokframework.domain.loading.settings.LoadingSettings;
 
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
@@ -72,9 +71,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function removeAssetData_loadedAsset_callsGetAssetData_ReturnsNull(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var settings:LoadingSettings = LoadingContext.getInstance().loadingSettingsRepository.find(asset1);
 			settings.cache.allowInternalCache = true;

@@ -33,8 +33,6 @@ package org.vostokframework.application.services
 	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
-	import org.vostokframework.application.LoadingContext;
-	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
@@ -86,9 +84,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function exists_callLoad_queueLoadingCompletes_checkIfQueueLoaderExists_ReturnsFalse(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -129,9 +125,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function exists_callLoad_queueLoadingCompletes_checkIfAssetLoaderExists_ReturnsFalse(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

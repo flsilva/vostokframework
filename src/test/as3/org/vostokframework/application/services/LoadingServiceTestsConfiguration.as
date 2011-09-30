@@ -44,7 +44,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
-	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.StubDataLoaderFactory;
 
 	/**
 	 * @author Flávio Silva
@@ -75,12 +75,12 @@ package org.vostokframework.application.services
 			AssetsContext.getInstance().setAssetPackageRepository(new AssetPackageRepository());
 			AssetsContext.getInstance().setAssetRepository(new AssetRepository());
 			
+			LoadingContext.getInstance().loaderFactory.fileLoadingAlgorithmFactory.setDataLoaderFactory(new StubDataLoaderFactory());
+			
 			LoadingContext.getInstance().setLoadingSettingsRepository(new LoadingSettingsRepository());
 			LoadingContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
-			LoadingContext.getInstance().setLoaderFactory(new StubVostokLoaderFactory());
 			LoadingContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
-			
 			LoadingContext.getInstance().globalLoadingSettings.maxConcurrentConnections = 4;
 			LoadingContext.getInstance().setMaxConcurrentQueues(2);
 			
@@ -93,26 +93,14 @@ package org.vostokframework.application.services
 			
 			service = new LoadingService();
 			
-			//var packageIdentification:VostokIdentification = new VostokIdentification(ASSET_PACKAGE_ID, VostokFramework.CROSS_LOCALE_ID);
-			//var assetPackage:AssetPackage = AssetsContext.getInstance().assetPackageFactory.create(packageIdentification);
 			var assetPackageService:AssetPackageService = new AssetPackageService();
 			var assetPackage:AssetPackage = assetPackageService.createAssetPackage(ASSET_PACKAGE_ID);
-			/*asset1 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
-			asset2 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
-			asset3 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
-			asset4 = AssetsContext.getInstance().assetFactory.create("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);*/
 			
 			var assetService:AssetService = new AssetService();
 			asset1 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-01.jpg", assetPackage);
 			asset2 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-02.jpg", assetPackage);
 			asset3 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-03.jpg", assetPackage);
 			asset4 = assetService.createAsset("LoadingServiceTestsConfiguration/asset/image-04.jpg", assetPackage);
-			
-			/*AssetsContext.getInstance().assetPackageRepository.add(assetPackage);
-			AssetsContext.getInstance().assetRepository.add(asset1);
-			AssetsContext.getInstance().assetRepository.add(asset2);
-			AssetsContext.getInstance().assetRepository.add(asset3);
-			AssetsContext.getInstance().assetRepository.add(asset4);*/
 		}
 		
 		[After]
@@ -123,6 +111,13 @@ package org.vostokframework.application.services
 			asset2 = null;
 			asset3 = null;
 			asset4 = null;
+		}
+		
+		public function turnOnDataLoaderSuccessBehaviorAsync():void
+		{
+			var stubDataLoaderFactory:StubDataLoaderFactory = new StubDataLoaderFactory();
+			stubDataLoaderFactory.successBehaviorAsync = true;
+			LoadingContext.getInstance().loaderFactory.fileLoadingAlgorithmFactory.setDataLoaderFactory(stubDataLoaderFactory);
 		}
 		
 	}

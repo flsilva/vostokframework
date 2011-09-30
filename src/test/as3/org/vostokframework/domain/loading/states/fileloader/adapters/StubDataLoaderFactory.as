@@ -26,32 +26,41 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading
+package org.vostokframework.domain.loading.states.fileloader.adapters
 {
-	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
-	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithmFactory;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.StubDataLoaderAdapter;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderFactory
+	public class StubDataLoaderFactory extends DataLoaderFactory
 	{
 		
-		function get defaultLoadingSettings(): LoadingSettings;
+		private var _successBehaviorAsync:Boolean;
 		
-		function get fileLoadingAlgorithmFactory(): IFileLoadingAlgorithmFactory;
+		public function set successBehaviorAsync(value:Boolean):void { _successBehaviorAsync = value; }
 		
-		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader;
+		public function StubDataLoaderFactory ()
+		{
+			
+		}
 		
-		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader;
-		
-		function setDefaultLoadingSettings(settings:LoadingSettings): void;
-		
-		function setFileLoadingAlgorithmFactory(factory:IFileLoadingAlgorithmFactory): void;
+		override public function create(type:AssetType, url:String, settings:LoadingSettings):IDataLoader
+		{
+			type = null;//just to avoid compiler warnings
+			url = null;//just to avoid compiler warnings
+			settings = null;//just to avoid compiler warnings
+			
+			var dataLoader:StubDataLoaderAdapter = new StubDataLoaderAdapter();
+			dataLoader.successBehaviorAsync = _successBehaviorAsync;
+			
+			return dataLoader;
+		}
 		
 	}
 

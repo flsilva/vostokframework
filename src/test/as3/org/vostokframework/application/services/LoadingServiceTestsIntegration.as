@@ -45,7 +45,6 @@ package org.vostokframework.application.services
 	import org.vostokframework.application.events.AssetLoadingEvent;
 	import org.vostokframework.application.events.GlobalLoadingEvent;
 	import org.vostokframework.application.events.QueueLoadingEvent;
-	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
 
 	import flash.events.Event;
 	import flash.events.TimerEvent;
@@ -136,9 +135,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalOpenEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -151,9 +148,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueOpenEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -166,9 +161,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetOpenEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -185,9 +178,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalProgressEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -200,9 +191,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueProgressEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -215,9 +204,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetProgressEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -234,9 +221,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesGlobalCompleteEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -248,9 +233,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesQueueCompleteEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -263,9 +246,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=500)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesAssetCompleteEvent(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -288,9 +269,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesOpenEventsInCorrectOrder(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -318,9 +297,7 @@ package org.vostokframework.application.services
 		[Test(async, timeout=1000)]
 		public function load_validArguments_verifyIfGlobalMonitorDispatchesCompleteEventsInCorrectOrder(): void
 		{
-			var stubVostokLoaderFactory:StubVostokLoaderFactory = new StubVostokLoaderFactory();
-			stubVostokLoaderFactory.successBehaviorAsync = true;
-			LoadingContext.getInstance().setLoaderFactory(stubVostokLoaderFactory);
+			turnOnDataLoaderSuccessBehaviorAsync();
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);

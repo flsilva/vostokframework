@@ -26,48 +26,20 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.loaders
+package org.vostokframework.domain.loading.states.fileloader
 {
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
-	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
-	import org.vostokframework.domain.loading.states.fileloader.adapters.StubDataLoaderAdapter;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubVostokLoaderFactory extends VostokLoaderFactory
+	public interface IDataLoaderFactory
 	{
 		
-		private var _openBehaviorSync:Boolean;
-		private var _successBehaviorAsync:Boolean;
-		//private var _successBehaviorSync:Boolean;
-		
-		public function set openBehaviorSync(value:Boolean):void { _openBehaviorSync = value; }
-		
-		public function set successBehaviorAsync(value:Boolean):void { _successBehaviorAsync = value; }
-		
-		//public function set successBehaviorSync(value:Boolean):void { _successBehaviorSync = value; }
-		
-		public function StubVostokLoaderFactory ()
-		{
-			
-		}
-		
-		override protected function createNativeDataLoader(type:AssetType, url:String, settings:LoadingSettings):IDataLoader
-		{
-			type = null;//just to avoid compiler warnings
-			url = null;//just to avoid compiler warnings
-			settings = null;//just to avoid compiler warnings
-			
-			var dataLoader:StubDataLoaderAdapter = new StubDataLoaderAdapter();
-			//dataLoader.openBehaviorSync = _openBehaviorSync;
-			dataLoader.successBehaviorAsync = _successBehaviorAsync;
-			//dataLoader.successBehaviorSync = _successBehaviorSync;
-			return dataLoader;
-		}
+		function create(type:AssetType, url:String, settings:LoadingSettings):IDataLoader;
 		
 	}
 

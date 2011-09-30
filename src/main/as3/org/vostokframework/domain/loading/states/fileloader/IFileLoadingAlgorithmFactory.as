@@ -26,32 +26,29 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading
+package org.vostokframework.domain.loading.states.fileloader
 {
-	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.loading.DataParserRepository;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
-	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithmFactory;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderFactory
+	public interface IFileLoadingAlgorithmFactory
 	{
 		
-		function get defaultLoadingSettings(): LoadingSettings;
+		function get dataLoaderFactory(): IDataLoaderFactory;
 		
-		function get fileLoadingAlgorithmFactory(): IFileLoadingAlgorithmFactory;
+		function get dataParserRepository(): DataParserRepository;
 		
-		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader;
+		function create(type:AssetType, url:String, settings:LoadingSettings):IFileLoadingAlgorithm;
 		
-		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader;
+		function setDataLoaderFactory(factory:IDataLoaderFactory): void;
 		
-		function setDefaultLoadingSettings(settings:LoadingSettings): void;
-		
-		function setFileLoadingAlgorithmFactory(factory:IFileLoadingAlgorithmFactory): void;
+		function setDataParserRepository(repository:DataParserRepository): void;
 		
 	}
 
