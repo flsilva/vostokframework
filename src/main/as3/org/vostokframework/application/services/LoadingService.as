@@ -51,6 +51,7 @@ package org.vostokframework.application.services
 	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
 	import org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError;
 	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -399,8 +400,8 @@ package org.vostokframework.application.services
 				throw new DuplicateLoadingMonitorError(errorMessage);
 			}
 			
-			var globalMaxConnections:int = LoadingContext.getInstance().maxConcurrentConnections;
-			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, priority, globalMaxConnections, concurrentConnections);
+			var globalLoadingSettings:GlobalLoadingSettings = LoadingContext.getInstance().globalLoadingSettings;
+			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, globalLoadingSettings, priority, concurrentConnections);
 			
 			//throws org.vostokframework.application.report.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally

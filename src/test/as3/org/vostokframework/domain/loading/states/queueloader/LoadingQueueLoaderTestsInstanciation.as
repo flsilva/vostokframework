@@ -36,15 +36,12 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.as3collections.maps.HashMap;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
-	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
-	import org.vostokframework.domain.loading.policies.LoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -104,8 +101,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 		}
@@ -132,8 +128,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -161,8 +156,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new HashMap()));
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -185,8 +179,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			mock(fakeChildLoader2).method("load").once();
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -206,8 +199,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			stub(highLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getElaborateLoadingPolicy(6);
 			
 			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -236,8 +228,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			stub(lowestLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getElaborateLoadingPolicy(6);
 			
 			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			

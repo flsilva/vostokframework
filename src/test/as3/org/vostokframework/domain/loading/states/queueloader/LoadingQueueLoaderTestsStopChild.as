@@ -33,12 +33,10 @@ package org.vostokframework.domain.loading.states.queueloader
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
-	import org.vostokframework.domain.loading.policies.LoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -89,8 +87,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository);
-			policy.globalMaxConnections = 6;
+			var policy:ILoadingPolicy = getLoadingPolicy(6);
 			
 			state = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 2);
 			

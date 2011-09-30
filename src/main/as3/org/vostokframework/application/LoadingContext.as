@@ -44,6 +44,7 @@ package org.vostokframework.application
 	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.application.services.AssetService;
 	import org.vostokframework.domain.assets.Asset;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
@@ -67,6 +68,7 @@ package org.vostokframework.application
 		private static var _instance:LoadingContext = new LoadingContext();
 		
 		private var _loadingSettingsRepository:LoadingSettingsRepository;
+		private var _globalLoadingSettings:GlobalLoadingSettings;
 		private var _globalQueueLoader:ILoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
@@ -74,7 +76,7 @@ package org.vostokframework.application
 		private var _loaderFactory:ILoaderFactory;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
-		private var _maxConcurrentConnections:int;
+		
 		private var _maxConcurrentQueues:int;
 		
 		/**
@@ -91,7 +93,11 @@ package org.vostokframework.application
 		/**
 		 * description
 		 */
+		public function get globalLoadingSettings(): GlobalLoadingSettings { return _globalLoadingSettings; }
 		
+		/**
+		 * description
+		 */
 		public function get globalQueueLoader(): ILoader { return _globalQueueLoader; }
 		
 		//public function get globalQueueLoadingMonitor(): QueueLoadingMonitor { return _globalQueueLoadingMonitor; }
@@ -107,11 +113,6 @@ package org.vostokframework.application
 		/**
 		 * description
 		 */
-		public function get maxConcurrentConnections(): int { return _maxConcurrentConnections; }
-
-		/**
-		 * description
-		 */
 		public function get maxConcurrentQueues(): int { return _maxConcurrentQueues; }
 		
 		public function get loaderFactory(): ILoaderFactory { return _loaderFactory; }
@@ -123,7 +124,7 @@ package org.vostokframework.application
 		{
 			if (_created) throw new IllegalOperationError("<LoadingContext> is a singleton class and should be accessed only by its <getInstance> method.");
 			
-			_maxConcurrentConnections = 6;
+			_globalLoadingSettings = GlobalLoadingSettings.getInstance();
 			_maxConcurrentQueues = 3;
 			
 			_loadingSettingsRepository = new LoadingSettingsRepository();
@@ -287,18 +288,6 @@ package org.vostokframework.application
 		 * 
 		 * @param value
 		 */
-		public function setMaxConcurrentConnections(value:int): void
-		{
-			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
-			_maxConcurrentConnections = value;
-			//TODO:issue aqui e em setMaxConcurrentQueues() - quando client puder chamar esse metodo globalQueueLoader ja estara criado. mudar dinamicamente policy?
-		}
-
-		/**
-		 * description
-		 * 
-		 * @param value
-		 */
 		public function setMaxConcurrentQueues(value:int): void
 		{
 			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
@@ -311,7 +300,7 @@ package org.vostokframework.application
 		private function createGlobalQueueLoader(): void
 		{
 			var identification:VostokIdentification = new VostokIdentification(GLOBAL_QUEUE_LOADER_ID, VostokFramework.CROSS_LOCALE_ID);
-			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, _maxConcurrentConnections, _maxConcurrentQueues);
+			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, globalLoadingSettings, LoadPriority.MEDIUM, _maxConcurrentQueues);
 			
 			setGlobalQueueLoader(queueLoader);
 		}

@@ -435,7 +435,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				
 				//DO NOT CALL stopChild() BECAUSE IT MUST NOT NOTIFY SUBCLASS
 				//VIA childStopped()
-				//OTHERWISE AFTER STOP FIRST CHILD LoadingQueueLoader CLASS
+				//OTHERWISE AFTER STOP FIRST CHILD, LoadingQueueLoader CLASS
 				//WILL CALL load() IN NEXT CHILD, WHICH MUST BE STOPPED TOO
 				
 				loadingStatus.queuedLoaders.add(child);

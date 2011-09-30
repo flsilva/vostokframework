@@ -32,20 +32,19 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.application.AssetsContext;
+	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.application.LoadingSettingsRepository;
+	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
+	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetPackageRepository;
 	import org.vostokframework.domain.assets.AssetRepository;
-	import org.vostokframework.application.services.AssetPackageService;
-	import org.vostokframework.application.services.AssetService;
-	import org.vostokframework.application.LoadingSettingsRepository;
-	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.loaders.StubVostokLoaderFactory;
-	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
-	import org.vostokframework.application.report.LoadedAssetRepository;
 
 	/**
 	 * @author Flávio Silva
@@ -82,14 +81,14 @@ package org.vostokframework.application.services
 			LoadingContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			
-			LoadingContext.getInstance().setMaxConcurrentConnections(4);
+			LoadingContext.getInstance().globalLoadingSettings.maxConcurrentConnections = 4;
 			LoadingContext.getInstance().setMaxConcurrentQueues(2);
 			
 			var identification:VostokIdentification = new VostokIdentification("GlobalQueueLoader", VostokFramework.CROSS_LOCALE_ID);
 			var loaderRepository:LoaderRepository = LoadingContext.getInstance().loaderRepository;
-			var maxConcurrentConnections:int = LoadingContext.getInstance().maxConcurrentConnections;
+			var globalLoadingSettings:GlobalLoadingSettings = LoadingContext.getInstance().globalLoadingSettings;
 			var maxConcurrentQueues:int = LoadingContext.getInstance().maxConcurrentQueues;
-			var globalQueueLoader:ILoader = LoadingContext.getInstance().loaderFactory.createComposite(identification, loaderRepository, LoadPriority.MEDIUM, maxConcurrentConnections, maxConcurrentQueues);
+			var globalQueueLoader:ILoader = LoadingContext.getInstance().loaderFactory.createComposite(identification, loaderRepository, globalLoadingSettings, LoadPriority.MEDIUM, maxConcurrentQueues);
 			LoadingContext.getInstance().setGlobalQueueLoader(globalQueueLoader);
 			
 			service = new LoadingService();

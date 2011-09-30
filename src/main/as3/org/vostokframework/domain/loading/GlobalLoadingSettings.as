@@ -28,30 +28,61 @@
  */
 package org.vostokframework.domain.loading
 {
-	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.domain.assets.AssetType;
-	import org.vostokframework.domain.loading.settings.LoadingSettings;
+	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoaderFactory
+	public class GlobalLoadingSettings
 	{
+		/**
+		 * @private
+		 */
+		private static var _instance:GlobalLoadingSettings = new GlobalLoadingSettings();
 		
-		function get dataParserRepository(): DataParserRepository;
+		private var _maxConcurrentConnections:int;
 		
-		function get defaultLoadingSettings(): LoadingSettings;
+		/**
+		 * @private
+		 */
+		private static var _created :Boolean = false;
 		
-		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader;
+		{
+			_created = true;
+		}
 		
-		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader;
+		/**
+		 * description
+		 */
+		public function get maxConcurrentConnections(): int { return _maxConcurrentConnections; }
+		public function set maxConcurrentConnections(value:int): void
+		{
+			if (value < 1) throw new ArgumentError("Argument <value> must be greater than zero.");
+			_maxConcurrentConnections = value;
+		}
+
+		/**
+		 * description
+		 */
+		public function GlobalLoadingSettings()
+		{
+			if (_created) throw new IllegalOperationError("<LoadingContext> is a singleton class and should be accessed only by its <getInstance> method.");
+			
+			_maxConcurrentConnections = 6;
+		}
 		
-		function setDataParserRepository(repository:DataParserRepository): void;
-		
-		function setDefaultLoadingSettings(settings:LoadingSettings): void;
-		
+		/**
+		 * description
+		 * 
+		 * @return
+ 		 */
+		public static function getInstance(): GlobalLoadingSettings
+		{
+			return _instance;
+		}
+
 	}
 
 }

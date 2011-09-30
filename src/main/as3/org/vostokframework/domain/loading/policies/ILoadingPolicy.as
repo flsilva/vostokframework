@@ -41,8 +41,8 @@ package org.vostokframework.domain.loading.policies
 		//function get localMaxConnections():int;
 		//function set localMaxConnections(value:int):void;
 		
-		function get globalMaxConnections():int;
-		function set globalMaxConnections(value:int):void;
+		//function get globalMaxConnections():int;
+		//function set globalMaxConnections(value:int):void;
 		
 		//function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader;
 		//function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;

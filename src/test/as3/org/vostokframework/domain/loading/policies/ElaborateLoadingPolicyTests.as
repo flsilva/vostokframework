@@ -29,6 +29,7 @@
 
 package org.vostokframework.domain.loading.policies
 {
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.StubLoaderRepository;
 
 	/**
@@ -52,8 +53,10 @@ package org.vostokframework.domain.loading.policies
 			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$openedConnections = totalGlobalConnections;
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository);
-			policy.globalMaxConnections = 6;
+			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
+			globalLoadingSettings.maxConcurrentConnections = 6;
+			
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository, globalLoadingSettings);
 			
 			return policy;
 		}

@@ -28,13 +28,22 @@
  */
 package org.vostokframework.domain.loading.loaders
 {
-	import org.as3utils.StringUtil;
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.IllegalStateError;
+	import org.as3utils.StringUtil;
 	import org.as3utils.URLUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.domain.assets.AssetType;
+	import org.vostokframework.domain.loading.DataParserRepository;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
+	import org.vostokframework.domain.loading.ILoader;
+	import org.vostokframework.domain.loading.ILoaderFactory;
+	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
+	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 	import org.vostokframework.domain.loading.settings.ApplicationDomainSetting;
 	import org.vostokframework.domain.loading.settings.LoadingCacheSettings;
 	import org.vostokframework.domain.loading.settings.LoadingExtraSettings;
@@ -43,14 +52,6 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.settings.LoadingSecuritySettings;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
-	import org.vostokframework.domain.loading.DataParserRepository;
-	import org.vostokframework.domain.loading.ILoader;
-	import org.vostokframework.domain.loading.ILoaderFactory;
-	import org.vostokframework.domain.loading.ILoaderState;
-	import org.vostokframework.domain.loading.LoadPriority;
-	import org.vostokframework.domain.loading.LoaderRepository;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
@@ -110,14 +111,14 @@ package org.vostokframework.domain.loading.loaders
 			setDefaultLoadingSettings(defaultLoadingSettings);
 		}
 		
-		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, priority:LoadPriority = null, globalMaxConnections:int = 6, localMaxConnections:int = 3):ILoader
+		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalMaxConnections);
+			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalLoadingSettings);
 			var state:ILoaderState = createCompositeLoaderState(policy, localMaxConnections);
 			
 			return instanciateComposite(identification, state, priority);
@@ -331,10 +332,10 @@ package org.vostokframework.domain.loading.loaders
 		}
 		
 		//protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int, localMaxConnections:int):ILoadingPolicy
-		protected function createPolicy(loaderRepository:LoaderRepository, globalMaxConnections:int):ILoadingPolicy
+		protected function createPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings):ILoadingPolicy
 		{
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository);
-			policy.globalMaxConnections = globalMaxConnections;
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository, globalLoadingSettings);
+			//policy.globalMaxConnections = globalMaxConnections;
 			//policy.localMaxConnections = localMaxConnections;
 			
 			return policy;

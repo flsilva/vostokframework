@@ -29,6 +29,7 @@
 
 package org.vostokframework.domain.loading.policies
 {
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
@@ -45,9 +46,9 @@ package org.vostokframework.domain.loading.policies
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function LoadingPolicy(loaderRepository:LoaderRepository)
+		public function LoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
 		{
-			super(loaderRepository);
+			super(loaderRepository, globalLoadingSettings);
 		}
 		
 		override protected function isNextLoaderEligible(loadingStatus:QueueLoadingStatus):Boolean

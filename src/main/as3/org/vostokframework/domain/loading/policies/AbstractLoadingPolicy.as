@@ -31,6 +31,7 @@ package org.vostokframework.domain.loading.policies
 {
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
@@ -45,27 +46,21 @@ package org.vostokframework.domain.loading.policies
 	public class AbstractLoadingPolicy implements ILoadingPolicy
 	{
 		private var _loaderRepository:LoaderRepository;
-		private var _globalMaxConnections:int;
+		private var _globalLoadingSettings:GlobalLoadingSettings;
 		
 		private function get activeGlobalConnections():int { return _loaderRepository.openedConnections; }
-		
-		public function get globalMaxConnections():int { return _globalMaxConnections; }
-		public function set globalMaxConnections(value:int):void
-		{
-			if (value < 1) throw new ArgumentError("The value must be greater than zero. Received: <" + value + ">");
-			_globalMaxConnections = value;
-		}
 		
 		/**
 		 * Constructor, creates a new AssetRepositoryError instance.
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AbstractLoadingPolicy(loaderRepository:LoaderRepository)
+		public function AbstractLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
 		{
 			if (ReflectionUtil.classPathEquals(this, AbstractLoadingPolicy))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
 			
+			_globalLoadingSettings = globalLoadingSettings;
 			_loaderRepository = loaderRepository;
 		}
 		
@@ -92,7 +87,7 @@ package org.vostokframework.domain.loading.policies
 		private function hasAvailableConnection(localMaxConnections:int, activeLocalConnections:int):Boolean
 		{
 			if (activeLocalConnections < 0) throw new ArgumentError("Argument <activeLocalConnections> must not be a negative integer. Received: <" + activeLocalConnections + ">");
-			return activeLocalConnections < localMaxConnections && activeGlobalConnections < _globalMaxConnections;
+			return activeLocalConnections < localMaxConnections && activeGlobalConnections < _globalLoadingSettings.maxConcurrentConnections;
 		}
 		
 		private function hasNextLoader(loadingStatus:QueueLoadingStatus, localMaxConnections:int):Boolean
@@ -112,7 +107,7 @@ package org.vostokframework.domain.loading.policies
 			var activeLocalConnections:int = loadingStatus.loadingLoaders.size();
 			var loader:ILoader;
 			
-			while (activeLocalConnections > 0 && (activeLocalConnections > localMaxConnections || activeGlobalConnections > _globalMaxConnections))
+			while (activeLocalConnections > 0 && (activeLocalConnections > localMaxConnections || activeGlobalConnections > _globalLoadingSettings.maxConcurrentConnections))
 			{
 				//stop LAST loading ILoader object
 				loader = loadingStatus.loadingLoaders.removeAt(activeLocalConnections - 1);

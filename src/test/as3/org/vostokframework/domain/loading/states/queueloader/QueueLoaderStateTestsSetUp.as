@@ -37,11 +37,15 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.ILoaderStateTransition;
 	import org.vostokframework.domain.loading.LoadPriority;
+	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
 	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.policies.LoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -133,6 +137,24 @@ package org.vostokframework.domain.loading.states.queueloader
 		public function getState():ILoaderState
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
+		}
+		
+		public function getLoadingPolicy(maxGlobalConcurrentConnections:int):ILoadingPolicy
+		{
+			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
+			globalLoadingSettings.maxConcurrentConnections = maxGlobalConcurrentConnections;
+			
+			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
+			return policy;
+		}
+		
+		public function getElaborateLoadingPolicy(maxGlobalConcurrentConnections:int):ILoadingPolicy
+		{
+			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
+			globalLoadingSettings.maxConcurrentConnections = maxGlobalConcurrentConnections;
+			
+			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
+			return policy;
 		}
 		
 	}
