@@ -27,13 +27,17 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import mockolate.nice;
 	import mockolate.runner.MockolateRule;
 	import mockolate.stub;
 
 	import org.flexunit.async.Async;
+	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.NativeDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
 
 	import flash.display.MovieClip;
 	import flash.events.ErrorEvent;

@@ -31,7 +31,6 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 
 	import flash.errors.IllegalOperationError;
@@ -61,7 +60,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		 */
 		public function FileLoadingAlgorithmBehavior(wrapAlgorithm:IFileLoadingAlgorithm)
 		{
-			if (ReflectionUtil.classPathEquals(this, FileLoadingAlgorithm))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, FileLoadingAlgorithmBehavior))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!wrapAlgorithm) throw new ArgumentError("Argument <wrapAlgorithm> must not be null.");
 			
 			_wrappedAlgorithm = wrapAlgorithm;

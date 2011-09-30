@@ -63,7 +63,6 @@ package
 	import org.vostokframework.domain.loading.states.fileloader.CanceledFileLoaderTests;
 	import org.vostokframework.domain.loading.states.fileloader.CompleteFileLoaderTests;
 	import org.vostokframework.domain.loading.states.fileloader.FailedFileLoaderTests;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmTests;
 	import org.vostokframework.domain.loading.states.fileloader.LoadingFileLoaderTests;
 	import org.vostokframework.domain.loading.states.fileloader.LoadingFileLoaderTestsCancel;
 	import org.vostokframework.domain.loading.states.fileloader.LoadingFileLoaderTestsInstantiation;
@@ -76,6 +75,7 @@ package
 	import org.vostokframework.domain.loading.states.fileloader.StoppedFileLoaderTestsCancel;
 	import org.vostokframework.domain.loading.states.fileloader.StoppedFileLoaderTestsLoad;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.DelayableFileLoadingAlgorithmTests;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.FileLoadingAlgorithmTests;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithmTests;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithmTests;
 	import org.vostokframework.domain.loading.states.queueloader.CanceledQueueLoaderTests;

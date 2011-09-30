@@ -37,8 +37,8 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 
 	import org.as3collections.maps.ArrayListMap;
 	import org.flexunit.async.Async;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmErrorEvent;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 
 	import flash.display.MovieClip;
 	import flash.events.TimerEvent;

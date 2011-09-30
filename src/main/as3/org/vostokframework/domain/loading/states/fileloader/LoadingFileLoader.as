@@ -31,6 +31,8 @@ package org.vostokframework.domain.loading.states.fileloader
 	import org.vostokframework.domain.loading.ILoaderStateTransition;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
 
 	import flash.events.ProgressEvent;
 

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
@@ -37,6 +37,11 @@ package org.vostokframework.domain.loading.states.fileloader
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.vostokframework.domain.loading.IDataParser;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmMediaEvent;
 
 	import flash.errors.IOError;
 	import flash.events.AsyncErrorEvent;
@@ -61,8 +66,8 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * @private
  		 */
 		private var _disposed:Boolean;
-		private var _errors:IListMap;//<LoadError, String> - where String is the original Flash Player error message
 		private var _dataLoader:IDataLoader;
+		private var _errors:IListMap;//<LoadError, String> - where String is the original Flash Player error message
 		private var _parsers:IList;
 		private var _timeConnectionStarted:int;
 		

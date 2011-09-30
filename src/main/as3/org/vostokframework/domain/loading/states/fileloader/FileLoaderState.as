@@ -59,7 +59,6 @@ package org.vostokframework.domain.loading.states.fileloader
 		
 		protected function get loader():ILoaderStateTransition { return _loader; }
 		
-		
 		public function get isLoading():Boolean { return false; }
 		
 		public function get isQueued():Boolean { return false; }

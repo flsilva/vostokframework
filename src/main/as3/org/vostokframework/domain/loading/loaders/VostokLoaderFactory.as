@@ -52,7 +52,6 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.settings.LoadingSecuritySettings;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.QueuedFileLoader;
@@ -64,6 +63,7 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.states.fileloader.adapters.NativeURLLoaderAdapter;
 	import org.vostokframework.domain.loading.states.fileloader.adapters.ProgressNetStream;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.DelayableFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.FileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.LatencyTimeoutFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.MaxAttemptsFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.dataparsers.XMLDataParser;
@@ -121,7 +121,7 @@ package org.vostokframework.domain.loading.loaders
 			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalLoadingSettings);
 			var state:ILoaderState = createCompositeLoaderState(policy, localMaxConnections);
 			
-			return instanciateComposite(identification, state, priority);
+			return instantiateComposite(identification, state, priority);
 		}
 		
 		public function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader
@@ -133,7 +133,7 @@ package org.vostokframework.domain.loading.loaders
 			if (!settings) settings = _defaultLoadingSettings;
 			
 			var state:ILoaderState = createLeafLoaderState(type, src, settings);
-			return instanciateLeaf(identification, state, settings.policy.priority);
+			return instantiateLeaf(identification, state, settings.policy.priority);
 		}
 		
 		public function setDataParserRepository(repository:DataParserRepository): void
@@ -300,12 +300,12 @@ package org.vostokframework.domain.loading.loaders
 			return dataLoader;
 		}
 		
-		protected function instanciateComposite(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
+		protected function instantiateComposite(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
 		{
 			return new VostokLoader(identification, state, priority);
 		}
 		
-		protected function instanciateLeaf(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
+		protected function instantiateLeaf(identification:VostokIdentification, state:ILoaderState, priority:LoadPriority):ILoader
 		{
 			return new VostokLoader(identification, state, priority);
 		}

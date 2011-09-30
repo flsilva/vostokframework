@@ -26,8 +26,10 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 {
+	import org.as3collections.IListMap;
+
 	import flash.events.Event;
 
 	/**
@@ -35,28 +37,19 @@ package org.vostokframework.domain.loading.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoadingAlgorithmMediaEvent extends Event
+	public class FileLoadingAlgorithmErrorEvent extends Event
 	{
-		public static const BUFFER_COMPLETE:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.BUFFER_COMPLETE";
-		public static const CUE_POINT:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.CUE_POINT";
-		public static const META_DATA:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.META_DATA";
-		public static const NET_STATUS:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.NET_STATUS";
+		public static const FAILED:String = "VostokFramework.FileLoadingAlgorithmEvent.FAILED";
 		
 		/**
 		 * description
 		 */
-		private var _cuePointData:Object;
-		private var _metadata:Object;
-		private var _netStatusInfo:Object;
+		private var _errors:*;
 		
-		public function get cuePointData(): Object { return _cuePointData; }
-		public function set cuePointData(value:Object): void { _cuePointData = value; }
-		
-		public function get metadata(): Object { return _metadata; }
-		public function set metadata(value:Object): void { _metadata = value; }
-		
-		public function get netStatusInfo(): Object { return _netStatusInfo; }
-		public function set netStatusInfo(value:Object): void { _netStatusInfo = value; }
+		/**
+		 * description
+		 */
+		public function get errors(): IListMap { return _errors; }
 
 		/**
 		 * description
@@ -66,19 +59,16 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function FileLoadingAlgorithmMediaEvent(type:String)
+		public function FileLoadingAlgorithmErrorEvent(type:String, errors:IListMap)
 		{
 			super(type);
+			
+			_errors = errors;
 		}
 		
 		override public function clone():Event
 		{
-			var event:FileLoadingAlgorithmMediaEvent = new FileLoadingAlgorithmMediaEvent(type);
-			event.cuePointData = _cuePointData;
-			event.metadata = _metadata;
-			event.netStatusInfo = _netStatusInfo;
-			
-			return event;
+			return new FileLoadingAlgorithmErrorEvent(type, _errors);
 		}
 		
 	}

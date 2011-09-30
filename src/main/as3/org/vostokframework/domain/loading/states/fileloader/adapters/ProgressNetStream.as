@@ -28,8 +28,8 @@
  */
 package org.vostokframework.domain.loading.states.fileloader.adapters
 {
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmMediaEvent;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmMediaEvent;
 
 	import flash.events.Event;
 	import flash.events.ProgressEvent;

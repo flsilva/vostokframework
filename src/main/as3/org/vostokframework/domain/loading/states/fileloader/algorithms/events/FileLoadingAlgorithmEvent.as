@@ -26,10 +26,8 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 {
-	import org.as3collections.IListMap;
-
 	import flash.events.Event;
 
 	/**
@@ -37,19 +35,33 @@ package org.vostokframework.domain.loading.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoadingAlgorithmErrorEvent extends Event
+	public class FileLoadingAlgorithmEvent extends Event
 	{
-		public static const FAILED:String = "VostokFramework.FileLoadingAlgorithmEvent.FAILED";
+		public static const COMPLETE:String = "VostokFramework.FileLoadingAlgorithmEvent.COMPLETE";
+		public static const HTTP_STATUS:String = "VostokFramework.FileLoadingAlgorithmEvent.HTTP_STATUS";
+		public static const INIT:String = "VostokFramework.FileLoadingAlgorithmEvent.INIT";
+		public static const OPEN:String = "VostokFramework.FileLoadingAlgorithmEvent.OPEN";
 		
 		/**
 		 * description
 		 */
-		private var _errors:*;
+		private var _data:*;
+		private var _httpStatus:int;
+		private var _latency:int;
+		private var _netStatusInfo:Object;
 		
 		/**
 		 * description
 		 */
-		public function get errors(): IListMap { return _errors; }
+		public function get data(): * { return _data; }
+		
+		public function get httpStatus(): int { return _httpStatus; }
+		public function set httpStatus(value:int): void { _httpStatus = value; }
+		
+		public function get latency(): int { return _latency; }
+		
+		public function get netStatusInfo(): Object { return _netStatusInfo; }
+		public function set netStatusInfo(value:Object): void { _netStatusInfo = value; }
 
 		/**
 		 * description
@@ -59,18 +71,31 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function FileLoadingAlgorithmErrorEvent(type:String, errors:IListMap)
+		public function FileLoadingAlgorithmEvent(type:String, data:* = null, latency:int = 0)
 		{
 			super(type);
 			
-			_errors = errors;
+			_data = data;
+			_latency = latency;
 		}
 		
 		override public function clone():Event
 		{
-			return new FileLoadingAlgorithmErrorEvent(type, _errors);
+			var event:FileLoadingAlgorithmEvent = new FileLoadingAlgorithmEvent(type, _data, _latency);
+			event.httpStatus = _httpStatus;
+			event.netStatusInfo = _netStatusInfo;
+			
+			return event;
 		}
-		
+		/*
+		public static function typeBelongs(type:String):Boolean
+		{
+			return type == COMPLETE ||
+			       type == HTTP_STATUS || 
+			       type == INIT ||
+			       type == OPEN;
+		}
+		*/
 	}
 
 }

@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 {
 	import flash.events.Event;
 
@@ -35,30 +35,25 @@ package org.vostokframework.domain.loading.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class FileLoadingAlgorithmEvent extends Event
+	public class FileLoadingAlgorithmMediaEvent extends Event
 	{
-		public static const COMPLETE:String = "VostokFramework.FileLoadingAlgorithmEvent.COMPLETE";
-		public static const HTTP_STATUS:String = "VostokFramework.FileLoadingAlgorithmEvent.HTTP_STATUS";
-		public static const INIT:String = "VostokFramework.FileLoadingAlgorithmEvent.INIT";
-		public static const OPEN:String = "VostokFramework.FileLoadingAlgorithmEvent.OPEN";
+		public static const BUFFER_COMPLETE:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.BUFFER_COMPLETE";
+		public static const CUE_POINT:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.CUE_POINT";
+		public static const META_DATA:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.META_DATA";
+		public static const NET_STATUS:String = "VostokFramework.FileLoadingAlgorithmMediaEvent.NET_STATUS";
 		
 		/**
 		 * description
 		 */
-		private var _data:*;
-		private var _httpStatus:int;
-		private var _latency:int;
+		private var _cuePointData:Object;
+		private var _metadata:Object;
 		private var _netStatusInfo:Object;
 		
-		/**
-		 * description
-		 */
-		public function get data(): * { return _data; }
+		public function get cuePointData(): Object { return _cuePointData; }
+		public function set cuePointData(value:Object): void { _cuePointData = value; }
 		
-		public function get httpStatus(): int { return _httpStatus; }
-		public function set httpStatus(value:int): void { _httpStatus = value; }
-		
-		public function get latency(): int { return _latency; }
+		public function get metadata(): Object { return _metadata; }
+		public function set metadata(value:Object): void { _metadata = value; }
 		
 		public function get netStatusInfo(): Object { return _netStatusInfo; }
 		public function set netStatusInfo(value:Object): void { _netStatusInfo = value; }
@@ -71,31 +66,21 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function FileLoadingAlgorithmEvent(type:String, data:* = null, latency:int = 0)
+		public function FileLoadingAlgorithmMediaEvent(type:String)
 		{
 			super(type);
-			
-			_data = data;
-			_latency = latency;
 		}
 		
 		override public function clone():Event
 		{
-			var event:FileLoadingAlgorithmEvent = new FileLoadingAlgorithmEvent(type, _data, _latency);
-			event.httpStatus = _httpStatus;
+			var event:FileLoadingAlgorithmMediaEvent = new FileLoadingAlgorithmMediaEvent(type);
+			event.cuePointData = _cuePointData;
+			event.metadata = _metadata;
 			event.netStatusInfo = _netStatusInfo;
 			
 			return event;
 		}
-		/*
-		public static function typeBelongs(type:String):Boolean
-		{
-			return type == COMPLETE ||
-			       type == HTTP_STATUS || 
-			       type == INIT ||
-			       type == OPEN;
-		}
-		*/
+		
 	}
 
 }

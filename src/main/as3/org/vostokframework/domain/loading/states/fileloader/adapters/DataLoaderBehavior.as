@@ -30,7 +30,6 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 {
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3utils.ReflectionUtil;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 
 	import flash.errors.IllegalOperationError;
@@ -60,7 +59,7 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 		 */
 		public function DataLoaderBehavior(wrappedDataLoader:IDataLoader)
 		{
-			if (ReflectionUtil.classPathEquals(this, FileLoadingAlgorithm))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, DataLoaderBehavior))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!wrappedDataLoader) throw new ArgumentError("Argument <wrappedDataLoader> must not be null.");
 			
 			_wrappedDataLoader = wrappedDataLoader;

@@ -29,8 +29,8 @@
 package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import org.vostokframework.domain.loading.LoadError;
-	import org.vostokframework.domain.loading.states.fileloader.FileLoadingAlgorithmErrorEvent;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
+	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
