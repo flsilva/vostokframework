@@ -43,9 +43,8 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.ILoaderStateTransition;
 	import org.vostokframework.domain.loading.LoadPriority;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
-	import org.vostokframework.domain.loading.policies.LoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SimpleQueueLoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -57,7 +56,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		public var mocks:MockolateRule = new MockolateRule();
 		
 		[Mock(inject="false")]
-		public var fakePolicy:ILoadingPolicy;
+		public var fakePolicy:IQueueLoadingPolicy;
 		
 		[Mock(inject="false")]
 		public var fakeChildLoader1:ILoader;
@@ -89,7 +88,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			fakeChildLoader2 = getFakeLoader("fake-loader-2", 2);
 			
 			fakeLoadingStatus = new QueueLoadingStatus();
-			fakePolicy = nice(ILoadingPolicy);
+			fakePolicy = nice(IQueueLoadingPolicy);
 			
 			fakeQueueLoader = nice(ILoaderStateTransition);
 			stub(fakeQueueLoader).asEventDispatcher();
@@ -139,21 +138,21 @@ package org.vostokframework.domain.loading.states.queueloader
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function getLoadingPolicy(maxGlobalConcurrentConnections:int):ILoadingPolicy
+		public function getLoadingPolicy(maxGlobalConcurrentConnections:int):IQueueLoadingPolicy
 		{
 			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
 			globalLoadingSettings.maxConcurrentConnections = maxGlobalConcurrentConnections;
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = new SimpleQueueLoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
 			return policy;
 		}
 		
-		public function getElaborateLoadingPolicy(maxGlobalConcurrentConnections:int):ILoadingPolicy
+		public function getSpecialHighestLowestQueueLoadingPolicy(maxGlobalConcurrentConnections:int):IQueueLoadingPolicy
 		{
 			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
 			globalLoadingSettings.maxConcurrentConnections = maxGlobalConcurrentConnections;
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = new SpecialHighestLowestQueueLoadingPolicy(LoadingContext.getInstance().loaderRepository, globalLoadingSettings);
 			return policy;
 		}
 		

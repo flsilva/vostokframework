@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
 	import org.as3collections.ICollection;
 	import org.as3collections.IIterator;
@@ -42,7 +42,7 @@ package org.vostokframework.domain.loading.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class ElaborateLoadingPolicy extends AbstractLoadingPolicy
+	public class SpecialHighestLowestQueueLoadingPolicy extends AbstractQueueLoadingPolicy
 	{
 		
 		/**
@@ -50,7 +50,7 @@ package org.vostokframework.domain.loading.policies
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function ElaborateLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
+		public function SpecialHighestLowestQueueLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
 		{
 			super(loaderRepository, globalLoadingSettings);
 		}

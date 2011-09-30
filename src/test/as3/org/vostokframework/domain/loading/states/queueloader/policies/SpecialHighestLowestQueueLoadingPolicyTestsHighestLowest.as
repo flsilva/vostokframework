@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -41,13 +41,14 @@ package org.vostokframework.domain.loading.policies
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class ElaborateLoadingPolicyTestsHighestLowest
+	public class SpecialHighestLowestQueueLoadingPolicyTestsHighestLowest
 	{
 		[Rule]
 		public var mocks:MockolateRule = new MockolateRule();
@@ -63,7 +64,7 @@ package org.vostokframework.domain.loading.policies
 		
 		public var queueLoadingStatus:QueueLoadingStatus;
 		
-		public function ElaborateLoadingPolicyTestsHighestLowest()
+		public function SpecialHighestLowestQueueLoadingPolicyTestsHighestLowest()
 		{
 			
 		}
@@ -89,7 +90,7 @@ package org.vostokframework.domain.loading.policies
 		// HELPER METHODS //
 		////////////////////
 		
-		protected function getPolicy(totalGlobalConnections:int):ILoadingPolicy
+		protected function getPolicy(totalGlobalConnections:int):IQueueLoadingPolicy
 		{
 			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$openedConnections = totalGlobalConnections;
@@ -97,7 +98,7 @@ package org.vostokframework.domain.loading.policies
 			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
 			globalLoadingSettings.maxConcurrentConnections = 6;
 			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = new SpecialHighestLowestQueueLoadingPolicy(repository, globalLoadingSettings);
 			//policy.localMaxConnections = 2;
 			//policy.globalMaxConnections = 6;
 			
@@ -121,13 +122,13 @@ package org.vostokframework.domain.loading.policies
 		
 		
 		//////////////////////////////////////////////
-		// ElaborateLoadingPolicy().process() TESTS //
+		// SpecialHighestLowestQueueLoadingPolicy().process() TESTS //
 		//////////////////////////////////////////////
 		
 		[Test]
 		public function process_highAndHighestInQueue_verifyLoadWasCalledOnHighestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
@@ -143,7 +144,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_highAndHighestInQueue_verifyLoadWasNotCalledOnHighLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
@@ -159,7 +160,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneHighInQueue_highestInLoadings_verifyLoadWasNotCalledOnHighLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
@@ -175,7 +176,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneHighestInQueue_highInLoadings_verifyLoadWasCalledOnHighestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
@@ -191,7 +192,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneHighestInQueue_highInLoadings_verifyStopWasCalledOnHighLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderHigh:ILoader = getLoader("loader-high", LoadPriority.HIGH);
 			var loaderHighest:ILoader = getLoader("loader-highest", LoadPriority.HIGHEST);
@@ -207,7 +208,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_lowAndLowestInQueue_verifyLoadWasCalledOnLowLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
@@ -223,7 +224,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_lowAndLowestInQueue_verifyLoadWasNotCalledOnLowestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
@@ -239,7 +240,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneLowestInQueue_lowInLoadings_verifyLoadWasNotCalledOnLowestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
@@ -255,7 +256,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneLowestInQueue_noneLoading_verifyLoadWasCalledOnLowestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
 			
@@ -269,7 +270,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneLowestInQueue_anotherLowestInLoadings_verifyLoadWasCalledOnQueuedLowestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLowest1:ILoader = getLoader("loader-lowest-1", LoadPriority.LOWEST);
 			var loaderLowest2:ILoader = getLoader("loader-lowest-2", LoadPriority.LOWEST);
@@ -285,7 +286,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneLowInQueue_lowestInLoadings_verifyLoadWasCalledOnLowLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);
@@ -301,7 +302,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_onlyOneLowInQueue_lowestInLoadings_verifyStopWasCalledOnLowestLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			var loaderLow:ILoader = getLoader("loader-low", LoadPriority.LOW);
 			var loaderLowest:ILoader = getLoader("loader-lowest", LoadPriority.LOWEST);

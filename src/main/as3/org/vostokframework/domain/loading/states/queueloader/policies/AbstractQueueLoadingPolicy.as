@@ -27,13 +27,14 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	import flash.errors.IllegalOperationError;
@@ -43,7 +44,7 @@ package org.vostokframework.domain.loading.policies
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class AbstractLoadingPolicy implements ILoadingPolicy
+	public class AbstractQueueLoadingPolicy implements IQueueLoadingPolicy
 	{
 		private var _loaderRepository:LoaderRepository;
 		private var _globalLoadingSettings:GlobalLoadingSettings;
@@ -55,9 +56,9 @@ package org.vostokframework.domain.loading.policies
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function AbstractLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
+		public function AbstractQueueLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
 		{
-			if (ReflectionUtil.classPathEquals(this, AbstractLoadingPolicy))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
+			if (ReflectionUtil.classPathEquals(this, AbstractQueueLoadingPolicy))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!loaderRepository) throw new ArgumentError("Argument <loaderRepository> must not be null.");
 			
 			_globalLoadingSettings = globalLoadingSettings;

@@ -57,9 +57,6 @@ package
 	import org.vostokframework.domain.assets.AssetTests;
 	import org.vostokframework.domain.assets.UrlAssetParserTests;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderTests;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTests;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicyTestsHighestLowest;
-	import org.vostokframework.domain.loading.policies.LoadingPolicyTests;
 	import org.vostokframework.domain.loading.states.fileloader.CanceledFileLoaderTests;
 	import org.vostokframework.domain.loading.states.fileloader.CompleteFileLoaderTests;
 	import org.vostokframework.domain.loading.states.fileloader.FailedFileLoaderTests;
@@ -123,6 +120,9 @@ package
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsRemoveChild;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsResumeChild;
 	import org.vostokframework.domain.loading.states.queueloader.StoppedQueueLoaderTestsSetMaxConcurrentConnections;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SimpleQueueLoadingPolicyTests;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicyTests;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicyTestsHighestLowest;
 
 	/**
 	 * @author Flávio Silva
@@ -154,10 +154,10 @@ package
 		public var loadingMonitorTests:LoadingMonitorTests;
 		public var loadingMonitorWrapperTestsIntegration:LoadingMonitorWrapperTestsIntegration;
 		
-		//org.vostokframework.domain.loading.policies
-		public var loadingPolicyTests:LoadingPolicyTests;
-		public var elaborateLoadingPolicyTests:ElaborateLoadingPolicyTests;
-		public var elaborateLoadingPolicyTestsHighestLowest:ElaborateLoadingPolicyTestsHighestLowest;
+		//org.vostokframework.domain.loading.states.queueloader.policies
+		public var simpleQueueLoadingPolicyTests:SimpleQueueLoadingPolicyTests;
+		public var specialHighestLowestQueueLoadingPolicyTests:SpecialHighestLowestQueueLoadingPolicyTests;
+		public var specialHighestLowestQueueLoadingPolicyTestsHighestLowest:SpecialHighestLowestQueueLoadingPolicyTestsHighestLowest;
 		
 		//org.vostokframework.domain.loading.states.fileloader
 		public var canceledFileLoaderTests:CanceledFileLoaderTests;

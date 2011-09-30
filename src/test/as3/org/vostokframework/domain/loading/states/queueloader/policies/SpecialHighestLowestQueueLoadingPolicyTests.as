@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Licensed under the MIT License
  * 
  * Copyright 2010 (c) Flávio Silva, http://flsilva.com
@@ -27,27 +27,41 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
-	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
+	import org.vostokframework.domain.loading.GlobalLoadingSettings;
+	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 
 	/**
-	 * Description
-	 * 
 	 * @author Flávio Silva
 	 */
-	public interface ILoadingPolicy
+	[TestCase]
+	public class SpecialHighestLowestQueueLoadingPolicyTests extends SimpleQueueLoadingPolicyTests
 	{
-		//function get localMaxConnections():int;
-		//function set localMaxConnections(value:int):void;
 		
-		//function get globalMaxConnections():int;
-		//function set globalMaxConnections(value:int):void;
+		public function SpecialHighestLowestQueueLoadingPolicyTests()
+		{
+			
+		}
 		
-		//function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader;
-		//function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;
-		//function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader;
-		function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void;
+		////////////////////
+		// HELPER METHODS //
+		////////////////////
+		
+		override protected function getPolicy(totalGlobalConnections:int):IQueueLoadingPolicy
+		{
+			var repository:StubLoaderRepository = new StubLoaderRepository();
+			repository.$openedConnections = totalGlobalConnections;
+			
+			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
+			globalLoadingSettings.maxConcurrentConnections = 6;
+			
+			var policy:IQueueLoadingPolicy = new SpecialHighestLowestQueueLoadingPolicy(repository, globalLoadingSettings);
+			
+			return policy;
+		}
+		
 	}
 
 }

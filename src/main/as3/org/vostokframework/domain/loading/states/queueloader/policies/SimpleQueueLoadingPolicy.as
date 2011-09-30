@@ -27,40 +27,35 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
 	import org.vostokframework.domain.loading.GlobalLoadingSettings;
-	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.LoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
+	 * description
+	 * 
 	 * @author Flávio Silva
 	 */
-	[TestCase]
-	public class ElaborateLoadingPolicyTests extends LoadingPolicyTests
+	public class SimpleQueueLoadingPolicy extends AbstractQueueLoadingPolicy
 	{
 		
-		public function ElaborateLoadingPolicyTests()
+		/**
+		 * Constructor, creates a new AssetRepositoryError instance.
+		 * 
+		 * @param message 	A string associated with the error object.
+		 */
+		public function SimpleQueueLoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
 		{
-			
+			super(loaderRepository, globalLoadingSettings);
 		}
 		
-		////////////////////
-		// HELPER METHODS //
-		////////////////////
-		
-		override protected function getPolicy(totalGlobalConnections:int):ILoadingPolicy
+		override protected function isNextLoaderEligible(loadingStatus:QueueLoadingStatus):Boolean
 		{
-			var repository:StubLoaderRepository = new StubLoaderRepository();
-			repository.$openedConnections = totalGlobalConnections;
-			
-			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
-			globalLoadingSettings.maxConcurrentConnections = 6;
-			
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(repository, globalLoadingSettings);
-			
-			return policy;
+			return true;
 		}
-		
+
 	}
 
 }

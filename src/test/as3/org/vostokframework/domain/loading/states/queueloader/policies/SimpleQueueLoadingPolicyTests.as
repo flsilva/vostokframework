@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader.policies
 {
 	import mockolate.mock;
 	import mockolate.nice;
@@ -41,13 +41,14 @@ package org.vostokframework.domain.loading.policies
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.StubLoaderRepository;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
 	 * @author Flávio Silva
 	 */
 	[TestCase]
-	public class LoadingPolicyTests
+	public class SimpleQueueLoadingPolicyTests
 	{
 		private static const LOADER_LOCALE:String = VostokFramework.CROSS_LOCALE_ID;
 		
@@ -65,7 +66,7 @@ package org.vostokframework.domain.loading.policies
 		
 		public var queueLoadingStatus:QueueLoadingStatus;
 		
-		public function LoadingPolicyTests()
+		public function SimpleQueueLoadingPolicyTests()
 		{
 			
 		}
@@ -108,7 +109,7 @@ package org.vostokframework.domain.loading.policies
 		// HELPER METHODS //
 		////////////////////
 		
-		protected function getPolicy(totalGlobalConnections:int):ILoadingPolicy
+		protected function getPolicy(totalGlobalConnections:int):IQueueLoadingPolicy
 		{
 			var repository:StubLoaderRepository = new StubLoaderRepository();
 			repository.$openedConnections = totalGlobalConnections;
@@ -116,7 +117,7 @@ package org.vostokframework.domain.loading.policies
 			var globalLoadingSettings:GlobalLoadingSettings = GlobalLoadingSettings.getInstance();
 			globalLoadingSettings.maxConcurrentConnections = 6;
 			
-			var policy:ILoadingPolicy = new LoadingPolicy(repository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = new SimpleQueueLoadingPolicy(repository, globalLoadingSettings);
 			
 			return policy;
 		}
@@ -134,7 +135,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_oneMaxLocalConnection_twoQueuedLoaders_verifyLoadWasCalledOnFirstLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			mock(_fakeLoader1).method("load").once();
 			policy.process(queueLoadingStatus, 1);
@@ -144,7 +145,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_oneMaxLocalConnection_twoQueuedLoaders_verifyLoadWasNotCalledOnSecondLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			mock(_fakeLoader2).method("load").never();
 			policy.process(queueLoadingStatus, 1);
@@ -154,7 +155,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_twoMaxLocalConnections_twoQueuedLoaders_verifyLoadWasCalledOnSecondLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			mock(_fakeLoader2).method("load").once();
 			policy.process(queueLoadingStatus, 2);
@@ -166,7 +167,7 @@ package org.vostokframework.domain.loading.policies
 		{
 			queueLoadingStatus.queuedLoaders.add(_fakeLoader3);
 			
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			mock(_fakeLoader3).method("load").never();
 			policy.process(queueLoadingStatus, 2);
@@ -181,7 +182,7 @@ package org.vostokframework.domain.loading.policies
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader1);
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
 			
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			policy.process(queueLoadingStatus, 2);
 			
@@ -199,7 +200,7 @@ package org.vostokframework.domain.loading.policies
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
 			
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			policy.process(queueLoadingStatus, 3);
 			
@@ -217,7 +218,7 @@ package org.vostokframework.domain.loading.policies
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader2);
 			queueLoadingStatus.loadingLoaders.add(_fakeLoader3);
 			
-			var policy:ILoadingPolicy = getPolicy(0);
+			var policy:IQueueLoadingPolicy = getPolicy(0);
 			
 			policy.process(queueLoadingStatus, 3);
 			
@@ -229,7 +230,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_sixMaxGlobalConnections_fiveTotalGlobalConnections_twoQueuedLoaders_verifyLoadWasCalledOnFirstLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(5);
+			var policy:IQueueLoadingPolicy = getPolicy(5);
 			
 			mock(_fakeLoader1).method("load").once();
 			policy.process(queueLoadingStatus, 3);
@@ -239,7 +240,7 @@ package org.vostokframework.domain.loading.policies
 		[Test]
 		public function process_sixMaxGlobalConnections_sixTotalGlobalConnections_twoQueuedLoaders_verifyLoadWasNotCalledOnFirstLoader(): void
 		{
-			var policy:ILoadingPolicy = getPolicy(6);
+			var policy:IQueueLoadingPolicy = getPolicy(6);
 			
 			mock(_fakeLoader1).method("load").never();
 			policy.process(queueLoadingStatus, 3);

@@ -41,7 +41,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -101,7 +101,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN), 50);
 			
-			var policy:ILoadingPolicy = getLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 		}
@@ -128,7 +128,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				.dispatches(new LoaderEvent(LoaderEvent.OPEN))
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
-			var policy:ILoadingPolicy = getLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -156,7 +156,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
 				.dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new HashMap()));
 			
-			var policy:ILoadingPolicy = getLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -179,7 +179,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			mock(fakeChildLoader2).method("load").once();
 			
-			var policy:ILoadingPolicy = getLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			
 			new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -187,9 +187,9 @@ package org.vostokframework.domain.loading.states.queueloader
 		}
 		
 		[Test]
-		public function integrationTesting_usingRealElaborateLoadingPolicy_stateWithOneHighPriorityChild_addHighestPriorityLoader_shouldStopHighPriorityLoader_highestPriorityLoaderDispatchesCompleteEvent_verifyIfHighPriorityLoaderWasCalled(): void
+		public function integrationTesting_usingRealSpecialHighestLowestQueueLoadingPolicy_stateWithOneHighPriorityChild_addHighestPriorityLoader_shouldStopHighPriorityLoader_highestPriorityLoaderDispatchesCompleteEvent_verifyIfHighPriorityLoaderWasCalled(): void
 		{
-			// INTEGRATION TESTING USING REAL ElaborateLoadingPolicy DEPENDENCY
+			// INTEGRATION TESTING USING REAL SpecialHighestLowestQueueLoadingPolicy DEPENDENCY
 			// NOT USING getState() HELPER METHOD
 			
 			var highLoader:ILoader = getFakeLoader("high-loader", 1, LoadPriority.HIGH);
@@ -199,7 +199,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			stub(highLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = getElaborateLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getSpecialHighestLowestQueueLoadingPolicy(6);
 			
 			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			
@@ -216,9 +216,9 @@ package org.vostokframework.domain.loading.states.queueloader
 		}
 		
 		[Test]
-		public function integrationTesting_usingRealElaborateLoadingPolicy_stateWithOneLowestPriorityChild_addLowPriorityLoader_shouldStopLowestPriorityLoader_lowPriorityLoaderDispatchesCompleteEvent_verifyIfLowestPriorityLoaderWasCalled(): void
+		public function integrationTesting_usingRealSpecialHighestLowestQueueLoadingPolicy_stateWithOneLowestPriorityChild_addLowPriorityLoader_shouldStopLowestPriorityLoader_lowPriorityLoaderDispatchesCompleteEvent_verifyIfLowestPriorityLoaderWasCalled(): void
 		{
-			// INTEGRATION TESTING USING REAL ElaborateLoadingPolicy DEPENDENCY
+			// INTEGRATION TESTING USING REAL SpecialHighestLowestQueueLoadingPolicy DEPENDENCY
 			// NOT USING getState() HELPER METHOD
 			
 			var lowestLoader:ILoader = getFakeLoader("lowest-loader", 1, LoadPriority.LOWEST);
@@ -228,7 +228,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			stub(lowestLoader).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = getElaborateLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getSpecialHighestLowestQueueLoadingPolicy(6);
 			
 			var state:ILoaderState = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 3);
 			

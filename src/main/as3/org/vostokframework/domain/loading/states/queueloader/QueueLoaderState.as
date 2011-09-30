@@ -40,7 +40,6 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.errors.DuplicateLoaderError;
 	import org.vostokframework.domain.loading.errors.LoaderNotFoundError;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
 
 	import flash.errors.IllegalOperationError;
 
@@ -59,7 +58,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		private var _loader:ILoaderStateTransition;
 		private var _loadingStatus:QueueLoadingStatus;
 		private var _maxConcurrentConnections:int;
-		private var _policy:ILoadingPolicy;
+		private var _policy:IQueueLoadingPolicy;
 		
 		/**
 		 * @private
@@ -68,7 +67,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		
 		protected function get loadingStatus():QueueLoadingStatus { return _loadingStatus; }
 		
-		protected function get policy():ILoadingPolicy { return _policy; }
+		protected function get policy():IQueueLoadingPolicy { return _policy; }
 		
 		public function get isLoading():Boolean { return false; }
 		
@@ -86,7 +85,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function QueueLoaderState(loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy, maxConcurrentConnections:int)
+		public function QueueLoaderState(loadingStatus:QueueLoadingStatus, policy:IQueueLoadingPolicy, maxConcurrentConnections:int)
 		{
 			if (ReflectionUtil.classPathEquals(this, QueueLoaderState))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 			if (!loadingStatus) throw new ArgumentError("Argument <loadingStatus> must not be null.");

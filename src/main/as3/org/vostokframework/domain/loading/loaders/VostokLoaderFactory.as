@@ -39,8 +39,8 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
-	import org.vostokframework.domain.loading.policies.ElaborateLoadingPolicy;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.settings.LoadingCacheSettings;
 	import org.vostokframework.domain.loading.settings.LoadingExtraSettings;
 	import org.vostokframework.domain.loading.settings.LoadingMediaSettings;
@@ -92,7 +92,7 @@ package org.vostokframework.domain.loading.loaders
 			
 			if (!priority) priority = LoadPriority.MEDIUM;
 			
-			var policy:ILoadingPolicy = createPolicy(loaderRepository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = createPolicy(loaderRepository, globalLoadingSettings);
 			var state:ILoaderState = createCompositeLoaderState(policy, localMaxConnections);
 			
 			return instantiateComposite(identification, state, priority);
@@ -128,7 +128,7 @@ package org.vostokframework.domain.loading.loaders
 			_fileLoadingAlgorithmFactory = factory;
 		}
 		
-		protected function createCompositeLoaderState(policy:ILoadingPolicy, localMaxConnections:int):ILoaderState
+		protected function createCompositeLoaderState(policy:IQueueLoadingPolicy, localMaxConnections:int):ILoaderState
 		{
 			var queueLoadingStatus:QueueLoadingStatus = new QueueLoadingStatus();
 			var state:ILoaderState = new QueuedQueueLoader(queueLoadingStatus, policy, localMaxConnections);
@@ -198,9 +198,9 @@ package org.vostokframework.domain.loading.loaders
 			return url;
 		}
 		
-		protected function createPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings):ILoadingPolicy
+		protected function createPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings):IQueueLoadingPolicy
 		{
-			var policy:ILoadingPolicy = new ElaborateLoadingPolicy(loaderRepository, globalLoadingSettings);
+			var policy:IQueueLoadingPolicy = new SpecialHighestLowestQueueLoadingPolicy(loaderRepository, globalLoadingSettings);
 			return policy;
 		}
 		

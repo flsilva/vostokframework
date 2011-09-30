@@ -33,7 +33,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.ILoaderStateTransition;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 
 	/**
 	 * description
@@ -79,7 +79,7 @@ package org.vostokframework.domain.loading.states.queueloader
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoadingQueueLoader(loader:ILoaderStateTransition, loadingStatus:QueueLoadingStatus, policy:ILoadingPolicy, maxConcurrentConnections:int)
+		public function LoadingQueueLoader(loader:ILoaderStateTransition, loadingStatus:QueueLoadingStatus, policy:IQueueLoadingPolicy, maxConcurrentConnections:int)
 		{
 			super(loadingStatus, policy, maxConcurrentConnections);
 			

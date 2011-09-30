@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed under the MIT License
  * 
  * Copyright 2010 (c) Flávio Silva, http://flsilva.com
@@ -27,35 +27,27 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.domain.loading.policies
+package org.vostokframework.domain.loading.states.queueloader
 {
-	import org.vostokframework.domain.loading.GlobalLoadingSettings;
-	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 
 	/**
-	 * description
+	 * Description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingPolicy extends AbstractLoadingPolicy
+	public interface IQueueLoadingPolicy
 	{
+		//function get localMaxConnections():int;
+		//function set localMaxConnections(value:int):void;
 		
-		/**
-		 * Constructor, creates a new AssetRepositoryError instance.
-		 * 
-		 * @param message 	A string associated with the error object.
-		 */
-		public function LoadingPolicy(loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings)
-		{
-			super(loaderRepository, globalLoadingSettings);
-		}
+		//function get globalMaxConnections():int;
+		//function set globalMaxConnections(value:int):void;
 		
-		override protected function isNextLoaderEligible(loadingStatus:QueueLoadingStatus):Boolean
-		{
-			return true;
-		}
-
+		//function getNext(algorithm:LoadingAlgorithm, queue:IQueue, loadingLoaders:ICollection):ILoader;
+		//function getNext(state:ILoaderState, queue:IQueue, loadingLoaders:ICollection):ILoader;
+		//function getNext(state:ILoaderState, loadingStatus:QueueLoadingStatus):ILoader;
+		function process(loadingStatus:QueueLoadingStatus, localMaxConnections:int):void;
 	}
 
 }

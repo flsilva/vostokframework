@@ -36,7 +36,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderState;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.policies.ILoadingPolicy;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -81,7 +81,7 @@ package org.vostokframework.domain.loading.states.queueloader
 			
 			stub(fakeChildLoader1).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING));
 			
-			var policy:ILoadingPolicy = getLoadingPolicy(6);
+			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			
 			state = new LoadingQueueLoader(fakeQueueLoader, fakeLoadingStatus, policy, 2);
 			state.stopChild(fakeChildLoader2.identification);
