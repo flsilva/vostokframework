@@ -31,7 +31,7 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
-	import org.vostokframework.domain.loading.states.fileloader.StubNativeDataLoader;
+	import org.vostokframework.domain.loading.states.fileloader.adapters.StubDataLoaderAdapter;
 
 	/**
 	 * description
@@ -62,7 +62,7 @@ package org.vostokframework.domain.loading.loaders
 			url = null;//just to avoid compiler warnings
 			settings = null;//just to avoid compiler warnings
 			
-			var dataLoader:StubNativeDataLoader = new StubNativeDataLoader();
+			var dataLoader:StubDataLoaderAdapter = new StubDataLoaderAdapter();
 			//dataLoader.openBehaviorSync = _openBehaviorSync;
 			dataLoader.successBehaviorAsync = _successBehaviorAsync;
 			//dataLoader.successBehaviorSync = _successBehaviorSync;

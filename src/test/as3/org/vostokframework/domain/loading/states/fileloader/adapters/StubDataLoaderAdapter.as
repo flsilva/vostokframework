@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.adapters
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -40,7 +40,7 @@ package org.vostokframework.domain.loading.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class StubNativeDataLoader extends NativeDataLoader
+	public class StubDataLoaderAdapter extends DataLoaderAdapter
 	{
 		
 		private var _dispatcher:IEventDispatcher;
@@ -61,7 +61,7 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * description
 		 * 
 		 */
-		public function StubNativeDataLoader()
+		public function StubDataLoaderAdapter()
 		{
 			_dispatcher = new EventDispatcher();
 		}

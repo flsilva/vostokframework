@@ -28,7 +28,6 @@
  */
 package org.vostokframework.domain.loading.states.fileloader.adapters
 {
-	import org.vostokframework.domain.loading.states.fileloader.NativeDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmMediaEvent;
 
 	import flash.events.IEventDispatcher;
@@ -41,7 +40,7 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class NativeNetStreamAdapter extends NativeDataLoader
+	public class NativeNetStreamAdapter extends DataLoaderAdapter
 	{
 		/**
 		 * @private

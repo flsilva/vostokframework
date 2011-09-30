@@ -26,12 +26,14 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.domain.loading.states.fileloader
+package org.vostokframework.domain.loading.states.fileloader.adapters
 {
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 
+	import flash.errors.IllegalOperationError;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 
@@ -40,7 +42,7 @@ package org.vostokframework.domain.loading.states.fileloader
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class NativeDataLoader implements IDataLoader
+	public class DataLoaderAdapter implements IDataLoader
 	{
 		/**
 		 * @private
@@ -54,9 +56,9 @@ package org.vostokframework.domain.loading.states.fileloader
 		 * @param request
 		 * @param context
 		 */
-		public function NativeDataLoader()
+		public function DataLoaderAdapter()
 		{
-			
+			if (ReflectionUtil.classPathEquals(this, DataLoaderAdapter))  throw new IllegalOperationError(ReflectionUtil.getClassName(this) + " is an abstract class and shouldn't be directly instantiated.");
 		}
 		
 		public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void

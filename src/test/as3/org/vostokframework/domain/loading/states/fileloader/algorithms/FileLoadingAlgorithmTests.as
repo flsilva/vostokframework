@@ -34,8 +34,8 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 	import mockolate.stub;
 
 	import org.flexunit.async.Async;
+	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
-	import org.vostokframework.domain.loading.states.fileloader.NativeDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
 
@@ -58,7 +58,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		public var algorithm:IFileLoadingAlgorithm;
 		
 		[Mock(inject="false")]
-		public var fakeDataLoader:NativeDataLoader;
+		public var fakeDataLoader:IDataLoader;
 		
 		public function FileLoadingAlgorithmTests()
 		{
@@ -72,7 +72,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		[Before]
 		public function setUp(): void
 		{
-			fakeDataLoader = nice(NativeDataLoader);
+			fakeDataLoader = nice(IDataLoader);
 			stub(fakeDataLoader).asEventDispatcher();
 			stub(fakeDataLoader).method("getData").returns(new MovieClip());
 			
