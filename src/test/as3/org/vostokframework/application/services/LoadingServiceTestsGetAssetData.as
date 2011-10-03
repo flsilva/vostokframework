@@ -62,13 +62,13 @@ package org.vostokframework.application.services
 			service.getAssetData(null);
 		}
 		
-		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError")]
 		public function getAssetData_notExistingAsset_ThrowsError(): void
 		{
 			service.getAssetData(asset1.identification.id);
 		}
 		
-		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError")]
 		public function getAssetData_notLoadedAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();
@@ -79,7 +79,7 @@ package org.vostokframework.application.services
 			service.getAssetData(asset2.identification.id, asset2.identification.locale);
 		}
 		
-		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError")]
 		public function getAssetData_loadingAsset_ThrowsError(): void
 		{
 			var list:IList = new ArrayList();

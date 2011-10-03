@@ -27,7 +27,7 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-package org.vostokframework.application.report.errors
+package org.vostokframework.application.cache.errors
 {
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.errors.VostokFrameworkError;
@@ -37,7 +37,7 @@ package org.vostokframework.application.report.errors
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadedAssetDataNotFoundError extends VostokFrameworkError
+	public class CachedAssetDataNotFoundError extends VostokFrameworkError
 	{
 		private var _identification:VostokIdentification;
 		
@@ -48,10 +48,10 @@ package org.vostokframework.application.report.errors
 		 * 
 		 * @param message 	A string associated with the error object.
 		 */
-		public function LoadedAssetDataNotFoundError(identification:VostokIdentification, message:String = null)
+		public function CachedAssetDataNotFoundError(identification:VostokIdentification, message:String = null)
 		{
 			super(message);
-			name = "LoadedAssetDataNotFoundError";
+			name = "CachedAssetDataNotFoundError";
 			_identification = identification;
 		}
 

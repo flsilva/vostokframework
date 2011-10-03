@@ -31,6 +31,8 @@ package org.vostokframework.application
 	import org.as3coreaddendum.errors.IllegalStateError;
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
+	import org.vostokframework.application.cache.CachedAssetData;
+	import org.vostokframework.application.cache.CachedAssetDataRepository;
 	import org.vostokframework.application.events.AssetLoadingEvent;
 	import org.vostokframework.application.events.GlobalLoadingEvent;
 	import org.vostokframework.application.events.QueueLoadingEvent;
@@ -40,8 +42,6 @@ package org.vostokframework.application
 	import org.vostokframework.application.monitoring.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.application.monitoring.monitors.LoadingMonitorWrapper;
 	import org.vostokframework.application.monitoring.monitors.dispatchers.GlobalLoadingMonitorDispatcher;
-	import org.vostokframework.application.report.LoadedAssetReport;
-	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.application.services.AssetService;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.loading.GlobalLoadingSettings;
@@ -67,12 +67,12 @@ package org.vostokframework.application
 		private static const GLOBAL_QUEUE_LOADER_ID:String = "GlobalQueueLoader";
 		private static var _instance:LoadingContext = new LoadingContext();
 		
+		private var _cachedAssetDataRepository:CachedAssetDataRepository;
 		private var _loadingSettingsRepository:LoadingSettingsRepository;
 		private var _globalLoadingSettings:GlobalLoadingSettings;
 		private var _globalQueueLoader:ILoader;
 		private var _globalQueueLoadingMonitor:ILoadingMonitor;
 		private var _globalQueueLoadingMonitorWrapper:LoadingMonitorWrapper;
-		private var _loadedAssetRepository:LoadedAssetRepository;
 		private var _loaderFactory:ILoaderFactory;
 		private var _loaderRepository:LoaderRepository;
 		private var _loadingMonitorRepository:LoadingMonitorRepository;
@@ -87,6 +87,8 @@ package org.vostokframework.application
 		{
 			_created = true;
 		}
+		
+		public function get cachedAssetDataRepository(): CachedAssetDataRepository { return _cachedAssetDataRepository; }
 		
 		public function get loadingSettingsRepository(): LoadingSettingsRepository { return _loadingSettingsRepository; }
 		
@@ -103,8 +105,6 @@ package org.vostokframework.application
 		//public function get globalQueueLoadingMonitor(): QueueLoadingMonitor { return _globalQueueLoadingMonitor; }
 		
 		public function get globalQueueLoadingMonitor(): ILoadingMonitor { return _globalQueueLoadingMonitorWrapper; }
-		
-		public function get loadedAssetRepository(): LoadedAssetRepository { return _loadedAssetRepository; }
 		
 		public function get loaderRepository(): LoaderRepository { return _loaderRepository; }
 		
@@ -127,9 +127,9 @@ package org.vostokframework.application
 			_globalLoadingSettings = GlobalLoadingSettings.getInstance();
 			_maxConcurrentQueues = 3;
 			
+			_cachedAssetDataRepository = new CachedAssetDataRepository();
 			_loadingSettingsRepository = new LoadingSettingsRepository();
 			_loaderFactory = new VostokLoaderFactory();
-			_loadedAssetRepository = new LoadedAssetRepository();
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
@@ -238,12 +238,12 @@ package org.vostokframework.application
 		 * 
 		 * @param repository
 		 */
-		public function setLoadedAssetRepository(repository:LoadedAssetRepository): void
+		public function setCachedAssetDataRepository(repository:CachedAssetDataRepository): void
 		{
 			if (!repository) throw new ArgumentError("Argument <repository> must not be null.");
 			
-			if (_loadedAssetRepository) _loadedAssetRepository.clear();
-			_loadedAssetRepository = repository;
+			if (_cachedAssetDataRepository) _cachedAssetDataRepository.clear();
+			_cachedAssetDataRepository = repository;
 		}
 		
 		/**
@@ -374,8 +374,8 @@ package org.vostokframework.application
 				throw new IllegalOperationError(errorMessage); 
 			}
 			
-			var loadedAssetReport:LoadedAssetReport = new LoadedAssetReport(asset.identification, queueLoader.identification, event.assetData, event.assetType, src);
-			loadedAssetRepository.add(loadedAssetReport); 
+			var cachedAssetData:CachedAssetData = new CachedAssetData(asset.identification, queueLoader.identification, event.assetData, event.assetType, src);
+			cachedAssetDataRepository.add(cachedAssetData); 
 		}
 
 	}

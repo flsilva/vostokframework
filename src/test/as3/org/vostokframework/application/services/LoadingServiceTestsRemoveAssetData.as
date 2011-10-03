@@ -62,7 +62,7 @@ package org.vostokframework.application.services
 			service.removeAssetData(null);
 		}
 		
-		[Test(expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(expects="org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError")]
 		public function removeAssetData_notLoadedAsset_ThrowsError(): void
 		{
 			service.removeAssetData(asset1.identification.id);

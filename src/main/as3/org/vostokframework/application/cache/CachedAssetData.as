@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.report
+package org.vostokframework.application.cache
 {
 	import org.as3utils.StringUtil;
 	import org.vostokframework.VostokIdentification;
@@ -37,7 +37,7 @@ package org.vostokframework.application.report
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadedAssetReport
+	public class CachedAssetData
 	{
 		/**
 		 * @private
@@ -91,7 +91,7 @@ package org.vostokframework.application.report
 		 * @param name
 		 * @param ordinal
 		 */
-		public function LoadedAssetReport(identification:VostokIdentification, queueIdentification:VostokIdentification, data:*, type:AssetType, src:String)
+		public function CachedAssetData(identification:VostokIdentification, queueIdentification:VostokIdentification, data:*, type:AssetType, src:String)
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			if (!queueIdentification) throw new ArgumentError("Argument <queueIdentification> must not be null.");

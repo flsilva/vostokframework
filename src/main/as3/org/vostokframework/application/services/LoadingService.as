@@ -40,16 +40,16 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.application.cache.CachedAssetData;
+	import org.vostokframework.application.cache.CachedAssetDataRepository;
+	import org.vostokframework.application.cache.errors.AssetDataAlreadyCachedError;
+	import org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError;
 	import org.vostokframework.application.monitoring.ILoadingMonitor;
 	import org.vostokframework.application.monitoring.monitors.CompositeLoadingMonitor;
 	import org.vostokframework.application.monitoring.monitors.LoadingMonitor;
 	import org.vostokframework.application.monitoring.monitors.LoadingMonitorDispatcher;
 	import org.vostokframework.application.monitoring.monitors.dispatchers.AssetLoadingMonitorDispatcher;
 	import org.vostokframework.application.monitoring.monitors.dispatchers.QueueLoadingMonitorDispatcher;
-	import org.vostokframework.application.report.LoadedAssetReport;
-	import org.vostokframework.application.report.LoadedAssetRepository;
-	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
-	import org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
@@ -78,7 +78,7 @@ package org.vostokframework.application.services
 		
 		private function get globalQueueLoader():ILoader { return _context.globalQueueLoader; }
 		
-		private function get loadedAssetRepository():LoadedAssetRepository { return _context.loadedAssetRepository; }
+		private function get cachedAssetDataRepository():CachedAssetDataRepository { return _context.cachedAssetDataRepository; }
 		
 		private function get loaderRepository():LoaderRepository { return _context.loaderRepository; }
 		
@@ -190,7 +190,7 @@ package org.vostokframework.application.services
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
 			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
-			return loadedAssetRepository.exists(identification);
+			return cachedAssetDataRepository.exists(identification);
 		}
 		
 		/**
@@ -222,17 +222,17 @@ package org.vostokframework.application.services
 			if (!locale) locale = VostokFramework.CROSS_LOCALE_ID;
 			
 			var identification:VostokIdentification = new VostokIdentification(assetId, locale);
-			if(!loadedAssetRepository.exists(identification))
+			if(!cachedAssetDataRepository.exists(identification))
 			{
 				var message:String = "There is no data cached for an Asset object with identification:\n";
 				message += "<" + identification + ">\n";
 				message += "Use method <LoadingService().containsAssetData()> to check if an Asset object was loaded and cached.\n";
 				
-				throw new LoadedAssetDataNotFoundError(identification, message);
+				throw new CachedAssetDataNotFoundError(identification, message);
 			}
 			
-			var report:LoadedAssetReport = loadedAssetRepository.find(identification);
-			return report.data;
+			var cachedAssetData:CachedAssetData = cachedAssetDataRepository.find(identification);
+			return cachedAssetData.data;
 		}
 		
 		/**
@@ -403,7 +403,7 @@ package org.vostokframework.application.services
 			var globalLoadingSettings:GlobalLoadingSettings = LoadingContext.getInstance().globalLoadingSettings;
 			var queueLoader:ILoader = loaderFactory.createComposite(identification, loaderRepository, globalLoadingSettings, priority, concurrentConnections);
 			
-			//throws org.vostokframework.application.report.errors.DuplicateLoadedAssetError
+			//throws org.vostokframework.application.cache.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
@@ -475,7 +475,7 @@ package org.vostokframework.application.services
 			//if there's any duplicate Asset object
 			validateDuplicateAsset(assets);
 			
-			//throws org.vostokframework.application.report.errors.DuplicateLoadedAssetError
+			//throws org.vostokframework.application.cache.errors.DuplicateLoadedAssetError
 			//if some Asset object is already loaded and cached internally
 			checkIfSomeAssetIsAlreadyLoadedAndCached(assets);
 			
@@ -515,10 +515,10 @@ package org.vostokframework.application.services
 				message += "<" + identification + ">\n";
 				message += "Use method <LoadingService().containsAssetData()> to check if an Asset object was loaded and cached.\n";
 				
-				throw new LoadedAssetDataNotFoundError(identification, message);
+				throw new CachedAssetDataNotFoundError(identification, message);
 			}
 			
-			loadedAssetRepository.remove(identification);
+			cachedAssetDataRepository.remove(identification);
 		}
 		
 		/**
@@ -582,19 +582,19 @@ package org.vostokframework.application.services
 			{
 				asset = it.next();
 				
-				if (loadedAssetRepository.exists(asset.identification))
+				if (cachedAssetDataRepository.exists(asset.identification))
 				{
-					var report:LoadedAssetReport = loadedAssetRepository.find(asset.identification);
+					var cachedAssetData:CachedAssetData = cachedAssetDataRepository.find(asset.identification);
 					
 					var errorMessage:String = "The Asset object with identification:\n";
 					errorMessage += "<" + asset.identification + ">\n";
 					errorMessage += "Is already loaded and cached internally.\n";
-					errorMessage += "It was loaded by a ILoader object with identification:\n";
-					errorMessage += "<" + report.queueIdentification + ">\n";
+					errorMessage += "It belonged to a queue loader object with identification:\n";
+					errorMessage += "<" + cachedAssetData.queueIdentification + ">\n";
 					errorMessage += "Use the method <LoadingService().containsAssetData()> to find it out.\n";
 					errorMessage += "Also, cached asset data can be retrieved using <LoadingService().getAssetData()>.";
 					
-					throw new DuplicateLoadedAssetError(asset.identification, errorMessage);
+					throw new AssetDataAlreadyCachedError(asset.identification, errorMessage);
 				}
 			}
 		}

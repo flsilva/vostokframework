@@ -34,8 +34,8 @@ package org.vostokframework.application.services
 	import org.vostokframework.application.AssetsContext;
 	import org.vostokframework.application.LoadingContext;
 	import org.vostokframework.application.LoadingSettingsRepository;
+	import org.vostokframework.application.cache.CachedAssetDataRepository;
 	import org.vostokframework.application.monitoring.LoadingMonitorRepository;
-	import org.vostokframework.application.report.LoadedAssetRepository;
 	import org.vostokframework.domain.assets.Asset;
 	import org.vostokframework.domain.assets.AssetPackage;
 	import org.vostokframework.domain.assets.AssetPackageRepository;
@@ -78,7 +78,7 @@ package org.vostokframework.application.services
 			LoadingContext.getInstance().loaderFactory.fileLoadingAlgorithmFactory.setDataLoaderFactory(new StubDataLoaderFactory());
 			
 			LoadingContext.getInstance().setLoadingSettingsRepository(new LoadingSettingsRepository());
-			LoadingContext.getInstance().setLoadedAssetRepository(new LoadedAssetRepository());
+			LoadingContext.getInstance().setCachedAssetDataRepository(new CachedAssetDataRepository());
 			LoadingContext.getInstance().setLoaderRepository(new LoaderRepository());
 			LoadingContext.getInstance().setLoadingMonitorRepository(new LoadingMonitorRepository());
 			LoadingContext.getInstance().globalLoadingSettings.maxConcurrentConnections = 4;

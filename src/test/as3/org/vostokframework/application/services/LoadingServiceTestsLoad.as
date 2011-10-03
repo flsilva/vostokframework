@@ -36,8 +36,8 @@ package org.vostokframework.application.services
 	import org.vostokframework.VostokFramework;
 	import org.vostokframework.VostokIdentification;
 	import org.vostokframework.application.LoadingContext;
+	import org.vostokframework.application.cache.CachedAssetData;
 	import org.vostokframework.application.monitoring.ILoadingMonitor;
-	import org.vostokframework.application.report.LoadedAssetReport;
 	import org.vostokframework.domain.assets.AssetType;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
@@ -95,12 +95,12 @@ package org.vostokframework.application.services
 			service.load("another-queue-id", list);
 		}
 		
-		[Test(expects="org.vostokframework.application.report.errors.DuplicateLoadedAssetError")]
+		[Test(expects="org.vostokframework.application.cache.errors.AssetDataAlreadyCachedError")]
 		public function load_assetAlreadyLoadedAndCached_ThrowsError(): void
 		{
 			var queueIdentification:VostokIdentification = new VostokIdentification(QUEUE1_ID, VostokFramework.CROSS_LOCALE_ID);
-			var report:LoadedAssetReport = new LoadedAssetReport(asset1.identification, queueIdentification, new MovieClip(), AssetType.SWF, asset1.src);
-			LoadingContext.getInstance().loadedAssetRepository.add(report);
+			var cachedAssetData:CachedAssetData = new CachedAssetData(asset1.identification, queueIdentification, new MovieClip(), AssetType.SWF, asset1.src);
+			LoadingContext.getInstance().cachedAssetDataRepository.add(cachedAssetData);
 			
 			var list:IList = new ArrayList();
 			list.add(asset1);
@@ -366,7 +366,7 @@ package org.vostokframework.application.services
 			timer.start();
 		}
 		
-		[Test(async, timeout=1000, expects="org.vostokframework.application.report.errors.LoadedAssetDataNotFoundError")]
+		[Test(async, timeout=1000, expects="org.vostokframework.application.cache.errors.CachedAssetDataNotFoundError")]
 		public function load_validArguments_queueLoadingCompletesButNotCacheLoadedAsset_callGetAssetData_ThrowsError(): void
 		{
 			turnOnDataLoaderSuccessBehaviorAsync();

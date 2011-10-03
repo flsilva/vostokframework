@@ -26,7 +26,7 @@
  * 
  * http://www.opensource.org/licenses/mit-license.php
  */
-package org.vostokframework.application.report
+package org.vostokframework.application.cache
 {
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
@@ -35,23 +35,23 @@ package org.vostokframework.application.report
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
-	import org.vostokframework.application.report.errors.DuplicateLoadedAssetError;
+	import org.vostokframework.application.cache.errors.AssetDataAlreadyCachedError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadedAssetRepository
+	public class CachedAssetDataRepository
 	{
 		private var _reportMap:IMap;//key = VostokIdentification | value = LoadedAssetReport 
 
 		/**
 		 * description
 		 */
-		public function LoadedAssetRepository()
+		public function CachedAssetDataRepository()
 		{
-			_reportMap = new TypedMap(new HashMap(), VostokIdentification, LoadedAssetReport);
+			_reportMap = new TypedMap(new HashMap(), VostokIdentification, CachedAssetData);
 		}
 		
 		/**
@@ -60,7 +60,7 @@ package org.vostokframework.application.report
 		 * @throws 	ArgumentError 	if the <code>report</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function add(report:LoadedAssetReport): void
+		public function add(report:CachedAssetData): void
 		{
 			if (!report) throw new ArgumentError("Argument <report> must not be null.");
 			
@@ -70,7 +70,7 @@ package org.vostokframework.application.report
 				message += "<" + report.identification + ">\n";
 				message += "Use the method <LoadedAssetRepository().exists()> to check if a LoadedAssetReport object already exists.\n";
 				
-				throw new DuplicateLoadedAssetError(report.identification, message);
+				throw new AssetDataAlreadyCachedError(report.identification, message);
 			}
 			
 			_reportMap.put(report.identification, report);
@@ -107,7 +107,7 @@ package org.vostokframework.application.report
 		 * @throws 	ArgumentError 	if the <code>identification</code> argument is <code>null</code>.
 		 * @return
 		 */
-		public function find(identification:VostokIdentification): LoadedAssetReport
+		public function find(identification:VostokIdentification): CachedAssetData
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
