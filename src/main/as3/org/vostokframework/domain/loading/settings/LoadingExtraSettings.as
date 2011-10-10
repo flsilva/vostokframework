@@ -28,27 +28,18 @@
  */
 package org.vostokframework.domain.loading.settings
 {
+	import org.as3coreaddendum.system.ICloneable;
+
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingExtraSettings
+	public class LoadingExtraSettings implements ICloneable
 	{
 		private var _baseURL:String;
 		private var _userDataContainer:*;
 		private var _userTotalBytes:int;
-
-		/**
-		 * description
-		 * 
-		 * @param userTotalBytes
-		 * @param userDataContainer
-		 */
-		public function LoadingExtraSettings()
-		{
-			
-		}
 		
 		/**
 		 * description
@@ -70,7 +61,27 @@ package org.vostokframework.domain.loading.settings
 		public function get userTotalBytes(): int { return _userTotalBytes; }
 		
 		public function set userTotalBytes(value:int): void { _userTotalBytes = value; }
-
+		
+		/**
+		 * description
+		 * 
+		 * @param userTotalBytes
+		 * @param userDataContainer
+		 */
+		public function LoadingExtraSettings()
+		{
+			
+		}
+		
+		public function clone():*
+		{
+			var extra:LoadingExtraSettings = new LoadingExtraSettings();
+			extra.baseURL = baseURL;
+			extra.userDataContainer = userDataContainer;
+			extra.userTotalBytes = userTotalBytes;
+			return extra;
+		}
+		
 	}
 
 }

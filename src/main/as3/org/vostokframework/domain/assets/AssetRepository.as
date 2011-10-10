@@ -31,7 +31,7 @@ package org.vostokframework.domain.assets
 	import org.as3collections.IList;
 	import org.as3collections.IMap;
 	import org.as3collections.lists.ReadOnlyArrayList;
-	import org.as3collections.maps.HashMap;
+	import org.as3collections.maps.ArrayListMap;
 	import org.as3collections.maps.TypedMap;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.VostokIdentification;
@@ -44,14 +44,14 @@ package org.vostokframework.domain.assets
 	 */
 	public class AssetRepository
 	{
-		private var _assetMap:IMap;//key = String (Asset().identification().toString()) | value = Asset 
+		private var _assetMap:IMap;//<String,Asset> - where String = Asset().identification().toString()
 
 		/**
 		 * description
 		 */
 		public function AssetRepository()
 		{
-			_assetMap = new TypedMap(new HashMap(), String, Asset);
+			_assetMap = new TypedMap(new ArrayListMap(), String, Asset);
 		}
 		
 		/**

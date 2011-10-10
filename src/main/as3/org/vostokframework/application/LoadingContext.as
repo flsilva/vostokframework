@@ -47,10 +47,12 @@ package org.vostokframework.application
 	import org.vostokframework.domain.loading.GlobalLoadingSettings;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
+	import org.vostokframework.domain.loading.ILoadingSettingsFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
 	import org.vostokframework.domain.loading.loaders.VostokLoaderFactory;
 	import org.vostokframework.domain.loading.settings.LoadingSettings;
+	import org.vostokframework.domain.loading.settings.LoadingSettingsFactory;
 
 	import flash.errors.IllegalOperationError;
 
@@ -68,6 +70,7 @@ package org.vostokframework.application
 		private static var _instance:LoadingContext = new LoadingContext();
 		
 		private var _cachedAssetDataRepository:CachedAssetDataRepository;
+		private var _loadingSettingsFactory:ILoadingSettingsFactory;
 		private var _loadingSettingsRepository:LoadingSettingsRepository;
 		private var _globalLoadingSettings:GlobalLoadingSettings;
 		private var _globalQueueLoader:ILoader;
@@ -89,6 +92,8 @@ package org.vostokframework.application
 		}
 		
 		public function get cachedAssetDataRepository(): CachedAssetDataRepository { return _cachedAssetDataRepository; }
+		
+		public function get loadingSettingsFactory(): ILoadingSettingsFactory { return _loadingSettingsFactory; }
 		
 		public function get loadingSettingsRepository(): LoadingSettingsRepository { return _loadingSettingsRepository; }
 		
@@ -128,8 +133,9 @@ package org.vostokframework.application
 			_maxConcurrentQueues = 3;
 			
 			_cachedAssetDataRepository = new CachedAssetDataRepository();
+			_loadingSettingsFactory = new LoadingSettingsFactory();
 			_loadingSettingsRepository = new LoadingSettingsRepository();
-			_loaderFactory = new VostokLoaderFactory();
+			_loaderFactory = new VostokLoaderFactory(loadingSettingsFactory);
 			_loaderRepository = new LoaderRepository();
 			_loadingMonitorRepository = new LoadingMonitorRepository();
 			
@@ -146,6 +152,17 @@ package org.vostokframework.application
 		public static function getInstance(): LoadingContext
 		{
 			return _instance;
+		}
+		
+		/**
+		 * description
+		 * 
+		 * @param factory
+		 */
+		public function setLoadingSettingsFactory(factory:ILoadingSettingsFactory): void
+		{
+			if (!factory) throw new ArgumentError("Argument <factory> must not be null.");
+			_loadingSettingsFactory = factory;
 		}
 		
 		/**

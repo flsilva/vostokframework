@@ -37,10 +37,9 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.ILoaderFactory;
 	import org.vostokframework.domain.loading.ILoaderState;
+	import org.vostokframework.domain.loading.ILoadingSettingsFactory;
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.LoaderRepository;
-	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicy;
-	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.settings.LoadingCacheSettings;
 	import org.vostokframework.domain.loading.settings.LoadingExtraSettings;
 	import org.vostokframework.domain.loading.settings.LoadingMediaSettings;
@@ -51,8 +50,10 @@ package org.vostokframework.domain.loading.loaders
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithmFactory;
 	import org.vostokframework.domain.loading.states.fileloader.QueuedFileLoader;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.FileLoadingAlgorithmFactory;
+	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 	import org.vostokframework.domain.loading.states.queueloader.QueueLoadingStatus;
 	import org.vostokframework.domain.loading.states.queueloader.QueuedQueueLoader;
+	import org.vostokframework.domain.loading.states.queueloader.policies.SpecialHighestLowestQueueLoadingPolicy;
 
 	/**
 	 * description
@@ -64,10 +65,8 @@ package org.vostokframework.domain.loading.loaders
 		/**
 		 * @private
 		 */
-		private var _defaultLoadingSettings:LoadingSettings;
 		private var _fileLoadingAlgorithmFactory:IFileLoadingAlgorithmFactory;
-		
-		public function get defaultLoadingSettings(): LoadingSettings { return _defaultLoadingSettings; }
+		private var _loadingSettingsFactory:ILoadingSettingsFactory;
 		
 		public function get fileLoadingAlgorithmFactory(): IFileLoadingAlgorithmFactory { return _fileLoadingAlgorithmFactory; }
 		
@@ -77,12 +76,12 @@ package org.vostokframework.domain.loading.loaders
 		 * @param asset
 		 * @param fileLoader
 		 */
-		public function VostokLoaderFactory()
+		public function VostokLoaderFactory(loadingSettingsFactory:ILoadingSettingsFactory)
 		{
-			_fileLoadingAlgorithmFactory = new FileLoadingAlgorithmFactory();
+			if (!loadingSettingsFactory) throw new ArgumentError("Argument <loadingSettingsFactory> must not be null.");
 			
-			var defaultLoadingSettings:LoadingSettings = createDefaultLoadingSettings();
-			setDefaultLoadingSettings(defaultLoadingSettings);
+			_loadingSettingsFactory = loadingSettingsFactory;
+			_fileLoadingAlgorithmFactory = new FileLoadingAlgorithmFactory();
 		}
 		
 		public function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader
@@ -104,22 +103,10 @@ package org.vostokframework.domain.loading.loaders
 			if (StringUtil.isBlank(src)) throw new ArgumentError("Argument <src> must not be null nor an empty String..");
 			if (!type) throw new ArgumentError("Argument <type> must not be null.");
 			
-			if (!settings) settings = _defaultLoadingSettings;
+			if (!settings) settings = _loadingSettingsFactory.create();
 			
 			var state:ILoaderState = createLeafLoaderState(type, src, settings);
 			return instantiateLeaf(identification, state, settings.policy.priority);
-		}
-		
-		/**
-		 * description
-		 * 
-		 * @param settings
-		 * @throws 	ArgumentError 	if the <code>settings</code> argument is <code>null</code>.
-		 */
-		public function setDefaultLoadingSettings(settings:LoadingSettings): void
-		{
-			if (!settings) throw new ArgumentError("Argument <settings> must not be null.");
-			_defaultLoadingSettings = settings;
 		}
 		
 		public function setFileLoadingAlgorithmFactory(factory:IFileLoadingAlgorithmFactory): void

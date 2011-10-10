@@ -28,7 +28,7 @@
  */
 package org.vostokframework.domain.loading.events
 {
-	import org.as3collections.IMap;
+	import org.as3collections.IList;
 
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -45,9 +45,9 @@ package org.vostokframework.domain.loading.events
 		/**
 		 * @private
 		 */
-		private var _errors:IMap;
+		private var _errors:IList;
 		
-		public function get errors():IMap { return _errors; }
+		public function get errors():IList { return _errors; }
 		
 		/**
 		 * description
@@ -55,7 +55,7 @@ package org.vostokframework.domain.loading.events
 		 * @param type
 		 * @param loadedAssetData
 		 */
-		public function LoaderErrorEvent(type: String, errors:IMap)
+		public function LoaderErrorEvent(type: String, errors:IList)
 		{
 			super(type);
 			_errors = errors;

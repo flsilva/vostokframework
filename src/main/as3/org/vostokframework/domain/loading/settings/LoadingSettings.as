@@ -28,13 +28,14 @@
  */
 package org.vostokframework.domain.loading.settings
 {
+	import org.as3coreaddendum.system.ICloneable;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingSettings
+	public class LoadingSettings implements ICloneable
 	{
 		/**
 		 * description
@@ -112,6 +113,17 @@ package org.vostokframework.domain.loading.settings
 		public function LoadingSettings()
 		{
 			
+		}
+		
+		public function clone():*
+		{
+			var settings:LoadingSettings = new LoadingSettings();
+			settings.cache = cache.clone();
+			settings.extra = extra.clone();
+			settings.media = media.clone();
+			settings.policy = policy.clone();
+			settings.security = security.clone();
+			return settings;
 		}
 
 	}

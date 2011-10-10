@@ -28,7 +28,7 @@
  */
 package org.vostokframework.application.monitoring.monitors.dispatchers
 {
-	import org.as3collections.IMap;
+	import org.as3collections.IList;
 	import org.as3utils.StringUtil;
 	import org.vostokframework.application.events.AssetLoadingErrorEvent;
 	import org.vostokframework.application.events.AssetLoadingEvent;
@@ -74,7 +74,7 @@ package org.vostokframework.application.monitoring.monitors.dispatchers
 			dispatchEvent(createEvent(AssetLoadingEvent.COMPLETE, monitoring, data));
 		}
 		
-		override public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IMap):void
+		override public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IList):void
 		{
 			dispatchEvent(createErrorEvent(AssetLoadingErrorEvent.FAILED, monitoring, errors));
 		}
@@ -116,7 +116,7 @@ package org.vostokframework.application.monitoring.monitors.dispatchers
 			return new AssetLoadingEvent(type, _assetId, _assetLocale, _assetType, monitoring, data);
 		}
 		
-		private function createErrorEvent(type:String, monitoring:LoadingMonitoring, errors:IMap):AssetLoadingErrorEvent
+		private function createErrorEvent(type:String, monitoring:LoadingMonitoring, errors:IList):AssetLoadingErrorEvent
 		{
 			return new AssetLoadingErrorEvent(type, _assetId, _assetLocale, _assetType, errors, monitoring);
 		}

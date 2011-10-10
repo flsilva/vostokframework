@@ -44,14 +44,14 @@ package org.vostokframework.application.cache
 	 */
 	public class CachedAssetDataRepository
 	{
-		private var _reportMap:IMap;//key = VostokIdentification | value = LoadedAssetReport 
+		private var _cache:IMap;//<VostokIdentification,LoadedAssetReport >
 
 		/**
 		 * description
 		 */
 		public function CachedAssetDataRepository()
 		{
-			_reportMap = new TypedMap(new HashMap(), VostokIdentification, CachedAssetData);
+			_cache = new TypedMap(new HashMap(), VostokIdentification, CachedAssetData);
 		}
 		
 		/**
@@ -64,7 +64,7 @@ package org.vostokframework.application.cache
 		{
 			if (!report) throw new ArgumentError("Argument <report> must not be null.");
 			
-			if (_reportMap.containsKey(report.identification))
+			if (_cache.containsKey(report.identification))
 			{
 				var message:String = "There is already a LoadedAssetReport object stored with VostokIdentification:\n";
 				message += "<" + report.identification + ">\n";
@@ -73,7 +73,7 @@ package org.vostokframework.application.cache
 				throw new AssetDataAlreadyCachedError(report.identification, message);
 			}
 			
-			_reportMap.put(report.identification, report);
+			_cache.put(report.identification, report);
 		}
 		
 		/**
@@ -83,7 +83,7 @@ package org.vostokframework.application.cache
  		 */
 		public function clear(): void
 		{
-			_reportMap.clear();
+			_cache.clear();
 		}
 
 		/**
@@ -97,7 +97,7 @@ package org.vostokframework.application.cache
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _reportMap.containsKey(identification);
+			return _cache.containsKey(identification);
 		}
 
 		/**
@@ -111,7 +111,7 @@ package org.vostokframework.application.cache
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _reportMap.getValue(identification);
+			return _cache.getValue(identification);
 		}
 
 		/**
@@ -122,7 +122,7 @@ package org.vostokframework.application.cache
 		public function findAll(): IList
 		{
 			if (isEmpty()) return null;
-			var l:IList = new ReadOnlyArrayList(_reportMap.getValues().toArray());
+			var l:IList = new ReadOnlyArrayList(_cache.getValues().toArray());
 			
 			return l;
 		}
@@ -134,7 +134,7 @@ package org.vostokframework.application.cache
 		 */
 		public function isEmpty(): Boolean
 		{
-			return _reportMap.isEmpty();
+			return _cache.isEmpty();
 		}
 
 		/**
@@ -148,7 +148,7 @@ package org.vostokframework.application.cache
 		{
 			if (!identification) throw new ArgumentError("Argument <identification> must not be null.");
 			
-			return _reportMap.remove(identification) != null;
+			return _cache.remove(identification) != null;
 		}
 		
 		/**
@@ -158,7 +158,7 @@ package org.vostokframework.application.cache
 		 */
 		public function size(): int
 		{
-			return _reportMap.size();
+			return _cache.size();
 		}
 		
 		/**
@@ -168,7 +168,7 @@ package org.vostokframework.application.cache
 		 */
 		public function toString(): String
 		{
-			return "[" + ReflectionUtil.getClassName(this) + "] <" + _reportMap.getValues() + ">";
+			return "[" + ReflectionUtil.getClassName(this) + "] <" + _cache.getValues() + ">";
 		}
 
 	}

@@ -29,6 +29,7 @@
 package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 
@@ -116,7 +117,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		
 		private function addWrappedAlgorithmListeners():void
 		{
-			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmErrorEvent.FAILED, failedHandler, false, 0, true);
+			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmErrorEvent.FAILED, failedHandler, false, int.MAX_VALUE, true);
 		}
 		
 		private function createTimer():void
@@ -133,9 +134,9 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			
 			if (event.errors && !event.errors.isEmpty())
 			{
-				var lastError:LoadError = event.errors.getKeyAt(event.errors.size() - 1);
+				var lastError:LoadError = event.errors.getAt(event.errors.size() - 1);
 				
-				if (lastError.equals(LoadError.LATENCY_TIMEOUT_ERROR))
+				if (lastError.type.equals(LoadErrorType.LATENCY_TIMEOUT_ERROR))
 				{
 					_currentDelay = _initialDelay;
 				}

@@ -49,6 +49,12 @@ package
 	import org.vostokframework.application.services.LoadingServiceTestsRemoveAssetData;
 	import org.vostokframework.application.services.LoadingServiceTestsResume;
 	import org.vostokframework.application.services.LoadingServiceTestsStop;
+	import org.vostokframework.application.services.XMLConfigurationServiceTests;
+	import org.vostokframework.configuration.parsers.xml.AssetPackageXMLNodeParserTests;
+	import org.vostokframework.configuration.parsers.xml.AssetXMLNodeParserTests;
+	import org.vostokframework.configuration.parsers.xml.LoadingSettingsXMLNodeParserTests;
+	import org.vostokframework.configuration.parsers.xml.XMLConfigurationParserTests;
+	import org.vostokframework.configuration.parsers.xml.XMLConfigurationParserTestsIntegration;
 	import org.vostokframework.domain.assets.AssetFactoryTests;
 	import org.vostokframework.domain.assets.AssetPackageFactoryTests;
 	import org.vostokframework.domain.assets.AssetPackageRepositoryTests;
@@ -132,6 +138,38 @@ package
 	public class TestSuite
 	{
 		
+		//org.vostokframework.application.monitoring
+		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
+		public var compositeLoadingMonitorTestsIntegration:CompositeLoadingMonitorTestsIntegration;
+		public var loadingMonitorTests:LoadingMonitorTests;
+		public var loadingMonitorWrapperTestsIntegration:LoadingMonitorWrapperTestsIntegration;
+		
+		//org.vostokframework.application.services
+		public var assetServiceTests:AssetServiceTests;
+		public var assetPackageServiceTests:AssetPackageServiceTests;
+		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
+		public var loadingServiceTestsChangePriority:LoadingServiceTestsChangePriority;
+		public var loadingServiceTestsContainsAssetData:LoadingServiceTestsContainsAssetData;
+		public var loadingServiceTestsExists:LoadingServiceTestsExists;
+		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;
+		public var loadingServiceTestsGetMonitor:LoadingServiceTestsGetMonitor;
+		public var loadingServiceTestsIsLoading:LoadingServiceTestsIsLoading;
+		public var loadingServiceTestsIsQueued:LoadingServiceTestsIsQueued;
+		public var loadingServiceTestsLoad:LoadingServiceTestsLoad;
+		public var loadingServiceTestsMergeAssets:LoadingServiceTestsMergeAssets;
+		public var loadingServiceTestsRemoveAssetData:LoadingServiceTestsRemoveAssetData;
+		public var loadingServiceTestsResume:LoadingServiceTestsResume;
+		public var loadingServiceTestsStop:LoadingServiceTestsStop;
+		public var loadingServiceTestsIntegration:LoadingServiceTestsIntegration;
+		public var xmlConfigurationServiceTests:XMLConfigurationServiceTests;
+		
+		//org.vostokframework.configuration.parsers.xml
+		public var assetXMLNodeParserTests:AssetXMLNodeParserTests;
+		public var assetPackageXMLNodeParserTests:AssetPackageXMLNodeParserTests;
+		public var loadingSettingsXMLNodeParserTests:LoadingSettingsXMLNodeParserTests;
+		public var xmlConfigurationParserTests:XMLConfigurationParserTests;
+		public var xmlConfigurationParserTestsIntegration:XMLConfigurationParserTestsIntegration;
+		
 		//org.vostokframework.domain.assets
 		public var assetTests:AssetTests;
 		public var assetFactoryTests:AssetFactoryTests;
@@ -141,18 +179,8 @@ package
 		public var assetPackageRepositoryTests:AssetPackageRepositoryTests;
 		public var urlAssetParserTests:UrlAssetParserTests;
 		
-		//org.vostokframework.application.services
-		public var assetServiceTests:AssetServiceTests;
-		public var assetPackageServiceTests:AssetPackageServiceTests;
-		
 		//org.vostokframework.domain.loading.loaders
 		public var vostokLoaderTests:VostokLoaderTests;
-		
-		//org.vostokframework.application.monitoring
-		public var compositeLoadingMonitorTests:CompositeLoadingMonitorTests;
-		public var compositeLoadingMonitorTestsIntegration:CompositeLoadingMonitorTestsIntegration;
-		public var loadingMonitorTests:LoadingMonitorTests;
-		public var loadingMonitorWrapperTestsIntegration:LoadingMonitorWrapperTestsIntegration;
 		
 		//org.vostokframework.domain.loading.states.queueloader.policies
 		public var simpleQueueLoadingPolicyTests:SimpleQueueLoadingPolicyTests;
@@ -231,22 +259,6 @@ package
 		public var stoppedQueueLoaderTestsRemoveChild:StoppedQueueLoaderTestsRemoveChild;
 		public var stoppedQueueLoaderTestsResumeChild:StoppedQueueLoaderTestsResumeChild;
 		public var stoppedQueueLoaderTestsSetMaxConcurrentConnections:StoppedQueueLoaderTestsSetMaxConcurrentConnections;
-		
-		//org.vostokframework.application.services
-		public var loadingServiceTestsCancel:LoadingServiceTestsCancel;
-		public var loadingServiceTestsChangePriority:LoadingServiceTestsChangePriority;
-		public var loadingServiceTestsContainsAssetData:LoadingServiceTestsContainsAssetData;
-		public var loadingServiceTestsExists:LoadingServiceTestsExists;
-		public var loadingServiceTestsGetAssetData:LoadingServiceTestsGetAssetData;
-		public var loadingServiceTestsGetMonitor:LoadingServiceTestsGetMonitor;
-		public var loadingServiceTestsIsLoading:LoadingServiceTestsIsLoading;
-		public var loadingServiceTestsIsQueued:LoadingServiceTestsIsQueued;
-		public var loadingServiceTestsLoad:LoadingServiceTestsLoad;
-		public var loadingServiceTestsMergeAssets:LoadingServiceTestsMergeAssets;
-		public var loadingServiceTestsRemoveAssetData:LoadingServiceTestsRemoveAssetData;
-		public var loadingServiceTestsResume:LoadingServiceTestsResume;
-		public var loadingServiceTestsStop:LoadingServiceTestsStop;
-		public var loadingServiceTestsIntegration:LoadingServiceTestsIntegration;
 		
 		public function TestSuite()
 		{

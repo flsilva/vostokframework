@@ -41,15 +41,11 @@ package org.vostokframework.domain.loading
 	public interface ILoaderFactory
 	{
 		
-		function get defaultLoadingSettings(): LoadingSettings;
-		
 		function get fileLoadingAlgorithmFactory(): IFileLoadingAlgorithmFactory;
 		
 		function createComposite(identification:VostokIdentification, loaderRepository:LoaderRepository, globalLoadingSettings:GlobalLoadingSettings, priority:LoadPriority = null, localMaxConnections:int = 3):ILoader;
 		
 		function createLeaf(identification:VostokIdentification, src:String, type:AssetType, settings:LoadingSettings = null):ILoader;
-		
-		function setDefaultLoadingSettings(settings:LoadingSettings): void;
 		
 		function setFileLoadingAlgorithmFactory(factory:IFileLoadingAlgorithmFactory): void;
 		

@@ -28,9 +28,9 @@
  */
 package org.vostokframework.application.events
 {
-	import org.as3collections.IMap;
-	import org.vostokframework.domain.assets.AssetType;
+	import org.as3collections.IList;
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
+	import org.vostokframework.domain.assets.AssetType;
 
 	import flash.events.ErrorEvent;
 	import flash.events.Event;
@@ -50,7 +50,7 @@ package org.vostokframework.application.events
 		private var _assetId:String;
 		private var _assetLocale:String;
 		private var _assetType:AssetType;
-		private var _errors:IMap;
+		private var _errors:IList;
 		private var _httpStatus:int;
 		private var _monitoring:LoadingMonitoring;
 		
@@ -72,7 +72,7 @@ package org.vostokframework.application.events
 		/**
 		 * description
 		 */
-		public function get errors(): IMap { return _errors; }
+		public function get errors(): IList { return _errors; }
 		
 		/**
 		 * description
@@ -94,7 +94,7 @@ package org.vostokframework.application.events
 		 * @param monitoring
 		 * @param message
 		 */
-		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, errors:IMap, monitoring:LoadingMonitoring = null)
+		public function AssetLoadingErrorEvent(type:String, assetId:String, assetLocale:String, assetType:AssetType, errors:IList, monitoring:LoadingMonitoring = null)
 		{
 			super(type);
 			

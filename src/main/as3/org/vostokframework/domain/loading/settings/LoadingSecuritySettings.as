@@ -28,15 +28,14 @@
  */
 package org.vostokframework.domain.loading.settings
 {
-	import org.vostokframework.domain.loading.settings.ApplicationDomainSetting;
-	import org.vostokframework.domain.loading.settings.SecurityDomainSetting;
+	import org.as3coreaddendum.system.ICloneable;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingSecuritySettings
+	public class LoadingSecuritySettings implements ICloneable
 	{
 		/**
 		 * description
@@ -82,6 +81,16 @@ package org.vostokframework.domain.loading.settings
 		public function LoadingSecuritySettings()
 		{
 			
+		}
+		
+		public function clone():*
+		{
+			var security:LoadingSecuritySettings = new LoadingSecuritySettings();
+			security.applicationDomain = applicationDomain;
+			security.checkPolicyFile = checkPolicyFile;
+			security.ignoreLocalSecurityDomain = ignoreLocalSecurityDomain;
+			security.securityDomain = securityDomain;
+			return security;
 		}
 
 	}

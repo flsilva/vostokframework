@@ -44,7 +44,7 @@ package org.vostokframework.application.monitoring
 	 */
 	public class LoadingMonitorRepository
 	{
-		private var _monitorMap:IMap;//key = ILoadingMonitor.id (String) | value = ILoadingMonitor 
+		private var _monitorMap:IMap;//<String,ILoadingMonitor> - where String = ILoadingMonitor.id
 
 		/**
 		 * description

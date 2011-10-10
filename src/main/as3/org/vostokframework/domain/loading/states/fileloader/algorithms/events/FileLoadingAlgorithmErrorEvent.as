@@ -28,7 +28,7 @@
  */
 package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 {
-	import org.as3collections.IListMap;
+	import org.as3collections.IList;
 
 	import flash.events.Event;
 
@@ -44,12 +44,12 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 		/**
 		 * description
 		 */
-		private var _errors:*;
+		private var _errors:IList;
 		
 		/**
 		 * description
 		 */
-		public function get errors(): IListMap { return _errors; }
+		public function get errors(): IList { return _errors; }
 
 		/**
 		 * description
@@ -59,7 +59,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms.events
 		 * @param monitoring
 		 * @param assetData
 		 */
-		public function FileLoadingAlgorithmErrorEvent(type:String, errors:IListMap)
+		public function FileLoadingAlgorithmErrorEvent(type:String, errors:IList)
 		{
 			super(type);
 			

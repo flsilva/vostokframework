@@ -28,12 +28,14 @@
  */
 package org.vostokframework.domain.loading.settings
 {
+	import org.as3coreaddendum.system.ICloneable;
+
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingCacheSettings
+	public class LoadingCacheSettings implements ICloneable
 	{
 		/**
 		 * description
@@ -61,6 +63,14 @@ package org.vostokframework.domain.loading.settings
 		public function LoadingCacheSettings()
 		{
 			
+		}
+		
+		public function clone():*
+		{
+			var cache:LoadingCacheSettings = new LoadingCacheSettings();
+			cache.allowInternalCache = allowInternalCache;
+			cache.killExternalCache = killExternalCache;
+			return cache;
 		}
 
 	}

@@ -28,7 +28,12 @@
  */
 package org.vostokframework.domain.assets
 {
+	import org.as3collections.IIterator;
+	import org.as3collections.lists.ArrayList;
+	import org.as3collections.utils.ListUtil;
+	import org.as3collections.IList;
 	import org.as3coreaddendum.system.Enum;
+	import org.as3utils.StringUtil;
 
 	import flash.errors.IllegalOperationError;
 
@@ -62,6 +67,38 @@ package org.vostokframework.domain.assets
 		{
 			super(name, ordinal);
 			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+		}
+		
+		public static function getByName(name:String):AssetType
+		{
+			if (StringUtil.isBlank(name)) throw new ArgumentError("Argument <name> must not be null nor an empty String.");
+			
+			var it:IIterator = getTypes().iterator();
+			var type:AssetType;
+			
+			while (it.hasNext())
+			{
+				type = it.next();
+				if (type.name == name.toUpperCase()) return type;
+			}
+			
+			throw new ArgumentError("There is no AssetType object with <name>: " + name);
+		}
+		
+		public static function getTypes():IList
+		{
+			var types:IList = ListUtil.getUniqueTypedList(new ArrayList(), AssetType);
+			types.add(AAC);
+			types.add(CSS);
+			types.add(IMAGE);
+			types.add(JSON);
+			types.add(MP3);
+			types.add(SWF);
+			types.add(TXT);
+			types.add(VIDEO);
+			types.add(XML);
+			
+			return types;
 		}
 
 	}

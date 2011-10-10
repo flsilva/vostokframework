@@ -72,6 +72,7 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 			switch(type)
 			{
 				case AssetType.IMAGE:
+				case AssetType.SWF:
 				{
 					var loader:Loader = new Loader();
 					var loaderContext:LoaderContext = createLoaderContext(settings.security);

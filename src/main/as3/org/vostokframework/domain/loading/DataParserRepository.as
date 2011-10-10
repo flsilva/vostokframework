@@ -44,7 +44,7 @@ package org.vostokframework.domain.loading
 	 */
 	public class DataParserRepository
 	{
-		private var _parserMap:IMap;//key = AssetType | value = IList (IDataParser) 
+		private var _parserMap:IMap;//<AssetType,IList> - where IList<IDataParser> 
 
 		/**
 		 * description

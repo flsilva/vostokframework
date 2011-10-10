@@ -28,9 +28,10 @@
  */
 package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
-	import org.as3collections.IListMap;
-	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.IList;
+	import org.as3collections.lists.ArrayList;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
@@ -117,8 +118,8 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		
 		private function addWrappedAlgorithmListeners():void
 		{
-			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmEvent.OPEN, openHandler, false, 0, true);
-			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmErrorEvent.FAILED, failedHandler, false, 0, true);
+			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmEvent.OPEN, openHandler, false, int.MAX_VALUE, true);
+			wrappedAlgorithm.addEventListener(FileLoadingAlgorithmErrorEvent.FAILED, failedHandler, false, int.MAX_VALUE, true);
 		}
 		
 		private function createErrorMessage():String
@@ -162,8 +163,9 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			removeWrappedAlgorithmListeners();
 			stop();
 			
-			var errors:IListMap = new ArrayListMap();
-			errors.put(LoadError.LATENCY_TIMEOUT_ERROR, createErrorMessage());
+			var errors:IList = new ArrayList();
+			var error:LoadError = new LoadError(LoadErrorType.LATENCY_TIMEOUT_ERROR, createErrorMessage());
+			errors.add(error);
 			
 			dispatchEvent(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, errors));
 		}

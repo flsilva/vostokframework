@@ -35,7 +35,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.lists.ArrayList;
 	import org.flexunit.async.Async;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
@@ -144,7 +144,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		[Test(async, timeout=800)]
 		public function load_initialDelayOf400Milliseconds_stubWrappedAlgorithmDispatchFailedErrorEvent_delayAfterError100Milliseconds_callLoadAgain_stopTestWith700Milliseconds_verifyMockWrappedAlgorithmWasCalledTwice(): void
 		{
-			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()), 50).once();
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList()), 50).once();
 			
 			// it is needed to do it here because DelayableFileLoadingAlgorithm
 			// do not call wrappedAlgorithm again
@@ -176,7 +176,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		[Test(async, timeout=500)]
 		public function load_initialDelayOf100Milliseconds_stubWrappedAlgorithmDispatchFailedErrorEvent_delayAfterError300Milliseconds_callLoadAgain_stopTestWith400Milliseconds_verifyMockWrappedAlgorithmWasNotCalledAgain(): void
 		{
-			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()), 50).once();
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList()), 50).once();
 			
 			// it is needed to do it here because DelayableFileLoadingAlgorithm
 			// do not call wrappedAlgorithm again

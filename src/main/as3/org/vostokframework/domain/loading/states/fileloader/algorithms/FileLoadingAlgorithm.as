@@ -30,13 +30,12 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
 	import org.as3collections.IIterator;
 	import org.as3collections.IList;
-	import org.as3collections.IListMap;
-	import org.as3collections.maps.ArrayListMap;
-	import org.as3collections.maps.TypedListMap;
+	import org.as3collections.lists.ArrayList;
 	import org.as3coreaddendum.errors.ObjectDisposedError;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.vostokframework.domain.loading.IDataParser;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoader;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
@@ -67,7 +66,6 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
  		 */
 		private var _disposed:Boolean;
 		private var _dataLoader:IDataLoader;
-		private var _errors:IListMap;//<LoadError, String> - where String is the original Flash Player error message
 		private var _parsers:IList;
 		private var _timeConnectionStarted:int;
 		
@@ -80,7 +78,6 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			if (!dataLoader) throw new ArgumentError("Argument <dataLoader> must not be null.");
 			
 			_dataLoader = dataLoader;
-			_errors = new TypedListMap(new ArrayListMap(), LoadError, String);
 		}
 		
 		override public function addEventListener(type : String, listener : Function, useCapture : Boolean = false, priority : int = 0, useWeakReference : Boolean = false) : void
@@ -138,7 +135,6 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			_dataLoader = null;
 			_disposed = true;
 			//_dataLoader = null;
-			_errors = null;
 			_parsers = null;
 		}
 		
@@ -268,13 +264,16 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			_dataLoader.addEventListener(ErrorEvent.ERROR, unknownErrorHandler, false, 0, true);
 		}
 		
-		private function failed(error:LoadError, errorMessage:String):void
+		private function failed(errorType:LoadErrorType, errorMessage:String):void
 		{
 			validateDisposal();
 			removeDataLoaderListeners();
 			
-			_errors.put(error, errorMessage);
-			dispatchEvent(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, _errors));
+			var errors:IList = new ArrayList();
+			var error:LoadError = new LoadError(errorType, errorMessage);
+			errors.add(error);
+			
+			dispatchEvent(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, errors));
 		}
 		
 		private function getData():*
@@ -346,25 +345,25 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		private function asyncError(errorMessage:String):void
 		{
 			validateDisposal();
-			failed(LoadError.ASYNC_ERROR, errorMessage);
+			failed(LoadErrorType.ASYNC_ERROR, errorMessage);
 		}
 		
 		private function ioError(errorMessage:String):void
 		{
 			validateDisposal();
-			failed(LoadError.IO_ERROR, errorMessage);
+			failed(LoadErrorType.IO_ERROR, errorMessage);
 		}
 		
 		private function securityError(errorMessage:String):void
 		{
 			validateDisposal();
-			failed(LoadError.SECURITY_ERROR, errorMessage);
+			failed(LoadErrorType.SECURITY_ERROR, errorMessage);
 		}
 		
 		private function unknownError(errorMessage:String):void
 		{
 			validateDisposal();
-			failed(LoadError.UNKNOWN_ERROR, errorMessage);
+			failed(LoadErrorType.UNKNOWN_ERROR, errorMessage);
 		}
 		
 		private function removeDataLoaderListeners():void

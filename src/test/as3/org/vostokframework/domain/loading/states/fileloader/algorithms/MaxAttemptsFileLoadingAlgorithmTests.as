@@ -35,11 +35,12 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 	import mockolate.sequence;
 	import mockolate.stub;
 
-	import org.as3collections.IListMap;
-	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.IList;
+	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmEvent;
@@ -103,9 +104,9 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			var seq:Sequence = sequence();
 			
 			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN))
-				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 			
-			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 				
 			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.COMPLETE)).once().ordered(seq);
 			
@@ -129,11 +130,11 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			var seq:Sequence = sequence();
 			
 			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN))
-				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 			
-			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 				
-			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 			
 			algorithm = getAlgorithm(3);
 			Async.proceedOnEvent(this, algorithm, FileLoadingAlgorithmErrorEvent.FAILED, 200);
@@ -146,7 +147,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			var seq:Sequence = sequence();
 			
 			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN))
-				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap())).once().ordered(seq);
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList())).once().ordered(seq);
 			
 			algorithm = getAlgorithm(1);
 			Async.proceedOnEvent(this, algorithm, FileLoadingAlgorithmErrorEvent.FAILED, 200);
@@ -156,8 +157,26 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		[Test(async, timeout=200)]
 		public function load_stubWrappedAlgorithmDispatchesOneFailedErrorEventWithSecurityError_algorithmWithThreeAttempts_waitForFileLoadingAlgorithmFailedErrorEvent(): void
 		{
-			var errors:IListMap = new ArrayListMap();
-			errors.put(LoadError.SECURITY_ERROR, "");
+			var errors:IList = new ArrayList();
+			var error:LoadError = new LoadError(LoadErrorType.SECURITY_ERROR, "");
+			errors.add(error);
+			
+			var seq:Sequence = sequence();
+			
+			stub(fakeWrappedAlgorithm).method("load").dispatches(new FileLoadingAlgorithmEvent(FileLoadingAlgorithmEvent.OPEN))
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, errors)).once().ordered(seq);
+			
+			algorithm = getAlgorithm(3);
+			Async.proceedOnEvent(this, algorithm, FileLoadingAlgorithmErrorEvent.FAILED, 200);
+			algorithm.load();
+		}
+		
+		[Test(async, timeout=200)]
+		public function load_stubWrappedAlgorithmDispatchesOneFailedErrorEventWithIOError_algorithmWithThreeAttempts_waitForFileLoadingAlgorithmFailedErrorEvent(): void
+		{
+			var errors:IList = new ArrayList();
+			var error:LoadError = new LoadError(LoadErrorType.IO_ERROR, "");
+			errors.add(error);
 			
 			var seq:Sequence = sequence();
 			

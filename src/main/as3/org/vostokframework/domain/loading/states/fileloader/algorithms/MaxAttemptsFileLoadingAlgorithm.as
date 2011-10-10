@@ -28,8 +28,12 @@
  */
 package org.vostokframework.domain.loading.states.fileloader.algorithms
 {
-	import org.as3collections.IListMap;
+	import org.as3collections.IIterator;
+	import org.as3collections.IList;
+	import org.as3collections.lists.ArrayList;
+	import org.as3collections.lists.TypedList;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.algorithms.events.FileLoadingAlgorithmErrorEvent;
 
@@ -48,7 +52,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		 * @private
  		 */
 		private var _dispatcher:IEventDispatcher;
-		private var _errors:IListMap;//<LoadError, String> - where String is the original Flash Player error message
+		private var _errors:IList;//<LoadError>
 		private var _maxAttempts:int;
 		private var _performedAttempts:int;
 		
@@ -67,6 +71,8 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			
 			_maxAttempts = maxAttempts;
 			_dispatcher = new EventDispatcher(this);
+			_errors = new TypedList(new ArrayList(), LoadError);
+			
 			addWrappedAlgorithmListeners();
 		}
 		
@@ -121,7 +127,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		{
 			validateDisposal();
 			
-			if (isExaustedAttempts())
+			if (isExaustedAttempts() || hasSomeFatalError())
 			{
 				failed();
 				return;
@@ -180,22 +186,14 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		{
 			validateDisposal();
 			
-			if (!_errors)
-			{
-				_errors = event.errors;
-			}
-			else
-			{
-				_errors.putAll(event.errors);
-			}
-			
+			_errors.addAll(event.errors);
 			_performedAttempts++;
-			
+			/*
 			// IF IT'S A SECURITY ERROR
 			// IT DOES NOT USE ATTEMPTS TO TRY AGAIN
 			// IT JUST FAIL
-			//if (error.equals(LoadError.SECURITY_ERROR))
-			if (_errors.containsKey(LoadError.SECURITY_ERROR))
+			var lastError:LoadError = _errors.getAt(_errors.size() - 1);
+			if (lastError.type.equals(LoadErrorType.SECURITY_ERROR))
 			{
 				failed();
 				return;
@@ -204,6 +202,29 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 			{
 				load();
 			}
+			*/
+			load();
+		}
+		
+		private function hasSomeFatalError():Boolean
+		{
+			if (!_errors || _errors.isEmpty()) return false;
+			
+			var it:IIterator = _errors.iterator();
+			var error:LoadError;
+			
+			// IF A SECURITY ERROR OR IO ERROR OCCURRED
+			// IT DOES NOT USE ATTEMPTS TO TRY AGAIN
+			// IT JUST FAIL
+			
+			while (it.hasNext())
+			{
+				error = it.next();
+				if (error.type.equals(LoadErrorType.SECURITY_ERROR)
+					|| error.type.equals(LoadErrorType.IO_ERROR)) return true;
+			}
+			
+			return false;
 		}
 		
 		private function isExaustedAttempts():Boolean

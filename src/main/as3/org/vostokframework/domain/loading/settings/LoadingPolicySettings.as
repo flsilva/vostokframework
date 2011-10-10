@@ -28,6 +28,7 @@
  */
 package org.vostokframework.domain.loading.settings
 {
+	import org.as3coreaddendum.system.ICloneable;
 	import org.vostokframework.domain.loading.LoadPriority;
 
 	/**
@@ -35,7 +36,7 @@ package org.vostokframework.domain.loading.settings
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingPolicySettings
+	public class LoadingPolicySettings implements ICloneable
 	{
 		/**
 		 * description
@@ -76,6 +77,15 @@ package org.vostokframework.domain.loading.settings
 		public function LoadingPolicySettings()
 		{
 			
+		}
+		
+		public function clone():*
+		{
+			var policy:LoadingPolicySettings = new LoadingPolicySettings();
+			policy.latencyTimeout = latencyTimeout;
+			policy.maxAttempts = maxAttempts;
+			policy.priority = priority;
+			return policy;
 		}
 
 	}

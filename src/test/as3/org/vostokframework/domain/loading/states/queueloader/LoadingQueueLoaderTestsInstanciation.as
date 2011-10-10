@@ -33,7 +33,7 @@ package org.vostokframework.domain.loading.states.queueloader
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.maps.HashMap;
+	import org.as3collections.lists.ArrayList;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.domain.loading.ILoader;
@@ -41,7 +41,6 @@ package org.vostokframework.domain.loading.states.queueloader
 	import org.vostokframework.domain.loading.LoadPriority;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
-	import org.vostokframework.domain.loading.states.queueloader.IQueueLoadingPolicy;
 
 	/**
 	 * @author Flávio Silva
@@ -154,7 +153,7 @@ package org.vostokframework.domain.loading.states.queueloader
 				.dispatches(new LoaderEvent(LoaderEvent.COMPLETE));
 			
 			stub(fakeChildLoader2).method("load").dispatches(new LoaderEvent(LoaderEvent.CONNECTING))
-				.dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new HashMap()));
+				.dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new ArrayList()));
 			
 			var policy:IQueueLoadingPolicy = getLoadingPolicy(6);
 			

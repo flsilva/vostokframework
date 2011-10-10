@@ -33,7 +33,7 @@ package org.vostokframework.domain.loading.states.fileloader
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.maps.ArrayListMap;
+	import org.as3collections.lists.ArrayList;
 	import org.flexunit.async.Async;
 	import org.hamcrest.object.instanceOf;
 	import org.vostokframework.domain.loading.ILoaderState;
@@ -90,7 +90,7 @@ package org.vostokframework.domain.loading.states.fileloader
 		[Test]
 		public function stubAlgorithmDispatchesFailedErrorEvent_verifyIfStateTransitionWasCalled(): void
 		{
-			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()));
+			stub(fakeAlgorithm).method("load").dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList()));
 			
 			fakeFileLoader.addEventListener(LoaderErrorEvent.FAILED, 
 				function(event:LoaderErrorEvent):void
@@ -156,7 +156,7 @@ package org.vostokframework.domain.loading.states.fileloader
 			Async.proceedOnEvent(this, fakeFileLoader, LoaderErrorEvent.FAILED, 200);
 			
 			stub(fakeAlgorithm).method("load").dispatches(new Event(Event.OPEN), 50)
-				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayListMap()), 100);
+				.dispatches(new FileLoadingAlgorithmErrorEvent(FileLoadingAlgorithmErrorEvent.FAILED, new ArrayList()), 100);
 			
 			state = getState();
 		}

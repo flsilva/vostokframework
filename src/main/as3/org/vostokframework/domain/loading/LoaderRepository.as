@@ -46,7 +46,7 @@ package org.vostokframework.domain.loading
 	 */
 	public class LoaderRepository
 	{
-		private var _loaderMap:IMap;//key = ILoader().identification.toString() (String) | value = ILoader 
+		private var _loaderMap:IMap;//<String,ILoader> - where String = ILoader().identification.toString()
 		
 		public function get openedConnections():int
 		{

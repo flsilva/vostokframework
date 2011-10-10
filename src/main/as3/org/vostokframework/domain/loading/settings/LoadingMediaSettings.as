@@ -29,13 +29,14 @@
 package org.vostokframework.domain.loading.settings
 {
 	import org.as3collections.IList;
+	import org.as3coreaddendum.system.ICloneable;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadingMediaSettings
+	public class LoadingMediaSettings implements ICloneable
 	{
 		/**
 		 * description
@@ -92,6 +93,18 @@ package org.vostokframework.domain.loading.settings
 		public function LoadingMediaSettings()
 		{
 			
+		}
+		
+		public function clone():*
+		{
+			var media:LoadingMediaSettings = new LoadingMediaSettings();
+			media.audioLinkage = audioLinkage;
+			media.autoCreateVideo = autoCreateVideo;
+			media.autoResizeVideo = autoResizeVideo;
+			media.autoStopStream = autoStopStream;
+			media.bufferPercent = bufferPercent;
+			media.bufferTime = bufferTime;
+			return media;
 		}
 
 	}

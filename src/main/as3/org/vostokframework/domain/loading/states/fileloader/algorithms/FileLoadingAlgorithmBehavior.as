@@ -47,7 +47,10 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		 * @private
  		 */
 		private var _disposed:Boolean;
+		private var _errors:IList;
 		private var _wrappedAlgorithm:IFileLoadingAlgorithm;
+		
+		protected function get errors():IList { return _errors; }
 		
 		protected function get wrappedAlgorithm():IFileLoadingAlgorithm { return _wrappedAlgorithm; }
 		

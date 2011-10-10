@@ -28,42 +28,32 @@
  */
 package org.vostokframework.domain.loading
 {
-	import org.as3coreaddendum.system.Enum;
-
-	import flash.errors.IllegalOperationError;
 
 	/**
 	 * description
 	 * 
 	 * @author Flávio Silva
 	 */
-	public class LoadError extends Enum
+	public class LoadError
 	{
-		public static const ASYNC_ERROR:LoadError = new LoadError("ASYNC ERROR", 0);
-		public static const IO_ERROR:LoadError = new LoadError("IO ERROR", 1);
-		public static const LATENCY_TIMEOUT_ERROR:LoadError = new LoadError("LATENCY TIMEOUT ERROR", 2);
-		public static const SECURITY_ERROR:LoadError = new LoadError("SECURITY ERROR", 3);
-		public static const UNKNOWN_ERROR:LoadError = new LoadError("UNKNOWN ERROR", 4);
-				
-		/**
-		 * @private
-		 */
-		private static var _created :Boolean = false;
 		
-		{
-			_created = true;
-		}
+		private var _message:String;
+		private var _type:LoadErrorType;
+		
+		public function get message():String { return _message; }
+		
+		public function get type():LoadErrorType { return _type; }
 		
 		/**
 		 * description
 		 * 
-		 * @param name
-		 * @param ordinal
+		 * @param type
+		 * @param message
 		 */
-		public function LoadError(name:String, ordinal:int)
+		public function LoadError(type:LoadErrorType, message:String = null)
 		{
-			super(name, ordinal);
-			if (_created) throw new IllegalOperationError("The set of acceptable values by this Enumerated Type has already been created internally.");
+			_type = type;
+			_message = message;
 		}
 
 	}

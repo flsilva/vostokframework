@@ -28,7 +28,7 @@
  */
 package org.vostokframework.application.monitoring.monitors
 {
-	import org.as3collections.IMap;
+	import org.as3collections.IList;
 	import org.as3coreaddendum.errors.UnsupportedOperationError;
 	import org.as3utils.ReflectionUtil;
 	import org.vostokframework.application.monitoring.LoadingMonitoring;
@@ -61,7 +61,7 @@ package org.vostokframework.application.monitoring.monitors
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}
 		
-		public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IMap):void
+		public function dispatchFailedEvent(monitoring:LoadingMonitoring, errors:IList):void
 		{
 			throw new UnsupportedOperationError("Method must be overridden in subclass: " + ReflectionUtil.getClassPath(this));
 		}

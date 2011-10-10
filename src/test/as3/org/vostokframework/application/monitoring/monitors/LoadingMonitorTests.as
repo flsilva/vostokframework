@@ -35,9 +35,8 @@ package org.vostokframework.application.monitoring.monitors
 	import mockolate.stub;
 	import mockolate.verify;
 
-	import org.as3collections.IMap;
-	import org.as3collections.maps.ArrayListMap;
-	import org.as3collections.maps.HashMap;
+	import org.as3collections.IList;
+	import org.as3collections.lists.ArrayList;
 	import org.flexunit.Assert;
 	import org.hamcrest.core.anything;
 	import org.vostokframework.VostokFramework;
@@ -45,6 +44,7 @@ package org.vostokframework.application.monitoring.monitors
 	import org.vostokframework.application.monitoring.ILoadingMonitor;
 	import org.vostokframework.domain.loading.ILoader;
 	import org.vostokframework.domain.loading.LoadError;
+	import org.vostokframework.domain.loading.LoadErrorType;
 	import org.vostokframework.domain.loading.events.LoaderErrorEvent;
 	import org.vostokframework.domain.loading.events.LoaderEvent;
 
@@ -164,7 +164,7 @@ package org.vostokframework.application.monitoring.monitors
 		[Test]
 		public function addEventListener_stubLoaderDispatchesFailedEvent_mustCatchStubLoaderEventAndCallMockDispatcher(): void
 		{
-			stub(fakeLoader).method("load").dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new HashMap()));
+			stub(fakeLoader).method("load").dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, new ArrayList()));
 			mock(mockDispatcher).method("dispatchFailedEvent");
 			
 			fakeLoader.load();
@@ -174,9 +174,13 @@ package org.vostokframework.application.monitoring.monitors
 		[Test]
 		public function addEventListener_stubLoaderDispatchesFailedEventWithControlledErrorMap_mustCatchStubEventAndCallMockDispatcherWithCorrectStatusValue(): void
 		{
-			var errors:IMap = new ArrayListMap();
-			errors.put(LoadError.ASYNC_ERROR, "LoadError.ASYNC_ERROR");
-			errors.put(LoadError.SECURITY_ERROR, "LoadError.SECURITY_ERROR");
+			var errors:IList = new ArrayList();
+			
+			var error:LoadError = new LoadError(LoadErrorType.ASYNC_ERROR, "LoadErrorType.ASYNC_ERROR");
+			errors.add(error);
+			
+			error = new LoadError(LoadErrorType.SECURITY_ERROR, "LoadErrorType.SECURITY_ERROR");
+			errors.add(error);
 			
 			stub(fakeLoader).method("load").dispatches(new LoaderErrorEvent(LoaderErrorEvent.FAILED, errors));
 			mock(mockDispatcher).method("dispatchFailedEvent").args(anything(), errors);
