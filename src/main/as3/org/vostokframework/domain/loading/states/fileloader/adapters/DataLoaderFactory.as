@@ -38,6 +38,8 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 	import org.vostokframework.domain.loading.states.fileloader.IDataLoaderFactory;
 
 	import flash.display.Loader;
+	import flash.media.Sound;
+	import flash.media.SoundLoaderContext;
 	import flash.net.NetConnection;
 	import flash.net.NetStream;
 	import flash.net.URLLoader;
@@ -120,6 +122,15 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 					break;
 				}
 				
+				case AssetType.MP3:
+				{
+					var sound:Sound = new Sound();
+					var soundContext:SoundLoaderContext = createSoundLoaderContext(settings.security);
+					
+					dataLoader = new NativeSoundAdapter(sound, urlRequest, soundContext);
+					break;
+				}
+				
 			}
 			
 			if (!dataLoader)
@@ -147,6 +158,12 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 			//if (ignoreLocalSecurityDomain && isLocal) securityDomain = null;//TODO:implement it
 			
 			return new LoaderContext(checkPolicyFile, applicationDomain, securityDomain);
+		}
+		
+		protected function createSoundLoaderContext(security:LoadingSecuritySettings):SoundLoaderContext
+		{
+			var checkPolicyFile:Boolean = security.checkPolicyFile;
+			return new SoundLoaderContext(1000, checkPolicyFile);
 		}
 		
 		protected function getApplicationDomain(setting:ApplicationDomainSetting):ApplicationDomain
