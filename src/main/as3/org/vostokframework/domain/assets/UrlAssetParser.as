@@ -49,12 +49,14 @@ package org.vostokframework.domain.assets
 			var aacExt:Array = getAACExtensions();
 			var cssExt:Array = getCSSExtensions();
 			var imgExt:Array = getImageExtensions();
+			var jsonExt:Array = getJsonExtensions();
 			var swfExt:Array = getSWFExtensions();
 			var xmlExt:Array = getXMLExtensions();
 			
 			_typeRegexpMap.put(AssetType.AAC, getRegexp(aacExt));
 			_typeRegexpMap.put(AssetType.CSS, getRegexp(cssExt));
 			_typeRegexpMap.put(AssetType.IMAGE, getRegexp(imgExt));
+			_typeRegexpMap.put(AssetType.JSON, getRegexp(jsonExt));
 			_typeRegexpMap.put(AssetType.SWF, getRegexp(swfExt));
 			_typeRegexpMap.put(AssetType.XML, getRegexp(xmlExt));
 		}
@@ -104,6 +106,14 @@ package org.vostokframework.domain.assets
 			var ext:Array = [];
 			ext.push("jpg");
 			ext.push("png");
+			
+			return ext;
+		}
+		
+		private function getJsonExtensions(): Array
+		{
+			var ext:Array = [];
+			ext.push("json");
 			
 			return ext;
 		}
