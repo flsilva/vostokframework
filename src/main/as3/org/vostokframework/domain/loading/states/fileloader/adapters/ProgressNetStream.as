@@ -142,7 +142,7 @@ package org.vostokframework.domain.loading.states.fileloader.adapters
 			var bufferBytesTotal:int = (_netStream.bytesTotal * _percentToBuffer) / 100;
 			var currentBufferPercent:int = (_netStream.bytesTotal > 0) ? Math.floor((_netStream.bytesLoaded * 100) / bufferBytesTotal) : 0;
 			
-			if (_netStream.bytesLoaded > 0 && !_openEventDispatched)
+			if (!_openEventDispatched)
 			{
 				loadingOpen();
 			}

@@ -52,6 +52,8 @@ package org.vostokframework.domain.assets
 			var jsonExt:Array = getJsonExtensions();
 			var mp3Ext:Array = getMp3Extensions();
 			var swfExt:Array = getSWFExtensions();
+			var txtExt:Array = getTxtExtensions();
+			var videoExt:Array = getVideoExtensions();
 			var xmlExt:Array = getXMLExtensions();
 			
 			_typeRegexpMap.put(AssetType.AAC, getRegexp(aacExt));
@@ -60,6 +62,8 @@ package org.vostokframework.domain.assets
 			_typeRegexpMap.put(AssetType.JSON, getRegexp(jsonExt));
 			_typeRegexpMap.put(AssetType.MP3, getRegexp(mp3Ext));
 			_typeRegexpMap.put(AssetType.SWF, getRegexp(swfExt));
+			_typeRegexpMap.put(AssetType.TXT, getRegexp(txtExt));
+			_typeRegexpMap.put(AssetType.VIDEO, getRegexp(videoExt));
 			_typeRegexpMap.put(AssetType.XML, getRegexp(xmlExt));
 		}
 		
@@ -132,6 +136,34 @@ package org.vostokframework.domain.assets
 		{
 			var ext:Array = [];
 			ext.push("swf");
+			
+			return ext;
+		}
+		
+		private function getTxtExtensions(): Array
+		{
+			var ext:Array = [];
+			ext.push("asp");
+			ext.push("aspx");
+			ext.push("jsp");
+			ext.push("php");
+			ext.push("txt");
+			
+			return ext;
+		}
+		
+		private function getVideoExtensions(): Array
+		{
+			var ext:Array = [];
+			ext.push("flv");
+			ext.push("f4v");
+			ext.push("mov");
+			ext.push("mpg");
+			ext.push("mpeg");
+			ext.push("mp4");
+			ext.push("mp4v");
+			ext.push("3gp");
+			ext.push("3g2");
 			
 			return ext;
 		}
