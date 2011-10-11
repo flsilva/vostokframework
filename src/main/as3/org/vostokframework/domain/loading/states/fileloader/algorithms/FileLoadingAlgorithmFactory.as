@@ -37,6 +37,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithm;
 	import org.vostokframework.domain.loading.states.fileloader.IFileLoadingAlgorithmFactory;
 	import org.vostokframework.domain.loading.states.fileloader.adapters.DataLoaderFactory;
+	import org.vostokframework.domain.loading.states.fileloader.dataparsers.CSSDataParser;
 	import org.vostokframework.domain.loading.states.fileloader.dataparsers.XMLDataParser;
 
 	/**
@@ -106,6 +107,7 @@ package org.vostokframework.domain.loading.states.fileloader.algorithms
 		{
 			_dataParserRepository = new DataParserRepository();
 			
+			_dataParserRepository.add(AssetType.CSS, new CSSDataParser());
 			_dataParserRepository.add(AssetType.XML, new XMLDataParser());
 		}
 
