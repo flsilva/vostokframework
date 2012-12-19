@@ -1,3 +1,18 @@
-h2. Vostok Framework
+h2. VostokFramework
 
-Vostok Framework
+VostokFramework is a powerful AS3 framework for loading, management and storage of assets (XML, SWF, JPG, etc). It has several advanced features such as built-in localization, simultaneous loading queues, detailed loading monitoring, priority, cache control, etc.
+
+For more information visit <a href="http://vostokframework.org" target="_blank">vostokframework.org</a>.
+
+h3. Build
+
+The build is done using Apache Maven 3.
+Basic commands working:
+
+mvn clean
+mvn compile
+mvn test
+mvn install
+
+To run unit tests the standalone flashplayer (debug version) must be launched. If you don't have it in your PATH, when running commands you can use the following variable to point to it:
+-Dflex.flashPlayer.command=ABSOLUTE_PATH_HERE
